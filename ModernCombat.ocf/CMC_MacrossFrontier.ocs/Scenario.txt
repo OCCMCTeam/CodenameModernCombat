@@ -7,8 +7,7 @@ Loader=Loader_CMC*
 Origin=ModernCombat.ocf\CMC_MacrossFrontier.ocs
 
 [Definitions]
-Definition2=LibraryArenaGames.ocd
-Definition3=ModernCombat.ocd
+Definition2=ModernCombat.ocd
 
 [Player1]
 Crew=Clonk=1
