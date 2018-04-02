@@ -1,0 +1,27 @@
+[Head]
+Icon=51
+Title=CMC - Macross Frontier
+MaxPlayer=12
+MaxPlayerLeague=12
+Loader=Loader_CMC*
+Origin=ModernCombat.ocf\CMC_MacrossFrontier.ocs
+
+[Definitions]
+Definition2=LibraryArenaGames.ocd
+Definition3=ModernCombat.ocd
+
+[Player1]
+Crew=Clonk=1
+
+[Player2]
+Crew=Clonk=1
+
+[Player3]
+Crew=Clonk=1
+
+[Player4]
+Crew=Clonk=1
+
+[Landscape]
+MapZoom=10
+NoScan=1
