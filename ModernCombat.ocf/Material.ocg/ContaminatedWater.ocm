@@ -1,0 +1,11 @@
+[Material]
+Name=Water2
+Density=25
+Instable=1
+MaxAirSpeed=25
+MaxSlide=10000
+WindDrift=30
+Corrosive=20
+Extinguisher=1
+Placement=10
+TextureOverlay=water

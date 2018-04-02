@@ -1,0 +1,11 @@
+[Material]
+Name=Sulphur
+Shape=Smooth
+Density=60
+Friction=75
+BlastFree=1
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=90
+Placement=40
+Inflammable=1

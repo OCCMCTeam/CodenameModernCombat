@@ -1,0 +1,6 @@
+[Material]
+Name=Wall
+Shape=Flat
+Density=50
+Friction=100
+Placement=40

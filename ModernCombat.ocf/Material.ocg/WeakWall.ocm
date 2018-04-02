@@ -1,0 +1,8 @@
+[Material]
+Name=WeakWall
+Shape=Flat
+Density=50
+Friction=80
+BlastFree=1
+BlastShiftTo=BackWall
+Placement=45

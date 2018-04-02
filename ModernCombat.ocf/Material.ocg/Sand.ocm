@@ -1,0 +1,13 @@
+[Material]
+Name=Sand
+Shape=Smooth
+Density=60
+Friction=80
+BlastFree=1
+Blast2PXSRatio=10
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=75
+Soil=1
+Placement=30
+TextureOverlay=sand

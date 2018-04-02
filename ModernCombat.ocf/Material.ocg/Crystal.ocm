@@ -1,0 +1,15 @@
+[Material]
+Name=Crystal
+Shape=Rough
+Density=70
+Friction=80
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=60
+Placement=50
+TextureOverlay=Crystal
+LightEmit=128,90,164
+LightSpot=160,96,128
+LightAngle=204
+MinShapeOverlap=30
+

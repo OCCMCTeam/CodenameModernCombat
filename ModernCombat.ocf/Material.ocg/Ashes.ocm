@@ -1,0 +1,15 @@
+[Material]
+Name=Ashes
+Shape=Smooth
+Density=50
+Friction=80
+MaxAirSpeed=25
+MaxSlide=1
+WindDrift=60
+Corrode=75
+Soil=1
+Placement=30
+TextureOverlay=ashes
+PXSGfxSize=6
+PXSGfx=AshesPXS
+PXSGfxRt=0,0,32,32,-16,-16

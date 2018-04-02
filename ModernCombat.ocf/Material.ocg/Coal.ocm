@@ -1,0 +1,11 @@
+[Material]
+Name=Coal
+Shape=Rough
+Density=50
+Friction=75
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=50
+Placement=40
+TextureOverlay=coal
+OverlayType=8

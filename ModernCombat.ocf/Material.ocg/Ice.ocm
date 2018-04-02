@@ -1,0 +1,10 @@
+[Material]
+Name=Ice
+Shape=TopFlat
+Density=60
+Friction=15
+MaxAirSpeed=100
+MaxSlide=1
+Corrode=60
+Placement=21
+TextureOverlay=ice
