@@ -10,16 +10,16 @@ Origin=ModernCombat.ocf\CMC_MacrossFrontier.ocs
 Definition2=ModernCombat.ocd
 
 [Player1]
-Crew=Clonk=1
+Crew=Peacemaker=1
 
 [Player2]
-Crew=Clonk=1
+Crew=Peacemaker=1
 
 [Player3]
-Crew=Clonk=1
+Crew=Peacemaker=1
 
 [Player4]
-Crew=Clonk=1
+Crew=Peacemaker=1
 
 [Landscape]
 MapZoom=10

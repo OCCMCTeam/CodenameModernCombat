@@ -1,0 +1,2 @@
+Name=Peacemaker
+Description=Das unangefochtene Rückgrat der Streitmacht und Ergebnis jahrelanger Ausbildung.||Die zahlreichen Taschen erlauben das Tragen von bis zu 5 Objekten, davon 3 Waffen.
