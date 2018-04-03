@@ -1,0 +1,4 @@
+[submodule "Library_ArenaGames"]
+	path = Library_ArenaGames
+	url = https://github.com/gitMarky/Library_ArenaGames
+	branch = stable
