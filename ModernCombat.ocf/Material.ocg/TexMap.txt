@@ -118,4 +118,4 @@ OverloadTextures
 111=Rock-rock_brown
 112=Rock-rock_canyon2
 113=Rock-rock_brown_smooth
-114=Rock-rock_canyon4
+114=Rock-rock_canyon
