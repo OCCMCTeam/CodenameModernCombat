@@ -43,7 +43,7 @@ OverloadTextures
 36=BackWall-backwall_industrial2
 37=BackWall-backwall_industrial3
 38=BackWall-backwall_laboratory1
-39=BackWall-backwall_marble1
+39=BackWallShiny-backwall_marble1
 40=BackWall-backwall_metal1
 41=BackWall-backwall_metal2
 42=BackWall-backwall_metal3

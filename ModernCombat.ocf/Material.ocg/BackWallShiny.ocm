@@ -1,0 +1,7 @@
+[Material]
+Name=BackWallShiny
+Shape=Flat
+OverlayType=2
+Placement=5
+LightSpot=10,10,10
+LightAngle=170
