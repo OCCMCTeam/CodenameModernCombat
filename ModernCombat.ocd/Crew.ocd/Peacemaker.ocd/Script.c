@@ -1,6 +1,14 @@
 /*--- The Peacemaker ---*/
 
 #include Clonk
+#include Library_AmmoManager
+
+/*--- Ammo management ---*/
+
+public func GetAmmoSource(id ammo)
+{
+	return AMMO_Source_Local;
+}
 
 /*--- No Backpack ---*/
 
