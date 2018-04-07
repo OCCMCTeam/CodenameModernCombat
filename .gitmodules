@@ -3,6 +3,6 @@
 	url = https://github.com/gitMarky/Library_ArenaGames
 	branch = stable
 [submodule "Library_Shooter"]
-	path = ModernCombat.ocd/Library_Shooter
+	path = Library_Shooter
 	url = https://github.com/gitMarky/Library_Shooter
 	branch = stable
