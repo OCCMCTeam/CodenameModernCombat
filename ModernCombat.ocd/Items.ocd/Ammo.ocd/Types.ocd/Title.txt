@@ -1,0 +1,2 @@
+DE:Munitionsarten
+US:Ammo types
