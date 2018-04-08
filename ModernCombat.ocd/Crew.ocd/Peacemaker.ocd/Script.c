@@ -3,11 +3,29 @@
 #include Clonk
 #include Library_AmmoManager
 
+/*--- Inventory management ---*/
+
+public func GetCurrentItem()
+{
+	return this->GetHandItem(0);
+}
+
 /*--- Ammo management ---*/
 
 public func GetAmmoSource(id ammo)
 {
 	return AMMO_Source_Local;
+}
+
+public func SetAmmo(id ammo, int new_value)
+{
+	var info = _inherited(ammo, new_value);
+	var hud = this->~GetHUDController();
+	if (hud)
+	{
+		hud->~OnAmmoChange(this);
+	}
+	return info;
 }
 
 /*--- No Backpack ---*/
