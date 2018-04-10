@@ -1,0 +1,6 @@
+﻿Name=Pistole
+Description=Die Pistole ist schnell, genau und effektiv und bildet so die beste Alternative, wenn die Primärwaffe in einem hitzigen Feuergefecht leergefeuert wurde.||Ein Peilsenderaufsatz erlaubt das Markieren von Zielen.
+
+Bullets=Kugeln
+TracerDart=Peilsender
+Single=Einzeln

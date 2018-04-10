@@ -1,0 +1,29 @@
+material weapon_pistol
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass
+        {
+            ambient  0.800 0.800 0.800 1.0
+            diffuse  0.640 0.640 0.640 1.0
+            specular 0.025 0.025 0.025 1.0 2.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            cull_hardware clockwise
+            depth_check on
+            depth_write on
+            scene_blend one zero
+
+            texture_unit 
+            {
+                texture pistol.jpg
+                tex_address_mode wrap
+                scale 1.0 1.0
+                colour_op modulate
+            }
+        }
+    }
+}
