@@ -1,7 +1,9 @@
+#include Library_AmmoManager
 #include Library_Firearm
 
 local Name = "$Name$";
 local Description = "$Description$";
+local Collectible = true;
 
 public func GetCarryTransform()
 {
@@ -22,6 +24,28 @@ public func Initialize()
 func Definition(id def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(-20, 0, 0, 1), Trans_Rotate(5, 1, 0, 0), Trans_Translate(-1800, 0, -3000));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Using
+
+local carry_mode = CARRY_Hand;
+
+public func GetCarryMode(object clonk, bool idle, bool nohand)
+{
+	if (idle || nohand)
+	{
+		return CARRY_None;
+	}
+	return carry_mode;
+}
+public func GetCarrySpecial(object user) { return "pos_hand2"; }
+public func GetCarryBone() { return "Grip"; }
+
+func IsUserReadyToUse(object user)
+{
+	return user->HasActionProcedure(false); // must not grab landscape
 }
 
 
