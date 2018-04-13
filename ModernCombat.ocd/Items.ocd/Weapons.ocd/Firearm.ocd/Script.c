@@ -1,7 +1,6 @@
 #include Library_Firearm // Basic functionality
 #include Library_AmmoManager // Provide functions for managing ammo
-// FIXME: Ammo does not seem to work at the moment :( GetAmmo(GetFiremode()) always returns 0, might have to do with the inlude order
-// #include Plugin_Firearm_AmmoLogic // For having an ammo logic in general
+#include Plugin_Firearm_AmmoLogic // For having an ammo logic in general
 // FIXME: Reloading broke with the library refactoring; will just take ammo from the container for now
 //#include Plugin_Firearm_ReloadFromAmmoSource // For ammo transfer between weapon and Clonk
 //#include Plugin_Firearm_ReloadProgressBar // Temporary include, because the weapon needs to reload and there is no proper HUD yet
