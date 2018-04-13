@@ -46,28 +46,27 @@ public func GetCarryTransform()
 
 func FiremodeStandard()
 {
-	return
-	{
-		Prototype = fire_mode_default, 
-		name = 				"$Bullets$",
-		mode = 				WEAPON_FM_Single,
-		icon = 				nil,
-		
-		ammo_id = 			CMC_Ammo_Bullets,
-		ammo_load =         15,
+	var mode = new Library_Firearm_Firemode {};
 	
-		delay_reload =		40,
-		delay_recover = 	5,
-	
-		damage = 			11,
-	
-		// TODO
-		projectile_id = 	NormalBullet,
-		projectile_speed = 	250,
-		projectile_range =  450,
-	
-		projectile_distance = 8,
-		projectile_offset_y = -6,
-	};
-}
+	// Generic info
+	mode->SetName("$Bullets$");
+	mode->SetMode(WEAPON_FM_Single);
 
+	// Reloading
+	mode->SetAmmoID(CMC_Ammo_Bullets);
+	mode.ammo_load = 15; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode->SetRecoveryDelay(5);
+	mode->SetReloadDelay(40);
+	mode->SetDamage(11);
+	
+	// Projectile
+	mode->SetProjectileID(NormalBullet);
+	mode->SetProjectileSpeed(250);
+	mode->SetProjectileRange(450);
+	mode->SetProjectileDistance(8);
+	mode->SetYOffset(-6);
+	
+	// Effects, CMC custom
+	mode->SetFireSound("Weapon::Pistol::Fire", 2);
+	return mode;
+}
