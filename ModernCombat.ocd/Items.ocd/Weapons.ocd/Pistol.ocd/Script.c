@@ -70,3 +70,32 @@ func FiremodeStandard()
 	mode->SetFireSound("Weapon::Pistol::Fire", 2);
 	return mode;
 }
+
+
+/* --- Effects --- */
+
+
+func FireSound(object user, proplist firemode)
+{
+	Sound(firemode->GetCurrentFireSound());
+}
+
+func OnFireProjectile(object user, object projectile, proplist firemode)
+{
+	projectile->Trail(2, 150);
+}
+
+func FireEffect(object user, int angle, proplist firemode)
+{
+	// Muzzle flash
+	var x = +Sin(angle, firemode->GetProjectileDistance());
+	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
+
+	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+	
+	// Casing
+	x = +Sin(angle, firemode->GetProjectileDistance() / 2);
+	y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
+
+	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + Sin(-angle, 5), user->GetYDir() - RandomX(15, 20));
+}
