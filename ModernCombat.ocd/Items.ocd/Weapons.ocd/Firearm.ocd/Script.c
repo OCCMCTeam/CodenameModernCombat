@@ -20,6 +20,13 @@ public func GetAmmoReloadContainer()
 	return Contained(); // Reload from this container
 }
 
+public func OnNoAmmo(object user, proplist firemode)
+{
+	_inherited(user, firemode);
+	
+	Sound("Weapon::Shared::LastRound?", {player = user->GetOwner()});
+}
+
 /* --- Reloading --- */
 
 public func NeedsReload(object user, proplist firemode)
@@ -34,3 +41,10 @@ public func NeedsRecovery(object user, proplist firemode)
 	return !NeedsReload(user, firemode); // No recovery necessary when reloading, so that reload can happen instantly
 }
 
+/* --- Misc effects --- */
+
+func Hit()
+{
+	Sound("Weapon::Shared::Hit?");
+	_inherited(...);
+}
