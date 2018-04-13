@@ -1,0 +1,11 @@
+[DefCore]
+id=CMC_Projectile_Bullet
+Version=8,0
+Category=C4D_Vehicle
+Width=3
+Height=3
+Offset=-2,-2
+Vertices=1
+Rotate=1
+Float=100000
+HideInCreator=true
