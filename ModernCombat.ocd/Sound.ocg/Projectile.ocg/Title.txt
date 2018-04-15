@@ -1,0 +1,2 @@
+DE:Projektile
+US:Projectiles

@@ -1,2 +1,2 @@
-DE:Waffen
-US:Weapons
+DE:Waffe
+US:Weapon
