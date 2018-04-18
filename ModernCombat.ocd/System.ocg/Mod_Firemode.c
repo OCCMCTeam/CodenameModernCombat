@@ -6,8 +6,24 @@
 
 #appendto Library_Firearm_Firemode
 
-
 /*-- Getters --*/
+
+/**
+ Get the transition type for carrying to ironsight.
+ Can be one of three constants (see CMC Firearm Library).
+*/
+public func GetIronsightType()
+{
+	return this.ironsight_trans;
+}
+
+/**
+ Get the transition delay for carrying to ironsight.
+*/
+public func GetIronsightDelay()
+{
+	return this.ironsight_delay;
+}
 
 /**
  Get the sound for firing.
@@ -33,7 +49,34 @@ public func GetCurrentFireSound()
 	return Format("%s%d", GetFireSound(), this.sound_fire_counter + 1);
 }
 
+/**
+ Get the aiming animation
+*/
+public func GetAimingAnimation()
+{
+	return this.anim_aim_name;
+}
+
 /*-- Setters --*/
+
+/**
+ Set the transition type for carrying to ironsight.
+ Can be one of three constants (see CMC Firearm Library).
+*/
+public func SetIronsightType(int type)
+{
+	this.ironsight_trans = type;
+	return this;
+}
+
+/**
+ Set the transition delay for carrying to ironsight.
+*/
+public func SetIronsightDelay(int delay)
+{
+	this.ironsight_delay = delay;
+	return this;
+}
 
 /**
  Set the fire sound for this fire mode.
@@ -44,8 +87,18 @@ public func GetCurrentFireSound()
 public func SetFireSound(string name, int count)
 {
 	AssertNotNil(name);
-	
+
 	this.sound_fire_counter = 0;
 	this.sound_fire_max = count ?? 1;
 	this.sound_fire = name;
+	return this;
+}
+
+/**
+ Set the aiming animation
+*/
+public func SetAimingAnimation(string name)
+{
+	this.anim_aim_name = name;
+	return this;
 }

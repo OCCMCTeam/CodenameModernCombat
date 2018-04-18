@@ -1,0 +1,2 @@
+CON_UseAlt=Use
+CON_UseAlt_Desc=Use the item in the hand alternatively.

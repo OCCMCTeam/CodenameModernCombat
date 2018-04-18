@@ -1,0 +1,23 @@
+# Define a new control with higher priority than Throw (standard throw has 100) to be triggered on right mouse button
+# Unfortunately, it is not possible to simply redefine the assignment of CON_UseAlt
+
+[ControlDefs]
+
+	[ControlDef]
+	Identifier=CMC_UseAlt
+	GUIName=$CON_UseAlt$
+	GUIDesc=$CON_UseAlt_Desc$
+	Hold=1
+	SendCursorPos=1
+
+[ControlSets]
+
+	[ControlSet]
+	Name=*
+
+		[Assignment]
+		Key=Mouse0Right
+		Priority=150
+		GUIName=$CON_UseAlt$
+		GUIDesc=$CON_UseAlt_Desc$
+		Control=CMC_UseAlt

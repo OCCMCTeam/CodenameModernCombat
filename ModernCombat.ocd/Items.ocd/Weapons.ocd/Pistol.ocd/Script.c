@@ -5,13 +5,13 @@
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+local ForceFreeHands = true;
 
 /* --- Engine callbacks --- */
 
 public func Initialize()
 {
 	_inherited(...);
-	this.MeshTransformation = Trans_Scale(800, 800, 800);
 
 	// Fire mode list
 	ClearFiremodes();
@@ -21,25 +21,29 @@ public func Initialize()
 func Definition(id def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(-20, 0, 0, 1), Trans_Rotate(5, 1, 0, 0), Trans_Translate(-1800, 0, -3000));
+	def.MeshTransformation = Trans_Scale(800);
 }
 
 /* --- Display --- */
 
-local carry_mode = CARRY_Hand;
-
-public func GetCarryMode(object clonk, bool idle, bool nohand)
+public func GetCarryMode(object clonk, bool idle)
 {
-	if (idle || nohand)
-	{
-		return CARRY_None;
-	}
-	return carry_mode;
+	if (!idle || this.is_in_ironsight)
+		return CARRY_Hand;
+	else
+		return CARRY_Belt;
 }
-public func GetCarrySpecial(object user) { return "pos_hand2"; }
 public func GetCarryBone() { return "Grip"; }
-public func GetCarryTransform()
+public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 {
-	return Trans_Mul(Trans_Rotate(90, 1, 0, 0), Trans_Translate(-2500, 800, 0), Trans_Scale(800, 800, 800));
+	if (idle) return;
+
+	var act = clonk->GetAction();
+
+	if (act != "Walk" && act != "Jump")
+		return Trans_Mul(Trans_Scale(500), Trans_Rotate(140, 1), Trans_Translate(0, 0, -2500));
+
+	return Trans_Mul(Trans_Scale(600), Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 }
 
 /* --- Fire modes --- */
@@ -47,7 +51,7 @@ public func GetCarryTransform()
 func FiremodeStandard()
 {
 	var mode = new Library_Firearm_Firemode {};
-	
+
 	// Generic info
 	mode->SetName("$Bullets$");
 	mode->SetMode(WEAPON_FM_Single);
@@ -58,22 +62,27 @@ func FiremodeStandard()
 	mode->SetRecoveryDelay(5);
 	mode->SetReloadDelay(40);
 	mode->SetDamage(11);
-	
+
 	// Projectile
 	mode->SetProjectileID(CMC_Projectile_Bullet);
 	mode->SetProjectileSpeed(250);
 	mode->SetProjectileRange(450);
 	mode->SetProjectileDistance(8);
 	mode->SetYOffset(-6);
-	
+
+	// Ironsight aiming
+	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
+	mode->SetIronsightDelay(15);
+	mode->SetAimingAnimation("AimArmsGeneric.R");
+	mode->SetForwardWalkingSpeed(95);
+	mode->SetBackwardWalkingSpeed(65);
+
 	// Effects, CMC custom
 	mode->SetFireSound("Weapon::Pistol::Fire", 2);
 	return mode;
 }
 
-
 /* --- Effects --- */
-
 
 func FireSound(object user, proplist firemode)
 {
@@ -92,7 +101,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	var x = +Sin(angle, firemode->GetProjectileDistance());
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
-	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+	//EffectMuzzleFlash(user, x, y, angle, 20, false, true);
 	
 	// Casing
 	x = +Sin(angle, firemode->GetProjectileDistance() / 2);
