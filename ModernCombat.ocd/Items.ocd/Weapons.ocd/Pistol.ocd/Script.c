@@ -29,21 +29,29 @@ func Definition(id def)
 public func GetCarryMode(object clonk, bool idle)
 {
 	if (!idle || this.is_in_ironsight)
+	{
 		return CARRY_Hand;
+	}
 	else
+	{
 		return CARRY_Belt;
+	}
 }
 public func GetCarryBone() { return "Grip"; }
 public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 {
 	if (idle) return;
 
-	var act = clonk->GetAction();
+	var trans_size = Trans_Scale(500);
+	if (clonk->~IsWalking() || clonk->~IsJumping())
+	{
+		return Trans_Mul(trans_size, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
+	}
+	else
+	{
+		return Trans_Mul(trans_size, Trans_Rotate(140, 1), Trans_Translate(0, 0, -2500));
+	}
 
-	if (act != "Walk" && act != "Jump")
-		return Trans_Mul(Trans_Scale(500), Trans_Rotate(140, 1), Trans_Translate(0, 0, -2500));
-
-	return Trans_Mul(Trans_Scale(600), Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 }
 
 /* --- Fire modes --- */
