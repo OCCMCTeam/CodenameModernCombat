@@ -8,7 +8,7 @@
 public func OnAmmoChange(id ammo_type)
 {
 	_inherited(ammo_type);
-	if (Contained())
+	if (Contained() && this->~GetAmmoSource(ammo_type) != AMMO_Source_Infinite)
 	{
 		Contained()->PlayerMessage(Contained()->GetOwner(), "{{%i}}: %d", ammo_type, GetAmmo(ammo_type));
 	}

@@ -5,10 +5,10 @@
 */
 
 #include Library_Firearm // Basic functionality
-//#include Library_AmmoManager // Provide functions for managing ammo
-//#include Plugin_Firearm_AmmoLogic // For having an ammo logic in general
-//#include Plugin_Firearm_ReloadFromAmmoSource // For ammo transfer between weapon and Clonk
-//#include Plugin_Firearm_ReloadProgressBar // Temporary include, because the weapon needs to reload and there is no proper HUD yet
+#include Library_AmmoManager // Provide functions for managing ammo
+#include Plugin_Firearm_AmmoLogic // For having an ammo logic in general
+#include Plugin_Firearm_ReloadFromAmmoSource // For ammo transfer between weapon and Clonk
+#include Plugin_Firearm_ReloadProgressBar // Temporary include, because the weapon needs to reload and there is no proper HUD yet
 
 /* --- Constants --- */
 
