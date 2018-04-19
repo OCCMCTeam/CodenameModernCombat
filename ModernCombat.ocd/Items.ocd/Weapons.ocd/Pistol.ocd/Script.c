@@ -21,37 +21,33 @@ public func Initialize()
 func Definition(id def)
 {
 	def.PictureTransformation = Trans_Mul(Trans_Rotate(-20, 0, 1, 0), Trans_Rotate(-20, 0, 0, 1), Trans_Rotate(5, 1, 0, 0), Trans_Translate(-1800, 0, -3000));
-	def.MeshTransformation = Trans_Scale(800);
+	def.MeshTransformation = Trans_Scale(500);
 }
 
 /* --- Display --- */
 
-public func GetCarryMode(object clonk, bool idle)
+public func GetCarryMode(object clonk, bool idle) // FIXME - maybe "idle" is a bad description? Currently it means that the item is not the active item that the player is using
 {
-	if (!idle || this.is_in_ironsight)
+	if (idle || !IsUserReadyToUse(clonk))
 	{
-		return CARRY_Hand;
+		return CARRY_Belt; // Mesh seems not to be attached to the Clonk in this carry mode
 	}
 	else
 	{
-		return CARRY_Belt;
+		return CARRY_Hand;
 	}
 }
 public func GetCarryBone() { return "Grip"; }
 public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 {
-	if (idle) return;
-
-	var trans_size = Trans_Scale(500);
-	if (clonk->~IsWalking() || clonk->~IsJumping())
+	if (idle || !IsUserReadyToUse(clonk)) // On belt?
 	{
-		return Trans_Mul(trans_size, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
+		return Trans_Mul(this.MeshTransformation);
 	}
-	else
+	else // FIXME - not necessary at the moment, this is covered by IsUserReadyToUse: if (clonk->~IsWalking() || clonk->~IsJumping())
 	{
-		return Trans_Mul(trans_size, Trans_Rotate(140, 1), Trans_Translate(0, 0, -2500));
+		return Trans_Mul(this.MeshTransformation, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 	}
-
 }
 
 /* --- Fire modes --- */
