@@ -1,8 +1,14 @@
-global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, int status)
+/**
+	Use this for redefining certain button behaviour.
+ */
+
+global func PlayerControl(int player, int control, id spec_id, int x, int y, int strength, bool repeat, int status)
 {
 	// Map the CON_CMC_UseAlt key to the regular CON_UseAlt
-	if (ctrl == CON_CMC_UseAlt)
-		ctrl = CON_UseAlt;
+	if (control == CON_CMC_UseAlt)
+	{
+		control = CON_UseAlt;
+	}
 
-	_inherited(plr, ctrl, spec_id, x, y, strength, repeat, status);
+	_inherited(player, control, spec_id, x, y, strength, repeat, status);
 }
