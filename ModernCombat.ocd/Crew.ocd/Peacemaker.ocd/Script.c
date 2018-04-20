@@ -57,7 +57,7 @@ private func SetSkin(int new_skin)
 	// However, we do not use any of these :(
 	skin_name = nil;
 	
-	SetGraphics(skin_name = nil, Clonk);
+	//SetGraphics(skin_name = nil, Clonk);
 	gender = 0;
 
 	// Refreshes animation (otherwise the Clonk will be stuck in the previus animation)

@@ -1,0 +1,41 @@
+material medic_mat 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass material
+        {
+		    cull_hardware none
+            scene_blend alpha_blend
+		
+            ambient 1.0 1.0 1.0 1.0
+            diffuse 1.0 1.0 1.0 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+			texture_unit overlay
+			{
+				texture overlay026wo85.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex modulate src_texture src_player_colour
+				alpha_op_ex source1 src_texture src_player_colour 				// take alpha from texture only, ignore player alpha
+			}
+			texture_unit base
+			{
+				texture peacemakerbase026wo85.jpg
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex blend_current_alpha src_current src_texture
+				alpha_op_ex add src_current src_texture							// Don't blend alpha, to make sure we have full intensity at the base/overlay border region
+			}
+			texture_unit light
+			{
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
+		}
+    }
+}
+
