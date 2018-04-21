@@ -20,6 +20,31 @@ func RelaunchLocations()
 	// provide a better interface here. I do not like accessing
 	// properties directly, because you have 
 	
+	// Team positions
+	var pos_team1_1 = {x =   420, y = 400, team = 1};
+	var pos_team1_2 = {x =   420, y = 630, team = 1};
+	var pos_team1_3 = {x =   450, y = 340, team = 1};
+	
+	var pos_team2_1 = {x =  1465, y = 285, team = 2};
+	var pos_team2_2 = {x =  1495, y = 320, team = 2};
+	var pos_team2_3 = {x =  1530, y = 550, team = 2};
+	
+	// Generic positions - TODO: a descriptive name would be useful for these
+	var pos_all_1 = {x = 540, y = 420};
+	var pos_all_2 = {x = 540, y = 540};
+	// FIXME: Why do these two differ by 10 pixels only? Should be one position
+	var pos_all_3_htf =   {x = 540, y = 630};
+	var pos_all_3_other = {x = 550, y = 630};
+	var pos_all_4 = {x = 1410, y = 340};
+	var pos_all_5 = {x = 730, y = 610};
+	var pos_all_6 = {x =  1220, y = 530};
+	// FIXME: Why do these two differ by 10 pixels only? Should be one position
+	var pos_all_7_htf =   {x = 1410, y = 460};
+	var pos_all_7_other = {x = 1420, y = 460};
+	// FIXME: Why do these two differ by 10 pixels only? Should be one position
+	var pos_all_8_htf =   {x = 1410, y = 550};
+	var pos_all_8_other = {x =  1400, y = 550};
+	
 	var is_goal_hold_the_flag = true;
 	if (is_goal_hold_the_flag)
 	{
@@ -27,21 +52,21 @@ func RelaunchLocations()
 		// locations... adding entries manually seems to make more sense
 		if (GetTeamCount() == 2)
 	    {
-			PushBack(possible_locations, {x =   420, y = 400, team = 1});
-			PushBack(possible_locations, {x =   420, y = 630, team = 1});
-			PushBack(possible_locations, {x =   450, y = 340, team = 1});
-			PushBack(possible_locations, {x =  1465, y = 285, team = 2});
-			PushBack(possible_locations, {x =  1495, y = 320, team = 2});
-			PushBack(possible_locations, {x =  1530, y = 550, team = 2});
+			PushBack(possible_locations, pos_team1_1);
+			PushBack(possible_locations, pos_team1_2);
+			PushBack(possible_locations, pos_team1_3);
+			PushBack(possible_locations, pos_team2_1);
+			PushBack(possible_locations, pos_team2_2);
+			PushBack(possible_locations, pos_team2_3);
 		}
 		else
 		{
-			PushBack(possible_locations, {x =  540, y = 420});
-			PushBack(possible_locations, {x =  540, y = 540});
-			PushBack(possible_locations, {x =  540, y = 630});
-			PushBack(possible_locations, {x = 1410, y = 340});
-			PushBack(possible_locations, {x = 1410, y = 460});
-			PushBack(possible_locations, {x = 1410, y = 550});
+			PushBack(possible_locations, pos_all_1);
+			PushBack(possible_locations, pos_all_2);
+			PushBack(possible_locations, pos_all_3_htf);
+			PushBack(possible_locations, pos_all_4);
+			PushBack(possible_locations, pos_all_7_htf);
+			PushBack(possible_locations, pos_all_8_htf);
 		}
 	}
 	else // Money run, last man standing, team deathmatch
@@ -51,21 +76,21 @@ func RelaunchLocations()
 		// and move those that are shared out of the if-else-blocks
 		if (GetTeamCount() == 2)
 	    {
-			PushBack(possible_locations, {x =   420, y = 400, team = 1}); 
-			PushBack(possible_locations, {x =   420, y = 630, team = 1}); 
-			PushBack(possible_locations, {x =   450, y = 340, team = 1}); 
-			PushBack(possible_locations, {x =  1465, y = 285, team = 2});
-			PushBack(possible_locations, {x =  1495, y = 320, team = 2});
-			PushBack(possible_locations, {x =  1530, y = 550, team = 2});
+			PushBack(possible_locations, pos_team1_1);
+			PushBack(possible_locations, pos_team1_2);
+			PushBack(possible_locations, pos_team1_3);
+			PushBack(possible_locations, pos_team2_1);
+			PushBack(possible_locations, pos_team2_2);
+			PushBack(possible_locations, pos_team2_3);
 		}
 		else
 		{
-			PushBack(possible_locations, {x =   540, y = 540});
-			PushBack(possible_locations, {x =   550, y = 630});
-			PushBack(possible_locations, {x =   730, y = 610});
-			PushBack(possible_locations, {x =  1220, y = 530});
-			PushBack(possible_locations, {x =  1420, y = 460});
-			PushBack(possible_locations, {x =  1400, y = 550});
+			PushBack(possible_locations, pos_all_2);
+			PushBack(possible_locations, pos_all_3_other);
+			PushBack(possible_locations, pos_all_5);
+			PushBack(possible_locations, pos_all_6);
+			PushBack(possible_locations, pos_all_7_other);
+			PushBack(possible_locations, pos_all_8_other);
 		}
 	}
 	

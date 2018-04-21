@@ -1,5 +1,11 @@
 /*--- CMC Default scenario script ---*/
 
+// TODO - Library internal respawn script:
+// It was created before Fulgen and Maikel reworked
+// the respawn rule (which is better, but in some aspects not generic enough).
+// For now our script uses this one, but I want to look into merging the two.
+#include Library_ScenarioScript_PlayerRespawn
+
 /*--- Engine callbacks ---*/
 
 public func Initialize()
