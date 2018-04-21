@@ -21,29 +21,29 @@ func RelaunchLocations()
 	// properties directly, because you have 
 	
 	// Team positions
-	var pos_team1_1 = {x =   420, y = 400, team = 1};
-	var pos_team1_2 = {x =   420, y = 630, team = 1};
-	var pos_team1_3 = {x =   450, y = 340, team = 1};
+	var pos_team1_1 = RelaunchLocation(420, 400)->SetTeam(1);
+	var pos_team1_2 = RelaunchLocation(420, 630)->SetTeam(1);
+	var pos_team1_3 = RelaunchLocation(450, 340)->SetTeam(1);
 	
-	var pos_team2_1 = {x =  1465, y = 285, team = 2};
-	var pos_team2_2 = {x =  1495, y = 320, team = 2};
-	var pos_team2_3 = {x =  1530, y = 550, team = 2};
+	var pos_team2_1 = RelaunchLocation(1465, 285)->SetTeam(2);
+	var pos_team2_2 = RelaunchLocation(1495, 320)->SetTeam(2);
+	var pos_team2_3 = RelaunchLocation(1530, 550)->SetTeam(2);
 	
 	// Generic positions - TODO: a descriptive name would be useful for these
-	var pos_all_1 = {x = 540, y = 420};
-	var pos_all_2 = {x = 540, y = 540};
+	var pos_all_1 = RelaunchLocation(540, 420);
+	var pos_all_2 = RelaunchLocation(540, 540);
 	// FIXME: Why do these two differ by 10 pixels only? Should be one position
-	var pos_all_3_htf =   {x = 540, y = 630};
-	var pos_all_3_other = {x = 550, y = 630};
-	var pos_all_4 = {x = 1410, y = 340};
-	var pos_all_5 = {x = 730, y = 610};
-	var pos_all_6 = {x =  1220, y = 530};
+	var pos_all_3_htf =   RelaunchLocation(540, 630);
+	var pos_all_3_other = RelaunchLocation(550, 630);
+	var pos_all_4 = RelaunchLocation(1410, 340);
+	var pos_all_5 = RelaunchLocation(730, 610);
+	var pos_all_6 = RelaunchLocation(1220, 530);
 	// FIXME: Why do these two differ by 10 pixels only? Should be one position
-	var pos_all_7_htf =   {x = 1410, y = 460};
-	var pos_all_7_other = {x = 1420, y = 460};
+	var pos_all_7_htf =   RelaunchLocation(1410, 460);
+	var pos_all_7_other = RelaunchLocation(1420, 460);
 	// FIXME: Why do these two differ by 10 pixels only? Should be one position
-	var pos_all_8_htf =   {x = 1410, y = 550};
-	var pos_all_8_other = {x =  1400, y = 550};
+	var pos_all_8_htf =   RelaunchLocation(1410, 550);
+	var pos_all_8_other = RelaunchLocation(1400, 550);
 	
 	var is_goal_hold_the_flag = true;
 	if (is_goal_hold_the_flag)
