@@ -4,12 +4,10 @@ Title=CMC - Macross Frontier
 MaxPlayer=12
 MaxPlayerLeague=12
 Loader=Loader_CMC*
-Origin=ModernCombat.ocf\CMC_MacrossFrontier.ocs
+Origin=CodenameModernCombat/ModernCombat.ocf/CMC_MacrossFrontier.ocs
 
 [Definitions]
-Definition2=LibraryArenaGames.ocd
-Definition3=LibraryShooter.ocd
-Definition4=ModernCombat.ocd
+Definition2=CodenameModernCombat/ModernCombat.ocd
 
 [Player1]
 Crew=Peacemaker=1
