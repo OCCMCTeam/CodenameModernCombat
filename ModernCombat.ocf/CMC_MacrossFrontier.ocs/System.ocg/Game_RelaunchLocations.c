@@ -27,12 +27,12 @@ func RelaunchLocations()
 		// locations... adding entries manually seems to make more sense
 		if (GetTeamCount() == 2)
 	    {
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition(420, 400)->SetTeam(1));
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition( 420,630)->SetTeam(1));
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition( 450,340)->SetTeam(1));
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition(1465,285)->SetTeam(2));
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition(1495,320)->SetTeam(2));
-			PushBack(possible_locations, Arena_RelaunchLocation->AtPosition(1530,550)->SetTeam(2));
+			PushBack(possible_locations, {x =   420, y = 400, team = 1});
+			PushBack(possible_locations, {x =   420, y = 630, team = 1});
+			PushBack(possible_locations, {x =   450, y = 340, team = 1});
+			PushBack(possible_locations, {x =  1465, y = 285, team = 2});
+			PushBack(possible_locations, {x =  1495, y = 320, team = 2});
+			PushBack(possible_locations, {x =  1530, y = 550, team = 2});
 		}
 		else
 		{
