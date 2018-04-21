@@ -9,10 +9,15 @@ public func Initialize()
 	// Create the round manager - this organizes the game in rounds
 	CreateObject(Environment_RoundManager);
 	
+	// Create the configuration - TODO: this has old style menus at the moment, will be changed
+	// to proper GUI menus soon
+	CreateObject(CMC_Game_Session_Configurator);
+	
 	// A nice log message
 	Log("$InitializeScenario$");
 
-	// Create deco, ...
+	// Create deco, ...  - TODO: this could be made more similar to the 
+	// CR CMC function/log order if we do not need multiple rounds per scenario
 	CreateDeco();
 }
 
