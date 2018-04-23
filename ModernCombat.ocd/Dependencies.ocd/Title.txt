@@ -1,3 +1,2 @@
-DE:Referenzierte Definition
-US:Referenced definitions
-
+DE:Referenzierte Definitionen
+US:Referenced Definitions
