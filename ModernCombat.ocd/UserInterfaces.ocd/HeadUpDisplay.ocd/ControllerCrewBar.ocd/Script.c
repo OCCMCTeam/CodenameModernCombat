@@ -170,7 +170,7 @@ public func GuiCrewBarPositionLayout()
 	var bottom = 1000 - GUI_CMC_Margin_Screen_V;
 	var right = 1000 - GUI_CMC_Margin_Screen_H;
 	var left = right - GUI_CMC_Element_Info_Width;
-	var top = bottom - 3 * GUI_CMC_Element_Bar_Height;
+	var top = bottom - GUI_CMC_Element_Default_Height;
 	return {
 		Left = ToPercentString(left),
 		Right = ToPercentString(right),
@@ -218,7 +218,6 @@ public func ScheduleUpdateCrewBars(string bar)
 			timer.update[GetBreathBar()->GetName()] = true;
 		}
 	}
-		
 }
 
 
@@ -238,7 +237,6 @@ local ScheduledCrewBarsUpdateTimer = new Effect
 // Update the bars
 func UpdateCrewBars(bool update_health, bool update_breath)
 {
-
 	var cursor = GetCursor(GetOwner());
 	
 	if (GuiShowForCrew(gui_cmc_crew, GetOwner(), cursor))
