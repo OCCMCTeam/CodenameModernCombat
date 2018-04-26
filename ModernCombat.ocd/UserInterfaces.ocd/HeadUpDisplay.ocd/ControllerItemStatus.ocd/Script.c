@@ -114,14 +114,122 @@ public func OnAmmoChange(object clonk)
 /* --- GUI definition --- */
 
 // Overload this if you want to change the layout
+// The layout goes like this, with 3 lines:
+//
+// | Field               |           |
+// |_____________________| <- W_B -> |
+// |                     |           |
+//
+// where:
+// W_B = width of buttons row = 20% (FIXME: should be 'em's, though, same goes for line height!
+// 
+// And the top left corner 'Field' is subdivided again, from left to right:
+//
+// 3 digits with 20% width each;
+// 4 digits with 10% width each; the first of these is the slash, the other three for ammo, etc.
 func AssembleItemStatus()
 {
+	var separator_button_row_h = 800;
+	var line_height = 333; // There are 3 lines
+	
+	var field_large_digit_width = 200;
+	var field_small_digit_width = 100;
+
 	var menu = {
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
 		
 		BackgroundColor = GUI_CMC_Background_Color_Default,
+		
+		// Leftmost top element: Field of two lines height
+		field = 
+		{
+			Right = ToPercentString(separator_button_row_h),
+			Bottom = ToPercentString(2 * line_height),
+			
+			// Further elements in the field:
+			
+			// Large digits for object count
+			object_count_digit_100 = 
+			{
+				Left =  ToPercentString(0 * field_large_digit_width),
+				Right = ToPercentString(1 * field_large_digit_width),
+			},
+			object_count_digit_10 = 
+			{
+				Left =  ToPercentString(1 * field_large_digit_width),
+				Right = ToPercentString(2 * field_large_digit_width),
+			},
+			object_count_digit_1 = 
+			{
+				Left =  ToPercentString(2 * field_large_digit_width),
+				Right = ToPercentString(3 * field_large_digit_width),
+			},
+
+			// Separator
+			slash = 
+			{
+				Left =  ToPercentString(0 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
+				Bottom = ToPercentString(500),
+			},
+			
+			// Small digits for total count
+			total_count_digit_100 = 
+			{
+				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
+				Bottom = ToPercentString(500),
+			},
+			total_count_digit_10 = 
+			{
+				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
+				Bottom = ToPercentString(500),
+			},
+			total_count_digit_1 = 
+			{
+				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
+				Bottom = ToPercentString(500),
+			},
+			
+			// Small digits for grenade count
+			grenade_count_digit_10 = 
+			{
+				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(500),
+			},
+			grenade_count_digit_1 = 
+			{
+				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(500),
+			},
+			grenade_count_icon = 
+			{
+				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
+				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(500),
+			},
+		},
+		
+		// Leftmost bottom element: Detail text of one line height
+		info_text = 
+		{
+			Right = ToPercentString(separator_button_row_h),
+			Top = ToPercentString(2 * line_height),
+			Bottom = ToPercentString(3 * line_height),
+		},
+		
+		// Rightmost element: A vertical button row
+		vertical_button_row = 
+		{
+			Left = ToPercentString(separator_button_row_h),
+			Right = ToPercentString(1000),
+		},
 	};
 	
 	AddProperties(menu, this->GuiItemStatusPositionLayout());
