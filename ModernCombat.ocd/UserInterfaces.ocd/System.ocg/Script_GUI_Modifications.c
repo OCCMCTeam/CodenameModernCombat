@@ -28,8 +28,8 @@ global func GUI_ShiftPosition(proplist layout, string horizontally, string verti
 	
 	if (vertically)
 	{
-		layout.Top = Format("%s %s", layout.Top ?? ToPercentString(0), horizontally);
-		layout.Bottom = Format("%s %s", layout.Bottom ?? ToPercentString(1000), horizontally);
+		layout.Top = Format("%s %s", layout.Top ?? ToPercentString(0), vertically);
+		layout.Bottom = Format("%s %s", layout.Bottom ?? ToPercentString(1000), vertically);
 	}
 	
 	return layout;
