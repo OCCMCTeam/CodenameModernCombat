@@ -9,6 +9,14 @@ static const GUI_CMC_Margin_Screen_H = 15;
    Given in percent, with factor 10. */
 static const GUI_CMC_Margin_Screen_V = 15;
 
+/* Vertical margin between elements.
+   Given in percent, with factor 10. */
+static const GUI_CMC_Margin_Element_V = 15;
+
+/* Vertical margin between elements, smaller distance.
+   Given in percent, with factor 10. */
+static const GUI_CMC_Margin_Element_Small_V = 10;
+
 
 /* --- Element dimensions / width and height --- */
 

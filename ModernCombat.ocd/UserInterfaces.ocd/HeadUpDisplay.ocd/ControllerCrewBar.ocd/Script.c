@@ -178,7 +178,7 @@ public func GuiCrewBarPositionLayout()
 		Top = ToPercentString(top),
 		Bottom = ToPercentString(bottom),
 	};
-	return GUI_ShiftPosition(position, ToPercentString( - GUI_CMC_Margin_Screen_H), ToPercentString( - GUI_CMC_Margin_Screen_V));
+	return GUI_ShiftPosition(position, ToPercentString(-GUI_CMC_Margin_Screen_H), ToPercentString(-GUI_CMC_Margin_Screen_V));
 }
 
 /* --- Access to certain layouts --- */

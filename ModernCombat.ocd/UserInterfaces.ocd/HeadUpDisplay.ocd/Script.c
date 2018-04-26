@@ -4,6 +4,7 @@
 #include GUI_Controller_ActionBar
 #include GUI_Controller_Goal
 #include GUI_Controller_Wealth
+#include CMC_GUI_Controller_ItemStatus
 #include CMC_GUI_Controller_CrewBars
 #include CMC_GUI_Controller_Ammo
 // Include the basic functionality of the HUD
