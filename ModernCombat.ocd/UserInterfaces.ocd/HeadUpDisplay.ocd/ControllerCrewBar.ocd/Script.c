@@ -136,10 +136,10 @@ func AssembleHealthBar()
 {
 	// Health bar takes up the top 1/3rd of the position
 	var health_bar = new CMC_GUI_ProgressBar{ Bottom = ToPercentString(335)};
-	health_bar->SetBackgroundColor(0x40cc0000) // Red, transparency 25%
+	health_bar->SetBackgroundColor(GUI_CMC_Color_HealthBar_Transparent)
 	          ->SetBarColor({
-	          	Health_Full = 0xffffffff, // White opaque
-	          	Health_Warn = 0xffcc0000, // Red opaque
+	          	Health_Full = GUI_CMC_Color_HealthBar_White,
+	          	Health_Warn = GUI_CMC_Color_HealthBar_Opaque,
 	          })
 	          ->SetValue(1000); // Full in the beginning
 	return health_bar;
@@ -151,8 +151,8 @@ private func AssembleBreathBar()
 {
 	// Health bar takes up the bottom 1/3rd of the position
 	var breath_bar = new CMC_GUI_ProgressBar{ Top = ToPercentString(665)};
-	breath_bar->SetBackgroundColor(0x4000ccff) // Light blue transparency 25%
-	          ->SetBarColor(0xff00ccff) // Light blue opaque
+	breath_bar->SetBackgroundColor(GUI_CMC_Color_BreathBar_Transparent)
+	          ->SetBarColor(GUI_CMC_Color_BreathBar_Opaque)
 	          ->SetValue(1000); // Full in the beginning
 	return breath_bar;
 }
