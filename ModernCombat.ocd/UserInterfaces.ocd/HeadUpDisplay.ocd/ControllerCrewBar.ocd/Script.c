@@ -167,16 +167,18 @@ private func AssembleBreathBar()
 */
 public func GuiCrewBarPositionLayout()
 {
-	var bottom = 1000 - GUI_CMC_Margin_Screen_V;
-	var right = 1000 - GUI_CMC_Margin_Screen_H;
+	var bottom = 1000;
+	var right = 1000;
 	var left = right - GUI_CMC_Element_Info_Width;
 	var top = bottom - GUI_CMC_Element_Default_Height;
-	return {
+	var position =
+	{
 		Left = ToPercentString(left),
 		Right = ToPercentString(right),
 		Top = ToPercentString(top),
 		Bottom = ToPercentString(bottom),
 	};
+	return GUI_ShiftPosition(position, ToPercentString( - GUI_CMC_Margin_Screen_H), ToPercentString( - GUI_CMC_Margin_Screen_V));
 }
 
 /* --- Access to certain layouts --- */
