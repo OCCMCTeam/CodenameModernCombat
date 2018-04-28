@@ -105,7 +105,7 @@ static const GUI_Element_Controller = new Global
 		{
 			var update = {};
 			update[this.GUI_Element_Controller_Name] = this;
-			GuiUpdate(update, this.GUI_ID, this.GUI_ID_Child, Object(this.GUI_TargetNr));
+			var result = GuiUpdate(update, this.GUI_ID, this.GUI_ID_Child /*, Object(this.GUI_TargetNr) - this seems to actually block the update if there is a child_id*/);
 		}
 		return this;
 	},

@@ -62,3 +62,10 @@ static const GUI_CMC_Color_BreathBar_Opaque =      0xff00ccff; // Light blue, op
 static const GUI_CMC_Color_HealthBar_Transparent = 0x40cc0000; // Red, transparency 25%
 static const GUI_CMC_Color_HealthBar_Opaque =      0xffcc0000; // Red, opaque
 static const GUI_CMC_Color_HealthBar_White =       0xffffffff; // White, opaque
+
+/* --- Text colors --- */
+
+// Note: These do not have an alpha component
+
+static const GUI_CMC_Text_Color_Highlight = 0xffcc00; // Gold
+

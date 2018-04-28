@@ -1,6 +1,5 @@
 Name=Pistol
 Description=The pistol is a fast, accurate and effective weapon and therefore the best alternative to a emptied primary weapon in the middle of a serious fire fight.||A tracer dart attachment enables the weapon to mark targets.
 
-Bullets=Bullets
 TracerDart=Tracer Darts
 Single=Single

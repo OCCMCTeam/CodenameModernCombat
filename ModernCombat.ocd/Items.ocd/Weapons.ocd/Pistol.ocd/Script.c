@@ -57,7 +57,7 @@ func FiremodeStandard()
 	var mode = new Library_Firearm_Firemode {};
 
 	// Generic info
-	mode->SetName("$Bullets$");
+	mode->SetName("$Single$");
 	mode->SetMode(WEAPON_FM_Single);
 
 	// Reloading

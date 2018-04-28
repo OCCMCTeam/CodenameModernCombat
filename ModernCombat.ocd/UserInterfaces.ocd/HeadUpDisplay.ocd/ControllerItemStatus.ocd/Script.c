@@ -29,6 +29,7 @@ func Construction()
 	gui_cmc_item_status.Total_Count = new GUI_Counter{};
 	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
 	gui_cmc_item_status.Slash = new GUI_Element_Controller{};
+	gui_cmc_item_status.InfoText = new GUI_Element_Controller{};
 	
 	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
 	
@@ -48,6 +49,9 @@ func Construction()
 	                 ->SetValue(0);
 	GetSlash()->AddTo(gui_cmc_item_status.Menu.field, "slash", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	          ->Hide();
+	
+	GetInfoText()->AddTo(gui_cmc_item_status.Menu, "info_text", gui_cmc_item_status.ID, nil, this)
+	             ->Hide();
 	
 	return _inherited(...);
 }
@@ -259,7 +263,6 @@ func AssembleItemStatus()
 			Right = ToPercentString(separator_button_row_h),
 			Top = ToPercentString(2 * line_height),
 			Bottom = ToPercentString(3 * line_height),
-			Text = "Fire Mode - Fire Technique",
 			Style = GUI_TextHCenter | GUI_TextVCenter,
 		},
 		
@@ -371,6 +374,12 @@ public func GetSlash()
 	return gui_cmc_item_status.Slash;
 }
 
+// Gets the info text layout
+public func GetInfoText()
+{
+	return gui_cmc_item_status.InfoText;
+}
+
 
 /* --- Drawing / display --- */
 
@@ -421,11 +430,12 @@ func UpdateItemStatus()
 		var object_count = 0;
 		var total_count = 0;
 		var show_counters = false;
+		var firemode = nil;
+		var ammo_type = nil;
 		if (item)
 		{
 			if (item->~IsAmmoManager() && cursor->~IsAmmoManager())
 			{
-				var ammo_type = nil;
 				var firemode = item->~GetFiremode();
 				if (firemode)
 				{
@@ -465,11 +475,37 @@ func UpdateItemStatus()
 		// Grenades
 		var grenade_count = 0;
 		GetGrenadeCount()->SetValue(grenade_count);
+		
+		// Text info in the bottom row
+		
+		var info_text = nil;
+		if (firemode && ammo_type)
+		{
+			// This should display a colored "fire mode" - "fire technique"
+			// In the shooter library the CMC fire technique is named firemode
+			// whereas the CMC fire mode is actually the ammo type that the weapon uses
+			info_text = Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, ammo_type->GetName(), firemode->GetName());
+		}
+		else if (item)
+		{
+			info_text = item->GetName();
+		}
+		
+		if (info_text)
+		{
+			GetInfoText()->Show();
+			GetInfoText().Text = info_text;
+		}
+		else
+		{
+			GetInfoText()->Hide();
+		}
 
 		// Actually update everything
 		GetObjectCount()->Update();
 		GetTotalCount()->Update();
 		GetSlash()->Update();
 		GetGrenadeCount()->Update();
+		GetInfoText()->Update();
 	}
 }
