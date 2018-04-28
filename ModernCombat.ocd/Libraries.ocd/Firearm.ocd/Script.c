@@ -186,6 +186,12 @@ public func OnNoAmmo(object user, proplist firemode)
 	Sound("Weapon::Shared::LastRound?", {player = user->GetOwner()});
 }
 
+public func OnAmmoChange(id ammo_type)
+{
+	NotifyContainer();
+	_inherited(ammo_type, ...);
+}
+
 /* --- Reloading --- */
 
 public func NeedsReload(object user, proplist firemode)
@@ -210,4 +216,29 @@ public func GetAnimationSet()
 	if (aim_animation != nil)
 		ret.AnimationAim = aim_animation;
 	return ret;
+}
+
+/**
+ * Tells a possible container that the firearm was
+ * changed.
+ * Calls NotifyHUD() in containers with extra slots,
+ * or OnInventoryChange() otherwise. 
+ */
+func NotifyContainer()
+{
+	// notify hud
+	var container = Contained();
+	if (container)
+	{
+		// has an extra slot
+		if (container->~HasExtraSlot())
+		{
+			container->~NotifyHUD();
+		}
+		// is a clonk with new inventory system
+		else
+		{
+			container->~OnInventoryChange();
+		}
+	}
 }
