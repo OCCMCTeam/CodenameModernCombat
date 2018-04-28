@@ -9,19 +9,19 @@
  
 
 /*
-	GUI prototype for a generic element.
+	GUI prototype for a generic element controller.
 	
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
  */
-static const GUI_Element = new Global
+static const GUI_Element_Controller = new Global
 {
 	// --- Properties:
 	GUI_ID = nil,       // int gui_id - for GuiUpdate()
 	GUI_ID_Child = nil, // int child_id - for GuiUpdate()
 	GUI_TargetNr = nil, // object target - for GuiUpdate(); Contains only the number to avoid infinite proplist (the object may contain the menu that contains this layout that saves this object as its target)
-	GUI_Element_Name = nil, // the name of the bar - the property name of the sub window in the menu
+	GUI_Element_Controller_Name = nil, // the name of the bar - the property name of the sub window in the menu
 	GUI_Owner = nil,    // the owner for the bar - for visibility
 	
 	// --- Functions / API
@@ -52,7 +52,7 @@ static const GUI_Element = new Global
 		
 		menu[submenu_name] = this;
 	
-		this.GUI_Element_Name = submenu_name;
+		this.GUI_Element_Controller_Name = submenu_name;
 		this.GUI_ID = gui_id;
 		this.GUI_TargetNr = target->ObjectNumber();
 		this.GUI_ID_Child = child_id;
@@ -67,7 +67,7 @@ static const GUI_Element = new Global
 	 */
 	GetName = func ()
 	{
-		return this.GUI_Element_Name;
+		return this.GUI_Element_Controller_Name;
 	},
 	
 	/*
@@ -101,10 +101,10 @@ static const GUI_Element = new Global
 	 */
 	Update = func ()
 	{
-		if (this.GUI_ID && this.GUI_Element_Name)
+		if (this.GUI_ID && this.GUI_Element_Controller_Name)
 		{
 			var update = {};
-			update[this.GUI_Element_Name] = this;
+			update[this.GUI_Element_Controller_Name] = this;
 			GuiUpdate(update, this.GUI_ID, this.GUI_ID_Child, Object(this.GUI_TargetNr));
 		}
 		return this;

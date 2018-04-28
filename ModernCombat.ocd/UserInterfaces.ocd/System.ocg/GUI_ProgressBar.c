@@ -17,24 +17,24 @@
 	Usage:
 	- Create a layout by var layout = new CMC_GUI_ProgressBar{};
 	- Configure the layout for the bar as you would with any GUI element
-	- Configure the bar foreground as you would with any GUI element, access layout.GUI_Element_Progress
+	- Configure the bar foreground as you would with any GUI element, access layout.GUI_Element_Controller_Progress
 	- Call layout->AddTo(...) after you opened a menu to add the layout the bar to that menu
 	
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
  */
-static const CMC_GUI_ProgressBar = new GUI_Element
+static const CMC_GUI_ProgressBar = new GUI_Element_Controller
 {	
 	// --- GUI info
 	
 	/*
 	 * The progress bar background, height, etc. can be defined via this proplist.
-	 * The progress bar progress is defined via the GUI_Element_Progress.
+	 * The progress bar progress is defined via the GUI_Element_Controller_Progress.
 	 */
 
 	// The element for the progress bar overlay
-	GUI_Element_Progress = nil,
+	GUI_Element_Controller_Progress = nil,
 	
 	// --- Functions / API
 	
@@ -67,8 +67,8 @@ static const CMC_GUI_ProgressBar = new GUI_Element
 	{
 		if (GetType(color) == C4V_Int || GetType(color) == C4V_PropList)
 		{
-			this.GUI_Element_Progress = this.GUI_Element_Progress ?? {};
-			this.GUI_Element_Progress.BackgroundColor = color;
+			this.GUI_Element_Controller_Progress = this.GUI_Element_Controller_Progress ?? {};
+			this.GUI_Element_Controller_Progress.BackgroundColor = color;
 			return this;
 		}
 		else
@@ -86,8 +86,8 @@ static const CMC_GUI_ProgressBar = new GUI_Element
 	 */
 	SetValue = func (int progress)
 	{
-		this.GUI_Element_Progress = this.GUI_Element_Progress ?? {};
-		this.GUI_Element_Progress.Right = ToPercentString(BoundBy(progress, 0, 1000));
+		this.GUI_Element_Controller_Progress = this.GUI_Element_Controller_Progress ?? {};
+		this.GUI_Element_Controller_Progress.Right = ToPercentString(BoundBy(progress, 0, 1000));
 		
 		return this;
 	},

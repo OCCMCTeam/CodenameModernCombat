@@ -28,7 +28,7 @@ func Construction()
 	gui_cmc_item_status.Object_Count = new GUI_Counter{};
 	gui_cmc_item_status.Total_Count = new GUI_Counter{};
 	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
-	gui_cmc_item_status.Slash = new GUI_Element{};
+	gui_cmc_item_status.Slash = new GUI_Element_Controller{};
 	
 	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
 	

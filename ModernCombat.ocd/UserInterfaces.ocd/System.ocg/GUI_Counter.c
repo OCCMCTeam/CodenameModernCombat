@@ -25,7 +25,7 @@
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
  */
-static const GUI_Counter = new GUI_Element
+static const GUI_Counter = new GUI_Element_Controller
 {	
 	// --- Properties
 	
@@ -130,7 +130,7 @@ static const GUI_Counter = new GUI_Element
 	 */
 	Update = func ()
 	{
-		if (this.GUI_ID && this.GUI_Element_Name)
+		if (this.GUI_ID && this.GUI_Element_Controller_Name)
 		{
 			GuiUpdate(this.GUI_Counter_Update, this.GUI_ID, this.GUI_ID_Child /*, Object(this.GUI_TargetNr) - this seems to actually block the update if there is a child_id*/);
 			this.GUI_Counter_Update = {};
