@@ -171,6 +171,9 @@ func AssembleItemStatus()
 	var field_large_digit_width = 200;
 	var field_small_digit_width = 100;
 
+	var field_large_digit_margin = 160;
+	var field_small_digit_margin = 80;
+
 	var menu = {
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
@@ -192,18 +195,24 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(0 * field_large_digit_width),
 				Right = ToPercentString(1 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin),
+				Bottom = ToPercentString(1000 - field_large_digit_margin),
 				Symbol = CMC_Icon_Number,
 			},
 			object_count_digit_10 = 
 			{
 				Left =  ToPercentString(1 * field_large_digit_width),
 				Right = ToPercentString(2 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin),
+				Bottom = ToPercentString(1000 - field_large_digit_margin),
 				Symbol = CMC_Icon_Number,
 			},
 			object_count_digit_1 = 
 			{
 				Left =  ToPercentString(2 * field_large_digit_width),
 				Right = ToPercentString(3 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin),
+				Bottom = ToPercentString(1000 - field_large_digit_margin),
 				Symbol = CMC_Icon_Number,
 			},
 
@@ -212,6 +221,7 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(0 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
 				Bottom = ToPercentString(500),
 				Symbol = CMC_Icon_Number,
 				GraphicsName = "Dash",
@@ -222,6 +232,7 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
 				Bottom = ToPercentString(500),
 				Symbol = CMC_Icon_Number,
 			},
@@ -229,6 +240,7 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
 				Bottom = ToPercentString(500),
 				Symbol = CMC_Icon_Number,
 			},
@@ -236,6 +248,7 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
+				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
 				Bottom = ToPercentString(500),
 				Symbol = CMC_Icon_Number,
 			},
@@ -245,14 +258,16 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500),
+				Top = ToPercentString(500 + field_small_digit_margin),
+				Bottom = ToPercentString(1000 - field_small_digit_margin),
 				Symbol = CMC_Icon_Number,
 			},
 			grenade_count_icon = 
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500),
+				Top = ToPercentString(500 + field_small_digit_margin),
+				Bottom = ToPercentString(1000 - field_small_digit_margin),
 				Symbol = IronBomb
 			},
 		},
@@ -274,24 +289,24 @@ func AssembleItemStatus()
 			
 			button_1 = 
 			{
-				Top = ToPercentString(0 * line_height),
-				Bottom = ToPercentString(1 * line_height),
+				Top = ToPercentString(0 * line_height + field_small_digit_margin),
+				Bottom = ToPercentString(1 * line_height - field_small_digit_margin),
 				Symbol = CMC_Icon_Number,
 				GraphicsName = "Hash",
 			},
 			
 			button_2 = 
 			{
-				Top = ToPercentString(1 * line_height),
-				Bottom = ToPercentString(2 * line_height),
+				Top = ToPercentString(1 * line_height + field_small_digit_margin),
+				Bottom = ToPercentString(2 * line_height - field_small_digit_margin),
 				Symbol = CMC_Icon_Number,
 				GraphicsName = "Hash",
 			},
 			
 			button_3 = 
 			{
-				Top = ToPercentString(2 * line_height),
-				Bottom = ToPercentString(3 * line_height),
+				Top = ToPercentString(2 * line_height + field_small_digit_margin),
+				Bottom = ToPercentString(3 * line_height - field_small_digit_margin),
 				Symbol = CMC_Icon_Number,
 				GraphicsName = "Hash",
 			},
