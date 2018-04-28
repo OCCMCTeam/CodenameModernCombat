@@ -30,7 +30,9 @@ static const GUI_Element = new Global
 		Adds the GUI element to a menu. Should be called after the menu definition.
 		
 		@par menu The GUI menu layout proplist.
-		@par submenu_name The property will be added with this name
+		@par submenu_name The property will be added with this name,
+		                  or an existing property will be extended
+		                  to work with these functions.
 		@par gui_id For GuiUpdate()
 		@par child_id For GuiUpdate()
 		@par target For GuiUpdate(); Required if you want to set visibility of the bar
@@ -41,9 +43,11 @@ static const GUI_Element = new Global
 		{
 			FatalError("GUI element can be added to a %v only, you passed %v", C4V_PropList, GetType(menu));
 		}
+		
+		// Copy existing properties to the element
 		if (menu[submenu_name])
 		{
-			FatalError("Cannot add GUI element \"%s\", there is already such a sub menu", submenu_name);
+			AddProperties(this, menu[submenu_name]);
 		}
 		
 		menu[submenu_name] = this;

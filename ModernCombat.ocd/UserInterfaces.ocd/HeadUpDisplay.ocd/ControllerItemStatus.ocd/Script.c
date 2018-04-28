@@ -28,6 +28,7 @@ func Construction()
 	gui_cmc_item_status.Object_Count = new GUI_Counter{};
 	gui_cmc_item_status.Total_Count = new GUI_Counter{};
 	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
+	gui_cmc_item_status.Slash = new GUI_Element{};
 	
 	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
 	
@@ -43,6 +44,8 @@ func Construction()
 	                 ->SetReference(gui_cmc_item_status.Menu.field)
 	                 ->SetMaxDigits(1)
 	                 ->SetValue(0);
+	GetSlash()->AddTo(gui_cmc_item_status.Menu.field, "slash", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
+	          ->Hide();
 	
 	return _inherited(...);
 }
@@ -111,6 +114,14 @@ public func OnCrewSelection(object clonk, bool unselect)
 	ScheduleUpdateItemStatus();
 
 	return _inherited(clonk, unselect, ...);
+}
+
+
+public func OnInventoryChange()
+{
+	ScheduleUpdateItemStatus();
+
+	return _inherited(...);
 }
 
 
@@ -352,8 +363,26 @@ public func GetTotalCount()
 	return gui_cmc_item_status.Total_Count;
 }
 
+// Gets the slash layout
+public func GetSlash()
+{
+	return gui_cmc_item_status.Slash;
+}
+
 
 /* --- Drawing / display --- */
+
+/*
+	Callback from the HUD adapter.
+	
+	Just update the item status, too.
+ */
+public func ScheduleUpdateInventory()
+{
+	ScheduleUpdateItemStatus();
+	return _inherited(...);
+}
+
 
 /*
 	Schedules an update of the bar for the next frame.
@@ -422,11 +451,13 @@ func UpdateItemStatus()
 		{
 			GetObjectCount()->Show();
 			GetTotalCount()->Show();
+			GetSlash()->Show();
 		}
 		else
 		{
 			GetObjectCount()->Hide();
 			GetTotalCount()->Hide();
+			GetSlash()->Hide();
 		}
 		
 		// Grenades
@@ -436,6 +467,7 @@ func UpdateItemStatus()
 		// Actually update everything
 		GetObjectCount()->Update();
 		GetTotalCount()->Update();
+		GetSlash()->Update();
 		GetGrenadeCount()->Update();
 	}
 }

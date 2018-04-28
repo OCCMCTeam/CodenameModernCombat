@@ -102,6 +102,28 @@ static const GUI_Counter = new GUI_Element
 	},
 	
 	/*
+		Makes the bar visible to its owner.
+		
+		@return proplist The bar layout proplist, for calling further functions.
+	 */
+	Show = func ()
+	{
+		SetCounterElementProperty("Player", this.GUI_Owner);
+		return this;
+	},
+	
+	/*
+		Makes the bar invisible to its owner.
+		
+		@return proplist The bar layout proplist, for calling further functions.
+	 */
+	Hide = func ()
+	{
+		SetCounterElementProperty("Player", NO_OWNER);
+		return this;
+	},
+	
+	/*
 		Updates the GUI with the counter number changes only.
 		
 		@return proplist The bar layout proplist, for calling further functions.
@@ -150,18 +172,13 @@ static const GUI_Counter = new GUI_Element
 	SetDigits = func (array digits)
 	{
 		this.GUI_Counter_Update = this.GUI_Counter_Update ?? {};
+		var graphics_names = [];
 		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
 		{
 			var digit = digits[i] ?? 0;
-
-			var property_name = Format("%s_digit_%d", this->GetName(), GetOrder(i));
-			var property = this.GUI_Counter_Submenu[property_name];
-			if (property)
-			{
-				this.GUI_Counter_Update[property_name] = this.GUI_Counter_Update[property_name] ?? {};
-				this.GUI_Counter_Update[property_name].GraphicsName = Format("%d", digit);
-			}
+			graphics_names[i] = Format("%d", digit);
 		}
+		SetCounterElementProperty("GraphicsName", graphics_names, true);
 	},
 	
 	/*
@@ -172,4 +189,34 @@ static const GUI_Counter = new GUI_Element
 	{
 		return 10 ** exponent;
 	},
+	
+	/*
+		Sets a property in the counter element.
+		Update is displayed once the update function is called
+	 */
+	SetCounterElementProperty = func (string property_name, value, bool in_order)
+	{
+		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
+		{
+			var counter_name = Format("%s_digit_%d", this->GetName(), GetOrder(i));
+			var property = this.GUI_Counter_Submenu[counter_name];
+			if (property)
+			{
+				if (!this.GUI_Counter_Update[counter_name])
+				{
+					this.GUI_Counter_Update[counter_name] = {};
+				}
+				
+				// Set the values in order, or copy the value to every counter?
+				if (GetType(value) == C4V_Array && in_order)
+				{
+					this.GUI_Counter_Update[counter_name][property_name] = value[i];
+				}
+				else
+				{
+					this.GUI_Counter_Update[counter_name][property_name] = value;
+				}
+			}
+		}
+	}
 };
