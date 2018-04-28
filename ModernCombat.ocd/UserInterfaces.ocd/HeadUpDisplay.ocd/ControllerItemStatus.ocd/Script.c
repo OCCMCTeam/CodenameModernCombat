@@ -258,16 +258,16 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500 + field_small_digit_margin),
-				Bottom = ToPercentString(1000 - field_small_digit_margin),
+				Top = ToPercentString(500 + field_large_digit_margin),
+				Bottom = ToPercentString(1000),
 				Symbol = CMC_Icon_Number,
 			},
 			grenade_count_icon = 
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500 + field_small_digit_margin),
-				Bottom = ToPercentString(1000 - field_small_digit_margin),
+				Top = ToPercentString(500 + field_large_digit_margin),
+				Bottom = ToPercentString(1000),
 				Symbol = IronBomb
 			},
 		},
