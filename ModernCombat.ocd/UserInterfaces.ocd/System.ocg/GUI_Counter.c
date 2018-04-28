@@ -29,9 +29,10 @@ static const GUI_Counter = new GUI_Element_Controller
 {	
 	// --- Properties
 	
-	GUI_Counter_DigitAmount = 1,	  // The counter shows this many digits
-	GUI_Counter_Submenu = nil,        // Reference to the menu that will be updated - this is needed only so that the correct digits will be updated
-	GUI_Counter_Update = nil,         // Empty update info
+	GUI_Counter_DigitAmount = 1,	      // The counter shows this many digits
+	GUI_Counter_Submenu = nil,            // Reference to the menu that will be updated - this is needed only so that the correct digits will be updated
+	GUI_Counter_Update = nil,             // Empty update info
+	GUI_Counter_No_Trailing_Zeros = true, // Hide trailing zeros?
 	
 	// --- Functions / API
 	
@@ -104,7 +105,7 @@ static const GUI_Counter = new GUI_Element_Controller
 	/*
 		Makes the bar visible to its owner.
 		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The counter proplist, for calling further functions.
 	 */
 	Show = func ()
 	{
@@ -115,7 +116,7 @@ static const GUI_Counter = new GUI_Element_Controller
 	/*
 		Makes the bar invisible to its owner.
 		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The counter proplist, for calling further functions.
 	 */
 	Hide = func ()
 	{
@@ -126,7 +127,7 @@ static const GUI_Counter = new GUI_Element_Controller
 	/*
 		Updates the GUI with the counter number changes only.
 		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The counter proplist, for calling further functions.
 	 */
 	Update = func ()
 	{
@@ -135,6 +136,21 @@ static const GUI_Counter = new GUI_Element_Controller
 			GuiUpdate(this.GUI_Counter_Update, this.GUI_ID, this.GUI_ID_Child /*, Object(this.GUI_TargetNr) - this seems to actually block the update if there is a child_id*/);
 			this.GUI_Counter_Update = {};
 		}
+		return this;
+	},
+	
+	/*
+		Defines whether you want to show trailing zeros.
+		
+		@par show If this is set to 'true' those digits that are not present
+		          in the actual value will display '0' instead.
+		          Set it to 'false' to hide traling zeros and display only
+		          the number.
+		@return proplist The counter proplist, for calling further functions.
+	 */
+	ShowTrailingZeros = func (bool show)
+	{
+		this.GUI_Counter_No_Trailing_Zeros = !show;
 		return this;
 	},
 	
@@ -161,7 +177,11 @@ static const GUI_Counter = new GUI_Element_Controller
 				digits[exponent] = digit;
 			}
 			++exponent;
-		} 
+		}
+		if (!GetLength(digits))
+		{
+			digits[0] = 0;
+		}
 		return digits;
 	},
 
@@ -175,8 +195,15 @@ static const GUI_Counter = new GUI_Element_Controller
 		var graphics_names = [];
 		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
 		{
-			var digit = digits[i] ?? 0;
-			graphics_names[i] = Format("%d", digit);
+			var digit = digits[i];
+			if (digit == nil && this.GUI_Counter_No_Trailing_Zeros)
+			{
+				graphics_names[i] = nil;
+			}
+			else
+			{
+				graphics_names[i] = Format("%d", digit);
+			}
 		}
 		SetCounterElementProperty("GraphicsName", graphics_names, true);
 	},

@@ -35,10 +35,12 @@ func Construction()
 	GetObjectCount()->AddTo(gui_cmc_item_status.Menu, "object_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	                ->SetReference(gui_cmc_item_status.Menu.field)
 	                ->SetMaxDigits(3)
+	                ->ShowTrailingZeros(true)
 	                ->SetValue(0);
 	GetTotalCount()->AddTo(gui_cmc_item_status.Menu, "total_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	               ->SetReference(gui_cmc_item_status.Menu.field)
 	               ->SetMaxDigits(3)
+	               ->ShowTrailingZeros(true)
 	               ->SetValue(0);
 	GetGrenadeCount()->AddTo(gui_cmc_item_status.Menu, "grenade_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	                 ->SetReference(gui_cmc_item_status.Menu.field)
