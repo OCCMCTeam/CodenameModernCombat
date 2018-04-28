@@ -192,19 +192,19 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(0 * field_large_digit_width),
 				Right = ToPercentString(1 * field_large_digit_width),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			object_count_digit_10 = 
 			{
 				Left =  ToPercentString(1 * field_large_digit_width),
 				Right = ToPercentString(2 * field_large_digit_width),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			object_count_digit_1 = 
 			{
 				Left =  ToPercentString(2 * field_large_digit_width),
 				Right = ToPercentString(3 * field_large_digit_width),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 
 			// Separator
@@ -213,8 +213,8 @@ func AssembleItemStatus()
 				Left =  ToPercentString(0 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
-				Text = "/",
-				Style = GUI_TextHCenter | GUI_TextVCenter,
+				Symbol = CMC_Icon_Number,
+				GraphicsName = "Dash",
 			},
 			
 			// Small digits for total count
@@ -223,21 +223,21 @@ func AssembleItemStatus()
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			total_count_digit_10 = 
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			total_count_digit_1 = 
 			{
 				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			
 			// Small digits for grenade count
@@ -246,7 +246,7 @@ func AssembleItemStatus()
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Top = ToPercentString(500),
-				Symbol = Icon_SlimNumber,
+				Symbol = CMC_Icon_Number,
 			},
 			grenade_count_icon = 
 			{
@@ -276,24 +276,24 @@ func AssembleItemStatus()
 			{
 				Top = ToPercentString(0 * line_height),
 				Bottom = ToPercentString(1 * line_height),
-				Symbol = Icon_SlimNumber,
-				GraphicsName = "10",
+				Symbol = CMC_Icon_Number,
+				GraphicsName = "Hash",
 			},
 			
 			button_2 = 
 			{
 				Top = ToPercentString(1 * line_height),
 				Bottom = ToPercentString(2 * line_height),
-				Symbol = Icon_SlimNumber,
-				GraphicsName = "10",
+				Symbol = CMC_Icon_Number,
+				GraphicsName = "Hash",
 			},
 			
 			button_3 = 
 			{
 				Top = ToPercentString(2 * line_height),
 				Bottom = ToPercentString(3 * line_height),
-				Symbol = Icon_SlimNumber,
-				GraphicsName = "10",
+				Symbol = CMC_Icon_Number,
+				GraphicsName = "Hash",
 			},
 		},
 	};
