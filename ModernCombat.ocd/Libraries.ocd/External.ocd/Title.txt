@@ -1,2 +1,2 @@
-DE:Referenzierte Definitionen
-US:Referenced Definitions
+DE:Extern
+US:External
