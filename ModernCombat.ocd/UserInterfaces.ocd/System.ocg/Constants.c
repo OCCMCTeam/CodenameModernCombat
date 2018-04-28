@@ -48,8 +48,8 @@ static const GUI_CMC_Element_Large_Height = 60;
 
 /* --- Colors --- */
 
-/* Default background for GUI elements: black, 30% transparancy = 77 alpha. */
-static const GUI_CMC_Background_Color_Default =   0x4d000000;
+/* Default background for GUI elements: dark grey (38, 38, 38), 60% transparancy = 102 alpha. */
+static const GUI_CMC_Background_Color_Default =   0x66262626;
 
 /* Background for highlighted/selected GUI elements: white, 25% transparency = 64 alpha. */
 static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
