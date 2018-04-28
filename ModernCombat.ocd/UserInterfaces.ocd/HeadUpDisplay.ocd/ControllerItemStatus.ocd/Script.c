@@ -14,6 +14,8 @@
 // Proplist for saving the menu layouts, GUI ID and so on.
 local gui_cmc_item_status;
 
+static const GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1 = 1;
+
 /* --- Creation / Destruction --- */
 
 func Construction()
@@ -23,7 +25,24 @@ func Construction()
 	// a better solution would be cool :)
 	gui_cmc_item_status = {};
 	gui_cmc_item_status.Menu = AssembleItemStatus();
+	gui_cmc_item_status.Object_Count = new GUI_Counter{};
+	gui_cmc_item_status.Total_Count = new GUI_Counter{};
+	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
+	
 	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
+	
+	GetObjectCount()->AddTo(gui_cmc_item_status.Menu, "object_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
+	                ->SetReference(gui_cmc_item_status.Menu.field)
+	                ->SetMaxDigits(3)
+	                ->SetValue(0);
+	GetTotalCount()->AddTo(gui_cmc_item_status.Menu, "total_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
+	               ->SetReference(gui_cmc_item_status.Menu.field)
+	               ->SetMaxDigits(3)
+	               ->SetValue(0);
+	GetGrenadeCount()->AddTo(gui_cmc_item_status.Menu, "grenade_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
+	                 ->SetReference(gui_cmc_item_status.Menu.field)
+	                 ->SetMaxDigits(1)
+	                 ->SetValue(0);
 	
 	return _inherited(...);
 }
@@ -145,6 +164,7 @@ func AssembleItemStatus()
 		// Leftmost top element: Field of two lines height
 		field = 
 		{
+			ID = GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1,
 			Right = ToPercentString(separator_button_row_h),
 			Bottom = ToPercentString(2 * line_height),
 			
@@ -155,16 +175,19 @@ func AssembleItemStatus()
 			{
 				Left =  ToPercentString(0 * field_large_digit_width),
 				Right = ToPercentString(1 * field_large_digit_width),
+				Symbol = Icon_SlimNumber,
 			},
 			object_count_digit_10 = 
 			{
 				Left =  ToPercentString(1 * field_large_digit_width),
 				Right = ToPercentString(2 * field_large_digit_width),
+				Symbol = Icon_SlimNumber,
 			},
 			object_count_digit_1 = 
 			{
 				Left =  ToPercentString(2 * field_large_digit_width),
 				Right = ToPercentString(3 * field_large_digit_width),
+				Symbol = Icon_SlimNumber,
 			},
 
 			// Separator
@@ -173,6 +196,8 @@ func AssembleItemStatus()
 				Left =  ToPercentString(0 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
+				Text = "/",
+				Style = GUI_TextHCenter | GUI_TextVCenter,
 			},
 			
 			// Small digits for total count
@@ -181,38 +206,37 @@ func AssembleItemStatus()
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
+				Symbol = Icon_SlimNumber,
 			},
 			total_count_digit_10 = 
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
+				Symbol = Icon_SlimNumber,
 			},
 			total_count_digit_1 = 
 			{
 				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
 				Bottom = ToPercentString(500),
+				Symbol = Icon_SlimNumber,
 			},
 			
 			// Small digits for grenade count
-			grenade_count_digit_10 = 
+			grenade_count_digit_1 = 
 			{
 				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Top = ToPercentString(500),
+				Symbol = Icon_SlimNumber,
 			},
-			grenade_count_digit_1 = 
+			grenade_count_icon = 
 			{
 				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
 				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
 				Top = ToPercentString(500),
-			},
-			grenade_count_icon = 
-			{
-				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500),
+				Symbol = IronBomb
 			},
 		},
 		
@@ -222,6 +246,8 @@ func AssembleItemStatus()
 			Right = ToPercentString(separator_button_row_h),
 			Top = ToPercentString(2 * line_height),
 			Bottom = ToPercentString(3 * line_height),
+			Text = "Fire Mode - Fire Technique",
+			Style = GUI_TextHCenter | GUI_TextVCenter,
 		},
 		
 		// Rightmost element: A vertical button row
@@ -229,6 +255,30 @@ func AssembleItemStatus()
 		{
 			Left = ToPercentString(separator_button_row_h),
 			Right = ToPercentString(1000),
+			
+			button_1 = 
+			{
+				Top = ToPercentString(0 * line_height),
+				Bottom = ToPercentString(1 * line_height),
+				Symbol = Icon_SlimNumber,
+				GraphicsName = "10",
+			},
+			
+			button_2 = 
+			{
+				Top = ToPercentString(1 * line_height),
+				Bottom = ToPercentString(2 * line_height),
+				Symbol = Icon_SlimNumber,
+				GraphicsName = "10",
+			},
+			
+			button_3 = 
+			{
+				Top = ToPercentString(2 * line_height),
+				Bottom = ToPercentString(3 * line_height),
+				Symbol = Icon_SlimNumber,
+				GraphicsName = "10",
+			},
 		},
 	};
 	
@@ -280,6 +330,29 @@ public func GuiItemStatusPositionLayout()
 	return GUI_ShiftPosition(position, ToPercentString(-GUI_CMC_Margin_Screen_H), vertical_shift);
 }
 
+/* --- Access to certain layouts --- */
+
+// Gets the counter proplist (is not a layout!)
+public func GetGrenadeCount()
+{
+	return gui_cmc_item_status.Grenade_Count;
+}
+
+
+// Gets the counter proplist (is not a layout!)
+public func GetObjectCount()
+{
+	return gui_cmc_item_status.Object_Count;
+}
+
+
+// Gets the counter proplist (is not a layout!)
+public func GetTotalCount()
+{
+	return gui_cmc_item_status.Total_Count;
+}
+
+
 /* --- Drawing / display --- */
 
 /*
@@ -311,5 +384,58 @@ func UpdateItemStatus()
 	
 	if (GuiShowForCrew(gui_cmc_item_status, GetOwner(), cursor))
 	{
+		var item = cursor->GetHandItem(0);
+		
+		// Object count and max count
+		var object_count = 0;
+		var total_count = 0;
+		var show_counters = false;
+		if (item)
+		{
+			if (item->~IsAmmoManager() && cursor->~IsAmmoManager())
+			{
+				var ammo_type = nil;
+				var firemode = item->~GetFiremode();
+				if (firemode)
+				{
+					ammo_type = firemode->GetAmmoID();
+				}
+				if (ammo_type)
+				{
+			    	object_count = item->GetAmmo(ammo_type);
+			    	total_count = cursor->GetAmmo(ammo_type);
+					show_counters = true;
+				}
+			}
+		    else if (item && item->~IsStackable())
+		    {
+		    	object_count = item->GetStackCount();
+		    	total_count = item->MaxStackCount();
+				show_counters = true;
+		    }
+		}
+		
+		GetObjectCount()->SetValue(object_count);
+		GetTotalCount()->SetValue(total_count);
+		
+		if (show_counters)
+		{
+			GetObjectCount()->Show();
+			GetTotalCount()->Show();
+		}
+		else
+		{
+			GetObjectCount()->Hide();
+			GetTotalCount()->Hide();
+		}
+		
+		// Grenades
+		var grenade_count = 0;
+		GetGrenadeCount()->SetValue(grenade_count);
+
+		// Actually update everything
+		GetObjectCount()->Update();
+		GetTotalCount()->Update();
+		GetGrenadeCount()->Update();
 	}
 }
