@@ -3,7 +3,6 @@
 	
 	When including this, be sure to call the inherited function in:
 	- Initialize
-
 */
 
 public func Initialize()
