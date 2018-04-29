@@ -1,0 +1,7 @@
+Name=Ammo Box
+Description=Contains ammo.
+
+NotMoreAmmo=Ammo limit reached:|<c ff0000>%dx</c> {{%i}}
+Collected=%dx {{%i}} collected.
+EnoughAmmo=Target already has|enough {{%i}}.
+HUDText=<c ffbb00>Ammo Box</c> - %s
