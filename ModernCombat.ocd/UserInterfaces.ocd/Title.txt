@@ -1,2 +1,2 @@
-DE:Benutzeroberfl‰che
+DE:Benutzeroberfl√§che
 US:User Interface
