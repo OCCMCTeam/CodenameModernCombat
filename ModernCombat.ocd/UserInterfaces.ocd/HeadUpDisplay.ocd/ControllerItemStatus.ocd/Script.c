@@ -29,7 +29,7 @@ func Construction()
 	gui_cmc_item_status.Total_Count = new GUI_Counter{};
 	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
 	gui_cmc_item_status.Slash = new GUI_Element_Controller{};
-	gui_cmc_item_status.InfoText = new GUI_Element_Controller{};
+	gui_cmc_item_status.Object_Configuration = new GUI_Element_Controller{};
 	
 	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
 	
@@ -50,8 +50,8 @@ func Construction()
 	GetSlash()->AddTo(gui_cmc_item_status.Menu.field, "slash", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	          ->Hide();
 	
-	GetInfoText()->AddTo(gui_cmc_item_status.Menu, "info_text", gui_cmc_item_status.ID, nil, this)
-	             ->Hide();
+	GetObjectConfiguration()->AddTo(gui_cmc_item_status.Menu, "info_text", gui_cmc_item_status.ID, nil, this)
+	                        ->Hide();
 	
 	return _inherited(...);
 }
@@ -390,9 +390,9 @@ public func GetSlash()
 }
 
 // Gets the info text layout
-public func GetInfoText()
+public func GetObjectConfiguration()
 {
-	return gui_cmc_item_status.InfoText;
+	return gui_cmc_item_status.Object_Configuration;
 }
 
 
@@ -442,9 +442,8 @@ func UpdateItemStatus()
 		var item = cursor->GetHandItem(0);
 		
 		// Object count and max count
-		var object_count = 0;
-		var total_count = 0;
-		var show_counters = false;
+		var object_count = nil;
+		var total_count = nil;
 		var firemode = nil;
 		var ammo_type = nil;
 		if (item)
@@ -460,31 +459,45 @@ func UpdateItemStatus()
 				{
 			    	object_count = item->GetAmmo(ammo_type);
 			    	total_count = cursor->GetAmmo(ammo_type);
-					show_counters = true;
 				}
 			}
 		    else if (item && item->~IsStackable())
 		    {
 		    	object_count = item->GetStackCount();
 		    	total_count = item->MaxStackCount();
-				show_counters = true;
 		    }
 		}
 		
 		GetObjectCount()->SetValue(object_count);
 		GetTotalCount()->SetValue(total_count);
 		
-		if (show_counters)
+		// Show object counts only if there is a value
+		if (object_count == nil)
 		{
-			GetObjectCount()->Show();
-			GetTotalCount()->Show();
-			GetSlash()->Show();
+			GetObjectCount()->Hide();
 		}
 		else
 		{
-			GetObjectCount()->Hide();
+			GetObjectCount()->Show();
+		}
+		
+		if (total_count == nil)
+		{
 			GetTotalCount()->Hide();
+		}
+		else
+		{
+			GetTotalCount()->Show();
+		}
+		
+		// Show slash only if there is object count AND total count
+		if (object_count == nil || total_count == nil)
+		{
 			GetSlash()->Hide();
+		}
+		else
+		{
+			GetSlash()->Show();
 		}
 		
 		// Grenades
@@ -508,12 +521,12 @@ func UpdateItemStatus()
 		
 		if (info_text)
 		{
-			GetInfoText()->Show();
-			GetInfoText().Text = info_text;
+			GetObjectConfiguration()->Show();
+			GetObjectConfiguration().Text = info_text;
 		}
 		else
 		{
-			GetInfoText()->Hide();
+			GetObjectConfiguration()->Hide();
 		}
 
 		// Actually update everything
@@ -521,6 +534,6 @@ func UpdateItemStatus()
 		GetTotalCount()->Update();
 		GetSlash()->Update();
 		GetGrenadeCount()->Update();
-		GetInfoText()->Update();
+		GetObjectConfiguration()->Update();
 	}
 }
