@@ -50,7 +50,7 @@ func Construction()
 	GetSlash()->AddTo(gui_cmc_item_status.Menu.field, "slash", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
 	          ->Hide();
 	
-	GetObjectConfiguration()->AddTo(gui_cmc_item_status.Menu, "info_text", gui_cmc_item_status.ID, nil, this)
+	GetObjectConfiguration()->AddTo(gui_cmc_item_status.Menu, "object_configuration", gui_cmc_item_status.ID, nil, this)
 	                        ->Hide();
 	
 	return _inherited(...);
@@ -273,7 +273,7 @@ func AssembleItemStatus()
 		},
 		
 		// Leftmost bottom element: Detail text of one line height
-		info_text = 
+		object_configuration = 
 		{
 			Right = ToPercentString(separator_button_row_h),
 			Top = ToPercentString(2 * line_height),
@@ -491,13 +491,13 @@ func UpdateItemStatus()
 		}
 		
 		// Text info in the bottom row, item name as a default
-		var info_text = status->GetObjectConfiguration();
-		if (item && info_text == nil)
+		var object_configuration = status->GetObjectConfiguration();
+		if (item && object_configuration == nil)
 		{
-			info_text = item->GetName();
+			object_configuration = item->GetName();
 		}
-		GetObjectConfiguration().Text = info_text;
-		if (info_text)
+		GetObjectConfiguration().Text = object_configuration;
+		if (object_configuration)
 		{
 			GetObjectConfiguration()->Show();
 		}
