@@ -206,17 +206,37 @@ public func NeedsRecovery(object user, proplist firemode)
 	return !NeedsReload(user, firemode); // No recovery necessary when reloading, so that reload can happen instantly
 }
 
-/* --- Misc --- */
+/* --- HUD information --- */
 
-public func GetAnimationSet()
+// Callback from the item status HUD element: What should be displayed?
+public func GetGuiItemStatusProperties(object user)
 {
-	var ret = _inherited();
+	var status = new GUI_Item_Status_Properties {};
 
-	var aim_animation = GetFiremode()->GetAimingAnimation();
-	if (aim_animation != nil)
-		ret.AnimationAim = aim_animation;
-	return ret;
+	var firemode = GetFiremode();
+	var ammo_type = firemode->GetAmmoID();
+
+	// Object count
+	status->SetObjectCount(GetAmmo(ammo_type));
+	
+	// Total count
+	if (user == Contained() && user->~IsAmmoManager())
+	{
+		status->SetTotalCount(user->GetAmmo(ammo_type));
+	}
+
+	// Object configuration
+	if (firemode && ammo_type)
+	{
+			// This should display a colored "fire mode" - "fire technique"
+			// In the shooter library the CMC fire technique is named firemode
+			// whereas the CMC fire mode is actually the ammo type that the weapon uses
+			status->SetObjectConfiguration(Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, ammo_type->GetName(), firemode->GetName()));
+	}
+
+	return status;
 }
+
 
 /**
  * Tells a possible container that the firearm was
@@ -241,4 +261,17 @@ func NotifyContainer()
 			container->~OnInventoryChange();
 		}
 	}
+}
+
+
+/* --- Misc --- */
+
+public func GetAnimationSet()
+{
+	var ret = _inherited();
+
+	var aim_animation = GetFiremode()->GetAimingAnimation();
+	if (aim_animation != nil)
+		ret.AnimationAim = aim_animation;
+	return ret;
 }

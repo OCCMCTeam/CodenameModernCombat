@@ -439,55 +439,45 @@ func UpdateItemStatus()
 	
 	if (GuiShowForCrew(gui_cmc_item_status, GetOwner(), cursor))
 	{
-		var item = cursor->GetHandItem(0);
+		// --- Grenades
+		var grenade_count = 0;
+		GetGrenadeCount()->SetValue(grenade_count);
 		
-		// Object count and max count
-		var object_count = nil;
-		var total_count = nil;
-		var firemode = nil;
-		var ammo_type = nil;
+		// --- Item status
+		var item = cursor->GetHandItem(0);
+
+		var status;
+		// Get status from the object if possible
 		if (item)
 		{
-			if (item->~IsAmmoManager() && cursor->~IsAmmoManager())
-			{
-				var firemode = item->~GetFiremode();
-				if (firemode)
-				{
-					ammo_type = firemode->GetAmmoID();
-				}
-				if (ammo_type)
-				{
-			    	object_count = item->GetAmmo(ammo_type);
-			    	total_count = cursor->GetAmmo(ammo_type);
-				}
-			}
-		    else if (item && item->~IsStackable())
-		    {
-		    	object_count = item->GetStackCount();
-		    	total_count = item->MaxStackCount();
-		    }
+			status = item->~GetGuiItemStatusProperties(cursor);
 		}
-		
-		GetObjectCount()->SetValue(object_count);
-		GetTotalCount()->SetValue(total_count);
+		// Fallback to default values
+		if (!status)
+		{
+			status = new GUI_Item_Status_Properties{};
+		}
 		
 		// Show object counts only if there is a value
+		var object_count = status->GetObjectCount();
 		if (object_count == nil)
 		{
-			GetObjectCount()->Hide();
+			GetObjectCount()->Hide()->SetValue(0);
 		}
 		else
 		{
-			GetObjectCount()->Show();
+			GetObjectCount()->Show()->SetValue(object_count);
 		}
 		
+		// Show total count only if there is a value
+		var total_count = status->GetTotalCount();
 		if (total_count == nil)
 		{
-			GetTotalCount()->Hide();
+			GetTotalCount()->Hide()->SetValue(0);
 		}
 		else
 		{
-			GetTotalCount()->Show();
+			GetTotalCount()->Show()->SetValue(total_count);
 		}
 		
 		// Show slash only if there is object count AND total count
@@ -500,36 +490,23 @@ func UpdateItemStatus()
 			GetSlash()->Show();
 		}
 		
-		// Grenades
-		var grenade_count = 0;
-		GetGrenadeCount()->SetValue(grenade_count);
-		
-		// Text info in the bottom row
-		
-		var info_text = nil;
-		if (firemode && ammo_type)
-		{
-			// This should display a colored "fire mode" - "fire technique"
-			// In the shooter library the CMC fire technique is named firemode
-			// whereas the CMC fire mode is actually the ammo type that the weapon uses
-			info_text = Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, ammo_type->GetName(), firemode->GetName());
-		}
-		else if (item)
+		// Text info in the bottom row, item name as a default
+		var info_text = status->GetObjectConfiguration();
+		if (item && info_text == nil)
 		{
 			info_text = item->GetName();
 		}
-		
+		GetObjectConfiguration().Text = info_text;
 		if (info_text)
 		{
 			GetObjectConfiguration()->Show();
-			GetObjectConfiguration().Text = info_text;
 		}
 		else
 		{
 			GetObjectConfiguration()->Hide();
 		}
 
-		// Actually update everything
+		// --- Actually update everything
 		GetObjectCount()->Update();
 		GetTotalCount()->Update();
 		GetSlash()->Update();
@@ -537,3 +514,51 @@ func UpdateItemStatus()
 		GetObjectConfiguration()->Update();
 	}
 }
+
+/* --- Misc --- */
+
+static const GUI_Item_Status_Properties = new Global
+{
+	// Internal properties
+
+	object_configuration = nil, // Description of the object configuration; nil means: Name of the object is displayed
+	object_count = nil,         // Amount to be display in object count; nil means: not displayed
+	total_count = nil,          // Amount to be display in total count; nil means: not displayed
+
+	// Getters
+	
+	GetObjectConfiguration = func ()
+	{
+		return this.object_configuration;
+	},
+
+	GetObjectCount = func ()
+	{
+		return this.object_count;
+	},
+
+	GetTotalCount = func ()
+	{
+		return this.total_count;
+	},
+
+	// Setters
+	
+	SetObjectConfiguration = func (string text)
+	{
+		this.object_configuration = text;
+		return this;
+	},
+
+	SetObjectCount = func (int value)
+	{
+		this.object_count = value;
+		return this;
+	},
+
+	SetTotalCount = func (int value)
+	{
+		this.total_count = value;
+		return this;
+	},
+};
