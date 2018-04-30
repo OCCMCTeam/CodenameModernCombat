@@ -4,6 +4,10 @@
 [ControlDefs]
 
 	[ControlDef]
+	Identifier=CMC_AimingCursor
+	DefaultDisabled=1
+
+	[ControlDef]
 	Identifier=CMC_UseAlt
 	GUIName=$CON_UseAlt$
 	GUIDesc=$CON_UseAlt_Desc$
@@ -13,7 +17,7 @@
 [ControlSets]
 
 	[ControlSet]
-	Name=*
+	Name=WASD_Hotkeys_IntQueue_MouseCon_
 
 		[Assignment]
 		Key=Mouse0Right
@@ -21,3 +25,8 @@
 		GUIName=$CON_UseAlt$
 		GUIDesc=$CON_UseAlt_Desc$
 		Control=CMC_UseAlt
+
+		[Assignment]
+		Key=Mouse0Move
+		Control=CMC_AimingCursor
+		Priority=30

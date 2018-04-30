@@ -19,19 +19,52 @@ static const WEAPON_FM_IronsightInst  = 2; // Instant ironsight
 
 /* --- Variables --- */
 
-// Right mouse buttons is pressed down
+// Ironsight is done or initiatied
 local ironsight = false;
 // Transition from carrying to ironsight is done, ready to fire
 local is_in_ironsight = false;
 
+/* --- Left click controls --- */
+
+// Called by the shooter library in ControlUseStart
+func OnPressUse(object clonk, int x, int y)
+{
+	// Check if currently in ironsight aiming and if yes, fire a controlled shot
+	if (ironsight)
+		DoIronsightFireCycle(clonk, x, y);
+	else
+		StartHipShooting(clonk, x, y);
+
+	return true;
+}
+
+func OnHoldingUse(object clonk, int x, int y)
+{
+	return true;
+}
+
 /* --- Right click controls --- */
+
+// Right click will by default be a toggle control but can be switched to a holding control
+public func IsIronsightToggled(int player)
+{
+	return CMC_Player_Settings->GetConfigurationValue(player, CMC_IRONSIGHT_TOGGLE, true);
+}
 
 // Called by the shooter library in ControlUseAltStart
 func OnPressUseAlt(object clonk, int x, int y)
 {
+	if (ironsight)
+	{
+		// If toggle setting is used, stop ironsight now
+		if (IsIronsightToggled(clonk->GetOwner()))
+			StopIronsight(clonk);
+		return true;
+	}
+
 	// Check if the clonk can currently perform an action with hands
 	if (!clonk->HasHandAction(true, nil, true))
-		return false;
+		return true;
 
 	// Great. Go into ironsight aiming
 	StartIronSight(clonk, x, y);
@@ -42,9 +75,13 @@ func OnPressUseAlt(object clonk, int x, int y)
 // Called by the shooter library in ControlUseAltHolding
 func OnHoldingUseAlt(object clonk, int x, int y)
 {
+	// Check if right click is not a toggle
+	if (IsIronsightToggled(clonk->GetOwner()))
+		return true; // Do nothing but prevent library default
+
 	// Shouldn't happen
 	if (!ironsight)
-		return false;
+		return true;
 
 	// Still transitioning into ironsight: wait
 	if (!is_in_ironsight)
@@ -56,27 +93,44 @@ func OnHoldingUseAlt(object clonk, int x, int y)
 	clonk->SetAimPosition(angle);
 }
 
+// Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
+public func ControlUseAiming(object clonk, int x, int y)
+{
+	if (!ironsight)
+		return true;
+
+	if (!is_in_ironsight)
+		return true;
+
+	if (!IsIronsightToggled())
+	{
+		// In this case, the control should never fire
+		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
+		return true;
+	}
+
+	// Aim!
+	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
+	angle = Normalize(angle, -180);
+	clonk->SetAimPosition(angle);
+}
+
 // Called by the shooter library in ControlUseAltStop
 func OnUseAltStop(object clonk, int x, int y)
 {
-	if (!ironsight)
-		return false;
+	// Check if right click is not a toggle
+	if (IsIronsightToggled(clonk->GetOwner()))
+		return true; // Do nothing but prevent library default
 
-	if (is_in_ironsight)
-		clonk->StopAim();
-	else
-	{
-		var effect = GetEffect("IronsightHelper", this);
-		if (effect)
-		{
-			effect->Cancel();
-			RemoveEffect(nil, nil, effect, true);
-		}
-	}
-
-	ironsight = false;
-	is_in_ironsight = false;
+	StopIronsight(clonk);
 	return true;
+}
+
+/* --- Hip Firing --- */
+
+func StartHipShooting(object clonk, int x, int y)
+{
+	
 }
 
 /* --- Ironsight aiming --- */
@@ -139,6 +193,39 @@ public func FinishIronsight(object clonk, int x, int y)
 	clonk->SetAimPosition(angle);
 
 	is_in_ironsight = true;
+
+	if (IsIronsightToggled())
+	{
+		// Mouse move will adjust aim angle
+		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, true);
+		// Disable OC default
+		SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
+	}
+}
+
+// Stop ironsight aiming, regardless of the current state (aiming or transitional state)
+public func StopIronsight(object clonk)
+{
+	if (!ironsight)
+		return;
+
+	if (is_in_ironsight)
+		clonk->StopAim();
+	else
+	{
+		var effect = GetEffect("IronsightHelper", this);
+		if (effect)
+		{
+			effect->Cancel();
+			RemoveEffect(nil, nil, effect, true);
+		}
+	}
+
+	ironsight = false;
+	is_in_ironsight = false;
+	// Disable CMC Aiming control if necessary
+	if (IsIronsightToggled())
+		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
 }
 
 local IronsightHelper = new Effect {
@@ -152,7 +239,7 @@ local IronsightHelper = new Effect {
 	Timer = func()
 	{
 		// Ironsight failed because of unknown things
-		if (!this.clonk->IsWalking() && !this.clonk->IsJumping())
+		if (!this.clonk->IsWalking())
 		{
 			this.Target->FailedIronsight();
 			return FX_Execute_Kill;
@@ -166,6 +253,13 @@ local IronsightHelper = new Effect {
 		this.clonk->StopAnimation(this.anim);
 	}
 };
+
+/* --- Ironsight Firing --- */
+
+func DoIronsightFireCycle(object clonk, int x, int y)
+{
+	
+}
 
 /* --- Ammo handling --- */
 
