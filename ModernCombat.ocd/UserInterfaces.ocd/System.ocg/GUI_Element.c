@@ -321,8 +321,70 @@ static const GUI_Element = new Global
 	//                   but move its position so that it matches the target
 	//                   position
 	
+	AlignLeft = func (proplist value)
+	{
+		var width = GetWidth();
+		SetLeft(value);
+		SetRight(value->Add(width));
+		return this;
+	},
+	
+	AlignRight = func (proplist value)
+	{
+		var width = GetWidth();
+		SetLeft(value->Subtract(width));
+		SetRight(value);
+		return this;
+	},
+	
+	AlignTop = func (proplist value)
+	{
+		var height = GetHeight();
+		SetTop(value);
+		SetBottom(value->Add(height));
+		return this;
+	},
+	
+	AlignBottom = func (proplist value)
+	{
+		var height = GetHeight();
+		SetTop(value->Subtract(height));
+		SetBottom(value);
+		return this;
+	},
+	
 	// Shift* functions: These leave the dimensions of the GUI element fixed,
 	//                   but move its position by a specified amount.
+	//                   Shift left/right and top/bottom are somewhat redundant,
+	//                   not sure if both will be kept.
+	
+	ShiftLeft = func (proplist value)
+	{
+		SetLeft(GetLeft()->Subtract(value));
+		SetRight(GetRight()->Subtract(value));
+		return this;
+	},
+	
+	ShiftRight = func (proplist value)
+	{
+		SetLeft(GetLeft()->Add(value));
+		SetRight(GetRight()->Add(value));
+		return this;
+	},
+	
+	ShiftTop = func (proplist value)
+	{
+		SetTop(GetTop()->Subtract(value));
+		SetBottom(GetBottom()->Subtract(value));
+		return this;
+	},
+	
+	ShiftBottom = func (proplist value)
+	{
+		SetTop(GetTop()->Add(value));
+		SetBottom(GetBottom()->Add(value));
+		return this;
+	},
 	
 	// Get* function: Get borders of the GUI, as a dimension.
 	
