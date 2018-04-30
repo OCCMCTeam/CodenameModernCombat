@@ -293,27 +293,27 @@ static const GUI_Element = new Global
 	// Set* functions: These leave the other values as they are,
 	//                 so that the dimensions of the element can be changed
 	
-	SetLeft = func (proplist value)
+	SetLeft = func (value, int em)
 	{
-		this.GUI_Element_Position[0] = value;
+		this.GUI_Element_Position[0] = Dimension(value, em);
 		return this;
 	},
 	
-	SetRight = func (proplist value)
+	SetRight = func (value, int em)
 	{
-		this.GUI_Element_Position[2] = value;
+		this.GUI_Element_Position[2] = Dimension(value, em);
 		return this;
 	},
 	
-	SetTop = func (proplist value)
+	SetTop = func (value, int em)
 	{
-		this.GUI_Element_Position[1] = value;
+		this.GUI_Element_Position[1] = Dimension(value, em);
 		return this;
 	},
 	
-	SetBottom = func (proplist value)
+	SetBottom = func (value, int em)
 	{
-		this.GUI_Element_Position[3] = value;
+		this.GUI_Element_Position[3] = Dimension(value, em);
 		return this;
 	},
 	
@@ -321,35 +321,35 @@ static const GUI_Element = new Global
 	//                   but move its position so that it matches the target
 	//                   position
 	
-	AlignLeft = func (proplist value)
+	AlignLeft = func (value, int em)
 	{
 		var width = GetWidth();
-		SetLeft(value);
-		SetRight(value->Add(width));
+		SetLeft(Dimension(value, em));
+		SetRight(Dimension(value, em)->Add(width));
 		return this;
 	},
 	
-	AlignRight = func (proplist value)
+	AlignRight = func (value, int em)
 	{
 		var width = GetWidth();
-		SetLeft(value->Subtract(width));
-		SetRight(value);
+		SetLeft(Dimension(value, em)->Subtract(width));
+		SetRight(Dimension(value, em));
 		return this;
 	},
 	
-	AlignTop = func (proplist value)
+	AlignTop = func (value, int em)
 	{
 		var height = GetHeight();
-		SetTop(value);
-		SetBottom(value->Add(height));
+		SetTop(Dimension(value, em));
+		SetBottom(Dimension(value, em)->Add(height));
 		return this;
 	},
 	
-	AlignBottom = func (proplist value)
+	AlignBottom = func (value, int em)
 	{
 		var height = GetHeight();
-		SetTop(value->Subtract(height));
-		SetBottom(value);
+		SetTop(Dimension(value, em)->Subtract(height));
+		SetBottom(Dimension(value, em));
 		return this;
 	},
 	
@@ -358,31 +358,31 @@ static const GUI_Element = new Global
 	//                   Shift left/right and top/bottom are somewhat redundant,
 	//                   not sure if both will be kept.
 	
-	ShiftLeft = func (proplist value)
+	ShiftLeft = func (value, int em)
 	{
-		SetLeft(GetLeft()->Subtract(value));
-		SetRight(GetRight()->Subtract(value));
+		SetLeft(GetLeft()->Subtract(Dimension(value, em)));
+		SetRight(GetRight()->Subtract(Dimension(value, em)));
 		return this;
 	},
 	
-	ShiftRight = func (proplist value)
+	ShiftRight = func (value, int em)
 	{
-		SetLeft(GetLeft()->Add(value));
-		SetRight(GetRight()->Add(value));
+		SetLeft(GetLeft()->Add(Dimension(value, em)));
+		SetRight(GetRight()->Add(Dimension(value, em)));
 		return this;
 	},
 	
-	ShiftTop = func (proplist value)
+	ShiftTop = func (value, int em)
 	{
-		SetTop(GetTop()->Subtract(value));
-		SetBottom(GetBottom()->Subtract(value));
+		SetTop(GetTop()->Subtract(Dimension(value, em)));
+		SetBottom(GetBottom()->Subtract(Dimension(value, em)));
 		return this;
 	},
 	
-	ShiftBottom = func (proplist value)
+	ShiftBottom = func (value, int em)
 	{
-		SetTop(GetTop()->Add(value));
-		SetBottom(GetBottom()->Add(value));
+		SetTop(GetTop()->Add(Dimension(value, em)));
+		SetBottom(GetBottom()->Add(Dimension(value, em)));
 		return this;
 	},
 	
@@ -420,15 +420,15 @@ static const GUI_Element = new Global
 	
 	// Get* function: Get size of the GUI element, as a dimension.
 	
-	SetHeight = func (proplist dimension)
+	SetHeight = func (dimension, em)
 	{
-		SetBottom(GetTop()->Add(dimension));
+		SetBottom(GetTop()->Add(Dimension(dimension, em)));
 		return this;
 	},
 	
-	SetWidth = func (proplist dimension)
+	SetWidth = func (dimension, int em)
 	{
-		SetRight(GetLeft()->Add(dimension));
+		SetRight(GetLeft()->Add(Dimension(dimension, em)));
 		return this;
 	},
 
@@ -451,5 +451,18 @@ static const GUI_Element = new Global
 		this.Right = GetRight()->ToString();
 		this.Top = GetTop()->ToString();
 		this.Bottom = GetBottom()->ToString();
+	},
+	
+	// Ensures that the input already is a dimension, or is converted to one.
+	Dimension = func (percent_or_dimension, int em)
+	{
+		if (GetType(percent_or_dimension) == C4V_PropList)
+		{
+			return percent_or_dimension;
+		}
+		else
+		{
+			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em);
+		}
 	},
 };
