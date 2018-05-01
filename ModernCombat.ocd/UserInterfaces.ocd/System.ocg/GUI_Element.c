@@ -200,19 +200,88 @@ static const GUI_Element = new Global
 	                        // try to display it as a subwindow
 	                        
 	GUI_Element_Name = nil, // the name of the element - the property name of the sub window in the menu
-	GUI_Parent_Name = nil,  // the name of the parent element; if this name is nil then it is implied that it is the root menu
 	GUI_Owner = nil,        // the owner for the bar - for visibility
 	
-	GUI_Element_Position =   // Contains the positions in percent and string; Is an array, because if it were a proplist it would count as a subwindow
-	[
-		new GUI_Dimension{}, // Left
-		new GUI_Dimension{}, // Top
-		new GUI_Dimension{}, // Right
-		new GUI_Dimension{}  // Bottom
-	],
+	GUI_Element_Position = nil,// Array that contains the positions in percent and string;
+	                           // Is an array, because if it were a proplist it would count as a subwindow;
+	                           // Must not initialized in the prototype, because it would be a reference and ALL gui elements would manipulate the same data
+	
+	GUI_Parent = nil,        // Array that contains the parent element; Is an array, because if it were a proplist it would count as a subwindow
+	                         // Is an array, because if it were a proplist it would count as a subwindow;
+	                         // Must not initialized in the prototype, because it would be a reference
 
 	// --- Generic Functions
 	
+	/**
+		Gets the name of the bar in the GUI layout proplist.
+		
+		@return string The name.
+	 */
+	GetName = func ()
+	{
+		return this.GUI_Element_Name;
+	},
+	
+	/**
+		Gets the parent GUI_Element of this element
+		
+		@return 'nil' if the element has no parent.
+	 */
+	GetParent = func ()
+	{
+		if (this.GUI_Parent == nil)
+		{
+			return nil;
+		}
+		var parent = this.GUI_Parent[0]; // Can be the same
+		if (this == parent) // Prevent infinite recursion
+		{
+			return nil;
+		}
+		else
+		{
+			return parent;
+		}
+	},
+	
+	/**
+		Gets the ID / GUI_ID of the main window.
+	 */
+	GetRootID = func ()
+	{
+		var parent = GetParent();
+		if (parent)
+		{
+			return parent->GetRootID();
+		}
+		else
+		{
+			return this.GUI_ID;
+		}
+	},
+
+	/**
+		Gets the ID of the child window.
+	 */
+	GetChildID = func ()
+	{
+		if (this.GUI_ID_Child) // Different priority, because the parent may have a different child ID, and so on.
+		{
+			return this.GUI_ID_Child;
+		}
+		else if (GetParent())
+		{
+			return GetParent()->GetChildID();
+		}
+	},
+	
+	// --- GUI Control functions
+
+	/**
+		Open as a GUI window
+		
+		@return proplist The GUI element proplist, for calling further functions.
+	 */
 	Open = func (int player)
 	{
 		if (this.GUI_ID == nil)
@@ -224,7 +293,12 @@ static const GUI_Element = new Global
 		return this;
 	},
 	
-	Close = func()
+	/**
+		Close as a GUI window
+		
+		@return proplist The GUI element proplist, for calling further functions.
+	 */
+	Close = func ()
 	{
 		if (this.GUI_ID)
 		{
@@ -233,20 +307,38 @@ static const GUI_Element = new Global
 		return this;
 	},
 	
-	/*
-		Gets the name of the bar in the GUI layout proplist.
+	/**
+		Add to an existing GUI window as a subwindow
+		Note: Use this only on other GUI_Element windows
 		
-		@return string The name.
+		@return proplist The GUI element proplist, for calling further functions.
 	 */
-	GetName = func ()
+	AddTo = func (proplist parent, int child_id, string element_name)
 	{
-		return this.GUI_Element_Name;
+		if (IsValidPrototype(parent))
+		{
+			if (GetParent())
+			{
+				FatalError("This element already has a parent element!");
+			}
+			else
+			{
+				this.GUI_Parent = [parent]; // Save in an array to avoid infinite proplist recursion / infinite submenus
+				this.GUI_ID_Child = child_id;
+				this.GUI_Element_Name = element_name ?? GetValidElementName(parent);
+				return this;
+			}
+		}
+		else
+		{
+			FatalError("Cannot add GUI element to proplist of prototype %s", GetPrototype(parent));
+		}
 	},
 	
-	/*
+	/**
 		Makes the bar visible to its owner.
 		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Show = func ()
 	{
@@ -254,10 +346,10 @@ static const GUI_Element = new Global
 		return this;
 	},
 	
-	/*
+	/**
 		Makes the bar invisible to its owner.
 		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Hide = func ()
 	{
@@ -265,25 +357,45 @@ static const GUI_Element = new Global
 		return this;
 	},
 	
-	/*
+	/**
 		Updates the GUI with all changes to the layout that were made previously.
 		
-		Works only if the bar was added to a GUI with AddTo(...).
-		
-		@return proplist The bar layout proplist, for calling further functions.
+		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Update = func ()
 	{
 		ComposeLayout();
-		if (this.GUI_Element_Name && (this.GUI_ID || this.GUI_ID_Child))
+		var gui_id = GetRootID();
+		var child_id = GetChildID();
+		var name = GetName();
+		// Update mode: Subwindow
+		if (name && (gui_id || child_id))
 		{
+			// Compose a simple update proplist
 			var update = {};
-			update[this.GUI_Element_Name] = this;
-			var result = GuiUpdate(update, this.GUI_ID, this.GUI_ID_Child);
+			update[name] = this;
+			
+			// Chain together the parent name, e.g.:
+			// { subwindow_level1 = { subwindow_level2 = { element_name = {...}}}}
+			for (var parent = GetParent(); parent != nil; parent = parent->GetParent())
+			{
+				// Cancel if the parent is the sub window known by ID, or the main window known by ID
+				if (gui_id == parent.GUI_ID || // Must be GUI_ID, because the parent does not have an ID; Must not call GetRootID()
+				    child_id == parent.ID) // Child must ask the actual ID
+				{
+					break; // No need for chaining proplists anymore
+				}
+				
+				var chained = {};
+				chained[parent->GetName()] = update;
+				update = chained;
+			}
+			GuiUpdate(update, gui_id, child_id);
 		}
-		else if (this.GUI_ID)
+		// Update mode: Main window
+		else if (gui_id)
 		{
-			var result = GuiUpdate(this, this.GUI_ID, this.GUI_ID_Child);
+			GuiUpdate(this, gui_id, child_id);
 		}
 		
 		return this;
@@ -296,24 +408,28 @@ static const GUI_Element = new Global
 	
 	SetLeft = func (value, int em)
 	{
+		InitPosition();
 		this.GUI_Element_Position[0] = Dimension(value, em);
 		return this;
 	},
 	
 	SetRight = func (value, int em)
 	{
+		InitPosition();
 		this.GUI_Element_Position[2] = Dimension(value, em);
 		return this;
 	},
 	
 	SetTop = func (value, int em)
 	{
+		InitPosition();
 		this.GUI_Element_Position[1] = Dimension(value, em);
 		return this;
 	},
 	
 	SetBottom = func (value, int em)
 	{
+		InitPosition();
 		this.GUI_Element_Position[3] = Dimension(value, em);
 		return this;
 	},
@@ -407,21 +523,25 @@ static const GUI_Element = new Global
 	
 	GetLeft = func ()
 	{
+		InitPosition();
 		return this.GUI_Element_Position[0];
 	},
 	
 	GetRight = func ()
 	{
+		InitPosition();
 		return this.GUI_Element_Position[2];
 	},
 	
 	GetTop = func ()
 	{
+		InitPosition();
 		return this.GUI_Element_Position[1];
 	},
 	
 	GetBottom = func ()
 	{
+		InitPosition();
 		return this.GUI_Element_Position[3];
 	},
 	
@@ -480,6 +600,32 @@ static const GUI_Element = new Global
 		else
 		{
 			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em);
+		}
+	},
+	
+	IsValidPrototype = func (proplist other)
+	{
+		return GetPrototype(other) == GetPrototype(this);
+	},
+	
+	GetValidElementName = func (proplist parent)
+	{
+		for (var tries = 10000; tries > 0; --tries)
+		{
+			var element_name = Format("_gui_element_%d%d%d%d%d", Random(10), Random(10), Random(10), Random(10), Random(10));
+			if (GetProperty(element_name, parent) == nil)
+			{
+				return element_name;
+			}
+		}
+		FatalError("Cannot find anonymous name for new GUI sub window");
+	},
+	
+	InitPosition = func ()
+	{
+		if (!this.GUI_Element_Position)
+		{
+			GUI_Element_Position = [new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}];
 		}
 	},
 };
