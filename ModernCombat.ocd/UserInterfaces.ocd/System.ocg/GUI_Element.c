@@ -213,12 +213,13 @@ static const GUI_Element = new Global
 
 	// --- Generic Functions
 	
-	Open = func ()
+	Open = func (int player)
 	{
 		if (this.GUI_ID == nil)
 		{
 			ComposeLayout();
 			this.GUI_ID = GuiOpen(this);
+			this.GUI_Owner = player;
 		}
 		return this;
 	},
@@ -324,32 +325,44 @@ static const GUI_Element = new Global
 	AlignLeft = func (value, int em)
 	{
 		var width = GetWidth();
-		SetLeft(Dimension(value, em));
-		SetRight(Dimension(value, em)->Add(width));
+		var position = Dimension(value, em);
+		SetLeft(position);
+		SetRight(position->Add(width));
 		return this;
 	},
 	
 	AlignRight = func (value, int em)
 	{
+		if (value == nil && em == nil) // Default to rightmost position if called withouth parameters
+		{
+			value = 1000;
+		}
 		var width = GetWidth();
-		SetLeft(Dimension(value, em)->Subtract(width));
-		SetRight(Dimension(value, em));
+		var position = Dimension(value, em);
+		SetLeft(position->Subtract(width));
+		SetRight(position);
 		return this;
 	},
 	
 	AlignTop = func (value, int em)
 	{
 		var height = GetHeight();
-		SetTop(Dimension(value, em));
-		SetBottom(Dimension(value, em)->Add(height));
+		var position = Dimension(value, em);
+		SetTop(position);
+		SetBottom(position->Add(height));
 		return this;
 	},
 	
 	AlignBottom = func (value, int em)
 	{
+		if (value == nil && em == nil) // Default to bottommost position if called withouth parameters
+		{
+			value = 1000;
+		}
 		var height = GetHeight();
-		SetTop(Dimension(value, em)->Subtract(height));
-		SetBottom(Dimension(value, em));
+		var position = Dimension(value, em);
+		SetTop(position->Subtract(height));
+		SetBottom(position);
 		return this;
 	},
 	
@@ -360,29 +373,33 @@ static const GUI_Element = new Global
 	
 	ShiftLeft = func (value, int em)
 	{
-		SetLeft(GetLeft()->Subtract(Dimension(value, em)));
-		SetRight(GetRight()->Subtract(Dimension(value, em)));
+		var shift = Dimension(value, em);
+		SetLeft(GetLeft()->Subtract(shift));
+		SetRight(GetRight()->Subtract(shift));
 		return this;
 	},
 	
 	ShiftRight = func (value, int em)
 	{
-		SetLeft(GetLeft()->Add(Dimension(value, em)));
-		SetRight(GetRight()->Add(Dimension(value, em)));
+		var shift = Dimension(value, em);
+		SetLeft(GetLeft()->Add(shift));
+		SetRight(GetRight()->Add(shift));
 		return this;
 	},
 	
 	ShiftTop = func (value, int em)
 	{
-		SetTop(GetTop()->Subtract(Dimension(value, em)));
-		SetBottom(GetBottom()->Subtract(Dimension(value, em)));
+		var shift = Dimension(value, em);
+		SetTop(GetTop()->Subtract(shift));
+		SetBottom(GetBottom()->Subtract(shift));
 		return this;
 	},
 	
 	ShiftBottom = func (value, int em)
 	{
-		SetTop(GetTop()->Add(Dimension(value, em)));
-		SetBottom(GetBottom()->Add(Dimension(value, em)));
+		var shift = Dimension(value, em);
+		SetTop(GetTop()->Add(shift));
+		SetBottom(GetBottom()->Add(shift));
 		return this;
 	},
 	
