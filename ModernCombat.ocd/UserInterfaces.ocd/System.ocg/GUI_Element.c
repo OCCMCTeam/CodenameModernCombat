@@ -331,7 +331,7 @@ static const GUI_Element = new Global
 		}
 		else
 		{
-			FatalError("Cannot add GUI element to proplist of prototype %s", GetPrototype(parent));
+			FatalError("Cannot add GUI element to proplist of prototype %v", GetPrototype(parent));
 		}
 	},
 	
@@ -605,7 +605,7 @@ static const GUI_Element = new Global
 	
 	IsValidPrototype = func (proplist other)
 	{
-		return GetPrototype(other) == GetPrototype(this);
+		return GetPrototype(other) == GetPrototype(this) || GetPrototype(other) == GUI_Element;
 	},
 	
 	GetValidElementName = func (proplist parent)
