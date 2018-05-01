@@ -24,7 +24,7 @@
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
  */
-static const CMC_GUI_ProgressBar = new GUI_Element_Controller
+static const CMC_GUI_ProgressBar = new GUI_Element
 {	
 	// --- GUI info
 	

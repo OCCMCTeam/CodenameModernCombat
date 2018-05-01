@@ -16,14 +16,14 @@ func Construction()
 	// a better solution would be cool :)
 	gui_cmc_crew = {};
 	gui_cmc_crew.Menu = AssembleCrewBarsPosition();
-	gui_cmc_crew.Layout_Health_Bar = AssembleHealthBar();
-	gui_cmc_crew.Layout_Breath_Bar = AssembleBreathBar();
+	gui_cmc_crew.Health_Bar = AssembleHealthBar();
+	gui_cmc_crew.Breath_Bar = AssembleBreathBar();
 	
-	// Open the menu (is actually just the position for the bars) and add the two bars to it
-	gui_cmc_crew.ID = GuiOpen(gui_cmc_crew.Menu);
-	GetHealthBar()->AddTo(gui_cmc_crew.Menu, "health_bar", gui_cmc_crew.ID, nil, this);
-	GetBreathBar()->AddTo(gui_cmc_crew.Menu, "breath_bar", gui_cmc_crew.ID, nil, this);
-
+	// Open the menu (is actually just the position for the bars) with the two bars added to it
+	GetHealthBar()->AddTo(gui_cmc_crew.Menu);
+	GetBreathBar()->AddTo(gui_cmc_crew.Menu);
+	gui_cmc_crew.ID = gui_cmc_crew.Menu->Open(GetOwner())->GetRootID();
+	
 	return _inherited(...);
 }
 
@@ -119,14 +119,18 @@ public func OnCrewBreathChange(object clonk, int change)
 // Overload this if you want to change the layout
 func AssembleCrewBarsPosition()
 {
-	var menu =
+	var menu = new GUI_Element
 	{
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
 	};
-	
-	AddProperties(menu, this->GuiCrewBarPositionLayout());
+
+	menu->SetWidth(GUI_CMC_Element_Info_Width)
+	    ->SetHeight(GUI_CMC_Element_Default_Height)
+	    ->AlignRight(1000 - GUI_CMC_Margin_Screen_H)
+	    ->AlignBottom(1000 - GUI_CMC_Margin_Screen_V);
+
 	return menu;
 }
 
@@ -135,8 +139,9 @@ func AssembleCrewBarsPosition()
 func AssembleHealthBar()
 {
 	// Health bar takes up the top 1/3rd of the position
-	var health_bar = new CMC_GUI_ProgressBar{ Bottom = ToPercentString(335)};
-	health_bar->SetBackgroundColor(GUI_CMC_Color_HealthBar_Transparent)
+	var health_bar = new CMC_GUI_ProgressBar {};
+	health_bar->SetBottom(335)
+	          ->SetBackgroundColor(GUI_CMC_Color_HealthBar_Transparent)
 	          ->SetBarColor({
 	          	Health_Full = GUI_CMC_Color_HealthBar_White,
 	          	Health_Warn = GUI_CMC_Color_HealthBar_Opaque,
@@ -150,35 +155,12 @@ func AssembleHealthBar()
 private func AssembleBreathBar()
 {
 	// Health bar takes up the bottom 1/3rd of the position
-	var breath_bar = new CMC_GUI_ProgressBar{ Top = ToPercentString(665)};
-	breath_bar->SetBackgroundColor(GUI_CMC_Color_BreathBar_Transparent)
+	var breath_bar = new CMC_GUI_ProgressBar {};
+	breath_bar->SetTop(665)
+	          ->SetBackgroundColor(GUI_CMC_Color_BreathBar_Transparent)
 	          ->SetBarColor(GUI_CMC_Color_BreathBar_Opaque)
 	          ->SetValue(1000); // Full in the beginning
 	return breath_bar;
-}
-
-
-/*
-	Gets the position layout of the crew bars.
-	
-	@return proplist Position properties for a GUI: Left, Right, Top, Bottom.
-	
-	                 The values are in percent, relative to the screen size.
-*/
-public func GuiCrewBarPositionLayout()
-{
-	var bottom = 1000;
-	var right = 1000;
-	var left = right - GUI_CMC_Element_Info_Width;
-	var top = bottom - GUI_CMC_Element_Default_Height;
-	var position =
-	{
-		Left = ToPercentString(left),
-		Right = ToPercentString(right),
-		Top = ToPercentString(top),
-		Bottom = ToPercentString(bottom),
-	};
-	return GUI_ShiftPosition(position, ToPercentString(-GUI_CMC_Margin_Screen_H), ToPercentString(-GUI_CMC_Margin_Screen_V));
 }
 
 /* --- Access to certain layouts --- */
@@ -186,14 +168,14 @@ public func GuiCrewBarPositionLayout()
 // Gets the health bar layout, for editing it
 public func GetHealthBar()
 {
-	return gui_cmc_crew.Layout_Health_Bar;
+	return gui_cmc_crew.Health_Bar;
 }
 
 
 // Gets the health bar layout, for editing it
 public func GetBreathBar()
 {
-	return gui_cmc_crew.Layout_Breath_Bar;
+	return gui_cmc_crew.Breath_Bar;
 }
 
 
@@ -206,6 +188,7 @@ public func GetBreathBar()
  */
 public func ScheduleUpdateCrewBars(string bar)
 {
+
 	var timer = GetEffect("ScheduledCrewBarsUpdateTimer", this) ?? CreateEffect(ScheduledCrewBarsUpdateTimer, 1, 1);
 	if (timer)
 	{
