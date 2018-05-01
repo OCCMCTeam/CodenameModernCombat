@@ -612,7 +612,7 @@ static const GUI_Element = new Global
 	{
 		for (var tries = 10000; tries > 0; --tries)
 		{
-			var element_name = Format("_gui_element_%d%d%d%d%d", Random(10), Random(10), Random(10), Random(10), Random(10));
+			var element_name = Format("gui_element_%d%d%d%d%d", Random(10), Random(10), Random(10), Random(10), Random(10));
 			if (GetProperty(element_name, parent) == nil)
 			{
 				return element_name;
