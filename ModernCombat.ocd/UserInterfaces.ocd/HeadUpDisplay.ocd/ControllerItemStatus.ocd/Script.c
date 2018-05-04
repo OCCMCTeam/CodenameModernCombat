@@ -14,8 +14,6 @@
 // Proplist for saving the menu layouts, GUI ID and so on.
 local gui_cmc_item_status;
 
-static const GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1 = 1;
-
 /* --- Creation / Destruction --- */
 
 func Construction()
