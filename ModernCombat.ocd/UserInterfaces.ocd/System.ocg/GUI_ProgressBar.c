@@ -18,7 +18,7 @@
 	- Create a layout by var layout = new CMC_GUI_ProgressBar{};
 	- Configure the layout for the bar as you would with any GUI element
 	- Configure the bar foreground as you would with any GUI element, access layout.GUI_Element_Controller_Progress
-	- Call layout->AddTo(...) after you opened a menu to add the layout the bar to that menu
+	- Call layout->AddTo(...) to add the layout the bar to that menu
 	
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like

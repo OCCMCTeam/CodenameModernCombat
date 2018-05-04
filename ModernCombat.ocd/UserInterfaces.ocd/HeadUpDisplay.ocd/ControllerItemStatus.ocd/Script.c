@@ -25,33 +25,9 @@ func Construction()
 	// a better solution would be cool :)
 	gui_cmc_item_status = {};
 	gui_cmc_item_status.Menu = AssembleItemStatus();
-	gui_cmc_item_status.Object_Count = new GUI_Counter{};
-	gui_cmc_item_status.Total_Count = new GUI_Counter{};
-	gui_cmc_item_status.Grenade_Count = new GUI_Counter{};
-	gui_cmc_item_status.Slash = new GUI_Element_Controller{};
-	gui_cmc_item_status.Object_Configuration = new GUI_Element_Controller{};
-	
-	gui_cmc_item_status.ID = GuiOpen(gui_cmc_item_status.Menu);
-	
-	GetObjectCount()->AddTo(gui_cmc_item_status.Menu, "object_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
-	                ->SetReference(gui_cmc_item_status.Menu.field)
-	                ->SetMaxDigits(3)
-	                ->ShowTrailingZeros(true)
-	                ->SetValue(0);
-	GetTotalCount()->AddTo(gui_cmc_item_status.Menu, "total_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
-	               ->SetReference(gui_cmc_item_status.Menu.field)
-	               ->SetMaxDigits(3)
-	               ->ShowTrailingZeros(true)
-	               ->SetValue(0);
-	GetGrenadeCount()->AddTo(gui_cmc_item_status.Menu, "grenade_count", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
-	                 ->SetReference(gui_cmc_item_status.Menu.field)
-	                 ->SetMaxDigits(1)
-	                 ->SetValue(0);
-	GetSlash()->AddTo(gui_cmc_item_status.Menu.field, "slash", gui_cmc_item_status.ID, GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1, this)
-	          ->Hide();
-	
-	GetObjectConfiguration()->AddTo(gui_cmc_item_status.Menu, "object_configuration", gui_cmc_item_status.ID, nil, this)
-	                        ->Hide();
+
+	gui_cmc_item_status.ID = gui_cmc_item_status.Menu->Open(GetOwner())->GetRootID();
+
 	
 	return _inherited(...);
 }
@@ -173,192 +149,135 @@ func AssembleItemStatus()
 
 	var field_large_digit_margin = 160;
 	var field_small_digit_margin = 80;
-
-	var menu = {
+	
+	var menu = new GUI_Element
+	{
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
 		
 		BackgroundColor = GUI_CMC_Background_Color_Default,
-		
-		// Leftmost top element: Field of two lines height
-		field = 
-		{
-			ID = GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1,
-			Right = ToPercentString(separator_button_row_h),
-			Bottom = ToPercentString(2 * line_height),
-			
-			// Further elements in the field:
-			
-			// Large digits for object count
-			object_count_digit_100 = 
-			{
-				Left =  ToPercentString(0 * field_large_digit_width),
-				Right = ToPercentString(1 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin),
-				Bottom = ToPercentString(1000 - field_large_digit_margin),
-				Symbol = CMC_Icon_Number,
-			},
-			object_count_digit_10 = 
-			{
-				Left =  ToPercentString(1 * field_large_digit_width),
-				Right = ToPercentString(2 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin),
-				Bottom = ToPercentString(1000 - field_large_digit_margin),
-				Symbol = CMC_Icon_Number,
-			},
-			object_count_digit_1 = 
-			{
-				Left =  ToPercentString(2 * field_large_digit_width),
-				Right = ToPercentString(3 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin),
-				Bottom = ToPercentString(1000 - field_large_digit_margin),
-				Symbol = CMC_Icon_Number,
-			},
-
-			// Separator
-			slash = 
-			{
-				Left =  ToPercentString(0 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
-				Bottom = ToPercentString(500),
-				Symbol = CMC_Icon_Number,
-				GraphicsName = "Dash",
-			},
-			
-			// Small digits for total count
-			total_count_digit_100 = 
-			{
-				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
-				Bottom = ToPercentString(500),
-				Symbol = CMC_Icon_Number,
-			},
-			total_count_digit_10 = 
-			{
-				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
-				Bottom = ToPercentString(500),
-				Symbol = CMC_Icon_Number,
-			},
-			total_count_digit_1 = 
-			{
-				Left =  ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(4 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(field_large_digit_margin), // Have to be aligned with the large digits
-				Bottom = ToPercentString(500),
-				Symbol = CMC_Icon_Number,
-			},
-			
-			// Small digits for grenade count
-			grenade_count_digit_1 = 
-			{
-				Left =  ToPercentString(1 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500 + field_large_digit_margin),
-				Bottom = ToPercentString(1000),
-				Symbol = CMC_Icon_Number,
-			},
-			grenade_count_icon = 
-			{
-				Left =  ToPercentString(2 * field_small_digit_width + 3 * field_large_digit_width),
-				Right = ToPercentString(3 * field_small_digit_width + 3 * field_large_digit_width),
-				Top = ToPercentString(500 + field_large_digit_margin),
-				Bottom = ToPercentString(1000),
-				Symbol = IronBomb
-			},
-		},
-		
-		// Leftmost bottom element: Detail text of one line height
-		object_configuration = 
-		{
-			Right = ToPercentString(separator_button_row_h),
-			Top = ToPercentString(2 * line_height),
-			Bottom = ToPercentString(3 * line_height),
-			Style = GUI_TextHCenter | GUI_TextVCenter,
-		},
-		
-		// Rightmost element: A vertical button row
-		vertical_button_row = 
-		{
-			Left = ToPercentString(separator_button_row_h),
-			Right = ToPercentString(1000),
-			
-			button_1 = 
-			{
-				Top = ToPercentString(0 * line_height + field_small_digit_margin),
-				Bottom = ToPercentString(1 * line_height - field_small_digit_margin),
-				Symbol = CMC_Icon_Number,
-				GraphicsName = "Hash",
-			},
-			
-			button_2 = 
-			{
-				Top = ToPercentString(1 * line_height + field_small_digit_margin),
-				Bottom = ToPercentString(2 * line_height - field_small_digit_margin),
-				Symbol = CMC_Icon_Number,
-				GraphicsName = "Hash",
-			},
-			
-			button_3 = 
-			{
-				Top = ToPercentString(2 * line_height + field_small_digit_margin),
-				Bottom = ToPercentString(3 * line_height - field_small_digit_margin),
-				Symbol = CMC_Icon_Number,
-				GraphicsName = "Hash",
-			},
-		},
 	};
 	
-	AddProperties(menu, this->GuiItemStatusPositionLayout());
-	
-	return menu;
-}
+	menu->SetWidth(GUI_CMC_Element_Info_Width)->SetHeight(3 * GUI_CMC_Element_Default_Height)
+	    ->AlignRight(1000 - GUI_CMC_Margin_Screen_H);
+	    
 
-
-/*
-	Gets the position layout of the item status.
-	
-	Has the height of 3 "default elements".
-	
-	@return proplist Position properties for a GUI: Left, Right, Top, Bottom.
-	
-	                 The values are in percent, relative to the screen size.
-*/
-public func GuiItemStatusPositionLayout()
-{
-
-	var top = 0;
-	var bottom = 3 * GUI_CMC_Element_Default_Height;
-
-	var right = 1000;
-	var left = right - GUI_CMC_Element_Info_Width;
-
-	var vertical_shift;
 	
 	// Depends on include order, unfortunately
 	// Also, you have to shift down from the top in this case :/
 	if (this.gui_cmc_crew)
 	{
-		var other_top = this.gui_cmc_crew.Menu.Top;
-		vertical_shift = Format("%s %s", other_top, ToPercentString(-bottom - GUI_CMC_Margin_Element_Small_V));
+		menu->AlignBottom(this.gui_cmc_crew.Menu->GetTop());
 	}
 	else
 	{
-		vertical_shift = ToPercentString(1000 - bottom - GUI_CMC_Margin_Screen_V);
+		menu->AlignBottom(1000);
 	}
+	menu->ShiftTop(GUI_CMC_Margin_Screen_V);
+	menu->Open(GetOwner());
 
-	var position =
+	var field = new GUI_Element {};
+	field->SetWidth(separator_button_row_h)
+	     ->SetHeight(2 * line_height)
+	     ->AddTo(menu);
+
+	// Rightmost element: A vertical button row
+	var vertical_button_row = new GUI_Element
 	{
-		Left = ToPercentString(left),
-		Right = ToPercentString(right),
-		Top = ToPercentString(top),
-		Bottom = ToPercentString(bottom),
+		button_1 = 
+		{
+			Top = ToPercentString(0 * line_height + field_small_digit_margin),
+			Bottom = ToPercentString(1 * line_height - field_small_digit_margin),
+			Symbol = CMC_Icon_Number,
+			GraphicsName = "Hash",
+		},
+		
+		button_2 = 
+		{
+			Top = ToPercentString(1 * line_height + field_small_digit_margin),
+			Bottom = ToPercentString(2 * line_height - field_small_digit_margin),
+			Symbol = CMC_Icon_Number,
+			GraphicsName = "Hash",
+		},
+		
+		button_3 = 
+		{
+			Top = ToPercentString(2 * line_height + field_small_digit_margin),
+			Bottom = ToPercentString(3 * line_height - field_small_digit_margin),
+			Symbol = CMC_Icon_Number,
+			GraphicsName = "Hash",
+		},
 	};
-	return GUI_ShiftPosition(position, ToPercentString(-GUI_CMC_Margin_Screen_H), vertical_shift);
+	vertical_button_row->SetLeft(separator_button_row_h)
+	                   ->SetRight(1000)
+	                   ->AddTo(menu, nil, "button_row");
+	                   
+	// Leftmost bottom element: Detail text of one line height
+	var object_configuration = new GUI_Element
+	{
+		Style = GUI_TextHCenter | GUI_TextVCenter,
+	};
+	object_configuration->SetWidth(separator_button_row_h)
+	                    ->SetHeight(line_height)
+	                    ->AlignTop(2 * line_height)
+	                    ->AddTo(menu, nil, "object_configuration");
+
+	// Large digits for object count
+	var object_count = new GUI_Counter {};
+	object_count->SetMaxDigits(3)
+	            ->SetDigitProperties({Symbol = CMC_Icon_Number})
+	            ->SetDigitWidth(field_large_digit_width)
+	            ->SetTop(field_large_digit_margin)
+	            ->SetBottom(1000 - field_large_digit_margin)
+	            ->ShowTrailingZeros(true)
+	            ->AddTo(field);
+
+	// Separator
+	var slash = new GUI_Element { Symbol = CMC_Icon_Number, GraphicsName = "Dash", };
+	slash->SetWidth(field_small_digit_width)
+	     ->SetTop(field_large_digit_margin)
+	     ->SetBottom(500)
+	     ->AlignLeft(object_count->GetRight())
+	     ->AddTo(field, nil, "slash");
+
+	// Small digits for total count
+	var total_count = new GUI_Counter{};
+	total_count->SetMaxDigits(3)
+	           ->SetDigitProperties({Symbol = CMC_Icon_Number})
+	           ->SetDigitWidth(field_small_digit_width)
+	           ->SetTop(field_large_digit_margin)
+	           ->SetBottom(500)
+	           ->AlignLeft(slash->GetRight())
+	           ->ShowTrailingZeros(true)
+	           ->AddTo(field);
+
+	// Small digits for grenade count
+	var grenade_count = new GUI_Counter {};
+	grenade_count->SetMaxDigits(1)
+	             ->SetDigitProperties({Symbol = CMC_Icon_Number})
+	             ->SetDigitWidth(field_small_digit_width)
+	             ->SetTop(500 + field_large_digit_margin)
+	             ->SetBottom(1000)
+	             ->AlignLeft(slash->GetRight())
+	             ->AddTo(field);
+
+	// Grenade icon
+	var grenade_icon = new GUI_Element { Symbol = IronBomb };
+	grenade_icon->SetTop(500 + field_large_digit_margin)
+	            ->SetBottom(1000)
+	            ->AlignLeft(grenade_count->GetRight())
+	            ->SetWidth(field_small_digit_width)
+	            ->AddTo(field);
+
+	// Add access to the main property
+	gui_cmc_item_status.Object_Configuration = object_configuration;
+	gui_cmc_item_status.Object_Count = object_count;
+	gui_cmc_item_status.Slash = slash;
+	gui_cmc_item_status.Total_Count = total_count;
+	gui_cmc_item_status.Grenade_Count = grenade_count;
+	
+	return menu;
 }
 
 /* --- Access to certain layouts --- */

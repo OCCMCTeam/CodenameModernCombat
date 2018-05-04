@@ -8,55 +8,22 @@
 /*
 	GUI prototype for a counter.
 	
-	The counter is not a GUI element by itself. It references another GUI element
-	that contains sub-elements of the name(s):
-		<name>_digit_1,
-		<name>_digit_10,
-		<name>_digit_100, etc.
-	where <name> is the name that you gave the counter. 
-	
 	Usage:
-	- Create a layout that contains the <name>_digit_X elements as described above
 	- Create a counter by var counter = new GUI_Counter{};
-	- Call layout->AddTo(...) after you opened a menu to add the layout the bar to that menu
-	- Call counter->SetReference(<parent_element>) to tell the counter which parent elements contains the <name>_digit_X elements
+	- Call layout->AddTo(...) to add the layout the bar to a menu
 	
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
  */
-static const GUI_Counter = new GUI_Element_Controller
+static const GUI_Counter = new GUI_Element
 {	
 	// --- Properties
 	
 	GUI_Counter_DigitAmount = 1,	      // The counter shows this many digits
-	GUI_Counter_Submenu = nil,            // Reference to the menu that will be updated - this is needed only so that the correct digits will be updated
-	GUI_Counter_Update = nil,             // Empty update info
 	GUI_Counter_No_Trailing_Zeros = true, // Hide trailing zeros?
 	
 	// --- Functions / API
-	
-	/*
-		Sets the reference to a perent element that contains counter elements.
-		This is mainly used for checking the display. You can display
-		a digit only if the corresponding counter element exists in this parent element.
-		
-		@par submenu This menu contains counter elements that fulfill the following requirements:
-		             - The counter elements follow the naming scheme "<name>_digit_x",
-		               + where <name> is the name that you specified in the AddTo(..) call,
-		               + where  x is a number from 10^(i - 1) with i = 1 ... N,
-		                 and N is the amount of digits that you want to display.
-		             - The counter elements have "Symbol" property that can display a number:
-		               + the default graphics of that definition is empty
-		               + the definition has graphics "0", ... , "9" that correspond to those numbers.
-		
-		@return proplist The counter proplist, for calling further functions.
-	 */
-	SetReference = func (proplist submenu)
-	{
-		this.GUI_Counter_Submenu = submenu;
-		return this;
-	},
 	
 	/*
 		Defines the maximum amount of digits that the counter
@@ -71,6 +38,20 @@ static const GUI_Counter = new GUI_Element_Controller
 	SetMaxDigits = func (int amount)
 	{
 		this.GUI_Counter_DigitAmount = amount;
+		return this;
+	},
+	
+	// SetDigit* function: Sets the size of the GUI element.
+	//
+	// Manipulating a GUI element this way will always
+	// change the right and/or bottom border, while
+	// the left and/or top border stay fixed.
+	//
+	// Sets the dimensions as usually, but multiplies it by the supplied digit width
+	
+	SetDigitWidth = func (dimension, int em)
+	{
+		SetWidth(Dimension(dimension, em)->Scale(this.GUI_Counter_DigitAmount ?? 1));
 		return this;
 	},
 
@@ -101,44 +82,7 @@ static const GUI_Counter = new GUI_Element_Controller
 		SetDigits(digits);
 		return this;
 	},
-	
-	/*
-		Makes the bar visible to its owner.
-		
-		@return proplist The counter proplist, for calling further functions.
-	 */
-	Show = func ()
-	{
-		SetCounterElementProperty("Player", this.GUI_Owner);
-		return this;
-	},
-	
-	/*
-		Makes the bar invisible to its owner.
-		
-		@return proplist The counter proplist, for calling further functions.
-	 */
-	Hide = func ()
-	{
-		SetCounterElementProperty("Player", NO_OWNER);
-		return this;
-	},
-	
-	/*
-		Updates the GUI with the counter number changes only.
-		
-		@return proplist The counter proplist, for calling further functions.
-	 */
-	Update = func ()
-	{
-		if (this.GUI_ID && this.GUI_Element_Controller_Name)
-		{
-			GuiUpdate(this.GUI_Counter_Update, this.GUI_ID, this.GUI_ID_Child /*, Object(this.GUI_TargetNr) - this seems to actually block the update if there is a child_id*/);
-			this.GUI_Counter_Update = {};
-		}
-		return this;
-	},
-	
+
 	/*
 		Defines whether you want to show trailing zeros.
 		
@@ -191,7 +135,6 @@ static const GUI_Counter = new GUI_Element_Controller
 	 */
 	SetDigits = func (array digits)
 	{
-		this.GUI_Counter_Update = this.GUI_Counter_Update ?? {};
 		var graphics_names = [];
 		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
 		{
@@ -205,7 +148,16 @@ static const GUI_Counter = new GUI_Element_Controller
 				graphics_names[i] = Format("%d", digit);
 			}
 		}
-		SetCounterElementProperty("GraphicsName", graphics_names, true);
+		SetCounterElementProperties("GraphicsName", graphics_names, true);
+	},
+	
+	SetDigitProperties = func (proplist properties)
+	{
+		for (var property_name in GetProperties(properties))
+		{
+			SetCounterElementProperties(property_name, properties[property_name]);
+		}
+		return this;
 	},
 	
 	/*
@@ -221,29 +173,51 @@ static const GUI_Counter = new GUI_Element_Controller
 		Sets a property in the counter element.
 		Update is displayed once the update function is called
 	 */
-	SetCounterElementProperty = func (string property_name, value, bool in_order)
+	SetCounterElementProperties = func (string property_name, value, bool in_order)
 	{
 		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
 		{
-			var counter_name = Format("%s_digit_%d", this->GetName(), GetOrder(i));
-			var property = this.GUI_Counter_Submenu[counter_name];
-			if (property)
+			// Set the values in order, or copy the value to every counter?
+			if (GetType(value) == C4V_Array && in_order)
 			{
-				if (!this.GUI_Counter_Update[counter_name])
-				{
-					this.GUI_Counter_Update[counter_name] = {};
-				}
-				
-				// Set the values in order, or copy the value to every counter?
-				if (GetType(value) == C4V_Array && in_order)
-				{
-					this.GUI_Counter_Update[counter_name][property_name] = value[i];
-				}
-				else
-				{
-					this.GUI_Counter_Update[counter_name][property_name] = value;
-				}
+				SetCounterElementProperty(i, property_name, value[i]);
+			}
+			else
+			{
+				SetCounterElementProperty(i, property_name, value);
 			}
 		}
-	}
+	},
+	
+	SetCounterElementProperty = func (int index, string property_name, value)
+	{
+		var counter_name = Format("digit_%d", GetOrder(index));
+		
+		if (!this[counter_name])
+		{
+			this[counter_name] = {};
+		}
+		this[counter_name][property_name] = value;
+	},
+	
+	// Translates the integer position information to GUI layout properties
+	ComposeLayout = func ()
+	{
+		// Copied from parent prototype, no idea how to inherit things here
+		this.Left = GetLeft()->ToString();
+		this.Right = GetRight()->ToString();
+		this.Top = GetTop()->ToString();
+		this.Bottom = GetBottom()->ToString();
+		
+		// Additional code below
+		var remainder = 1000 % this.GUI_Counter_DigitAmount;
+		var width = (1000 - remainder) / this.GUI_Counter_DigitAmount;
+		
+		var left = [], right = [];
+		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
+		{
+			SetCounterElementProperty(i, "Left", ToPercentString(1000 - width * (i + 1)));
+			SetCounterElementProperty(i, "Right", ToPercentString(1000 - width * i));
+		}
+	},
 };

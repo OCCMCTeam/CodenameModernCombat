@@ -154,6 +154,13 @@ static const GUI_Dimension = new Global
 		}
 	},
 	
+	Scale = func(int factor)
+	{
+		return new GUI_Dimension{}
+		       ->SetPercent(GetPercent() * factor)
+		       ->SetEm(GetEm() * factor);
+	},
+	
 	// --- Internal functions
 	
 	IsValidPrototype = func (proplist other)
@@ -206,9 +213,10 @@ static const GUI_Element = new Global
 	                           // Is an array, because if it were a proplist it would count as a subwindow;
 	                           // Must not initialized in the prototype, because it would be a reference and ALL gui elements would manipulate the same data
 	
-	GUI_Parent = nil,        // Array that contains the parent element; Is an array, because if it were a proplist it would count as a subwindow
+	GUI_Parent = nil,        // Array that contains the parent element;
 	                         // Is an array, because if it were a proplist it would count as a subwindow;
 	                         // Must not initialized in the prototype, because it would be a reference
+
 
 	// --- Generic Functions
 	
@@ -286,7 +294,7 @@ static const GUI_Element = new Global
 	{
 		if (this.GUI_ID == nil)
 		{
-			ComposeLayout();
+			this->ComposeLayout();
 			this.GUI_ID = GuiOpen(this);
 			this.GUI_Owner = player;
 		}
@@ -326,6 +334,17 @@ static const GUI_Element = new Global
 				this.GUI_Parent = [parent]; // Save in an array to avoid infinite proplist recursion / infinite submenus
 				this.GUI_ID_Child = child_id;
 				this.GUI_Element_Name = element_name ?? GetValidElementName(parent);
+				
+				// Perform a GUI update on open GUIs, otherwise just add an element
+				if (parent->GetRootID())
+				{
+					this->Update();
+				}
+				else
+				{
+					parent[this.GUI_Element_Name] = this;
+				}
+				
 				return this;
 			}
 		}
@@ -364,7 +383,7 @@ static const GUI_Element = new Global
 	 */
 	Update = func ()
 	{
-		ComposeLayout();
+		this->ComposeLayout();
 		var gui_id = GetRootID();
 		var child_id = GetChildID();
 		var name = GetName();
@@ -381,7 +400,7 @@ static const GUI_Element = new Global
 			{
 				// Cancel if the parent is the sub window known by ID, or the main window known by ID
 				if (gui_id == parent.GUI_ID || // Must be GUI_ID, because the parent does not have an ID; Must not call GetRootID()
-				    child_id == parent.ID) // Child must ask the actual ID
+				   (child_id != nil && child_id == parent.ID)) // Child must ask the actual ID, and be defined
 				{
 					break; // No need for chaining proplists anymore
 				}
@@ -553,8 +572,6 @@ static const GUI_Element = new Global
 	//                change the right and/or bottom border, while
 	//                the left and/or top border stay fixed.
 	
-	
-	
 	// Get* function: Get size of the GUI element, as a dimension.
 	
 	SetHeight = func (dimension, em)
@@ -628,4 +645,9 @@ static const GUI_Element = new Global
 			GUI_Element_Position = [new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}];
 		}
 	},
+	
+	Self = func ()
+	{
+		return this;
+	}
 };
