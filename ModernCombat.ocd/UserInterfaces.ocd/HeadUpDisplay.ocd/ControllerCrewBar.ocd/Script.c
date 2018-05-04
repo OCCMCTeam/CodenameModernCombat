@@ -11,9 +11,6 @@ local gui_cmc_crew;
 
 func Construction()
 {
-	// FIXME the properties
-	// .Menu and .ID are part of my convention for GuiShowForCrew();
-	// a better solution would be cool :)
 	gui_cmc_crew = {};
 	gui_cmc_crew.Menu = AssembleCrewBarsPosition();
 	gui_cmc_crew.Health_Bar = AssembleHealthBar();
@@ -22,7 +19,7 @@ func Construction()
 	// Open the menu (is actually just the position for the bars) with the two bars added to it
 	GetHealthBar()->AddTo(gui_cmc_crew.Menu);
 	GetBreathBar()->AddTo(gui_cmc_crew.Menu);
-	gui_cmc_crew.ID = gui_cmc_crew.Menu->Open(GetOwner())->GetRootID();
+	gui_cmc_crew.Menu->Open(GetOwner());
 	
 	return _inherited(...);
 }
@@ -30,8 +27,7 @@ func Construction()
 
 func Destruction()
 {
-	GuiClose(gui_cmc_crew.ID);
-	gui_cmc_crew.ID = nil;
+	gui_cmc_crew.Menu->Close();
 
 	_inherited(...);
 }
@@ -224,7 +220,7 @@ func UpdateCrewBars(bool update_health, bool update_breath)
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (GuiShowForCrew(gui_cmc_crew, GetOwner(), cursor))
+	if (gui_cmc_crew.Menu->ShowForCrew(cursor))
 	{
 		if (update_health)
 		{
@@ -253,7 +249,7 @@ func UpdateCrewBars(bool update_health, bool update_breath)
 			GetHealthBar()->Update();
 			
 			// Change tag for health bar; has to be updated after changing the progress values to take proper effect
-			GuiUpdateTag(tag, gui_cmc_crew.ID);
+			GuiUpdateTag(tag, GetHealthBar()->GetRootID());
 		}
 		
 		if (update_breath)

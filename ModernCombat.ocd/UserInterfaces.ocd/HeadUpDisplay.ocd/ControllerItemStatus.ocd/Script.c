@@ -20,13 +20,9 @@ static const GUI_CMC_ITEM_STATUS_SUBWINDOW_ID1 = 1;
 
 func Construction()
 {
-	// FIXME the properties
-	// .Menu and .ID are part of my convention for GuiShowForCrew();
-	// a better solution would be cool :)
 	gui_cmc_item_status = {};
 	gui_cmc_item_status.Menu = AssembleItemStatus();
-
-	gui_cmc_item_status.ID = gui_cmc_item_status.Menu->Open(GetOwner())->GetRootID();
+	gui_cmc_item_status.Menu->Open(GetOwner());
 
 	return _inherited(...);
 }
@@ -34,8 +30,7 @@ func Construction()
 
 func Destruction()
 {
-	GuiClose(gui_cmc_item_status.ID);
-	gui_cmc_item_status.ID = nil;
+	gui_cmc_item_status.Menu->Close();
 
 	_inherited(...);
 }
@@ -352,7 +347,7 @@ func UpdateItemStatus()
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (GuiShowForCrew(gui_cmc_item_status, GetOwner(), cursor))
+	if (gui_cmc_item_status.Menu->ShowForCrew(cursor))
 	{
 		// --- Grenades
 		var grenade_count = 0;

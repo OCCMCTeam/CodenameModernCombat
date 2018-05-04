@@ -335,6 +335,7 @@ static const GUI_Element = new Global
 				this.GUI_Parent = [parent]; // Save in an array to avoid infinite proplist recursion / infinite submenus
 				this.GUI_ID_Child = child_id;
 				this.GUI_Element_Name = element_name ?? GetValidElementName(parent);
+			    this.GUI_Owner = parent.GUI_Owner;
 
 				// Perform a GUI update on open GUIs, otherwise just add an element
 				if (parent->GetRootID())
@@ -352,6 +353,23 @@ static const GUI_Element = new Global
 		else
 		{
 			FatalError("Cannot add GUI element to proplist of prototype %v", GetPrototype(parent));
+		}
+	},
+	
+	/**
+		Shows the menu if the crew is enabled, hides it if disabled.
+	 */
+	ShowForCrew = func (object crew)
+	{
+		if (crew && crew->GetCrewEnabled())
+		{
+			Show()->Update();
+			return true;
+		}
+		else
+		{
+			Hide()->Update();
+			return false;
 		}
 	},
 	
