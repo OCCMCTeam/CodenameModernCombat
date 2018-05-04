@@ -28,7 +28,6 @@ func Construction()
 
 	gui_cmc_item_status.ID = gui_cmc_item_status.Menu->Open(GetOwner())->GetRootID();
 
-	
 	return _inherited(...);
 }
 
@@ -161,8 +160,6 @@ func AssembleItemStatus()
 	
 	menu->SetWidth(GUI_CMC_Element_Info_Width)->SetHeight(3 * GUI_CMC_Element_Default_Height)
 	    ->AlignRight(1000 - GUI_CMC_Margin_Screen_H);
-	    
-
 	
 	// Depends on include order, unfortunately
 	// Also, you have to shift down from the top in this case :/
@@ -175,7 +172,6 @@ func AssembleItemStatus()
 		menu->AlignBottom(1000);
 	}
 	menu->ShiftTop(GUI_CMC_Margin_Screen_V);
-	menu->Open(GetOwner());
 
 	var field = new GUI_Element {};
 	field->SetWidth(separator_button_row_h)
@@ -211,7 +207,7 @@ func AssembleItemStatus()
 	};
 	vertical_button_row->SetLeft(separator_button_row_h)
 	                   ->SetRight(1000)
-	                   ->AddTo(menu, nil, "button_row");
+	                   ->AddTo(menu);
 	                   
 	// Leftmost bottom element: Detail text of one line height
 	var object_configuration = new GUI_Element
@@ -221,7 +217,7 @@ func AssembleItemStatus()
 	object_configuration->SetWidth(separator_button_row_h)
 	                    ->SetHeight(line_height)
 	                    ->AlignTop(2 * line_height)
-	                    ->AddTo(menu, nil, "object_configuration");
+	                    ->AddTo(menu);
 
 	// Large digits for object count
 	var object_count = new GUI_Counter {};
@@ -239,7 +235,7 @@ func AssembleItemStatus()
 	     ->SetTop(field_large_digit_margin)
 	     ->SetBottom(500)
 	     ->AlignLeft(object_count->GetRight())
-	     ->AddTo(field, nil, "slash");
+	     ->AddTo(field);
 
 	// Small digits for total count
 	var total_count = new GUI_Counter{};

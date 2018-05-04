@@ -207,21 +207,20 @@ static const GUI_Element = new Global
 	                        // try to display it as a subwindow
 	                        
 	GUI_Element_Name = nil, // the name of the element - the property name of the sub window in the menu
-	GUI_Owner = nil,        // the owner for the bar - for visibility
+	GUI_Owner = nil,        // the owner for the element - for visibility
 	
 	GUI_Element_Position = nil,// Array that contains the positions in percent and string;
 	                           // Is an array, because if it were a proplist it would count as a subwindow;
-	                           // Must not initialized in the prototype, because it would be a reference and ALL gui elements would manipulate the same data
+	                           // Must not be initialized in the prototype, because it would be a reference and ALL gui elements would manipulate the same data
 	
 	GUI_Parent = nil,        // Array that contains the parent element;
 	                         // Is an array, because if it were a proplist it would count as a subwindow;
-	                         // Must not initialized in the prototype, because it would be a reference
-
+	                         // Must not be initialized in the prototype, because it would be a reference
 
 	// --- Generic Functions
 	
 	/**
-		Gets the name of the bar in the GUI layout proplist.
+		Gets the name of the element in the GUI layout proplist.
 		
 		@return string The name.
 	 */
@@ -295,8 +294,10 @@ static const GUI_Element = new Global
 		if (this.GUI_ID == nil)
 		{
 			this->ComposeLayout();
-			this.GUI_ID = GuiOpen(this);
 			this.GUI_Owner = player;
+			
+			this.GUI_ID = GuiOpen(this);
+			ClearChildElements();
 		}
 		return this;
 	},
@@ -334,7 +335,7 @@ static const GUI_Element = new Global
 				this.GUI_Parent = [parent]; // Save in an array to avoid infinite proplist recursion / infinite submenus
 				this.GUI_ID_Child = child_id;
 				this.GUI_Element_Name = element_name ?? GetValidElementName(parent);
-				
+
 				// Perform a GUI update on open GUIs, otherwise just add an element
 				if (parent->GetRootID())
 				{
@@ -342,9 +343,9 @@ static const GUI_Element = new Global
 				}
 				else
 				{
+					this->ComposeLayout();
 					parent[this.GUI_Element_Name] = this;
 				}
-				
 				return this;
 			}
 		}
@@ -355,7 +356,7 @@ static const GUI_Element = new Global
 	},
 	
 	/**
-		Makes the bar visible to its owner.
+		Makes the element visible to its owner.
 		
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
@@ -366,7 +367,7 @@ static const GUI_Element = new Global
 	},
 	
 	/**
-		Makes the bar invisible to its owner.
+		Makes the element invisible to its owner.
 		
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
@@ -597,6 +598,21 @@ static const GUI_Element = new Global
 	},
 	
 	// --- Internals
+	
+	// Removes all child elements from a GUI element
+	// Background: Internally the GUI gets all children for an update before it is opened, then these are removed for less data heavy updates
+	ClearChildElements = func ()
+	{
+		for (var property in GetProperties(this))
+		{
+			// Found a GUI element? Clear it!
+			if (GetType(this[property]) == C4V_PropList && this[property].GUI_Element_Name)
+			{
+				this[property]->~ClearChildElements();
+				this[property] = nil;
+			}
+		}
+	},
 	
 	// Translates the integer position information to GUI layout properties
 	ComposeLayout = func ()
