@@ -126,32 +126,20 @@ static const GUI_Dimension = new Global
 	//
 	// These will return a NEW dimension
 	
-	Add = func (proplist other)
+	Add = func (percent, int em)
 	{
-		if (IsValidPrototype(other))
-		{
-			return new GUI_Dimension{}->CopyOf(this)
+		var other = Dimension(percent, em);
+		return new GUI_Dimension{}->CopyOf(this)
 			       ->AddPercent(+other->GetPercent())
 			       ->AddEm(+other->GetEm());
-		}
-		else
-		{
-			FatalError("Cannot subtract proplist of prototype %s", GetPrototype(other));
-		}
 	},
 	
-	Subtract = func (proplist other)
+	Subtract = func (percent, int em)
 	{
-		if (IsValidPrototype(other))
-		{
-			return new GUI_Dimension{}->CopyOf(this)
-			       ->AddPercent(-other->GetPercent())
-			       ->AddEm(-other->GetEm());
-		}
-		else
-		{
-			FatalError("Cannot subtract proplist of prototype %s", GetPrototype(other));
-		}
+		var other = Dimension(percent, em);
+		return new GUI_Dimension{}->CopyOf(this)
+		       ->AddPercent(-other->GetPercent())
+		       ->AddEm(-other->GetEm());
 	},
 	
 	Scale = func(int factor)
@@ -165,7 +153,7 @@ static const GUI_Dimension = new Global
 	
 	IsValidPrototype = func (proplist other)
 	{
-		return GetPrototype(other) == GetPrototype(this);
+		return GetPrototype(other) == GUI_Dimension;
 	},
 	
 	ToString = func ()
@@ -181,6 +169,26 @@ static const GUI_Dimension = new Global
 			if (GetPercent() != nil) p = ToPercentString(GetPercent());
 			if (GetEm() != nil) e = ToPercentString(GetEm());
 			return Format("%s%s", p, e);
+		}
+	},
+	
+	// Ensures that the input already is a dimension, or is converted to one.
+	Dimension = func (percent_or_dimension, int em)
+	{
+		if (GetType(percent_or_dimension) == C4V_PropList)
+		{
+			if (IsValidPrototype(percent_or_dimension))
+			{
+				return percent_or_dimension;
+			}
+			else
+			{
+				FatalError("Cannot use proplist of prototype %v", GetPrototype(percent_or_dimension));
+			}
+		}
+		else
+		{
+			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em);
 		}
 	},
 };
@@ -644,14 +652,7 @@ static const GUI_Element = new Global
 	// Ensures that the input already is a dimension, or is converted to one.
 	Dimension = func (percent_or_dimension, int em)
 	{
-		if (GetType(percent_or_dimension) == C4V_PropList)
-		{
-			return percent_or_dimension;
-		}
-		else
-		{
-			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em);
-		}
+		return GUI_Dimension->Dimension(percent_or_dimension, em);
 	},
 	
 	IsValidPrototype = func (proplist other)

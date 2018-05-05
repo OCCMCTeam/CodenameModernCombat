@@ -178,7 +178,6 @@ local ScheduledInventoryUpdateTimer = new Effect
 // Update the inventory
 func UpdateInventory()
 {
-	Log("Update inventory");
 	var cursor = GetCursor(GetOwner());
 	
 	if (gui_cmc_inventory.Menu->ShowForCrew(cursor))
@@ -211,8 +210,6 @@ func UpdateInventory()
 
 func UpdateInventoryButtonAmount(int max_contents_count)
 {
-	Log("Update inventory button amount %d", max_contents_count);
-
 	var old_count = GetLength(gui_cmc_inventory.Slots);
 	if (old_count != max_contents_count)
 	{
@@ -232,11 +229,8 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 		SetLength(gui_cmc_inventory.Slots, max_contents_count);
 		
 		// Adjust positions
-		var margin = new GUI_Dimension{};
-		margin->SetPercent(GUI_CMC_Margin_Element_V);
-		
-		var margin_small = new GUI_Dimension{};
-		margin_small->SetPercent(GUI_CMC_Margin_Element_Small_V);
+		var margin = GUI_Dimension->Dimension(GUI_CMC_Margin_Element_V);
+		var margin_small = GUI_Dimension->Dimension(GUI_CMC_Margin_Element_Small_V);
 		
 		var position;
 		// Depends on include order, unfortunately
