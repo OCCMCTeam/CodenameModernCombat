@@ -122,10 +122,10 @@ func AssembleCrewBarsPosition()
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
 	};
 
-	menu->SetWidth(GUI_CMC_Element_Info_Width)
-	    ->SetHeight(GUI_CMC_Element_Default_Height)
-	    ->AlignRight(1000 - GUI_CMC_Margin_Screen_H)
-	    ->AlignBottom(1000 - GUI_CMC_Margin_Screen_V);
+	menu->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
+	    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
+	    ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
+	    ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V));
 
 	return menu;
 }

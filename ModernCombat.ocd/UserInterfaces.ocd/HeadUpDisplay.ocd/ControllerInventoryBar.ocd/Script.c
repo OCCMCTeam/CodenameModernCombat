@@ -131,8 +131,8 @@ func AssembleInventoryButton(int slot)
 			Selected = GUI_CMC_Background_Color_Highlight,
 		}
 	};
-	button->SetWidth(GUI_CMC_Element_Info_Width)
-	      ->SetHeight(GUI_CMC_Element_Large_Height);
+	button->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
+	      ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
 	
 	return button;
 }
@@ -229,8 +229,8 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 		SetLength(gui_cmc_inventory.Slots, max_contents_count);
 		
 		// Adjust positions
-		var margin = GUI_Dimension->Dimension(GUI_CMC_Margin_Element_V);
-		var margin_small = GUI_Dimension->Dimension(GUI_CMC_Margin_Element_Small_V);
+		var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
+		var margin_small = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_V);
 		
 		var position;
 		// Depends on include order, unfortunately
@@ -254,7 +254,7 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 		{
 			// Align the slot
 			var slot = gui_cmc_inventory.Slots[i - 1];
-			slot->AlignRight(1000 - GUI_CMC_Margin_Screen_H);
+			slot->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H));
 			slot->AlignBottom(position);
 			
 			// Update top position

@@ -151,8 +151,9 @@ func AssembleItemStatus()
 		BackgroundColor = GUI_CMC_Background_Color_Default,
 	};
 	
-	menu->SetWidth(GUI_CMC_Element_Info_Width)->SetHeight(3 * GUI_CMC_Element_Default_Height)
-	    ->AlignRight(1000 - GUI_CMC_Margin_Screen_H);
+	menu->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
+	    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Height))
+	    ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H));
 	
 	// Depends on include order, unfortunately
 	// Also, you have to shift down from the top in this case :/
@@ -164,7 +165,7 @@ func AssembleItemStatus()
 	{
 		menu->AlignBottom(1000);
 	}
-	menu->ShiftTop(GUI_CMC_Margin_Screen_V);
+	menu->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V));
 
 	var field = new GUI_Element {};
 	field->SetWidth(separator_button_row_h)

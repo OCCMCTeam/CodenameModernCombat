@@ -2,20 +2,20 @@
 /* --- Margins --- */
 
 /* Margin for left and right sides of the screen.
-   Given in percent, with factor 10. */
+   Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_H = 15;
 
 /* Margin for top and bottom sides of the screen.
-   Given in percent, with factor 10. */
-static const GUI_CMC_Margin_Screen_V = 15;
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Screen_V = 10;
 
 /* Vertical margin between elements.
-   Given in percent, with factor 10. */
-static const GUI_CMC_Margin_Element_V = 15;
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Element_V = 10;
 
 /* Vertical margin between elements, smaller distance.
-   Given in percent, with factor 10. */
-static const GUI_CMC_Margin_Element_Small_V = 10;
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Element_Small_V = 5;
 
 
 /* --- Element dimensions / width and height --- */
@@ -24,26 +24,34 @@ static const GUI_CMC_Margin_Element_Small_V = 10;
  Width for info elements:
  - health bar
  - breath bar
- - weapon / item info field
+ - item status
  
- Width is given in percent, with factor 10;
+  Given in pixel-scaled-em.
  */
-static const GUI_CMC_Element_Info_Width = 200;
+static const GUI_CMC_Element_Info_Width = 205;
+
+
+/*
+ Heigh for info elements:
+ - item status
+ 
+  Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_Info_Height = 90;
 
 /*
  Height of default element.
  
- Height is given in percent, with factor 10;
+ Given in pixel-scaled-em. 
  */
-static const GUI_CMC_Element_Default_Height = 40;
+static const GUI_CMC_Element_Default_Height = 30;
 
 /*
- Height of vertically larger elements, 1.5 times
- the height of a default element.
+ Width/Height of icons
  
- Height is given in percent, with factor 10;
+ Given in pixel-scaled-em.
  */
-static const GUI_CMC_Element_Large_Height = 60;
+static const GUI_CMC_Element_Icon_Size = 45;
 
 
 /* --- Colors --- */

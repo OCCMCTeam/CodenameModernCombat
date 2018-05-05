@@ -33,7 +33,10 @@
 static const GUI_Dimension = new Global
 {
 	percent = nil,
+	percent_factor = nil,
 	em = nil,
+	em_factor = nil,
+	
 	
 	// --- Functions
 	
@@ -44,6 +47,14 @@ static const GUI_Dimension = new Global
 	{
 		return this.percent;
 	},
+	
+	/*
+		Gets the percent component of the dimension.
+	 */
+	GetPercentFactor = func ()
+	{
+		return this.percent_factor;
+	},
 
 	/*
 		Gets the em component of the dimension.
@@ -52,9 +63,17 @@ static const GUI_Dimension = new Global
 	{
 		return this.em;
 	},
+
+	/*
+		Gets the em component factor of the dimension.
+	 */	
+	GetEmFactor = func ()
+	{
+		return this.em_factor;
+	},
 	
 	/*
-		Sets the percent commponent of the dimension.
+		Sets the percent component of the dimension.
 		
 		@par value The percent component.
 		@return proplist The dimension itself for
@@ -66,11 +85,23 @@ static const GUI_Dimension = new Global
 		return this;
 	},
 	
+	/*
+		Sets the percent component factor of the dimension.
+		
+		@par value The percent component factor.
+		@return proplist The dimension itself for
+		                 further function calls.
+	 */
+	SetPercentFactor = func (int value)
+	{
+		this.percent_factor = value;
+		return this;
+	},
 	
 	/*
 		Sets the em component of the dimension.
 		
-		@par value The percent component.
+		@par value The em component.
 		@return proplist The dimension itself for
 		                 further function calls.
 	 */
@@ -80,9 +111,22 @@ static const GUI_Dimension = new Global
 		return this;
 	},
 	
+	/*
+		Sets the em component factor of the dimension.
+		
+		@par value The em component factor.
+		@return proplist The dimension itself for
+		                 further function calls.
+	 */
+	SetEmFactor = func (int value)
+	{
+		this.em_factor = value;
+		return this;
+	},
+	
 	
 	/*
-		Adds to the percent commponent of the dimension.
+		Adds to the percent component of the dimension.
 		
 		@par change The percent value to add.
 		@return proplist The dimension itself for
@@ -96,7 +140,7 @@ static const GUI_Dimension = new Global
 	
 	
 	/*
-		Adds to the em commponent of the dimension.
+		Adds to the em component of the dimension.
 		
 		@par change The em value to add.
 		@return proplist The dimension itself for
@@ -114,7 +158,9 @@ static const GUI_Dimension = new Global
 		{
 			return new GUI_Dimension{}
 			       ->SetPercent(other->GetPercent())
-			       ->SetEm(other->GetEm());
+			       ->SetPercentFactor(other->GetPercentFactor())
+			       ->SetEm(other->GetEm())
+			       ->SetEmFactor(other->GetEmFactor());
 		}
 		else
 		{
@@ -129,6 +175,7 @@ static const GUI_Dimension = new Global
 	Add = func (percent, int em)
 	{
 		var other = Dimension(percent, em);
+		AssertValidFactor(other);
 		return new GUI_Dimension{}->CopyOf(this)
 			       ->AddPercent(+other->GetPercent())
 			       ->AddEm(+other->GetEm());
@@ -137,6 +184,7 @@ static const GUI_Dimension = new Global
 	Subtract = func (percent, int em)
 	{
 		var other = Dimension(percent, em);
+		AssertValidFactor(other);
 		return new GUI_Dimension{}->CopyOf(this)
 		       ->AddPercent(-other->GetPercent())
 		       ->AddEm(-other->GetEm());
@@ -150,6 +198,37 @@ static const GUI_Dimension = new Global
 	},
 	
 	// --- Internal functions
+	
+	AssertValidFactor = func (proplist other)
+	{
+		HarmonizeFactors(this, other);
+		HarmonizeFactors(other, this);
+	
+		var factorP1 = other->GetPercentFactor() ?? 10;
+		var factorP2 = this->GetPercentFactor() ?? 10;
+		var factorE1 = other->GetEmFactor() ?? 10;
+		var factorE2 = this->GetEmFactor() ?? 10;
+		
+		var error = false;
+
+		
+		if (factorP1 != factorP2 || factorE1 != factorE2)
+		{
+			FatalError("Cannot combine dimensions of different factors: other has %d%% and %dem, this has %d%% and %dem", factorP1, factorE1, factorP2, factorE2);
+		}
+	},
+	
+	HarmonizeFactors = func (proplist source, proplist destination)
+	{
+		if (destination->GetPercent() == nil && source->GetPercentFactor() != nil)
+		{
+			destination->SetPercentFactor(source->GetPercentFactor());
+		}
+		if (destination->GetEm() == nil && source->GetEmFactor() != nil)
+		{
+			destination->SetEmFactor(source->GetEmFactor());
+		}
+	},
 	
 	IsValidPrototype = func (proplist other)
 	{
@@ -166,14 +245,14 @@ static const GUI_Dimension = new Global
 		{
 			// This looks a little complicated, but it is the safest way to get a correct string
 			var p = "", e = "";
-			if (GetPercent() != nil) p = ToPercentString(GetPercent());
-			if (GetEm() != nil) e = ToPercentString(GetEm());
+			if (GetPercent() != nil) p = ToPercentString(GetPercent(), GetPercentFactor());
+			if (GetEm() != nil) e = ToEmString(GetEm(), GetEmFactor());
 			return Format("%s%s", p, e);
 		}
 	},
 	
 	// Ensures that the input already is a dimension, or is converted to one.
-	Dimension = func (percent_or_dimension, int em)
+	Dimension = func (percent_or_dimension, int em, int percent_factor, int em_factor)
 	{
 		if (GetType(percent_or_dimension) == C4V_PropList)
 		{
@@ -188,7 +267,8 @@ static const GUI_Dimension = new Global
 		}
 		else
 		{
-			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em);
+			return new GUI_Dimension{}->SetPercent(percent_or_dimension)->SetEm(em)
+			                          ->SetPercentFactor(percent_factor)->SetEmFactor(em_factor);
 		}
 	},
 };
