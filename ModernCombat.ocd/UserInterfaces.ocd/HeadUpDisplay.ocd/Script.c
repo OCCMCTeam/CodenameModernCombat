@@ -6,5 +6,6 @@
 #include CMC_GUI_Controller_InventoryBar
 #include CMC_GUI_Controller_ItemStatus
 #include CMC_GUI_Controller_CrewBars
+#include CMC_GUI_Controller_AllyInfo
 // Include the basic functionality of the HUD
 #include Library_HUDController

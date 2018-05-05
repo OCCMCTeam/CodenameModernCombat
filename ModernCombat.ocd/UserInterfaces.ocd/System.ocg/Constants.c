@@ -47,6 +47,14 @@ static const GUI_CMC_Element_Info_Height = 90;
 static const GUI_CMC_Element_Default_Height = 30;
 
 /*
+ Width for player info.
+ 
+  Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_Player_Width = 300;
+
+
+/*
  Width/Height of icons
  
  Given in pixel-scaled-em.
