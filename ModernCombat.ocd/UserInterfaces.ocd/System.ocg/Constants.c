@@ -3,7 +3,7 @@
 
 /* Margin for left and right sides of the screen.
    Given in pixel-scaled-em. */
-static const GUI_CMC_Margin_Screen_H = 15;
+static const GUI_CMC_Margin_Screen_H = 10;
 
 /* Margin for top and bottom sides of the screen.
    Given in pixel-scaled-em. */
