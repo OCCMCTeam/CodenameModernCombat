@@ -737,7 +737,8 @@ static const GUI_Element = new Global
 	
 	IsValidPrototype = func (proplist other)
 	{
-		return GetPrototype(other) == GetPrototype(this) || GetPrototype(other) == GUI_Element;
+		var prototypes = GetPrototypes(other);
+		return GetPrototype(other) == GetPrototype(this) || IsValueInArray(prototypes, GUI_Element);
 	},
 	
 	GetValidElementName = func (proplist parent)
