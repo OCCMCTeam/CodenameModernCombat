@@ -147,13 +147,22 @@ func UpdateAllyInfo()
 		{
 			color = GUI_CMC_Text_Color_Highlight;
 		}
+		
+		// Player info
 
 		info->SetNameLabel(GetPlayerName(ally), color);
-		info->SetRankSymbol(Rule_TeamAccount);
+		info->SetRankSymbol(Rule_TeamAccount);		
 		info->Update();		
+
+		// Selected clonk info
+		var cursor = GetCursor(ally);
+		
+		if (info->GetHealthBar()->ShowForCrew(cursor))
+		{
+			info->GetHealthBar()->SetHealth(cursor);
+		}
 	}
 }
-
 
 
 func UpdateAllyAmount()
@@ -164,7 +173,6 @@ func UpdateAllyAmount()
 
 	if (old_count != new_count)
 	{
-		Log("Update ally amount");
 		// Need to create more ally info buttons?
 		for (var i = old_count; i < new_count; ++i)
 		{

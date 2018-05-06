@@ -47,6 +47,13 @@ static const GUI_CMC_Element_Info_Height = 90;
 static const GUI_CMC_Element_Default_Height = 30;
 
 /*
+ Height of default progress bar element.
+ 
+ Given in pixel-scaled-em. 
+ */
+static const GUI_CMC_Element_ProgressBar_Height = 10;
+
+/*
  Width for player info.
  
   Given in pixel-scaled-em.

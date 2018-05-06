@@ -36,17 +36,21 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 		// Player name and status icons
 		var info_field = new GUI_Element { Text = "Player Name", Style = GUI_TextVCenter };
 		info_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
-		          ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width))
+		          ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width - GUI_CMC_Margin_Element_Small_V))
 		          ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
 		          ->AddTo(this, nil, "player_name");
 		
 		// Health bar
 		var bar_field = new GUI_Element {};
 		bar_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
-		         ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width))
+		         ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width - GUI_CMC_Margin_Element_Small_V))
 		         ->SetTop(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
-		         ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
-		         ->AddTo(this);
+		         ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size - GUI_CMC_Margin_Element_Small_V))
+		         ->AddTo(this, nil, "bars");
+
+		var health_bar = new CMC_GUI_HealthBar {};
+		health_bar->Assemble()->AddTo(bar_field, this.ID, "health_bar");
+		return this;
 	},
 
 	// Setter functions
@@ -65,5 +69,10 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 	{
 		this.player_rank.Symbol = symbol;
 		return this;
+	},
+	
+	GetHealthBar = func ()
+	{
+		return this.bars.health_bar;
 	},
 };

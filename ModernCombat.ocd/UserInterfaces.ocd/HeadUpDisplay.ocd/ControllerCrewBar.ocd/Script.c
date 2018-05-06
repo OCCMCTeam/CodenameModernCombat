@@ -135,13 +135,9 @@ func AssembleCrewBarsPosition()
 func AssembleHealthBar()
 {
 	// Health bar takes up the top 1/3rd of the position
-	var health_bar = new CMC_GUI_ProgressBar {};
-	health_bar->SetBottom(335)
-	          ->SetBackgroundColor(GUI_CMC_Color_HealthBar_Transparent)
-	          ->SetBarColor({
-	          	Health_Full = GUI_CMC_Color_HealthBar_White,
-	          	Health_Warn = GUI_CMC_Color_HealthBar_Opaque,
-	          })
+	var health_bar = new CMC_GUI_HealthBar {};
+	health_bar->Assemble()
+	          ->AlignTop()
 	          ->SetValue(1000); // Full in the beginning
 	return health_bar;
 }
@@ -152,7 +148,8 @@ private func AssembleBreathBar()
 {
 	// Health bar takes up the bottom 1/3rd of the position
 	var breath_bar = new CMC_GUI_ProgressBar {};
-	breath_bar->SetTop(665)
+	breath_bar->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ProgressBar_Height))
+	          ->AlignBottom()
 	          ->SetBackgroundColor(GUI_CMC_Color_BreathBar_Transparent)
 	          ->SetBarColor(GUI_CMC_Color_BreathBar_Opaque)
 	          ->SetValue(1000); // Full in the beginning
@@ -224,32 +221,7 @@ func UpdateCrewBars(bool update_health, bool update_breath)
 	{
 		if (update_health)
 		{
-			// Default tag for health bar
-			var tag = "Health_Full";
-			
-			// Update the values
-			var health_max = cursor->~GetMaxEnergy();
-			if (health_max)
-			{
-				var health = cursor->GetEnergy();
-				
-				// Set values for the update, this does not yet apply the changes to the menu
-				GetHealthBar()->Show();
-				GetHealthBar()->SetValue(1000 * health / health_max);
-				
-				// Change tag for incomplete health bar
-				if (health < health_max) tag = "Health_Warn";
-			}
-			else
-			{
-				GetHealthBar()->SetValue(1000);
-				GetHealthBar()->Hide();
-			}
-			// Apply changes
-			GetHealthBar()->Update();
-			
-			// Change tag for health bar; has to be updated after changing the progress values to take proper effect
-			GuiUpdateTag(tag, GetHealthBar()->GetRootID());
+			GetHealthBar()->SetHealth(cursor);
 		}
 		
 		if (update_breath)
