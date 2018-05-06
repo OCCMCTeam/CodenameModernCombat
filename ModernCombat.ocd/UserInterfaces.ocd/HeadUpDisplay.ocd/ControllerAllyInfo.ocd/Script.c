@@ -109,6 +109,42 @@ func AssembleAllyInfo(int slot)
 	};
 	button->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width))
 	      ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
+	      
+	var dash_offset = 4;
+	      
+	var rank = new GUI_Element
+	{
+		Symbol = Rule_TeamAccount,
+		Margin = ToEmString(5),
+	};
+	rank->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	    ->ShiftLeft(GuiDimensionCmc(nil, dash_offset / 2))
+	    ->AddTo(button);
+	    
+	var dash = new GUI_Element
+	{
+		Symbol = CMC_Icon_Number,
+		GraphicsName = "Dash",
+		Margin = ToEmString(1),
+	};
+	dash->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	    ->ShiftRight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size / 2 - dash_offset))
+	    ->AddTo(button);
+	    
+	var info_field = new GUI_Element { Text = "Player Name", Style = GUI_TextVCenter };
+	info_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	          ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width))
+	          ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
+	          ->AddTo(button);
+	
+	var bar_field = new GUI_Element {};
+	bar_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	         ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width))
+	         ->SetTop(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
+	         ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+	         ->AddTo(button);
 	
 	return button;
 }
