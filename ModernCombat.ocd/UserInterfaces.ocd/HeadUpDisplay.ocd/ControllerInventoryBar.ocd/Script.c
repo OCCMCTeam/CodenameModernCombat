@@ -109,6 +109,12 @@ public func OnSlotObjectChanged(int slot)
 	return _inherited(slot, ...);
 }
 
+public func OnSlotObjectUnchanged(int slot)
+{
+	ScheduleUpdateInventory(true);
+
+	return _inherited(slot, ...);
+}
 
 public func OnAmmoChange(object clonk)
 {
@@ -181,7 +187,7 @@ func UpdateInventory(bool selection_changed)
 				SetInventoryButtonCompact(item_index, false, 5);
 			}
 			
-			slot->Show()->SetInfo(item, item_index == selected_item_index)->Update();
+			slot->Show()->Update()->SetInfo(item, item_index == selected_item_index);
 		}
 	}
 }
