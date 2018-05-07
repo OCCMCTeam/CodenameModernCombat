@@ -16,6 +16,7 @@ func Construction()
 {
 	gui_cmc_inventory = {};
 	gui_cmc_inventory.Slots = []; // Array with individual inventory slots
+	gui_cmc_inventory.Collapse = []; // Array with individual collapse effects
 	gui_cmc_inventory.Menu = new GUI_Element
 	{
 		Target = this,
@@ -103,7 +104,7 @@ public func OnInventoryChange()
 
 public func OnSlotObjectChanged(int slot)
 {
-	ScheduleUpdateInventory();
+	ScheduleUpdateInventory(true);
 
 	return _inherited(slot, ...);
 }
@@ -122,18 +123,11 @@ public func OnAmmoChange(object clonk)
 // Overload this if you want to change the layout
 func AssembleInventoryButton(int slot)
 {
-	var button = new GUI_Element
+	var button = new GUI_CMC_InventoryButton
 	{
 		ID = slot + 1,
-		BackgroundColor =
-		{
-			Std = GUI_CMC_Background_Color_Default,
-			Selected = GUI_CMC_Background_Color_Highlight,
-		}
 	};
-	button->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
-	      ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
-	
+	button->Assemble();
 	return button;
 }
 
@@ -142,25 +136,14 @@ func AssembleInventoryButton(int slot)
 /* --- Drawing / display --- */
 
 /*
-	Callback from the HUD adapter.
-	
-	Just update the item status, too.
- */
-public func ScheduleUpdateInventory()
-{
-	ScheduleUpdateInventory();
-	return _inherited(...);
-}
-
-
-/*
 	Schedules an update of the bar for the next frame.
 	
 	@par bar The name of the bar if you want to update only of the bars. Pass 'nil' to update all bars.
  */
-public func ScheduleUpdateInventory()
+public func ScheduleUpdateInventory(bool selection_changed)
 {
 	var timer = GetEffect("ScheduledInventoryUpdateTimer", this) ?? CreateEffect(ScheduledInventoryUpdateTimer, 1, 1);
+	timer.selection_changed = selection_changed;
 }
 
 
@@ -169,14 +152,14 @@ local ScheduledInventoryUpdateTimer = new Effect
 {
 	Timer = func ()
 	{
-		Target->UpdateInventory();
+		Target->UpdateInventory(this.selection_changed);
 		return FX_Execute_Kill;
 	},
 };
 
 
 // Update the inventory
-func UpdateInventory()
+func UpdateInventory(bool selection_changed)
 {
 	var cursor = GetCursor(GetOwner());
 	
@@ -187,25 +170,21 @@ func UpdateInventory()
 		// update inventory-slots
 		var selected_item_index = cursor->~GetHandItemPos(0);
 		var quick_switch_index = cursor->~GetQuickSwitchSlot();
-	
+
 		for (var item_index = 0; item_index < GetLength(gui_cmc_inventory.Slots); ++item_index)
 		{
 			var slot = gui_cmc_inventory.Slots[item_index];
 			var item = cursor->GetItem(item_index);
 			
-			var tag = nil;
-			if (item_index == selected_item_index)
+			if (selection_changed)
 			{
-				tag = "Selected";
+				SetInventoryButtonCompact(item_index, false, 5);
 			}
 			
-			slot.Symbol = item;
-			slot->Show()->Update();
-			GuiUpdateTag(tag, gui_cmc_inventory.Menu->GetRootID(), slot.ID);
+			slot->Show()->SetInfo(item, item_index == selected_item_index)->Update();
 		}
 	}
 }
-
 
 
 func UpdateInventoryButtonAmount(int max_contents_count)
@@ -262,3 +241,73 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 		}
 	}
 }
+
+
+func SetInventoryButtonCompact(int index, bool compact, int blend_time)
+{
+	var change = BoundBy(100 / (blend_time ?? 25), 1, 100);
+	if (compact)
+	{
+		change *= -1;
+	}
+	
+	var fx = this.gui_cmc_inventory.Collapse[index] ?? CreateEffect(this.CollapseButtonEffect, 1, 1);
+	fx.index = index;
+	fx.collapse_timeout = 35;
+	fx.change = change;
+	this.gui_cmc_inventory.Collapse[index] = fx;
+}
+
+
+local CollapseButtonEffect = new Effect
+{
+	Timer = func ()
+	{
+		var button = this.Target.gui_cmc_inventory.Slots[this.index];
+		var max = 100;
+		if (this.change)
+		{
+			button.GUI_Compactness = BoundBy(button.GUI_Compactness + this.change, 0, max);
+
+			var width = button.GUI_Width_Compact * (max - button.GUI_Compactness)
+			          + button.GUI_Width_Expanded * button.GUI_Compactness;
+
+			width /= max;
+			
+			var text = button.GUI_Item_Name;
+			if (text)
+			{
+				if (button.GUI_Compactness <= 0)
+				{
+					text = nil;
+				}
+				else
+				{
+					text = Format("<c %x>%s</c>", RGBa(255, 255, 255, BoundBy(button.GUI_Compactness * 255 / 100, 0, 255)), text);
+				}
+			}
+			button.item_name.Text = text;
+			button.item_name->Update();
+			button.bar->SetWidth(GuiDimensionCmc(nil, width))->AlignRight()->Update();
+
+			if (button.GUI_Compactness >= max)
+			{
+				this.change = 0;
+			}
+			else if (button.GUI_Compactness <= 0)
+			{
+				return FX_Execute_Kill;
+			}
+		}
+		else
+		{
+			this.collapse_timeout -= 1;
+			
+			if (this.collapse_timeout <= 0)
+			{
+				this.Target->SetInventoryButtonCompact(this.index, true);
+			}
+		}
+		return FX_OK;
+	}
+};

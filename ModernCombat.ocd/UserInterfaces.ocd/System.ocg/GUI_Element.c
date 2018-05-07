@@ -295,6 +295,7 @@ static const GUI_Element = new Global
 	                        // try to display it as a subwindow
 	                        
 	GUI_Element_Name = nil, // the name of the element - the property name of the sub window in the menu
+	GUI_Element_Tag = nil,  // the last selected tag - for updates
 	GUI_Owner = nil,        // the owner for the element - for visibility
 	
 	GUI_Element_Position = nil,// Array that contains the positions in percent and string;
@@ -445,6 +446,15 @@ static const GUI_Element = new Global
 	},
 	
 	/**
+	 Sets a tag for the whole GUI or for a child.
+	 */
+	SetTag = func (string tag)
+	{
+		this.GUI_Element_Tag = tag;
+		return this;
+	},
+	
+	/**
 		Shows the menu if the crew is enabled, hides it if disabled.
 	 */
 	ShowForCrew = func (object crew)
@@ -495,10 +505,11 @@ static const GUI_Element = new Global
 		var child_id = GetChildID();
 		var name = GetName();
 		// Update mode: Subwindow
+		var update;
 		if (name && (gui_id || child_id))
 		{
 			// Compose a simple update proplist
-			var update = {};
+			update = {};
 			update[name] = this;
 			
 			// Chain together the parent name, e.g.:
@@ -516,14 +527,14 @@ static const GUI_Element = new Global
 				chained[parent->GetName()] = update;
 				update = chained;
 			}
-			GuiUpdate(update, gui_id, child_id);
 		}
 		// Update mode: Main window
 		else if (gui_id)
 		{
-			GuiUpdate(this, gui_id, child_id);
+			update = this;
 		}
-		
+		GuiUpdate(update, gui_id, child_id);
+		GuiUpdateTag(this.GUI_Element_Tag, gui_id, child_id);
 		return this;
 	},
 	

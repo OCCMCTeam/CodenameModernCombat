@@ -2,19 +2,19 @@
 /* --- Margins --- */
 
 /* Margin for left and right sides of the screen.
-   Given in pixel-scaled-em. */
+  Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_H = 10;
 
 /* Margin for top and bottom sides of the screen.
-   Given in pixel-scaled-em. */
+  Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_V = 10;
 
 /* Vertical margin between elements.
-   Given in pixel-scaled-em. */
+  Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_V = 10;
 
 /* Vertical margin between elements, smaller distance.
-   Given in pixel-scaled-em. */
+  Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_Small_V = 5;
 
 
@@ -26,7 +26,7 @@ static const GUI_CMC_Margin_Element_Small_V = 5;
  - breath bar
  - item status
  
-  Given in pixel-scaled-em.
+ Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Info_Width = 205;
 
@@ -35,7 +35,7 @@ static const GUI_CMC_Element_Info_Width = 205;
  Heigh for info elements:
  - item status
  
-  Given in pixel-scaled-em.
+ Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Info_Height = 90;
 
@@ -56,10 +56,16 @@ static const GUI_CMC_Element_ProgressBar_Height = 10;
 /*
  Width for player info.
  
-  Given in pixel-scaled-em.
+ Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Player_Width = 300;
 
+/*
+ Width for player info.
+ 
+ Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_Inventory_Width = 55;
 
 /*
  Width/Height of icons
@@ -76,6 +82,9 @@ static const GUI_CMC_Background_Color_Default =   0x66262626;
 
 /* Background for highlighted/selected GUI elements: white, 25% transparency = 64 alpha. */
 static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
+
+/* Default background for GUI elements: dark grey (38, 38, 38), 30% transparancy = 66 alpha. */
+static const GUI_CMC_Background_Color_Inactive =   0x33262626;
 
 /* Breath bar colors */
 static const GUI_CMC_Color_BreathBar_Transparent = 0x4000ccff; // Light blue, transparency 25%
