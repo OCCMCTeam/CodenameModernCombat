@@ -102,7 +102,8 @@ public func OpenMenuCreateAmmoBox(object user)
 	}
 
 	var main_menu = new CMC_GUI_SelectionListMenu {};
-	main_menu->Assemble();
+	main_menu->Assemble()
+	         ->AlignCenterH();
 	
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
@@ -135,8 +136,10 @@ public func OpenMenuCreateAmmoBox(object user)
 			var name = Format("<c %x>%d %s</c>", text_color, ammo_info.ammo_count, ammo_type->GetName());
 			ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
 		}
-		main_menu->AdjustHeightToEntries();
-		main_menu->Open(user->GetOwner());
+		main_menu->AdjustHeightToEntries()
+	             ->AlignCenterV()
+	             ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
+		         ->Open(user->GetOwner());
 		active_menu = {};
 		active_menu.user = user;
 		active_menu.menu = main_menu;

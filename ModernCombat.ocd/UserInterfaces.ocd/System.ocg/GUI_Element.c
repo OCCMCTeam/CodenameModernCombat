@@ -197,6 +197,13 @@ static const GUI_Dimension = new Global
 		       ->SetEm(GetEm() * factor);
 	},
 	
+	Shrink = func(int factor)
+	{
+		return new GUI_Dimension{}->CopyOf(this)
+		       ->SetPercent(GetPercent() / factor)
+		       ->SetEm(GetEm() / factor);
+	},
+	
 	// --- Internal functions
 	
 	AssertValidFactor = func (proplist other)
@@ -629,6 +636,42 @@ static const GUI_Element = new Global
 		SetTop(position->Subtract(height));
 		SetBottom(position);
 		return this;
+	},
+	
+	AlignCenterH = func (value, int em)
+	{
+		// Get the desired position
+		var offset = Dimension(value, em);
+		var screen_center = Dimension(500);
+		var destination = screen_center->Add(offset);
+
+		// Get the current position, with default values if not initialized
+		var left = GetLeft();
+		var right = GetRight();
+		left->SetPercent(left->GetPercent() ?? 0);
+		right->SetPercent(right->GetPercent() ?? 1000);
+		var element_center = left->Add(right)->Shrink(2);
+		
+		// Shift to destination
+		return ShiftRight(destination->Subtract(element_center));
+	},
+	
+	AlignCenterV = func (value, int em)
+	{
+		// Get the desired position
+		var offset = Dimension(value, em);
+		var screen_center = Dimension(500);
+		var destination = screen_center->Add(offset);
+
+		// Get the current position, with default values if not initialized
+		var top = GetTop();
+		var bottom = GetBottom();
+		top->SetPercent(top->GetPercent() ?? 0);
+		bottom->SetPercent(bottom->GetPercent() ?? 1000);
+		var element_center = top->Add(bottom)->Shrink(2);
+		
+		// Shift to destination
+		return ShiftBottom(destination->Subtract(element_center));
 	},
 	
 	// Shift* functions: These leave the dimensions of the GUI element fixed,
