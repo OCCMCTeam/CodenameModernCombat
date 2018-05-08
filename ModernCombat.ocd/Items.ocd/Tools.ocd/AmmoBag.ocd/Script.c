@@ -162,7 +162,7 @@ public func OpenMenuCreateAmmoBox(object user)
 	}
 	else
 	{
-		var ammo_list = new GUI_List {}; //= CreateObject(MenuStyle_List);
+		var ammo_list = new CMC_GUI_List {};
 		ammo_list->Assemble();
 		main_menu.body.list_display.list = ammo_list;
 		
