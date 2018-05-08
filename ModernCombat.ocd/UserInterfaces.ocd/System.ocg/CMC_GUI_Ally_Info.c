@@ -37,7 +37,7 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 		    ->AddTo(this);
 		
 		// Player name and status icons
-		var child_id = 123;
+		var child_id = 100 + this.ID;
 		var info_field = new GUI_Element { ID = child_id, Style = GUI_TextVCenter };
 		info_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + dash_offset))
 		          ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width - GUI_CMC_Margin_Element_Small_V))

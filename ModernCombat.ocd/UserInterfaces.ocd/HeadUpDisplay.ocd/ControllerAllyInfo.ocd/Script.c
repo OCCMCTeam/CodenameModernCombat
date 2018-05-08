@@ -97,6 +97,14 @@ public func OnCrewSelection(object clonk, bool unselect)
 }
 
 
+public func OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
+{
+	ScheduleUpdateAllyInfo();
+	
+	return _inherited(clonk, change, cause, caused_by, ...);
+}
+
+
 public func OnSetCrewClass(object clonk)
 {
 	ScheduleUpdateAllyInfo();
@@ -206,15 +214,10 @@ func UpdateAllyInfo()
 
 		info->SetNameLabel(GetPlayerName(ally), color);
 		info->SetRankSymbol(Rule_TeamAccount);		
-		info->Update();		
+		info->Update();
 
 		// Selected clonk info
 		var cursor = GetCursor(ally);
-		
-		if (info->GetHealthBar()->ShowForCrew(cursor))
-		{
-			info->GetHealthBar()->SetHealth(cursor);
-		}
 		
 		// Display class
 		var status_class = cursor->~GetCrewClass();
@@ -226,6 +229,12 @@ func UpdateAllyInfo()
 		else
 		{
 			info->RemoveStatusIcon(identifier_class);
+		}
+		
+		// Health bar
+		if (info->GetHealthBar()->ShowForCrew(cursor))
+		{
+			info->GetHealthBar()->SetHealth(cursor);
 		}
 	}
 }
