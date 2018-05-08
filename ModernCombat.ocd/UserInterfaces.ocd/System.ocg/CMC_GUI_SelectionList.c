@@ -6,7 +6,7 @@
 
 static const CMC_GUI_SelectionListMenu = new GUI_Element
 {
-	BackgroundColor = GUI_CMC_Background_Color_Default,
+	Symbol = CMC_Icon_ListSelection,
 	Style = GUI_NoCrop,
 
 	Assemble = func ()
@@ -48,10 +48,10 @@ static const CMC_GUI_SelectionList = new GUI_List
 		{
 			Bottom = size->ToString(),
 			
-			BackgroundColor =
+			Symbol =
 			{
-				Std = 0,
-				OnHover = GUI_CMC_Text_Color_Highlight,
+				Std = nil,
+				OnHover = CMC_Icon_ListSelectionHighlight,
 			},
 			
 			icon =
