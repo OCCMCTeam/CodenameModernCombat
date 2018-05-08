@@ -259,10 +259,10 @@ func UpdateAllyAmount()
 		
 		var position = GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V);
 		
-		for (var i = new_count; i > 0; --i)
+		for (var i = 0; i < new_count; ++i)
 		{
 			// Align the slot
-			var slot = gui_cmc_ally_info.Info[i - 1];
+			var slot = gui_cmc_ally_info.Info[i];
 			slot->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H));
 			slot->AlignTop(position);
 			
