@@ -2,20 +2,24 @@
 /* --- Margins --- */
 
 /* Margin for left and right sides of the screen.
-  Given in pixel-scaled-em. */
+   Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_H = 10;
 
 /* Margin for top and bottom sides of the screen.
-  Given in pixel-scaled-em. */
+   Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_V = 10;
 
 /* Vertical margin between elements.
-  Given in pixel-scaled-em. */
+   Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_V = 10;
 
 /* Vertical margin between elements, smaller distance.
-  Given in pixel-scaled-em. */
+   Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_Small_V = 5;
+
+/* Vertical margin between status icons in the ally info.
+   Given in pixel-scaled-em. */
+static const GUI_Margin_StatusIcon_H = 3;
 
 
 /* --- Element dimensions / width and height --- */
@@ -73,6 +77,13 @@ static const GUI_CMC_Element_Inventory_Width = 55;
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Icon_Size = 45;
+
+/*
+ Width/Height of status icons in ally info.
+ 
+ Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_StatusIcon_Size = 27;
 
 
 /* --- Colors --- */

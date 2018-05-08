@@ -16,4 +16,5 @@ public func GetCrewClass()
 public func SetCrewClass(id class)
 {
 	cmc_crew_class = class;
+	this->~OnSetCrewClass(class);
 }

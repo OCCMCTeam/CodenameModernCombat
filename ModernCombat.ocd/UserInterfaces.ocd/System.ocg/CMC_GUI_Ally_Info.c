@@ -3,6 +3,9 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 {
 	BackgroundColor = GUI_CMC_Background_Color_Default,
 	
+	GUI_Element_StatusIcons_Max = 4,       // this many are allowed at most
+	GUI_Element_StatusIcons_Current = nil, // this many are currently displayed
+
 	Assemble = func ()
 	{
 		// Element data
@@ -34,11 +37,26 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 		    ->AddTo(this);
 		
 		// Player name and status icons
-		var info_field = new GUI_Element { Text = "Player Name", Style = GUI_TextVCenter };
+		var child_id = 123;
+		var info_field = new GUI_Element { ID = child_id, Style = GUI_TextVCenter };
 		info_field->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + dash_offset))
 		          ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Player_Width - GUI_CMC_Margin_Element_Small_V))
 		          ->SetBottom(GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height))
-		          ->AddTo(this, nil, "player_name");
+		          ->AddTo(this, child_id, "player_name");
+		
+		var status_icon_offset = nil;          
+		for (var i = 0; i < this.GUI_Element_StatusIcons_Max; ++i)
+		{
+			var status_icon = new GUI_Element {};
+			
+			status_icon->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_StatusIcon_Size))
+			           ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_StatusIcon_Size))
+			           ->AlignRight(status_icon_offset)
+			           ->AlignTop(GuiDimensionCmc(nil, 2))
+			           ->AddTo(info_field, child_id, Format("status_icon_%d", i));
+			           
+		    status_icon_offset = status_icon->GetLeft()->Subtract(GuiDimensionCmc(nil, GUI_Margin_StatusIcon_H));
+		}
 		
 		// Health bar
 		var bar_field = new GUI_Element {};
@@ -75,4 +93,86 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 	{
 		return this.bars.health_bar;
 	},
+	
+	AddStatusIcon = func (symbol, string identifier)
+	{
+		AssertNotNil(identifier);
+		
+		// Only add if there are enough items, otherwise simply ignore it
+		if (GUI_Element_StatusIcons_Current < GUI_Element_StatusIcons_Max)
+		{
+			var existing = GetStatusIcon(identifier);
+			if (!existing)
+			{
+				existing = GetStatusIcon(this.GUI_Element_StatusIcons_Current ?? 0);
+				existing.Priority = this.GUI_Element_StatusIcons_Current; // Save the position / index for removal
+
+				// Increase counter
+				this.GUI_Element_StatusIcons_Current += 1;
+			}
+			existing.Symbol = symbol;
+			existing.Status_Identifier = identifier;
+			existing->Update();
+		}
+		return this;
+	},
+	
+	RemoveStatusIcon = func (identifier)
+	{
+		var icon = GetStatusIcon(identifier);
+	
+		if (icon)
+		{
+			var removed_index = icon.Priority;
+			for (var index = removed_index; index < this.GUI_Element_StatusIcons_Max; ++index)
+			{
+				var current = GetStatusIcon(index);
+				if (current)
+				{
+					// Transfer info from the current icon
+					icon.Symbol = current.Symbol;
+					icon.Status_Identifier = current.Status_Identifier;
+					icon->Update();
+					
+					// Delete info in the current icon
+					current.Symbol = nil;
+					current.Status_Identifier = nil;
+					current->Update();
+					icon = current;
+				}
+			}
+		}
+		return this;
+	},
+	
+	GetStatusIcon = func (identifier)
+	{
+		if (GetType(identifier) == C4V_String)
+		{
+			if (this.player_name[identifier])
+			{
+				return this.player_name[identifier];
+			}
+			else
+			{
+				for (var i = 0; i < this.GUI_Element_StatusIcons_Max; ++i)
+				{
+					var icon = GetStatusIcon(i);
+					if (icon.Status_Identifier == identifier)
+					{
+						return icon;
+					}
+				}
+				return nil;
+			}
+		}
+		else if (GetType(identifier) == C4V_Int)
+		{
+			return GetStatusIcon(Format("status_icon_%d", identifier));
+		}
+		else
+		{
+			FatalError("Has to be string or int, got %v", GetType(identifier));
+		}
+	}
 };

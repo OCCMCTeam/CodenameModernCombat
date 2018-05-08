@@ -97,6 +97,14 @@ public func OnCrewSelection(object clonk, bool unselect)
 }
 
 
+public func OnSetCrewClass(object clonk)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(clonk, ...);
+}
+
+
 /* --- GUI definition --- */
 
 // Overload this if you want to change the layout
@@ -160,6 +168,18 @@ func UpdateAllyInfo()
 		if (info->GetHealthBar()->ShowForCrew(cursor))
 		{
 			info->GetHealthBar()->SetHealth(cursor);
+		}
+		
+		// Display class
+		var status_class = cursor->~GetCrewClass();
+		var identifier_class = "status_class"; //Format("%i", CMC_Library_Class);
+		if (status_class)
+		{
+			info->AddStatusIcon(status_class, identifier_class);
+		}
+		else
+		{
+			info->RemoveStatusIcon(identifier_class);
 		}
 	}
 }

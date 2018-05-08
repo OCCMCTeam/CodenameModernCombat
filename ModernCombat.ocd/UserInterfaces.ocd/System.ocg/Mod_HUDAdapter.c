@@ -13,3 +13,11 @@ func OnSlotUnchanged(int slot)
 		HUDcontroller->~OnSlotObjectUnchanged(slot);
 	return _inherited(slot, ...);
 }
+
+// Callback from class system
+func OnSetCrewClass(id class)
+{
+	if (HUDcontroller)
+		HUDcontroller->~OnSetCrewClass(this, class);
+	return _inherited(class, ...);
+}
