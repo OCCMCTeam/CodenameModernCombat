@@ -192,7 +192,7 @@ static const GUI_Dimension = new Global
 	
 	Scale = func(int factor)
 	{
-		return new GUI_Dimension{}
+		return new GUI_Dimension{}->CopyOf(this)
 		       ->SetPercent(GetPercent() * factor)
 		       ->SetEm(GetEm() * factor);
 	},
@@ -220,11 +220,11 @@ static const GUI_Dimension = new Global
 	
 	HarmonizeFactors = func (proplist source, proplist destination)
 	{
-		if (destination->GetPercent() == nil && source->GetPercentFactor() != nil)
+		if (!destination->GetPercent() && source->GetPercentFactor() != nil)
 		{
 			destination->SetPercentFactor(source->GetPercentFactor());
 		}
-		if (destination->GetEm() == nil && source->GetEmFactor() != nil)
+		if (!destination->GetEm() && source->GetEmFactor() != nil)
 		{
 			destination->SetEmFactor(source->GetEmFactor());
 		}
