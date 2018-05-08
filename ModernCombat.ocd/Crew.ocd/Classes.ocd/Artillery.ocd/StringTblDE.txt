@@ -1,0 +1,2 @@
+Name=Artillerist
+Description=Mit einem starken Granatenwerfer|ausgerüstet, agiert diese Einheit|hinter der Frontlinie und feuert|tödliche Artillerie auf den Feind.

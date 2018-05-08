@@ -1,0 +1,2 @@
+Name=Assault
+Description=Qualified for all distances.|Assaults form the major attack|unit of the team and therefore are|mostly front and center in combat.

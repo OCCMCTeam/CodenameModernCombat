@@ -1,0 +1,2 @@
+Name=Sturmeinheit
+Description=Eignen sich für alle Distanzen.|Sturmeinheiten bilden die Speer-|spitzen des Teams und sind demnach|meist an vorderster Front zuhause.

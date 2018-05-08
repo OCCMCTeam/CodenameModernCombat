@@ -1,0 +1,2 @@
+Name=Unterstützer
+Description=Schwer bewaffnet und mit genügend|Munition ausgerüstet ist der|Unterstützer die Antwort auf fast|jede hitzige Kampfsituation.

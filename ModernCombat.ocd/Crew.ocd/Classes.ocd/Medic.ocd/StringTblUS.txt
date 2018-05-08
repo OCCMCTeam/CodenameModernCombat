@@ -1,0 +1,2 @@
+Name=Medic
+Description=Medics are the backbone of team|support and can heal and reanimate|wounded effectively. They are the|ultimate team players.

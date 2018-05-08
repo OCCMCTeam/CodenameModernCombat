@@ -2,6 +2,7 @@
 
 #include Clonk
 #include Library_AmmoManager
+#include CMC_Library_HasClass
 
 /*--- Inventory management ---*/
 

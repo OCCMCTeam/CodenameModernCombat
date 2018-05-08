@@ -1,0 +1,2 @@
+Name=Antiskill
+Description=Bilden die Spezialeinheiten, welche|effektiv mit Einsatzschildern vor|Feindbeschuss schützen und schnell|mit Shotguns Angriffe starten.

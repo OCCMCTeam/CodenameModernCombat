@@ -1,0 +1,2 @@
+Name=Sanitäter
+Description=Sanitäter bilden das Rückgrat der|Teamversorgung und können|effektiv heilen und reanimieren.|Die ultimativen Teamspieler.

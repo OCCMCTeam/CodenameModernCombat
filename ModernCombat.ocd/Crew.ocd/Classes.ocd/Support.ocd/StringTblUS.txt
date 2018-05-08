@@ -1,0 +1,2 @@
+Name=Supporter
+Description=Heavily armed and equipped with|lots of ammo. Ideal to rain down|barrages on enemies and useful|in any stormy situation.

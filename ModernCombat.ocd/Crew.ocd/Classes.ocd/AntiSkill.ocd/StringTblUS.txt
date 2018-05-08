@@ -1,0 +1,2 @@
+Name=Antiskill
+Description=Part of the special forces which|effectively use riot shield to fend|off enemy fire. Use Shotguns to|quickly start counter attacks.

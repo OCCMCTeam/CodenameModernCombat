@@ -1,0 +1,2 @@
+Name=Artillerist
+Description=Equipped with a powerful grenade|launcher, this unit acts behind|the battlefield and fires deadly|artillery onto the enemy.
