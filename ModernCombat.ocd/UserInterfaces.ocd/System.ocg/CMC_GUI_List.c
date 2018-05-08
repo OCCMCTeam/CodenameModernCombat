@@ -3,11 +3,9 @@ static const CMC_GUI_List = new GUI_List
 {
 	MakeEntryProplist = func(symbol, text)
 	{
-		var size = new GUI_Dimension {};
-		size->SetEm(20);
+		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
 		var custom_entry =
 		{
-			Style = GUI_FitChildren,
 			Bottom = size->ToString(),
 			
 			BackgroundColor =
@@ -22,7 +20,7 @@ static const CMC_GUI_List = new GUI_List
 				Bottom = size->ToString(),
 				
 				Symbol = symbol,
-				Margin = [GuiDimensionCmc(10)->ToString()],
+				Margin = [ToPercentString(100)],
 			},
 			caption =
 			{

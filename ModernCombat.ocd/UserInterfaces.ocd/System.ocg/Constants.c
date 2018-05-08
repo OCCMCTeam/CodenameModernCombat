@@ -85,6 +85,20 @@ static const GUI_CMC_Element_Icon_Size = 45;
  */
 static const GUI_CMC_Element_StatusIcon_Size = 27;
 
+/*
+ Width/Height of list menu entry elements.
+ 
+ Given in pixel-scaled-em. 
+ */
+static const GUI_CMC_Element_ListIcon_Size = 35;
+
+/*
+ Width/Height of selection list menu entry elements.
+ 
+ Given in pixel-scaled-em. 
+ */
+static const GUI_CMC_Element_SelectionList_Width = 320;
+
 
 /* --- Colors --- */
 

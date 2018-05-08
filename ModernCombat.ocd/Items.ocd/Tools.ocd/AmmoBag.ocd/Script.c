@@ -101,18 +101,14 @@ public func OpenMenuCreateAmmoBox(object user)
 		return;
 	}
 
-	var main_menu = new CMC_GUI_ListDetailMenu {};
-	main_menu->Assemble()
-	         ->SetWidth(GuiDimensionCmc(300))
-	         ->Update()
-	         ->SetHeaderIcon(this)
-	         ->SetHeaderCaption("$TakeAmmo$");
+	var main_menu = new CMC_GUI_SelectionListMenu {};
+	main_menu->Assemble();
 	
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
 	if (GetLength(available_types) == 0)
 	{
-		main_menu->SetBackgroundCaption("$NoAmmoAvailable$");
+		FatalError("TODO: Add an ingame error message here....");
 	}
 	else
 	{
@@ -134,17 +130,18 @@ public func OpenMenuCreateAmmoBox(object user)
 				text_color = GUI_CMC_Text_Color_Inactive;
 				description = Format("$PointsRequired$", ammo_info.points_required);
 				call_on_click = this.CreateNothing;
-			}			
+			}
 			
 			var name = Format("<c %x>%d %s</c>", text_color, ammo_info.ammo_count, ammo_type->GetName());
 			ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
 		}
+		main_menu->AdjustHeightToEntries();
+		main_menu->Open(user->GetOwner());
+		active_menu = {};
+		active_menu.user = user;
+		active_menu.menu = main_menu;
+		active_menu.user->~SetMenu(main_menu->GetRootID());
 	}
-	main_menu->Open(user->GetOwner());
-	active_menu = {};
-	active_menu.user = user;
-	active_menu.menu = main_menu;
-	active_menu.user->~SetMenu(main_menu->GetRootID());
 }
 
 public func CloseMenuCreateAmmoBox()
