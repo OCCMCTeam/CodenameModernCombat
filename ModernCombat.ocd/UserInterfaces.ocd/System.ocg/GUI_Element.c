@@ -305,6 +305,8 @@ static const GUI_Element = new Global
 	GUI_Parent = nil,        // Array that contains the parent element;
 	                         // Is an array, because if it were a proplist it would count as a subwindow;
 	                         // Must not be initialized in the prototype, because it would be a reference
+	                         
+	GUI_Element_KeepAsChild = nil, // Keep information for this child element after opening the menu?
 
 	// --- Generic Functions
 	
@@ -409,9 +411,18 @@ static const GUI_Element = new Global
 		Add to an existing GUI window as a subwindow
 		Note: Use this only on other GUI_Element windows
 		
+		@par parent Add to this menu.
+		@par child_id Use this child ID is a reference when updating.
+		@par element_name Use this property name for the element. By default an
+		                  anonoymous name is used.
+        @par keep If you open the menu with Open() the property will be removed.
+                  This usually ensures that the updates are not data heavy.
+                  Setting this to {@code true} is necessary only if you
+                  have a standalone menu and want to keep elements with a
+                  special element name for future reference.
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
-	AddTo = func (proplist parent, int child_id, string element_name)
+	AddTo = func (proplist parent, int child_id, string element_name, bool keep)
 	{
 		if (IsValidPrototype(parent))
 		{
@@ -433,6 +444,7 @@ static const GUI_Element = new Global
 				}
 				else
 				{
+					this.GUI_Element_KeepAsChild = keep;
 					this->ComposeLayout();
 					parent[this.GUI_Element_Name] = this;
 				}
@@ -726,7 +738,10 @@ static const GUI_Element = new Global
 			if (GetType(this[property]) == C4V_PropList && this[property].GUI_Element_Name)
 			{
 				this[property]->~ClearChildElements();
-				this[property] = nil;
+				if (!this[property].GUI_Element_KeepAsChild)
+				{
+					this[property] = nil;
+				}
 			}
 		}
 	},

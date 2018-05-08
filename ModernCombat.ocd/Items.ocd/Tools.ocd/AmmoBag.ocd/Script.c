@@ -100,75 +100,24 @@ public func OpenMenuCreateAmmoBox(object user)
 	{
 		return;
 	}
-	
-	var description_top = "70%";
-	var header_size = "+2em";
-	
-	// Create a menu
-	var main_menu = 
-	{
-		Left = "30%", Right = "70%", Top = "20%", Bottom = "80%",
-		header =
-		{
-			Bottom = header_size,
-			Text = "$TakeAmmo$",
-			Style = GUI_TextHCenter | GUI_TextVCenter,
-			BackgroundColor = GUI_CMC_Background_Color_Default,
-			icon =
-			{
-				Left = "0.1em",
-				Right = Format("0.1em %s", header_size),
-				actual_icon =
-				{
-					Symbol = this,
-					Left = "20%",
-					Right = "80%",
-					Top = "20%",
-					Bottom = "80%"
-				}
-			}
-		},
-		body =
-		{
-			Top = header_size, 
-		    list_display = 
-		    {
-		    	Left = "0.2em",
-		    	Bottom = description_top,
-		    	BackgroundColor = GUI_CMC_Background_Color_Default, 
-	    	},
-		    description_display =
-		    {
-		    	Top = description_top, 
-		    	BackgroundColor = GUI_CMC_Background_Color_Default, 
-		    	text_field =
-		    	{
-		    		ID = 9999, 
-		    		Left = "0.6em", 
-		    		Right = "100%-0.5em"
-	    		}
-    		}
-		},
-	};
-	GuiAddCloseButton(main_menu, this, GetFunctionName(this.CloseMenuCreateAmmoBox));
-	active_menu = {};
+
+	var main_menu = new CMC_GUI_ListDetailMenu {};
+	main_menu->Assemble()
+	         ->SetWidth(GuiDimensionCmc(300))
+	         ->Update()
+	         ->SetHeaderIcon(this)
+	         ->SetHeaderCaption("$TakeAmmo$");
 	
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
 	if (GetLength(available_types) == 0)
 	{
-		main_menu.body.list_display.Style = GUI_TextHCenter | GUI_TextVCenter;
-		main_menu.body.list_display.Text = "$NoAmmoAvailable$";
+		main_menu->SetBackgroundCaption("$NoAmmoAvailable$");
 	}
 	else
 	{
-		var ammo_list = new CMC_GUI_List {};
-		ammo_list->Assemble();
-		main_menu.body.list_display.list = ammo_list;
+		var ammo_list = main_menu->GetList();
 		
-		ammo_list->SetMouseOverCallback(this, this.OnHoverCreateAmmoBox);
-		
-
 		for (var ammo_type in available_types) 
 		{
 			// Collect the current info
@@ -191,26 +140,21 @@ public func OpenMenuCreateAmmoBox(object user)
 			ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
 		}
 	}
-	
+	main_menu->Open(user->GetOwner());
+	active_menu = {};
 	active_menu.user = user;
-	active_menu.ID = GuiOpen(main_menu);
-	active_menu.user->~SetMenu(active_menu.ID);
+	active_menu.menu = main_menu;
+	active_menu.user->~SetMenu(main_menu->GetRootID());
 }
 
 public func CloseMenuCreateAmmoBox()
 {
 	if (active_menu)
 	{
-		GuiClose(active_menu.ID);
-		if (active_menu.upgrade_list) active_menu.upgrade_list->RemoveObject();
+		active_menu.menu->Close();
 		if (active_menu.user) active_menu.user->MenuClosed();
 	}
 	active_menu = nil;
-}
-
-func OnHoverCreateAmmoBox(proplist upgrade, int ID)
-{
-	GuiUpdateText(upgrade.Info, active_menu.ID, 9999);
 }
 
 func CreateNothing()
