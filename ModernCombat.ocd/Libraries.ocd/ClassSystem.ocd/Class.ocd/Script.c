@@ -12,5 +12,7 @@ func Definition()
 }
 
 /* --- Properties --- */
-local Ammo = {};
 
+local Ammo;     // proplist: { definition = amount }
+local Items;    // proplist: { definition = amount }
+local Grenades; // proplist: { definition = amount }
