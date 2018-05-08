@@ -123,7 +123,7 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 	
 		if (icon)
 		{
-			var removed_index = icon.Priority;
+			var removed_index = icon.Priority ?? 0;
 			for (var index = removed_index; index < this.GUI_Element_StatusIcons_Max; ++index)
 			{
 				var current = GetStatusIcon(index);

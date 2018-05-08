@@ -172,7 +172,7 @@ func UpdateAllyInfo()
 		
 		// Display class
 		var status_class = cursor->~GetCrewClass();
-		var identifier_class = "status_class"; //Format("%i", CMC_Library_Class);
+		var identifier_class = Format("%i", CMC_Library_Class);
 		if (status_class)
 		{
 			info->AddStatusIcon(status_class, identifier_class);
