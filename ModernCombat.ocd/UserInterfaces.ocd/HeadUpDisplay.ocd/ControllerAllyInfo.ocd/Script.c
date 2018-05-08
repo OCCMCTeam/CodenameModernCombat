@@ -104,6 +104,35 @@ public func OnSetCrewClass(object clonk)
 	return _inherited(clonk, ...);
 }
 
+/* --- Callbacks from the engine, regarding teams and hostility --- */
+
+public func InitializePlayer(int player, int x, int y, object base, int team)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(player, x, y, base, team, ...);
+}
+
+public func RemovePlayer(int player, int team)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(player, team, ...);
+}
+
+public func OnHostilityChange(int player1, int player2, bool hostile, bool old_hostility)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(player1, player2, hostile, old_hostility, ...);
+}
+
+public func OnTeamSwitch(int player, int new_team, int old_team)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(player, new_team, old_team, ...);
+}
 
 /* --- GUI definition --- */
 
@@ -123,9 +152,26 @@ func AssembleAllyInfo(int slot)
 /*
 	Schedules an update of the element for the next frame.
  */
-public func ScheduleUpdateAllyInfo()
+public func ScheduleUpdateAllyInfo(bool update_self_only)
 {
-	var timer = GetEffect("ScheduledAllyInfoUpdateTimer", this) ?? CreateEffect(ScheduledAllyInfoUpdateTimer, 1, 1);
+	if (update_self_only)
+	{
+		var timer = GetEffect("ScheduledAllyInfoUpdateTimer", this) ?? CreateEffect(ScheduledAllyInfoUpdateTimer, 1, 1);
+	}
+	else
+	{
+		for (var i = 0; i < GetPlayerCount(); ++i)
+		{
+			var player = GetPlayerByIndex(i);
+			var crew = GetCrew(player, 0);
+			
+			if (crew)
+			{
+				var controller = crew->GetHUDController();
+				controller->~ScheduleUpdateAllyInfo(true);
+			}
+		}
+	}
 }
 
 
