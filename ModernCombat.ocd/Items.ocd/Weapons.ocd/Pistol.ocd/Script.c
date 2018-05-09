@@ -90,7 +90,7 @@ func FiremodeStandard()
 
 func FireSound(object user, proplist firemode)
 {
-	Sound(firemode->GetCurrentFireSound());
+	Sound(firemode->GetCurrentFireSound(), {multiple = true});
 }
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
