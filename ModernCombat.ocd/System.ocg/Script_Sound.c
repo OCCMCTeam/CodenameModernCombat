@@ -25,8 +25,9 @@ global func Sound(name, opts, ...)
 	{
 		var source = CreateObject(Dummy, 0, 0, NO_OWNER);
 		source.Visibility = VIS_All;
-		var result = source->Sound(name, { Prototype = opts, multiple = false});
-		source->RemoveObject();
+		opts.multiple = false;
+		var result = source->Sound(name, opts);
+		ScheduleCall(source, source.RemoveObject, 100); // Note: Removing the object in the same frame plays the sound at 100% volume regardless of the volume setting
 		return result;
 	}
 
