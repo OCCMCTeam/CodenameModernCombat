@@ -88,6 +88,12 @@ func RejectStack(object item)
 	return true;
 }
 
+// Callback for the spawn point: Create the desired ammo in this box.
+func SpawnAs(id ammo_type)
+{
+	CreateContents(ammo_type);
+}
+
 /* --- Properties --- */
 
 local Name = "$Name$";

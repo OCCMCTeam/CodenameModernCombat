@@ -154,3 +154,35 @@ private func OnRoundEnd(int round_number)
 	
 	_inherited(round_number, ...); // Does nothing for now
 }
+
+/* --- Helper for spawn points --- */
+
+
+/*
+	Gets a proplist with the usual spawn points. 
+
+	This is more convenient than copy & pasting the script each time.
+ */
+public func GetSpawnPointTemplates()
+{
+	return {
+		ammo_bullets = CreateSpawnPoint(0, 0)->SpawnItem(CMC_Ammo_Box)->SetCallbackOnSpawn(CMC_Ammo_Box.SpawnAs, CMC_Ammo_Bullets),
+		ammo_grenades = CreateSpawnPoint(0, 0)->SpawnItem(CMC_Ammo_Box)->SetCallbackOnSpawn(CMC_Ammo_Box.SpawnAs, CMC_Ammo_Grenades),
+		ammo_missiles = CreateSpawnPoint(0, 0)->SpawnItem(CMC_Ammo_Box)->SetCallbackOnSpawn(CMC_Ammo_Box.SpawnAs, CMC_Ammo_Missiles),
+	};
+}
+
+
+/*
+	Removes all spawn point templates in a given proplist.
+ */
+public func RemoveSpawnPointTemplates(proplist templates)
+{
+	for (var property in GetProperties(templates))
+	{
+		if (templates[property] != nil)
+		{
+			templates[property]->RemoveObject();
+		}
+	}
+}
