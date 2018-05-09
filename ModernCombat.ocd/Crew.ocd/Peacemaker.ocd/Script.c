@@ -1,17 +1,17 @@
-/*--- The Peacemaker ---*/
+/* --- The Peacemaker --- */
 
 #include Clonk
 #include Library_AmmoManager
 #include CMC_Library_HasClass
 
-/*--- Inventory management ---*/
+/* --- Inventory management --- */
 
 public func GetCurrentItem()
 {
 	return this->GetHandItem(0);
 }
 
-/*--- Ammo management ---*/
+/* --- Ammo management --- */
 
 public func GetAmmoSource(id ammo)
 {
@@ -29,7 +29,7 @@ public func SetAmmo(id ammo, int new_value)
 	return info;
 }
 
-/*--- No Backpack ---*/
+/* --- No Backpack --- */
 
 private func AttachBackpack()
 {
@@ -42,7 +42,7 @@ private func RemoveBackpack()
 	// Overridden to do nothing
 }
 
-/*--- Graphics ---*/
+/* --- Graphics --- */
 
 private func SetSkin(int new_skin)
 {
@@ -71,7 +71,57 @@ private func SetSkin(int new_skin)
 	return skin;
 }
 
-/*--- Better death animation ---*/
+/* --- Sounds --- */
+
+func PlaySoundMovementStepHard()
+{
+	Sound("Clonk::Movement::StepHard?", {multiple = true, volume = 25});
+}
+
+func PlaySoundMovementStepSoft()
+{
+	Sound("Clonk::Movement::StepSoft?", {multiple = true, volume = 25});
+}
+
+func PlaySoundMovementStepWater()
+{
+	Sound("Clonk::Movement::StepWater?", {multiple = true, volume = 25});
+}
+
+func PlaySoundMovementRustle()
+{
+	Sound("Clonk::Movement::Rustle?", {multiple = true});
+}
+
+func PlaySoundMovementRustleLand()
+{
+	Sound("Clonk::Movement::Land?", {multiple = true, volume = 25});
+}
+
+func Footstep()
+{
+    if(GBackLiquid(0, 6))
+    {
+    	PlaySoundMovementStepWater();
+    }
+    else
+    {
+    	inherited(...);
+    }
+}
+
+func DoRoll(bool is_falling)
+{
+	// Additional sound from falling
+	if (is_falling)
+	{
+		PlaySoundMovementRustleLand();
+	}
+	// Everything as usual
+	inherited(is_falling, ...);
+}
+
+/* --- Better death animation --- */
 
 func StartDead()
 {
@@ -105,7 +155,7 @@ func OverlayDeathAnimation(int slot)
 	PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
 }
 
-/*--- Properties ---*/
+/* --- Properties --- */
 
 local Name = "$Name$";
 local Description = "$Description$";
