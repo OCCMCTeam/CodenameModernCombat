@@ -18,3 +18,8 @@ public func SetCrewClass(id class)
 	cmc_crew_class = class;
 	this->~OnSetCrewClass(class);
 }
+
+public func StartClassSelection()
+{
+	// Does nothing at the moment
+}
