@@ -27,8 +27,9 @@ public func OnInitializeCrew(object crew)
 	{
 		contents->RemoveObject();
 	}
-
-	crew->~StartClassSelection();
+	
+	// Open the respawn menu
+	crew->~OpenRespawnMenu();
 
 	// Notify the HUD
 	crew->~OnCrewRelaunchStart();
