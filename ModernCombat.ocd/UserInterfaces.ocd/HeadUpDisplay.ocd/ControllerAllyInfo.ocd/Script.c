@@ -215,42 +215,52 @@ func UpdateAllyInfo()
 {
 	UpdateAllyAmount();
 	
+	var hide =  GetCursor(GetOwner())->~IsRespawning();
+	
 	for (var i = 0; i < GetLength(gui_cmc_ally_info.Allies); ++i)
 	{
 		var ally = gui_cmc_ally_info.Allies[i];
 		var info = gui_cmc_ally_info.Info[i];
 
-		var color = nil;
-		if (ally == GetOwner())
+		if (hide)
 		{
-			color = GUI_CMC_Text_Color_Highlight;
-		}
-		
-		// Player info
-
-		info->SetNameLabel(GetPlayerName(ally), color);
-		info->SetRankSymbol(Rule_TeamAccount);		
-		info->Update();
-
-		// Selected clonk info
-		var cursor = GetCursor(ally);
-		
-		// Display class
-		var status_class = cursor->~GetCrewClass();
-		var identifier_class = Format("%i", CMC_Library_Class);
-		if (status_class)
-		{
-			info->AddStatusIcon(status_class, identifier_class);
+			info->Hide()->Update();
 		}
 		else
 		{
-			info->RemoveStatusIcon(identifier_class);
-		}
-		
-		// Health bar
-		if (info->GetHealthBar()->ShowForCrew(cursor, cursor->~IsRespawning()))
-		{
-			info->GetHealthBar()->SetHealth(cursor);
+			var color = nil;
+			if (ally == GetOwner())
+			{
+				color = GUI_CMC_Text_Color_Highlight;
+			}
+			
+			// Player info
+	
+			info->Show();
+			info->SetNameLabel(GetPlayerName(ally), color);
+			info->SetRankSymbol(Rule_TeamAccount);		
+			info->Update();
+	
+			// Selected clonk info
+			var cursor = GetCursor(ally);
+			
+			// Display class
+			var status_class = cursor->~GetCrewClass();
+			var identifier_class = Format("%i", CMC_Library_Class);
+			if (status_class)
+			{
+				info->AddStatusIcon(status_class, identifier_class);
+			}
+			else
+			{
+				info->RemoveStatusIcon(identifier_class);
+			}
+			
+			// Health bar
+			if (info->GetHealthBar()->ShowForCrew(cursor, cursor->~IsRespawning()))
+			{
+				info->GetHealthBar()->SetHealth(cursor);
+			}
 		}
 	}
 }
