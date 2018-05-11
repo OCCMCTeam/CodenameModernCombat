@@ -104,14 +104,7 @@ public func OpenRespawnMenu()
 		    ->Open(GetOwner());
 		SetMenu(menu->GetRootID());
 
-		// Add class selection tabs
-		for (var class in this->~GetAvailableClasses())
-		{
-			menu->GetTabs()->AddTab(class,                                     // identifier
-			                        class->~GetName(),                         // label text
-			                        DefineCallback(this.SetCrewClass, class)); // called on button click
-		}
-		menu->GetTabs()->SelectTab();
+		// Callback that allows for filling the tabs
+		this->~OnOpenRespawnMenu(menu);
 	}
 }
-
