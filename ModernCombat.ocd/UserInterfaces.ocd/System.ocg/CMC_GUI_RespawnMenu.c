@@ -23,20 +23,21 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			GUI_Respawn_Components = [];
 	
 			var header = new GUI_Element {};
-			header->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V))
-			    ->SetBottom(200)
-			    ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
-			    ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
-			    ->AddTo(this);
-			    
 			var tabs = new CMC_GUI_RespawnMenu_TabRow {};
-			tabs->Assemble()->AddTo(header);
+			tabs->Assemble();
+			
+			header->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V))
+			      ->SetHeight(tabs->GetHeight())
+			      ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
+			      ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
+			      ->AddTo(this);
+			tabs->AddTo(header);
 	
 			var box_left = new GUI_Element
 			{
 				BackgroundColor = GUI_CMC_Background_Color_Default
 			};
-			box_left->SetTop(GuiDimensionCmc(200, GUI_CMC_Margin_Screen_V))
+			box_left->SetTop(header->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 			        ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
 			        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
 			        ->SetRight(250)
@@ -46,7 +47,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			{
 				BackgroundColor = GUI_CMC_Background_Color_Default
 			};
-			box_right->SetTop(GuiDimensionCmc(200, GUI_CMC_Margin_Screen_V))
+			box_right->SetTop(header->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 			         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
 			         ->SetLeft(750)
 			         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
@@ -97,7 +98,6 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 
 	AddTab = func (identifier, proplist style)
 	{
-		Log("Adding tab %v", identifier);
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
 		this.Tab_Elements = this.Tab_Elements ?? [];
@@ -115,13 +115,12 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = this.Tab_Count, };
 			tab->Assemble(style)->AddTo(this);
-	
+
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
 	
 			// Update tab width
 			this.Tab_Width = this.Tab_Width->Add(tab->GetWidth());
-			Log("New total tab width = %s", this.Tab_Width->ToString());
 			var percent = this.Tab_Width->GetPercent() * 10 / (this.Tab_Width->GetPercentFactor() ?? 10);
 			if (percent >= 1000)
 			{
@@ -132,7 +131,6 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		
 		// Update the individual tabs for uniform width
 		var tab_width = GuiDimensionCmc(1000)->Shrink(GetLength(this.Tab_Elements));
-		Log("New individual tab width = %s", tab_width->ToString());
 		for (var element in this.Tab_Elements)
 		{
 			element->SetWidth(tab_width)->Update();
