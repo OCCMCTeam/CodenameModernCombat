@@ -136,6 +136,7 @@ private func OnRoundReset(int round_number)
 	
 	// Make map visible to everyone
 	UpdateFoW();
+	SetPlayerZoomLandscape();
 	
 	// Do the usual stuff
 	_inherited(round_number, ...);
@@ -179,7 +180,6 @@ func OnPlayerJoinedRound(int player, int team)
 // if the round is active.
 func UpdateFoW(int player, int team, bool enabled)
 {
-	Log("Update FoW: %v %v", player, team);
 	if (player == nil && team == nil)
 	{
 		for (var i = 0; i < GetPlayerCount(); ++i)
