@@ -91,3 +91,24 @@ public func IsRespawning()
 {
 	return Contained() && Contained()->GetID() == Arena_RelaunchContainer;
 }
+
+// Opens the respawn menu
+public func OpenRespawnMenu()
+{
+	if (IsRespawning())
+	{
+		// Open menu
+		var menu = new CMC_GUI_RespawnMenu {};
+		menu->Assemble(this)
+		    ->Show()
+		    ->Open(GetOwner());
+		SetMenu(menu->GetRootID());
+
+		// Add class selection tabs
+		for (var class in this->~GetAvailableClasses())
+		{
+			menu->GetTabs()->AddTab(class, { Text = class->~GetName(), });
+		}
+	}
+}
+

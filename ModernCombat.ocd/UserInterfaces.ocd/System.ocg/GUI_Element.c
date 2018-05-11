@@ -519,9 +519,15 @@ static const GUI_Element = new Global
 	/**
 		Updates the GUI with all changes to the layout that were made previously.
 		
+		@par specific Updates only a specific subset of the GUI element properties, 
+		              as the {@link Global#GuiUpdate} function would.
+		              Defaults to the GUI element proplist itself, so that all of
+		              its properties get updated in case you call the function
+		              without arguments.
+
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
-	Update = func ()
+	Update = func (proplist specific)
 	{
 		this->ComposeLayout();
 		var gui_id = GetRootID();
@@ -533,7 +539,7 @@ static const GUI_Element = new Global
 		{
 			// Compose a simple update proplist
 			update = {};
-			update[name] = this;
+			update[name] = specific ?? this;
 			
 			// Chain together the parent name, e.g.:
 			// { subwindow_level1 = { subwindow_level2 = { element_name = {...}}}}
@@ -554,7 +560,7 @@ static const GUI_Element = new Global
 		// Update mode: Main window
 		else if (gui_id)
 		{
-			update = this;
+			update = specific ?? this;
 		}
 		GuiUpdate(update, gui_id, child_id);
 		GuiUpdateTag(this.GUI_Element_Tag, gui_id, child_id);
@@ -800,6 +806,8 @@ static const GUI_Element = new Global
 		this.Right = GetRight()->ToString();
 		this.Top = GetTop()->ToString();
 		this.Bottom = GetBottom()->ToString();
+		
+		return { Left = this.Left, Right = this.Right, Top = this.Top, Bottom = this.Bottom };
 	},
 	
 	// Ensures that the input already is a dimension, or is converted to one.

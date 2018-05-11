@@ -18,3 +18,8 @@ public func SetCrewClass(id class)
 	cmc_crew_class = class;
 	this->~OnSetCrewClass(class);
 }
+
+public func GetAvailableClasses()
+{
+	return [CMC_Class_Assault, CMC_Class_Medic, CMC_Class_Support, CMC_Class_AntiSkill, CMC_Class_Artillery];
+}
