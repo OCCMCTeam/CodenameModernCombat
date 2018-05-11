@@ -28,11 +28,11 @@ global func SetPlayerZoomLandscape(int player)
 	{
 		for (var i = 0; i < GetPlayerCount(); ++i)
 		{
-			SetPlayerZoomDefault(GetPlayerByIndex(i));
+			SetPlayerZoomLandscape(GetPlayerByIndex(i));
 		}
 	}
 	else
 	{
-		SetPlayerZoomByViewRange(GetOwner(), range, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+		SetPlayerZoomByViewRange(player, range, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
 	}
 }
