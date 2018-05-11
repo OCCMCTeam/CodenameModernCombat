@@ -36,19 +36,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			GUI_Respawn_Components[1] = tabs;
 	
 			AssembleContentBox();
-	
-			var box_right = new GUI_Element
-			{
-				ID = 3,
-				BackgroundColor = GUI_CMC_Background_Color_Default,
-			};
-			box_right->SetTop(header->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-			         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
-			         ->SetLeft(750)
-			         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
-			         ->AddTo(this);
-	
-			GUI_Respawn_Components[3] = box_right;
+			AssembleRespawnBox();
 		}
 		return this;
 	},
@@ -68,9 +56,72 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
 		        ->SetRight(250)
 		        ->AddTo(this);
-
+		        
 		GUI_Respawn_Components[child_id] = box_left;
 		return box_left;
+	},
+	
+	AssembleRespawnBox = func ()
+	{
+		var child_id = 3;
+		var box_right = new GUI_Element
+		{
+			ID = child_id,
+			Style = GUI_VerticalLayout,
+		};
+		box_right->SetTop(GetHeader()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
+		         ->SetLeft(750)
+		         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
+		         ->AddTo(this);
+
+		GUI_Respawn_Components[child_id] = box_right;
+		
+		// Fill directly, because this has less different contents
+		
+		var icon_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		
+		// Overview button
+		var button_overview = new CMC_GUI_RespawnMenu_OverviewButton
+		{
+			Priority = 1,
+		};
+		button_overview->Assemble()
+		               ->SetWidth(1000)
+		               ->SetHeight(icon_size)
+		               ->SetData("Overview", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
+		               ->AddTo(box_right);
+
+		// Spawn points list
+		var list_container = new GUI_Element
+		{
+			Priority = 2,
+		};
+		list_container->SetHeight(GuiDimensionCmc(1000)->Subtract(icon_size->Scale(2)))
+		              ->AddTo(box_right);
+		              
+		var spawnpoint_list = new GUI_Element
+		{
+			ID = 4,
+			BackgroundColor = GUI_CMC_Background_Color_Default,
+			Style = GUI_VerticalLayout,
+		};
+		spawnpoint_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
+		               ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
+		               ->AddTo(list_container);
+		GUI_Respawn_Components[4] = spawnpoint_list;
+		
+		// Respawn button
+		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
+		{
+			Priority = 3,
+		};
+		button_respawn->Assemble()
+		              ->SetWidth(1000)
+		              ->SetHeight(icon_size)
+		              ->SetData("Respawn!")
+		              ->AddTo(box_right);
+		
 	},
 	
 	/* --- Access functions --- */
@@ -90,9 +141,14 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		return GUI_Respawn_Components[2]; 
 	},
 	
-	GetSpawnPoints = func ()
+	GetRightBox = func ()
 	{
 		return GUI_Respawn_Components[3]; 
+	},
+	
+	GetSpawnPoints = func ()
+	{
+		return GUI_Respawn_Components[4]; 
 	},
 	
 	/* --- Reset functions --- */
@@ -167,7 +223,6 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		SetWidth(this.Tab_Width);
 		AlignCenterH();
 		Update(ComposeLayout());
-		
 		
 		// Done
 		return tab;
@@ -283,6 +338,28 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 		{
 			this.BackgroundColor = color;
 			Update({BackgroundColor = color});
+		}
+	},
+};
+
+static const CMC_GUI_RespawnMenu_OverviewButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
+{
+	OnClickCall = func ()
+	{
+		if (this.Tab_Callback)
+		{
+			DoCallback(this.Tab_Callback);
+		}
+	},
+};
+
+static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
+{
+	OnClickCall = func ()
+	{
+		if (this.Tab_Callback)
+		{
+			DoCallback(this.Tab_Callback);
 		}
 	},
 };
