@@ -67,7 +67,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		return GUI_Respawn_Components[0]; 
 	},
 	
-	GetContents = func ()
+	GetContentBox = func ()
 	{
 		return GUI_Respawn_Components[1]; 
 	},
@@ -96,7 +96,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		return this;
 	},
 
-	AddTab = func (identifier, string caption, proplist style)
+	AddTab = func (identifier, string caption, call_from, command, parameter, proplist style)
 	{
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
@@ -108,7 +108,6 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		if (index >= 0)
 		{
 			tab = this.Tab_Elements[index];
-			tab->Assemble(caption, style)->Update();
 		}
 		else
 		{
@@ -116,7 +115,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 			
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = tab_count, Tab_Index = tab_count };
-			tab->Assemble(caption, style)->AddTo(this);
+			tab->Assemble()->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
@@ -130,6 +129,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 				this.Tab_Width->SetEm(0);
 			}
 		}
+		tab->SetData(caption, call_from, command, parameter, style)->Update();
 		
 		// Update the individual tabs for uniform width
 		var tab_width = GuiDimensionCmc(1000)->Shrink(GetLength(this.Tab_Elements));
@@ -141,6 +141,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		SetWidth(this.Tab_Width);
 		AlignCenterH();
 		Update(ComposeLayout());
+		
 		
 		// Done
 		return tab;
@@ -172,35 +173,47 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 {
 	// --- Properties
 
-	Tab_Selected = false,
-	Tab_Hovered = false,
+	Tab_Selected = nil,
+	Tab_Hovered = nil,
+	Tab_Callback = nil,
 
 	// --- GUI Properties
 
 	BackgroundColor = GUI_CMC_Background_Color_Default,
 	
-	// Overlay for hover effect
-	hover = nil,
-	// Overlay for text, should be over the hover effect
-	label = nil,
+	hover = nil, // Overlay for hover effect
+	label = nil, // Overlay for text, should be over the hover effect
 	
 	// --- Functions
 	
-	Assemble = func (string caption, proplist style, desired_width)
+	Assemble = func (desired_width)
 	{
 		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
 		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
 		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
 		
 		this.hover = { Priority = 1};
-		this.label = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter, Text = caption};
+		this.label = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter};
 		
+		SetWidth(desired_width ?? 100);
+		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
+		return this;
+	},
+	
+	SetData = func (string caption, call_from, command, parameter, proplist style)
+	{
+		this.label.Text = caption;
 		if (style)
 		{
 			AddProperties(this, style);
 		}
-		SetWidth(desired_width ?? 100);
-		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
+		if (command)
+		{
+			this.Tab_Callback = this.Tab_Callback ?? [];
+			this.Tab_Callback[0] = command;
+			this.Tab_Callback[1] = parameter;
+			this.Tab_Callback[2] = call_from;
+		}
 		return this;
 	},
 	
@@ -221,8 +234,23 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	
 	SetSelected = func (bool selected)
 	{
+		// Update the display
 		this.Tab_Selected = selected;
 		UpdateBackground();
+		
+		// Issue a callback?
+		if (this.Tab_Callback && selected)
+		{
+			var command = this.Tab_Callback[0];
+			var parameter = this.Tab_Callback[1];
+			var call_from = this.Tab_Callback[2];
+			
+			(call_from ?? this)->Call(command, parameter);
+		}
+		
+		// Configure the GUI menu left content box
+		// TODO
+		
 		return this;
 	},
 	
