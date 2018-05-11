@@ -35,6 +35,7 @@ public func InitializePlayer(int player, int x, int y, object base, int team, id
 	// It may start immediately (later this will not be the case, once we have the main scenario entry)
 	// Later, the goals should register themselves as round end blocker
 	RoundManager()->RegisterRoundEndBlocker(GetHiRank(player));
+	OnPlayerJoinedRound(player, team);
 	
 	// Do the usual stuff
 	return _inherited(player, x, y, base, team, extra_data, ...);
@@ -133,6 +134,9 @@ private func OnRoundReset(int round_number)
 	CreateInterior();
 	CreateEquipment();
 	
+	// Make map visible to everyone
+	UpdateFoW();
+	
 	// Do the usual stuff
 	_inherited(round_number, ...);
 }
@@ -141,7 +145,11 @@ private func OnRoundReset(int round_number)
 // 2) Round starts, players should be able to act now
 private func OnRoundStart(int round_number)
 {
-	_inherited(round_number, ...); // Does nothing for now
+	// Activate fog of war
+	UpdateFoW();
+
+	// Do the usual stuff
+	_inherited(round_number, ...);
 }
 
 
@@ -152,7 +160,37 @@ private func OnRoundEnd(int round_number)
 	CleanUpInterior();
 	CleanUpEquipment();
 	
+	// Disable fog of war
+	UpdateFoW(nil, nil, false);
+	
 	_inherited(round_number, ...); // Does nothing for now
+}
+
+/* --- Player management --- */
+
+func OnPlayerJoinedRound(int player, int team)
+{
+	UpdateFoW(player, team);
+}
+
+// Sets the fog of war for a player.
+// If neither player nor team are given the setting will be applied to all players.
+// If the 'enabled' value is not given the fog of war will be enabled only
+// if the round is active.
+func UpdateFoW(int player, int team, bool enabled)
+{
+	Log("Update FoW: %v %v", player, team);
+	if (player == nil && team == nil)
+	{
+		for (var i = 0; i < GetPlayerCount(); ++i)
+		{
+			UpdateFoW(GetPlayerByIndex(i));
+		}
+	}
+	else if (player != nil)
+	{
+		SetFoW(enabled ?? RoundManager()->IsRoundActive(), player);
+	}
 }
 
 /* --- Helper for spawn points --- */

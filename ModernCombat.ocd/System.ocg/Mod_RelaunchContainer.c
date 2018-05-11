@@ -41,5 +41,6 @@ public func OnInitializeCrew(object crew)
  */
 public func OnRelaunchCrew(object crew)
 {
-	// Nothing at the moment
+	// Reset zoom
+	SetPlayerZoomByViewRange(crew->GetOwner(), nil, nil, PLRZOOM_Set | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 }
