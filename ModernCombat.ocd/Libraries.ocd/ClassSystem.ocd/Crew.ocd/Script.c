@@ -37,9 +37,31 @@ public func OnOpenRespawnMenu(proplist menu)
 	// Add class selection tabs
 	for (var class in this->GetAvailableClasses())
 	{
-		menu->GetTabs()->AddTab(class,                                     // identifier
-		                        class->~GetName(),                         // label text
-		                        DefineCallback(this.SetCrewClass, class)); // called on button click
+		menu->GetTabs()->AddTab(class,                                               // identifier
+		                        class->~GetName(),                                   // label text
+		                        DefineCallback(this.OnSelectClassTab, menu, class)); // called on button click
 	}
 	menu->GetTabs()->SelectTab();
+}
+
+public func OnSelectClassTab(proplist menu, id class)
+{
+	// Update the class
+	SetCrewClass(class);
+	
+	// Update the contents box
+	menu->ResetContentBox();
+	
+	if (class.Description)
+	{
+		var description = new GUI_Element
+		{
+			Priority = 1,
+			Style = GUI_TextHCenter | GUI_TextVCenter,
+			
+			Text = class.Description,
+			Symbol = class,
+		};
+		description->SetHeight(200)->AddTo(menu->GetContentBox());
+	}
 }

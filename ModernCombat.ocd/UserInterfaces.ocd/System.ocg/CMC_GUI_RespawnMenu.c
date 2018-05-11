@@ -23,7 +23,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			GUI_Respawn_Components = [];
 	
 			var header = new GUI_Element {};
-			var tabs = new CMC_GUI_RespawnMenu_TabRow {};
+			var tabs = new CMC_GUI_RespawnMenu_TabRow {ID = 1};
 			tabs->Assemble();
 			
 			header->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V))
@@ -32,20 +32,15 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			      ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
 			      ->AddTo(this);
 			tabs->AddTo(header);
+			GUI_Respawn_Components[0] = header;
+			GUI_Respawn_Components[1] = tabs;
 	
-			var box_left = new GUI_Element
-			{
-				BackgroundColor = GUI_CMC_Background_Color_Default
-			};
-			box_left->SetTop(header->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-			        ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
-			        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
-			        ->SetRight(250)
-			        ->AddTo(this);
+			AssembleContentBox();
 	
 			var box_right = new GUI_Element
 			{
-				BackgroundColor = GUI_CMC_Background_Color_Default
+				ID = 3,
+				BackgroundColor = GUI_CMC_Background_Color_Default,
 			};
 			box_right->SetTop(header->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 			         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
@@ -53,28 +48,60 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
 			         ->AddTo(this);
 	
-			GUI_Respawn_Components[0] = tabs;
-			GUI_Respawn_Components[1] = box_left;
-			GUI_Respawn_Components[2] = box_right;
+			GUI_Respawn_Components[3] = box_right;
 		}
 		return this;
 	},
 	
+	/* --- Creation functions --- */
+	
+	AssembleContentBox = func ()
+	{
+		var child_id = 2;
+		var box_left = new GUI_Element
+		{
+			ID = child_id, 
+			BackgroundColor = GUI_CMC_Background_Color_Default,
+			Style = GUI_VerticalLayout,
+		};
+		box_left->SetTop(GetHeader()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		        ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
+		        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
+		        ->SetRight(250)
+		        ->AddTo(this);
+
+		GUI_Respawn_Components[child_id] = box_left;
+		return box_left;
+	},
+	
 	/* --- Access functions --- */
 	
-	GetTabs = func ()
+	GetHeader = func ()
 	{
 		return GUI_Respawn_Components[0]; 
 	},
 	
-	GetContentBox = func ()
+	GetTabs = func ()
 	{
 		return GUI_Respawn_Components[1]; 
 	},
 	
-	GetSpawnPoints = func ()
+	GetContentBox = func ()
 	{
 		return GUI_Respawn_Components[2]; 
+	},
+	
+	GetSpawnPoints = func ()
+	{
+		return GUI_Respawn_Components[3]; 
+	},
+	
+	/* --- Reset functions --- */
+	
+	ResetContentBox = func ()
+	{
+		GetContentBox()->Close();
+		AssembleContentBox()->Update();
 	},
 };
 
@@ -237,10 +264,6 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 		{
 			DoCallback(this.Tab_Callback);
 		}
-		
-		// Configure the GUI menu left content box
-		// TODO
-		
 		return this;
 	},
 	

@@ -407,9 +407,15 @@ static const GUI_Element = new Global
 	 */
 	Close = func ()
 	{
-		if (this.GUI_ID)
+		if (this.GUI_ID || this.ID)
 		{
-			GuiClose(this.GUI_ID, this.GUI_Child_ID);
+			var root_id = GetRootID();
+			var child_id;
+			if (this.ID && this.ID != root_id)
+			{
+				child_id = this.ID;
+			}
+			GuiClose(root_id, child_id);
 		}
 		return this;
 	},
