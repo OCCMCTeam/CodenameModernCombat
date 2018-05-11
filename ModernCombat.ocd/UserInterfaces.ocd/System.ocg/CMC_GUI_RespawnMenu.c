@@ -61,7 +61,6 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		var box_left = new GUI_Element
 		{
 			ID = child_id, 
-			BackgroundColor = GUI_CMC_Background_Color_Default,
 			Style = GUI_VerticalLayout,
 		};
 		box_left->SetTop(GetHeader()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))

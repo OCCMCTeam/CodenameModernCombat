@@ -52,16 +52,119 @@ public func OnSelectClassTab(proplist menu, id class)
 	// Update the contents box
 	menu->ResetContentBox();
 	
+	// --- Actual contents
+	
+	var icon_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+	
+	// Description box
 	if (class.Description)
 	{
 		var description = new GUI_Element
 		{
 			Priority = 1,
-			Style = GUI_TextHCenter | GUI_TextVCenter,
 			
-			Text = class.Description,
-			Symbol = class,
+			icon =  // Display icon and then transparent background with text, because text will be easier to read
+			{
+				Bottom = GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V)->ToString(),
+				Symbol = class,
+				
+				desc =
+				{
+					Style = GUI_TextHCenter | GUI_TextVCenter,
+					Text = class.Description,
+					BackgroundColor = GUI_CMC_Background_Color_Default,
+				},
+			},
 		};
 		description->SetHeight(200)->AddTo(menu->GetContentBox());
 	}
+	
+	// Ammo
+	if (class.Ammo)
+	{
+		var ammo_info = new GUI_Element 
+		{
+			Priority = 2,
+			
+			box = 
+			{
+				BackgroundColor = GUI_CMC_Background_Color_Default,
+				Bottom = icon_size->ToString(),
+				Style = GUI_GridLayout,
+			}
+		};
+		var ammo_types = GetProperties(class.Ammo);
+		var index = 0;
+		for (var ammo_type in ammo_types)
+		{
+			var ammo = GetDefinition(ammo_type);
+			ammo_info.box[ammo_type] = 
+			{
+				Priority = index,
+				Right = icon_size->ToString(),
+				Bottom = icon_size->ToString(),
+				
+				Symbol = ammo,
+				Text = Format("%dx", class.Ammo[ammo_type]),
+				Tooltip = ammo->GetName(),
+				Style = GUI_TextBottom | GUI_TextRight,
+			};
+			index += 1;
+		}
+		ammo_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
+		         ->AddTo(menu->GetContentBox());
+	}
+	
+	// Weapons
+	if (class.Items)
+	{
+		var item_types = GetProperties(class.Items);
+		var item_count = GetLength(item_types);
+		var size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size * item_count);
+		var item_info = new GUI_Element 
+		{
+			Priority = 3,
+
+			list = 
+			{
+				BackgroundColor = GUI_CMC_Background_Color_Default,
+				Bottom = size->ToString(),
+				Style = GUI_VerticalLayout,
+			}
+		};
+		var index = 0;
+		for (var item_type in item_types)
+		{
+			var item = GetDefinition(item_type);
+			item_info.list[item_type] = 
+			{
+				Priority = index,
+				Tooltip = item.Description,
+				
+				icon = 
+				{
+					Right = icon_size->ToString(),
+					Bottom = icon_size->ToString(),
+					Symbol = item,
+					
+					count = 
+					{			
+						Text = Format("%dx", class.Items[item_type]),
+						Style = GUI_TextBottom | GUI_TextRight,
+					},
+				},
+				
+				label = 
+				{
+					Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),
+					Style = GUI_TextVCenter,
+					Text = item->GetName(),
+				},
+			};
+			index += 1;
+		}
+		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		         ->AddTo(menu->GetContentBox());
+	}
+	
 }

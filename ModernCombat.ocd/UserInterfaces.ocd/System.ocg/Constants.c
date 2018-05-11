@@ -17,6 +17,10 @@ static const GUI_CMC_Margin_Element_V = 10;
    Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_Small_V = 5;
 
+/* Horizontal margin between elements, smaller distance.
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Element_Small_H = 5;
+
 /* Vertical margin between status icons in the ally info.
    Given in pixel-scaled-em. */
 static const GUI_Margin_StatusIcon_H = 3;
