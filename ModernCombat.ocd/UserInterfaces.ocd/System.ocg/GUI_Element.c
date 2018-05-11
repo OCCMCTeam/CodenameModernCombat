@@ -475,10 +475,14 @@ static const GUI_Element = new Global
 	
 	/**
 		Shows the menu if the crew is enabled, hides it if disabled.
+		
+		@par crew The crew member
+		@par hide_condition An additional condition for hiding the GUI
+		                    element.
 	 */
-	ShowForCrew = func (object crew)
+	ShowForCrew = func (object crew, bool hide_condition)
 	{
-		if (crew && crew->GetCrewEnabled())
+		if (crew && crew->GetCrewEnabled() && !hide_condition)
 		{
 			Show()->Update();
 			return true;

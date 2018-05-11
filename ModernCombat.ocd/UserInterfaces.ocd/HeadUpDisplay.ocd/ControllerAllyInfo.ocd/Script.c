@@ -112,6 +112,22 @@ public func OnSetCrewClass(object clonk)
 	return _inherited(clonk, ...);
 }
 
+
+public func OnCrewRelaunchStart(object clonk)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(clonk, ...);
+}
+
+
+public func OnCrewRelaunchFinish(object clonk)
+{
+	ScheduleUpdateAllyInfo();
+
+	return _inherited(clonk, ...);
+}
+
 /* --- Callbacks from the engine, regarding teams and hostility --- */
 
 public func InitializePlayer(int player, int x, int y, object base, int team)
@@ -232,7 +248,7 @@ func UpdateAllyInfo()
 		}
 		
 		// Health bar
-		if (info->GetHealthBar()->ShowForCrew(cursor))
+		if (info->GetHealthBar()->ShowForCrew(cursor, cursor->~IsRespawning()))
 		{
 			info->GetHealthBar()->SetHealth(cursor);
 		}

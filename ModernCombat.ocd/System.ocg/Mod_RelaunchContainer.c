@@ -29,6 +29,9 @@ public func OnInitializeCrew(object crew)
 	}
 
 	crew->~StartClassSelection();
+
+	// Notify the HUD
+	crew->~OnCrewRelaunchStart();
 }
 
 
@@ -43,4 +46,7 @@ public func OnRelaunchCrew(object crew)
 {
 	// Reset zoom to defaults
 	SetPlayerZoomDefault(crew->GetOwner());
+	
+	// Notify the HUD
+	crew->~OnCrewRelaunchFinish();
 }

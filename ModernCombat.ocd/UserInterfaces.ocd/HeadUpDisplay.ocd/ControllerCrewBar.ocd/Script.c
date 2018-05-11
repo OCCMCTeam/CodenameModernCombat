@@ -110,6 +110,22 @@ public func OnCrewBreathChange(object clonk, int change)
 }
 
 
+public func OnCrewRelaunchStart(object clonk)
+{
+	ScheduleUpdateCrewBars();
+
+	return _inherited(clonk, ...);
+}
+
+
+public func OnCrewRelaunchFinish(object clonk)
+{
+	ScheduleUpdateCrewBars();
+
+	return _inherited(clonk, ...);
+}
+
+
 /* --- GUI definition --- */
 
 // Overload this if you want to change the layout
@@ -217,7 +233,7 @@ func UpdateCrewBars(bool update_health, bool update_breath)
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_crew.Menu->ShowForCrew(cursor))
+	if (gui_cmc_crew.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
 	{
 		if (update_health)
 		{

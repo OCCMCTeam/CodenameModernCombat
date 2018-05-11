@@ -115,6 +115,23 @@ public func OnAmmoChange(object clonk)
 }
 
 
+public func OnCrewRelaunchStart(object clonk)
+{
+	ScheduleUpdateItemStatus();
+
+	return _inherited(clonk, ...);
+}
+
+
+public func OnCrewRelaunchFinish(object clonk)
+{
+	ScheduleUpdateItemStatus();
+
+	return _inherited(clonk, ...);
+}
+
+
+
 /* --- GUI definition --- */
 
 // Overload this if you want to change the layout
@@ -346,7 +363,7 @@ func UpdateItemStatus()
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_item_status.Menu->ShowForCrew(cursor))
+	if (gui_cmc_item_status.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
 	{
 		// --- Grenades
 		var grenade_count = 0;

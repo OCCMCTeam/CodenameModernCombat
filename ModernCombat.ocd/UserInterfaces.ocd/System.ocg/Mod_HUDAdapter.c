@@ -21,3 +21,19 @@ func OnSetCrewClass(id class)
 		HUDcontroller->~OnSetCrewClass(this, class);
 	return _inherited(class, ...);
 }
+
+// Callback from relaunch container
+func OnCrewRelaunchStart()
+{
+	if (HUDcontroller)
+		HUDcontroller->~OnCrewRelaunchStart(this);
+	return _inherited(...);
+}
+
+// Callback from relaunch container
+func OnCrewRelaunchFinish()
+{
+	if (HUDcontroller)
+		HUDcontroller->~OnCrewRelaunchFinish(this);
+	return _inherited(...);
+}

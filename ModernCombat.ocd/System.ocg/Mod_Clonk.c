@@ -1,5 +1,7 @@
 #appendto Clonk
 
+/* --- Use controls --- */
+
 // Override for Objects/Libraries/ClonkUseControl
 // This will reenable the "Alt" callbacks for using_type C4D_Object
 // Also, handle CON_CMC_AimingCursor
@@ -80,4 +82,12 @@ func AimingUseControl(int x, int y, object obj)
 	var handled = obj->Call(GetUseCallString("Aiming"), this, x, y);
 
 	return handled;
+}
+
+/* --- Respawn stuff --- */
+
+// Find out whether the crew is currently respawning
+public func IsRespawning()
+{
+	return Contained() && Contained()->GetID() == Arena_RelaunchContainer;
 }

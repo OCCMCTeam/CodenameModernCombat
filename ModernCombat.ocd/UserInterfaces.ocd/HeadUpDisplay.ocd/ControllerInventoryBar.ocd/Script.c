@@ -124,6 +124,22 @@ public func OnAmmoChange(object clonk)
 }
 
 
+public func OnCrewRelaunchStart(object clonk)
+{
+	ScheduleUpdateInventory();
+
+	return _inherited(clonk, ...);
+}
+
+
+public func OnCrewRelaunchFinish(object clonk)
+{
+	ScheduleUpdateInventory();
+
+	return _inherited(clonk, ...);
+}
+
+
 /* --- GUI definition --- */
 
 // Overload this if you want to change the layout
@@ -169,7 +185,7 @@ func UpdateInventory(bool selection_changed)
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_inventory.Menu->ShowForCrew(cursor))
+	if (gui_cmc_inventory.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
 	{
 		UpdateInventoryButtonAmount(cursor.MaxContentsCount);
 
