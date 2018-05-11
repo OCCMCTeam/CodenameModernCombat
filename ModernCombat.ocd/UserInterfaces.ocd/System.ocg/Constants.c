@@ -111,6 +111,9 @@ static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
 /* Default background for GUI elements: dark grey (38, 38, 38), 30% transparancy = 66 alpha. */
 static const GUI_CMC_Background_Color_Inactive =   0x33262626;
 
+/* Background for hovered GUI elements: gold, 50% transparency = 128 alpha. */
+static const GUI_CMC_Background_Color_Hover = 0x81ffcc00;
+
 /* Breath bar colors */
 static const GUI_CMC_Color_BreathBar_Transparent = 0x4000ccff; // Light blue, transparency 25%
 static const GUI_CMC_Color_BreathBar_Opaque =      0xff00ccff; // Light blue, opaque

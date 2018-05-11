@@ -107,8 +107,9 @@ public func OpenRespawnMenu()
 		// Add class selection tabs
 		for (var class in this->~GetAvailableClasses())
 		{
-			menu->GetTabs()->AddTab(class, { Text = class->~GetName(), });
+			menu->GetTabs()->AddTab(class, class->~GetName());
 		}
+		menu->GetTabs()->SelectTab();
 	}
 }
 

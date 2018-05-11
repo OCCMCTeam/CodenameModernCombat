@@ -96,7 +96,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		return this;
 	},
 
-	AddTab = func (identifier, proplist style)
+	AddTab = func (identifier, string caption, proplist style)
 	{
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
@@ -108,13 +108,15 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		if (index >= 0)
 		{
 			tab = this.Tab_Elements[index];
-			tab->Assemble(style)->Update();
+			tab->Assemble(caption, style)->Update();
 		}
 		else
 		{
+			var tab_count = GetLength(this.Tab_Elements);
+			
 			// Add additional tab
-			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = this.Tab_Count, };
-			tab->Assemble(style)->AddTo(this);
+			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = tab_count, Tab_Index = tab_count };
+			tab->Assemble(caption, style)->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
@@ -143,18 +145,56 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		// Done
 		return tab;
 	},
+	
+	SelectTab = func (identifier, int index)
+	{
+		if (identifier)
+		{
+			index = GetIndexOf(this.Tab_Ids, identifier);
+		}
+		index = index ?? 0;
+
+		if (index == -1)
+		{
+			FatalError("Tab not found");
+		}
+		
+		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
+		{
+			this.Tab_Elements[i]->SetSelected(i == index);
+		}
+	},
 };
 
 /* --- Tab button --- */
 
 static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 {
-	Style = GUI_TextHCenter | GUI_TextVCenter,
+	// --- Properties
+
+	Tab_Selected = false,
+	Tab_Hovered = false,
+
+	// --- GUI Properties
 
 	BackgroundColor = GUI_CMC_Background_Color_Default,
 	
-	Assemble = func (proplist style, desired_width)
+	// Overlay for hover effect
+	hover = nil,
+	// Overlay for text, should be over the hover effect
+	label = nil,
+	
+	// --- Functions
+	
+	Assemble = func (string caption, proplist style, desired_width)
 	{
+		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
+		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
+		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
+		
+		this.hover = { Priority = 1};
+		this.label = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter, Text = caption};
+		
 		if (style)
 		{
 			AddProperties(this, style);
@@ -164,9 +204,45 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 		return this;
 	},
 	
+	OnMouseInCall = func ()
+	{
+		Update({ hover = {BackgroundColor = GUI_CMC_Background_Color_Hover}});
+	},
+	
+	OnMouseOutCall = func ()
+	{
+		Update({ hover = {BackgroundColor = nil}});
+	},
+	
+	OnClickCall = func ()
+	{
+		GetParent()->SelectTab(nil, this.Priority);
+	},
+	
 	SetSelected = func (bool selected)
 	{
 		this.Tab_Selected = selected;
+		UpdateBackground();
 		return this;
+	},
+	
+	UpdateBackground = func (int color)
+	{
+		if (color == nil)
+		{
+			if (this.Tab_Selected)
+			{
+				UpdateBackground(GUI_CMC_Background_Color_Highlight);
+			}
+			else
+			{
+				UpdateBackground(GUI_CMC_Background_Color_Default);
+			}
+		}
+		else
+		{
+			this.BackgroundColor = color;
+			Update({BackgroundColor = color});
+		}
 	},
 };
