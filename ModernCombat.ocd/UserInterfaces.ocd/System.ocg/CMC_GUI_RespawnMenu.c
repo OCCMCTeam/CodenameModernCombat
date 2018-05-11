@@ -96,7 +96,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		return this;
 	},
 
-	AddTab = func (identifier, string caption, call_from, command, parameter, proplist style)
+	AddTab = func (identifier, string caption, array callback, proplist style)
 	{
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
@@ -129,7 +129,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 				this.Tab_Width->SetEm(0);
 			}
 		}
-		tab->SetData(caption, call_from, command, parameter, style)->Update();
+		tab->SetData(caption, callback, style)->Update();
 		
 		// Update the individual tabs for uniform width
 		var tab_width = GuiDimensionCmc(1000)->Shrink(GetLength(this.Tab_Elements));
@@ -200,20 +200,14 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 		return this;
 	},
 	
-	SetData = func (string caption, call_from, command, parameter, proplist style)
+	SetData = func (string caption, array callback, proplist style)
 	{
 		this.label.Text = caption;
 		if (style)
 		{
 			AddProperties(this, style);
 		}
-		if (command)
-		{
-			this.Tab_Callback = this.Tab_Callback ?? [];
-			this.Tab_Callback[0] = command;
-			this.Tab_Callback[1] = parameter;
-			this.Tab_Callback[2] = call_from;
-		}
+		this.Tab_Callback = callback;
 		return this;
 	},
 	
@@ -241,11 +235,7 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 		// Issue a callback?
 		if (this.Tab_Callback && selected)
 		{
-			var command = this.Tab_Callback[0];
-			var parameter = this.Tab_Callback[1];
-			var call_from = this.Tab_Callback[2];
-			
-			(call_from ?? this)->Call(command, parameter);
+			DoCallback(this.Tab_Callback);
 		}
 		
 		// Configure the GUI menu left content box
