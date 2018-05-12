@@ -121,9 +121,9 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		button_respawn->Assemble()
 		              ->SetWidth(1000)
 		              ->SetHeight(icon_size)
-		              ->SetData("$RespawnButtonLabel$")
+		              ->SetData("$RespawnButtonLabelReady$")
 		              ->AddTo(box_right);
-		
+		GUI_Respawn_Components[5] = button_respawn;
 	},
 	
 	/* --- Access functions --- */
@@ -151,6 +151,11 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 	GetSpawnPoints = func ()
 	{
 		return GUI_Respawn_Components[4]; 
+	},
+	
+	GetRespawnButton = func ()
+	{
+		return GUI_Respawn_Components[5]; 
 	},
 	
 	/* --- Reset functions --- */
@@ -357,11 +362,35 @@ static const CMC_GUI_RespawnMenu_OverviewButton = new CMC_GUI_RespawnMenu_TabBut
 
 static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
 {
+	user_ready = false, // bool - Did the player click the button, i.e. is he done with configuration?
+
 	OnClickCall = func ()
 	{
 		if (this.Tab_Callback)
 		{
 			DoCallback(this.Tab_Callback);
 		}
+	},
+	
+	OnTimeRemaining = func (int frames)
+	{
+		frames = Max(frames, 0);
+		var caption;
+		var seconds = frames / RELAUNCH_Factor_Second;
+		if (frames == 0)
+		{
+			caption = "$RespawnButtonLabelReady$";
+		}
+		else if (user_ready)
+		{
+			caption = Format("$RespawnButtonLabelWaiting$", seconds);
+		}
+		else
+		{
+			caption = Format("$RespawnButtonLabelBlocked$", seconds);
+		}
+		
+		this.label.Text = caption;
+		Update({label = {Text = caption}});
 	},
 };

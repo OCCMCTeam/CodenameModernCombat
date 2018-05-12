@@ -19,6 +19,9 @@ public func OpenRespawnMenu()
 		    ->Show()
 		    ->Open(GetOwner());
 		SetMenu(menu->GetRootID());
+		
+		// Save menu in the container for future reference
+		Contained()->SetRespawnMenu(menu);
 
 		// Callback that allows for filling the tabs
 		this->~OnOpenRespawnMenu(menu);

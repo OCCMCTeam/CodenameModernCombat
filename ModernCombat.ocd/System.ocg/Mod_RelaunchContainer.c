@@ -1,8 +1,11 @@
 
 #appendto Arena_RelaunchContainer
 
-/* --- Engine callbacks --- */
+/* --- Properties --- */
 
+local respawn_menu;
+
+/* --- Engine callbacks --- */
 
 func Initialize()
 {
@@ -10,6 +13,22 @@ func Initialize()
 
 	// Relaunch time is 15 seconds
 	SetRelaunchTime(15);
+}
+
+/* --- Functions --- */
+
+public func GetRespawnMenu()
+{
+	return respawn_menu;
+}
+
+public func SetRespawnMenu(proplist menu)
+{
+	if (respawn_menu)
+	{
+		FatalError("Already has a respawn menu!");
+	}
+	respawn_menu = menu;
 }
 
 /* --- Callbacks --- */
@@ -51,3 +70,20 @@ public func OnRelaunchCrew(object crew)
 	// Notify the HUD
 	crew->~OnCrewRelaunchFinish();
 }
+
+
+/**
+	Callback from the relaunch timer.
+	
+	By default this displays the remaining time as a message above the container.
+
+	@par frames This many frames are remaining.
+ */
+public func OnTimeRemaining(int frames)
+{
+	if (GetRespawnMenu())
+	{
+		GetRespawnMenu()->GetRespawnButton()->OnTimeRemaining(frames);
+	}
+}
+
