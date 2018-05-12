@@ -1,0 +1,9 @@
+Name=Battlefield border
+Description=Limits the battlefield
+
+Area=Area
+ZoneType=Type
+OutsideBattlefield=Battlefield border
+TeamSpawn=Team spawn area
+InstantDeath=Instant death
+Team=Team

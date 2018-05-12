@@ -1,0 +1,9 @@
+Name=Schlachtfeldgrenze
+Description=Begrenzt das Schlachtfeld
+
+Area=Bereich
+ZoneType=Typ
+OutsideBattlefield=Schlachtfeldgrenze
+TeamSpawn=Team Spawn Bereich
+InstantDeath=Sofortiger Tod
+Team=Team
