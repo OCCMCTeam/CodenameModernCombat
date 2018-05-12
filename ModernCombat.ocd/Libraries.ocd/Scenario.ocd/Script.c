@@ -193,6 +193,15 @@ func UpdateFoW(int player, int team, bool enabled)
 	}
 }
 
+
+//	Defines which crew will be spawned for the player.
+//
+//	@par player The player number.
+public func GetPlayerCrewID(int player)
+{
+	return Peacemaker;
+}
+
 /* --- Helper for spawn points --- */
 
 
