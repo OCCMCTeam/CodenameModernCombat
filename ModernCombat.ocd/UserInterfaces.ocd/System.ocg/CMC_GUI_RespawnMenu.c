@@ -121,7 +121,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		button_respawn->Assemble()
 		              ->SetWidth(1000)
 		              ->SetHeight(icon_size)
-		              ->SetData("$RespawnButtonLabelReady$")
+		              ->SetData(Format("$RespawnButtonLabelWaiting$", CMC_RELAUNCH_TIME))
 		              ->AddTo(box_right);
 		GUI_Respawn_Components[5] = button_respawn;
 	},
@@ -362,19 +362,22 @@ static const CMC_GUI_RespawnMenu_OverviewButton = new CMC_GUI_RespawnMenu_TabBut
 
 static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
 {
-	user_ready = false, // bool - Did the player click the button, i.e. is he done with configuration?
+	user_ready = false,   // bool - Did the player click the button, i.e. is he done with configuration?
+	time_remaining = nil, // int remaining time
 
 	OnClickCall = func ()
 	{
-		if (this.Tab_Callback)
-		{
-			DoCallback(this.Tab_Callback);
-		}
+		// Toggle readiness
+		this.user_ready = !this.user_ready;
+		UpdateBackground();
+		OnTimeRemaining(this.time_remaining);
 	},
 	
 	OnTimeRemaining = func (int frames)
 	{
 		frames = Max(frames, 0);
+		this.time_remaining = frames;
+		
 		var caption;
 		var seconds = frames / RELAUNCH_Factor_Second;
 		if (frames == 0)
@@ -392,5 +395,26 @@ static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButt
 		
 		this.label.Text = caption;
 		Update({label = {Text = caption}});
+	},
+	
+	
+	UpdateBackground = func (int color)
+	{
+		if (color == nil)
+		{
+			if (this.user_ready)
+			{
+				UpdateBackground(GUI_CMC_Background_Color_Highlight);
+			}
+			else
+			{
+				UpdateBackground(GUI_CMC_Background_Color_Default);
+			}
+		}
+		else
+		{
+			this.BackgroundColor = color;
+			Update({BackgroundColor = color});
+		}
 	},
 };

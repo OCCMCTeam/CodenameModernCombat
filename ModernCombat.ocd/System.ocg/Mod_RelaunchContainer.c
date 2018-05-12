@@ -1,6 +1,8 @@
 
 #appendto Arena_RelaunchContainer
 
+static const CMC_RELAUNCH_TIME = 15;
+
 /* --- Properties --- */
 
 local respawn_menu;
@@ -12,7 +14,7 @@ func Initialize()
 	inherited(...);
 
 	// Relaunch time is 15 seconds
-	SetRelaunchTime(15);
+	SetRelaunchTime(CMC_RELAUNCH_TIME);
 }
 
 /* --- Functions --- */
