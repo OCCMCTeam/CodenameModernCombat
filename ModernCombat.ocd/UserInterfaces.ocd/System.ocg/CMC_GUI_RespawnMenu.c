@@ -85,11 +85,12 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		var button_overview = new CMC_GUI_RespawnMenu_OverviewButton
 		{
 			Priority = 1,
+			Tooltip = "$OverviewButtonTooltip$",
 		};
 		button_overview->Assemble()
 		               ->SetWidth(1000)
 		               ->SetHeight(icon_size)
-		               ->SetData("Overview", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
+		               ->SetData("$OverviewButtonLabel$", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
 		               ->AddTo(box_right);
 
 		// Spawn points list
@@ -115,11 +116,12 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
 		{
 			Priority = 3,
+			Tooltip = "$RespawnButtonTooltip$",
 		};
 		button_respawn->Assemble()
 		              ->SetWidth(1000)
 		              ->SetHeight(icon_size)
-		              ->SetData("Respawn!")
+		              ->SetData("$RespawnButtonLabel$")
 		              ->AddTo(box_right);
 		
 	},

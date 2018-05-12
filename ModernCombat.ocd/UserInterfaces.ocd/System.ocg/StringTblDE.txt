@@ -1,0 +1,4 @@
+﻿OverviewButtonLabel=Übersicht
+OverviewButtonTooltip=Verkleinert die Kartenansicht, sodass das gesamte Schlachtfeld sichtbar ist.
+RespawnButtonLabel=Einstieg!
+RespawnButtonTooltip=Einstieg am gewählten Einstiegspunkt
