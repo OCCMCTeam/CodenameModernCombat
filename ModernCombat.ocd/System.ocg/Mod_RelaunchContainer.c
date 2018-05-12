@@ -14,7 +14,7 @@ func Initialize()
 	inherited(...);
 
 	// Relaunch time is 15 seconds
-	SetRelaunchTime(CMC_RELAUNCH_TIME);
+	SetRelaunchTime(CMC_RELAUNCH_TIME, true, 6);
 }
 
 /* --- Functions --- */
@@ -69,8 +69,36 @@ public func OnRelaunchCrew(object crew)
 	// Reset zoom to defaults
 	SetPlayerZoomDefault(crew->GetOwner());
 	
+	// Close the menu
+	if (GetRespawnMenu())
+	{
+		GetRespawnMenu()->Close();
+	}
+	
 	// Notify the HUD
 	crew->~OnCrewRelaunchFinish();
+}
+
+/* --- Overloaded functions --- */
+
+/**
+	Find out whether a relaunch is currently blocked.
+	
+	@return bool Returns {@code true} if the relaunch is blocked.
+	             By default, this is if the crew has a menu,
+	             or if a callback "RejectRelaunch" in the crew
+	             returns {@code true}. 
+ */
+public func IsRelaunchBlocked()
+{
+	if (GetRespawnMenu())
+	{
+		return GetRespawnMenu()->IsRespawnBlocked();
+	}
+	else
+	{
+		return inherited(...);
+	}
 }
 
 

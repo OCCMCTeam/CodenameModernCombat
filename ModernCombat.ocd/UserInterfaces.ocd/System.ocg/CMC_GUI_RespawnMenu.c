@@ -158,6 +158,14 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		return GUI_Respawn_Components[5]; 
 	},
 	
+	/* --- Status functions --- */
+	
+	IsRespawnBlocked = func ()
+	{
+		var user_ready = GetRespawnButton()->IsUserReady();
+		return !user_ready;
+	},
+	
 	/* --- Reset functions --- */
 	
 	ResetContentBox = func ()
@@ -416,5 +424,10 @@ static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButt
 			this.BackgroundColor = color;
 			Update({BackgroundColor = color});
 		}
+	},
+	
+	IsUserReady = func ()
+	{
+		return this.user_ready;
 	},
 };
