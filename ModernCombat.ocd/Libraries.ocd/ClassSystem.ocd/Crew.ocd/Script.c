@@ -30,6 +30,41 @@ public func GetAvailableClasses()
 
 /* --- Callbacks from other systems --- */
 
+
+public func OnCrewRelaunchFinish()
+{
+	_inherited(...);
+
+	// Create ammo
+	var ammo_types = GetProperties(GetCrewClass().Ammo);
+	for (var ammo_type in ammo_types)
+	{
+		var ammo = GetDefinition(ammo_type);
+		var amount = GetCrewClass().Ammo[ammo_type];
+		this->SetAmmo(ammo, amount);
+	}
+	
+	// Create contents
+	var item_types = GetProperties(GetCrewClass().Items);
+	for (var item_type in item_types)
+	{
+		var item = GetDefinition(item_type);
+		var amount = GetCrewClass().Items[item_type];
+		CreateContents(item, amount);
+	}
+	
+	// Create grenades
+	var grenade_types = GetProperties(GetCrewClass().Grenades);
+	for (var grenade_type in grenade_types)
+	{
+		var grenade = GetDefinition(grenade_type);
+		var amount = GetCrewClass().Grenades[grenade_type];
+		// TODO - no grenades yet
+	}
+}
+
+/* --- Callbacks from respawn system --- */
+
 public func OnOpenRespawnMenu(proplist menu)
 {
 	_inherited(menu, ...);
