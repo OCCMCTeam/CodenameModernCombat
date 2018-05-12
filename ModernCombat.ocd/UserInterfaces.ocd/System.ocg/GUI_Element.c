@@ -409,6 +409,7 @@ static const GUI_Element = new Global
 	{
 		if (this.GUI_ID || this.ID)
 		{
+			// Close the GUI
 			var root_id = GetRootID();
 			var child_id;
 			if (this.ID && this.ID != root_id)
@@ -416,6 +417,20 @@ static const GUI_Element = new Global
 				child_id = this.ID;
 			}
 			GuiClose(root_id, child_id);
+			
+			// Reset the menu in a target
+			if (this.Target)
+			{
+				var target_menu = this.Target->~GetMenu();
+				
+				if (GetType(target_menu) == C4V_PropList)
+				{
+					if (root_id == target_menu.ID)
+					{
+						this.Target->~SetMenu();
+					}
+				}
+			}
 		}
 		return this;
 	},
