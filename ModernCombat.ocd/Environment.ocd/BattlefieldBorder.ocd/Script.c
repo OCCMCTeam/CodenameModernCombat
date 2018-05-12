@@ -8,6 +8,10 @@ local area = [-20, -20, 40, 40]; // Area to check
 local zonetype = 0; // Type of zone. 0 = Outside of the battlefield, 1 = Spawn area for specific team, 2 = Instant death zone
 local team = 0; // Team for Spawn area
 
+static const ZONETYPE_NORMAL = 0;
+static const ZONETYPE_TEAMSPAWN = 1;
+static const ZONETYPE_INSTANTDEATH = 2;
+
 // Effect for zone checks
 local fxzonecheck = new Effect
 {
@@ -15,7 +19,7 @@ local fxzonecheck = new Effect
 	{
 		var objs;
 		
-		if (Target.zonetype == 0)
+		if (Target.zonetype == ZONETYPE_NORMAL)
 		{
 			// Outside Battlefield. Find everything that is in this area.
 			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"));
@@ -25,7 +29,7 @@ local fxzonecheck = new Effect
 				if (!GetEffect("DeathZoneTimer", obj)) obj->CreateEffect(Target.fxinsidedeathzone,1,1, { zoneobj = Target } );
 			}
 		}
-		else if (Target.zonetype == 1)
+		else if (Target.zonetype == ZONETYPE_TEAMSPAWN)
 		{
 			// Team Spawn. Find everything but clonks from the specified team.
 			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"), Find_Not(Find_Team(Target.team)));
@@ -35,7 +39,7 @@ local fxzonecheck = new Effect
 				if (!GetEffect("DeathZoneTimer", obj)) obj->CreateEffect(Target.fxinsidedeathzone,1,1, { zoneobj = Target } );
 			}
 		}
-		else if (Target.zonetype == 2)
+		else if (Target.zonetype == ZONETYPE_INSTANTDEATH)
 		{
 			// Instant Death Zone. Kill everything instantaneously in this area.
 			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"));
@@ -113,9 +117,9 @@ func Definition(def)
 		Type="enum",
 		Options =
 		[
-			{ Name = "$OutsideBattlefield$", Value = 0 },
-			{ Name = "$TeamSpawn$", Value = 1 },
-			{ Name = "$InstantDeath$", Value = 2 }
+			{ Name = "$OutsideBattlefield$", Value = ZONETYPE_NORMAL },
+			{ Name = "$TeamSpawn$", Value = ZONETYPE_TEAMSPAWN },
+			{ Name = "$InstantDeath$", Value = ZONETYPE_INSTANTDEATH }
 		],
 		Set = "SetZoneType"
 	};
