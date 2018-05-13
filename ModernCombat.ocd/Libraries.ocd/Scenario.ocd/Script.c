@@ -202,6 +202,19 @@ public func GetPlayerCrewID(int player)
 	return Peacemaker;
 }
 
+public func GetRelaunchLocation(int player)
+{
+	var configurator = FindObject(Find_ID(CMC_Game_Session_Configurator));
+	if (configurator)
+	{
+		return configurator->ContainCrewAt();
+	}
+	else
+	{
+		return nil;
+	}
+}
+
 /* --- Helper for spawn points --- */
 
 

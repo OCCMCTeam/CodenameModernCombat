@@ -11,3 +11,9 @@ func CanConfigureSpawnPoints()
 {
 	return false;
 }
+
+// Crews are contained at this point by default. Scenarios may overload this.
+func ContainCrewAt()
+{
+	return RelaunchLocation(LandscapeWidth() / 2, LandscapeHeight() / 2);
+}
