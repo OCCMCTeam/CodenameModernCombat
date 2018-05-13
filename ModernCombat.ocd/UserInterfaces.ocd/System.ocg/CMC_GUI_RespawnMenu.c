@@ -163,7 +163,9 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 	IsRespawnBlocked = func ()
 	{
 		var user_ready = GetRespawnButton()->IsUserReady();
-		return !user_ready;
+		var no_class_selected = this.Target.GetCrewClass && this.Target->GetCrewClass() == nil;
+		return !user_ready
+		     || no_class_selected;
 	},
 	
 	/* --- Reset functions --- */
