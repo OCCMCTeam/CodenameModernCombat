@@ -54,6 +54,9 @@ public func OnInitializeCrew(object crew)
 
 	// Notify the HUD
 	crew->~OnCrewRelaunchStart();
+	
+	// Remove light
+	crew->SetLightRange(0);
 }
 
 
@@ -77,6 +80,9 @@ public func OnRelaunchCrew(object crew)
 	
 	// Notify the HUD
 	crew->~OnCrewRelaunchFinish();
+	
+	// Restore light
+	crew->SetLightRange(300);
 }
 
 /* --- Overloaded functions --- */
