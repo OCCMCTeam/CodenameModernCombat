@@ -27,3 +27,10 @@ public func OpenRespawnMenu()
 		this->~OnOpenRespawnMenu(menu);
 	}
 }
+
+public func OnOpenRespawnMenu(proplist menu)
+{
+	menu->FillDeployLocations();
+	menu->GetRespawnBox()->Update();
+	_inherited(menu, ...);
+}

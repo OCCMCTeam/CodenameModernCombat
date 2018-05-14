@@ -93,7 +93,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		               ->SetData("$OverviewButtonLabel$", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
 		               ->AddTo(box_right);
 
-		// Spawn points list
+		// Deploy location list
 		var list_container = new GUI_Element
 		{
 			Priority = 2,
@@ -101,16 +101,16 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		list_container->SetHeight(GuiDimensionCmc(1000)->Subtract(icon_size->Scale(2)))
 		              ->AddTo(box_right);
 		              
-		var spawnpoint_list = new GUI_Element
+		var deploy_location_list = new GUI_Element
 		{
 			ID = 4,
 			BackgroundColor = GUI_CMC_Background_Color_Default,
 			Style = GUI_VerticalLayout,
 		};
-		spawnpoint_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
-		               ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
-		               ->AddTo(list_container);
-		GUI_Respawn_Components[4] = spawnpoint_list;
+		deploy_location_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
+		                    ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
+		                    ->AddTo(list_container);
+		GUI_Respawn_Components[4] = deploy_location_list;
 		
 		// Respawn button
 		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
@@ -143,12 +143,12 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		return GUI_Respawn_Components[2]; 
 	},
 	
-	GetRightBox = func ()
+	GetRespawnBox = func ()
 	{
 		return GUI_Respawn_Components[3]; 
 	},
 	
-	GetSpawnPoints = func ()
+	GetDeployLocations = func ()
 	{
 		return GUI_Respawn_Components[4]; 
 	},
@@ -175,6 +175,34 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		GetContentBox()->Close();
 		AssembleContentBox()->Update();
 	},
+	
+	ResetRespawnBox = func ()
+	{
+		GetRespawnBox()->Close();
+		AssembleRespawnBox()->Update();
+		FillDeployLocations();
+	},
+	
+	/* --- Deploy locations --- */
+	
+	FillDeployLocations = func ()
+	{
+		var locations = FindObjects(Find_Func("IsDeployLocation"), Find_Func("IsDisplayed", this.Target->GetOwner()), Sort_Func("GetPriority"));
+		var icon_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		for (var i = 0; i < GetLength(locations); ++i)
+		{
+			var location_button = new GUI_Element 
+			{
+				Priority = i,
+				Style = GUI_TextHCenter | GUI_TextVCenter,
+				
+				Text = locations[i]->GetName(),
+				ToolTip = locations[i].Description,
+			};
+			location_button->SetHeight(icon_size)
+			               ->AddTo(GetDeployLocations());
+		}
+	}
 };
 
 /* --- Tab row --- */

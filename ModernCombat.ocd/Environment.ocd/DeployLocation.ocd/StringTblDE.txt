@@ -1,0 +1,10 @@
+Name=Einstiegspunkt
+
+EditorAddLocationName=Koordinate hinzufügen
+EditorAddLocationHelp=Fügt eine Koordinate temporär hinzu.
+EditorApplyLocationName=Änderungen übernehmen
+EditorApplyLocationHelp=Speichert die aktuellen Koordinaten.
+EditorResetLocationName=Änderungen verwerfen
+EditorResetLocationHelp=Verwirft Änderungen an den Koordinaten.
+EditorLocationName=Koordinate %d
+EditorLocationHelp=Definiert eine mögliche Koordinate für den Einstieg. Bei mehreren Koordinaten wird die ungefährlichste ausgewählt. 

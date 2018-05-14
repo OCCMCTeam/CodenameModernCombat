@@ -1,0 +1,10 @@
+Name=Deploy location
+
+EditorAddLocationName=Add coordinate
+EditorAddLocationHelp=Temporarily adds a coordinate.
+EditorApplyLocationName=Apply changes
+EditorApplyLocationHelp=Saves the current coordinates.
+EditorResetLocationName=Reset changes
+EditorResetLocationHelp=Resets changes in the coordinates.
+EditorLocationName=Coordinate %d
+EditorLocationHelp=Defines a possible coordinate for deployment. In case of multiple coordinates the least dangerous is chosen.
