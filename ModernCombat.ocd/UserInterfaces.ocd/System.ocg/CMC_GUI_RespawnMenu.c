@@ -166,14 +166,24 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		var no_class_selected = this.Target.GetCrewClass && this.Target->GetCrewClass() == nil;
 		
 		var deploy_location_available = false;
-		var deploy_location = GetDeployLocations()->GetSelectedTab();
-		if (deploy_location->GetLocation())
+		var deploy_location = SelectedDeployLocation();
+		if (deploy_location)
 		{
-			deploy_location_available = deploy_location->GetLocation()->IsAvailable(this.Target->GetOwner());
+			deploy_location_available = deploy_location->IsAvailable(this.Target->GetOwner());
 		}
 		return !user_ready
 		    ||  no_class_selected
 		    || !deploy_location_available;
+	},
+	
+	SelectedDeployLocation = func ()
+	{
+		var deploy_location = GetDeployLocations()->GetSelectedTab();
+		if (deploy_location && deploy_location->GetLocation())
+		{
+			return deploy_location->GetLocation();
+		}
+		return nil;
 	},
 	
 	/* --- Reset functions --- */
