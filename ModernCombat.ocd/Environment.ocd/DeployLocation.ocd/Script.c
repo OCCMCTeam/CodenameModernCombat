@@ -124,7 +124,7 @@ public func IsAvailable(int player)
 
 public func IsFulfilled(array conditions)
 {
-	for (var condition in conditions)
+	for (var condition in conditions ?? [])
 	{
 		var fulfilled = DoCallback(condition);
 		if (!fulfilled)

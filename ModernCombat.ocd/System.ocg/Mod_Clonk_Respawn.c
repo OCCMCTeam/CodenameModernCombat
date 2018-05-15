@@ -28,9 +28,20 @@ public func OpenRespawnMenu()
 	}
 }
 
+/* --- Callbacks from respawn system --- */
+
 public func OnOpenRespawnMenu(proplist menu)
 {
-	menu->FindDeployLocations();
-	menu->GetRespawnBox()->Update();
 	_inherited(menu, ...);
+
+	CMC_DeployLocationManager->ScanDeployLocations();
+
+	// Add selection tabs
+	for (var location in CMC_DeployLocationManager->GetDeployLocations(GetOwner()))
+	{
+		menu->GetDeployLocations()->AddTab(location);
+	}
+
+	// Select the first location by default
+	menu->GetDeployLocations()->SelectTab(nil, 0, true);
 }
