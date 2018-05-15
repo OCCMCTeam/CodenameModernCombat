@@ -190,7 +190,8 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		var locations = FindObjects(Find_Func("IsDeployLocation"), Find_Func("IsDisplayed", this.Target->GetOwner()));
 		for (var i = 0; i < GetLength(locations); ++i)
 		{
-			GetDeployLocations()->AddTab(locations[i])->SetIndex(i);
+			var button = GetDeployLocations()->AddTab(locations[i])->SetIndex(i);
+			button->SetData(nil, button->DefineCallback(button.ZoomTo));
 		}
 	}
 };
@@ -319,7 +320,10 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	
 	SetData = func (string caption, array callback, proplist style)
 	{
-		this.label.Text = caption;
+		if (caption)
+		{
+			this.label.Text = caption;
+		}
 		if (style)
 		{
 			AddProperties(this, style);
@@ -532,6 +536,27 @@ static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabBut
 		this.ToolTip = location.Description;
 		Update({ label = {Text = this.label.Text}, ToolTip = this.ToolTip});
 		return this;
+	},
+	
+	ZoomTo = func ()
+	{
+		var location = GetLocation();
+		if (location)
+		{
+			var target = GetRoot().Target;
+			var player = target->GetOwner();
+			SetPlrView(player, location);
+			SetPlayerZoomDefault(player);
+		}
+	},
+	
+	GetLocation = func ()
+	{
+		if (this.RespawnLocation)
+		{
+			return Object(this.RespawnLocation);
+		}
+		return nil;		
 	},
 };
 
