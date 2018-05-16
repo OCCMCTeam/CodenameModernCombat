@@ -79,12 +79,20 @@ public func OnRelaunchCrew(object crew)
 	// Close the menu
 	if (GetRespawnMenu())
 	{
+		// Get selected location
 		var deploy = GetRespawnMenu()->SelectedDeployLocation();
 		if (deploy)
 		{
 			location = deploy->RecommendRelaunchLocation(player);
 		}
 		
+		// Hide symbols
+		for (var symbol in CMC_DeployLocationManager->GetDeployLocations())
+		{
+			symbol->CloseMenuFor(player);
+		}
+		
+		// Close actual menu
 		GetRespawnMenu()->Close();
 	}
 	

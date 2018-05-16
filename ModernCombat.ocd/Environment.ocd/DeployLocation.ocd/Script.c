@@ -21,6 +21,8 @@ public func IsDeployLocation() { return true; }
 local conditions;
 local locations;
 local team = NO_OWNER;
+local menu_list;
+local menu_icon;
 
 /* --- Engine callbacks --- */
 
@@ -48,6 +50,17 @@ public func Initialize()
 		EditorHelp = "$EditorResetLocationHelp$", 
 		Command="ResetEditorPropsLocation()",
 	};
+
+	// Make clickable - menus are, to my knowledge, not positioned above objects
+	menu_list = [];
+	menu_icon = CreateObject(Dummy);
+	menu_icon.Visibility = [VIS_Select];
+	menu_icon->SetCategory(C4D_StaticBack | C4D_MouseSelect | C4D_IgnoreFoW);
+	menu_icon->SetShape(-32, -32, 64, 64);
+	menu_icon->SetGraphics(nil, Firestone, 1, GFXOV_MODE_IngamePicture);
+	menu_icon.Plane = 10000;
+	menu_icon.location = this;
+	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
 }
 
 /* --- Settings --- */
@@ -188,6 +201,37 @@ public func GetRelaunchLocationRating(int player, proplist relaunch_location)
 		}
     }
 }
+
+/* --- Clickable symbol --- */
+
+public func CreateMenuFor(int player, proplist callback_menu)
+{
+	menu_list[player] = callback_menu;
+	menu_icon.Visibility[player + 1] = 1;
+	menu_icon->SetPosition(GetX(), GetY());
+}
+
+public func CloseMenuFor(int player)
+{
+	menu_list[player] = nil;
+	menu_icon.Visibility[player + 1] = 0;
+}
+
+// Function for the menu_icon object
+public func MouseSelectionCallback(int player)
+{
+	this.location->OnClick(player);
+}
+
+// Actual call when clicked with mouse
+public func OnClick(int player)
+{
+	if (menu_list[player])
+	{
+		menu_list[player]->GetDeployLocations()->SelectTab(ObjectNumber());
+	}
+}
+
 
 /* --- Editor properties --- */
 

@@ -58,15 +58,23 @@ public func GetDeployLocations(int player)
 	}
 	else
 	{
-		var specific = [];
-		for (var location in Concatenate(locations_static, locations_temporary))
+		var all = Concatenate(locations_static, locations_temporary);
+		if (player == nil)
 		{
-			if (location && location->IsDisplayed(player))
-			{
-				PushBack(specific, location);
-			}
+			return all;
 		}
-		return specific;
+		else
+		{
+			var specific = [];
+			for (var location in all)
+			{
+				if (location && location->IsDisplayed(player))
+				{
+					PushBack(specific, location);
+				}
+			}
+			return specific;
+		}
 	}
 }
 
