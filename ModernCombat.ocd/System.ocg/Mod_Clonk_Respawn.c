@@ -44,5 +44,5 @@ public func OnOpenRespawnMenu(proplist menu)
 	}
 
 	// Select the first location by default
-	menu->GetDeployLocations()->SelectTab(nil, 0, true);
+	menu->GetDeployLocations()->SelectBestTab(true);
 }

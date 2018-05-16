@@ -536,6 +536,20 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 		}
 	},
 	
+	SelectBestTab = func (bool skip_callback)
+	{
+		var best_index = 0;
+		for (var i = 1; i < GetLength(this.Tab_Elements); ++i)
+		{
+			if (this.Tab_Elements[i].Priority < this.Tab_Elements[best_index].Priority)
+			{
+				best_index = i;
+			}
+		}
+		
+		SelectTab(nil, best_index, skip_callback);
+	},
+	
 	GetSelectedTab = func ()
 	{
 		for (var tab in this.Tab_Elements)
