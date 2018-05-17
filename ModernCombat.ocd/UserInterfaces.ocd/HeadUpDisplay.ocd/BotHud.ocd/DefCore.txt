@@ -1,0 +1,5 @@
+[DefCore]
+id=CMC_GUI_ControllerBot
+Version=8,0
+Category=C4D_StaticBack | C4D_Environment
+HideInCreator=true

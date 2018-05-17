@@ -37,3 +37,29 @@ func OnCrewRelaunchFinish()
 		HUDcontroller->~OnCrewRelaunchFinish(this);
 	return _inherited(...);
 }
+
+/* --- Overloads --- */
+
+// Either returns the current HUD controller or creates one.
+// But only if owner is a human otherwise returns nil.
+func GetHUDController()
+{
+	// Get the existing HUD, if possible
+	var player = GetOwner();
+	var controller = inherited(...);
+	if (controller)
+	{
+		return controller;
+	}
+	// Bots do not usually get a HUD, but here we want a simple one that
+	// can notify the other HUDs of health changes
+	else if (GetPlayerType(player) == C4PT_Script)
+	{
+		var controllerDef = CMC_GUI_ControllerBot;
+		HUDcontroller = FindObject(Find_ID(controllerDef), Find_Owner(player));
+		if (!HUDcontroller)
+			HUDcontroller = CreateObject(controllerDef, AbsX(0), AbsY(0), player);
+		return HUDcontroller;
+	}
+	return nil;
+}

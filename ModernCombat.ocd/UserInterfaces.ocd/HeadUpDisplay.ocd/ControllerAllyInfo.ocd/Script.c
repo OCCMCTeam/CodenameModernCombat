@@ -192,7 +192,10 @@ public func ScheduleUpdateAllyInfo(bool update_self_only)
 			if (crew)
 			{
 				var controller = crew->GetHUDController();
-				controller->~ScheduleUpdateAllyInfo(true);
+				if (controller)
+				{
+					controller->~ScheduleUpdateAllyInfo(true);
+				}
 			}
 		}
 	}
