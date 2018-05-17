@@ -401,6 +401,7 @@ static const GUI_Element = new Global
 		{
 			this->ComposeLayout();
 			this.GUI_Owner = player;
+			Show();
 			
 			this.GUI_ID = GuiOpen(this);
 			ClearChildElements();
