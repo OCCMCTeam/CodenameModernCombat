@@ -12,6 +12,21 @@ func CanConfigureSpawnPoints()
 	return false;
 }
 
+
+// Makes bots configurable in editor mode
+public func CanConfigureBots()
+{
+	return IsEditor();
+}
+
+
+// Make teams configurable in editor mode
+public func CanConfigureTeams()
+{
+	return IsEditor();
+}
+
+
 // Crews are contained at this point by default. Scenarios may overload this.
 func ContainCrewAt()
 {
