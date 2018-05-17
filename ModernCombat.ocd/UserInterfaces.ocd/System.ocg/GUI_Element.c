@@ -348,21 +348,29 @@ static const GUI_Element = new Global
 			return parent;
 		}
 	},
+
+	/**
+		Gets the main window.
+	 */
+	GetRoot = func ()
+	{
+		var parent = GetParent();
+		if (parent)
+		{
+			return parent->GetRoot();
+		}
+		else
+		{
+			return this;
+		}
+	},
 	
 	/**
 		Gets the ID / GUI_ID of the main window.
 	 */
 	GetRootID = func ()
 	{
-		var parent = GetParent();
-		if (parent)
-		{
-			return parent->GetRootID();
-		}
-		else
-		{
-			return this.GUI_ID;
-		}
+		return GetRoot().GUI_ID;
 	},
 
 	/**

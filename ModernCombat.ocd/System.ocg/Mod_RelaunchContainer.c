@@ -69,13 +69,38 @@ public func OnInitializeCrew(object crew)
  */
 public func OnRelaunchCrew(object crew)
 {
+	var location = nil;
+	var player = crew->GetOwner();
+
 	// Reset zoom to defaults
-	SetPlayerZoomDefault(crew->GetOwner());
+	SetPlayerZoomDefault(player);
+	
 	
 	// Close the menu
 	if (GetRespawnMenu())
 	{
+		// Get selected location
+		var deploy = GetRespawnMenu()->SelectedDeployLocation();
+		if (deploy)
+		{
+			location = deploy->RecommendRelaunchLocation(player);
+		}
+		
+		// Hide symbols
+		for (var symbol in CMC_DeployLocationManager->GetDeployLocations())
+		{
+			symbol->CloseMenuFor(player);
+		}
+		
+		// Close actual menu
 		GetRespawnMenu()->Close();
+	}
+	
+	// Update location
+	if (location)
+	{
+		crew->SetPosition(location->GetX(), location->GetY());
+		SetPlrView(player, crew);
 	}
 	
 	// Notify the HUD

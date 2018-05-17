@@ -201,5 +201,4 @@ public func OnSelectClassTab(proplist menu, id class)
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
 	}
-	
 }

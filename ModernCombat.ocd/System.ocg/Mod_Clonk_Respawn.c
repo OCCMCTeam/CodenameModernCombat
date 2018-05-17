@@ -27,3 +27,22 @@ public func OpenRespawnMenu()
 		this->~OnOpenRespawnMenu(menu);
 	}
 }
+
+/* --- Callbacks from respawn system --- */
+
+public func OnOpenRespawnMenu(proplist menu)
+{
+	_inherited(menu, ...);
+
+	CMC_DeployLocationManager->ScanDeployLocations();
+
+	// Add selection tabs
+	for (var location in CMC_DeployLocationManager->GetDeployLocations(GetOwner()))
+	{
+		menu->GetDeployLocations()->AddTab(location); // Tab
+		location->CreateMenuFor(GetOwner(), menu);    // Clickable symbol
+	}
+
+	// Select the first location by default
+	menu->GetDeployLocations()->SelectBestTab(true);
+}

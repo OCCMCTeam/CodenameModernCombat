@@ -93,7 +93,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		               ->SetData("$OverviewButtonLabel$", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
 		               ->AddTo(box_right);
 
-		// Spawn points list
+		// Deploy location list
 		var list_container = new GUI_Element
 		{
 			Priority = 2,
@@ -101,16 +101,16 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		list_container->SetHeight(GuiDimensionCmc(1000)->Subtract(icon_size->Scale(2)))
 		              ->AddTo(box_right);
 		              
-		var spawnpoint_list = new GUI_Element
+		var deploy_location_list = new CMC_GUI_RespawnMenu_DeployList
 		{
 			ID = 4,
-			BackgroundColor = GUI_CMC_Background_Color_Default,
+			//BackgroundColor = GUI_CMC_Background_Color_Default,
 			Style = GUI_VerticalLayout,
 		};
-		spawnpoint_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
-		               ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
-		               ->AddTo(list_container);
-		GUI_Respawn_Components[4] = spawnpoint_list;
+		deploy_location_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
+		                    ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
+		                    ->AddTo(list_container);
+		GUI_Respawn_Components[4] = deploy_location_list;
 		
 		// Respawn button
 		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
@@ -143,12 +143,12 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		return GUI_Respawn_Components[2]; 
 	},
 	
-	GetRightBox = func ()
+	GetRespawnBox = func ()
 	{
 		return GUI_Respawn_Components[3]; 
 	},
 	
-	GetSpawnPoints = func ()
+	GetDeployLocations = func ()
 	{
 		return GUI_Respawn_Components[4]; 
 	},
@@ -164,8 +164,26 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 	{
 		var user_ready = GetRespawnButton()->IsUserReady();
 		var no_class_selected = this.Target.GetCrewClass && this.Target->GetCrewClass() == nil;
+		
+		var deploy_location_available = false;
+		var deploy_location = SelectedDeployLocation();
+		if (deploy_location)
+		{
+			deploy_location_available = deploy_location->IsAvailable(this.Target->GetOwner());
+		}
 		return !user_ready
-		     || no_class_selected;
+		    ||  no_class_selected
+		    || !deploy_location_available;
+	},
+	
+	SelectedDeployLocation = func ()
+	{
+		var deploy_location = GetDeployLocations()->GetSelectedTab();
+		if (deploy_location && deploy_location->GetLocation())
+		{
+			return deploy_location->GetLocation();
+		}
+		return nil;
 	},
 	
 	/* --- Reset functions --- */
@@ -174,6 +192,12 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 	{
 		GetContentBox()->Close();
 		AssembleContentBox()->Update();
+	},
+	
+	ResetRespawnBox = func ()
+	{
+		GetRespawnBox()->Close();
+		AssembleRespawnBox()->Update();
 	},
 };
 
@@ -214,7 +238,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 			
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = tab_count, Tab_Index = tab_count };
-			tab->Assemble()->AddTo(this);
+			tab->Assemble()->SetIndex(tab_count)->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
@@ -274,6 +298,7 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	Tab_Selected = nil,
 	Tab_Hovered = nil,
 	Tab_Callback = nil,
+	Tab_Index = nil,
 
 	// --- GUI Properties
 
@@ -300,12 +325,21 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	
 	SetData = func (string caption, array callback, proplist style)
 	{
-		this.label.Text = caption;
+		if (caption)
+		{
+			this.label.Text = caption;
+		}
 		if (style)
 		{
 			AddProperties(this, style);
 		}
 		this.Tab_Callback = callback;
+		return this;
+	},
+	
+	SetIndex = func (int index)
+	{
+		this.Tab_Index = index;
 		return this;
 	},
 	
@@ -321,21 +355,26 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	
 	OnClickCall = func ()
 	{
-		GetParent()->SelectTab(nil, this.Priority);
+		GetParent()->SelectTab(nil, this.Tab_Index);
 	},
 	
-	SetSelected = func (bool selected)
+	SetSelected = func (bool selected, bool skip_callback)
 	{
 		// Update the display
 		this.Tab_Selected = selected;
 		UpdateBackground();
 		
 		// Issue a callback?
-		if (this.Tab_Callback && selected)
+		if (this.Tab_Callback && selected && !skip_callback)
 		{
 			DoCallback(this.Tab_Callback);
 		}
 		return this;
+	},
+	
+	IsSelected = func ()
+	{
+		return this.Tab_Selected;
 	},
 	
 	UpdateBackground = func (int color)
@@ -433,3 +472,128 @@ static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButt
 		return this.user_ready;
 	},
 };
+
+/* --- Deploy locations --- */
+
+static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
+{
+	Style = GUI_GridLayout,
+
+	// Elements for pseudo-proplist
+	// Adding a real proplist would add the elements as a submenu ()
+	Tab_Ids = nil,
+	Tab_Elements = nil,
+	Tab_Width = nil,
+
+	AddTab = func (object location)
+	{
+		// Establish defaults
+		this.Tab_Ids = this.Tab_Ids ?? [];
+		this.Tab_Elements = this.Tab_Elements ?? [];
+		this.Tab_Width = this.Tab_Width ?? GuiDimensionCmc();
+		
+		var identifier = location->ObjectNumber();
+		
+		var tab;
+		var index = GetIndexOf(this.Tab_Ids, identifier);
+		if (index >= 0)
+		{
+			tab = this.Tab_Elements[index];
+		}
+		else
+		{
+			var tab_count = GetLength(this.Tab_Elements);
+		
+			// Add additional tab
+			tab = new CMC_GUI_RespawnMenu_LocationButton { Priority = location->GetPriority(), Tab_Index = tab_count };
+			tab->Assemble(1000)->AddTo(this);
+
+			PushBack(this.Tab_Ids, identifier);
+			PushBack(this.Tab_Elements, tab);
+		}
+		tab->SetLocation(location)->Update();
+		
+		// Done
+		return tab;
+	},
+	
+	SelectTab = func (identifier, int index, bool skip_callback)
+	{
+		if (identifier)
+		{
+			index = GetIndexOf(this.Tab_Ids, identifier);
+		}
+		index = index ?? 0;
+
+		if (index == -1)
+		{
+			FatalError("Tab not found");
+		}
+		
+		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
+		{
+			this.Tab_Elements[i]->SetSelected(i == index, skip_callback);
+		}
+	},
+	
+	SelectBestTab = func (bool skip_callback)
+	{
+		var best_index = 0;
+		for (var i = 1; i < GetLength(this.Tab_Elements); ++i)
+		{
+			if (this.Tab_Elements[i].Priority < this.Tab_Elements[best_index].Priority)
+			{
+				best_index = i;
+			}
+		}
+		
+		SelectTab(nil, best_index, skip_callback);
+	},
+	
+	GetSelectedTab = func ()
+	{
+		for (var tab in this.Tab_Elements)
+		{
+			if (tab->IsSelected())
+			{
+				return tab;
+			}
+		}
+		return nil;
+	},
+};
+
+static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabButton
+{
+	SetLocation = func (object location)
+	{
+		this.RespawnLocation = location->ObjectNumber();
+		this.label.Text = location->GetName();
+		this.ToolTip = location.Description;
+		Update({ label = {Text = this.label.Text}, ToolTip = this.ToolTip});
+		this.Tab_Callback = this->DefineCallback(this.ZoomTo);
+		return this;
+	},
+	
+	ZoomTo = func ()
+	{
+		var location = GetLocation();
+		if (location)
+		{
+			var target = GetRoot().Target;
+			var player = target->GetOwner();
+			SetPlrView(player, location);
+			SetPlayerZoomDefault(player);
+		}
+	},
+	
+	GetLocation = func ()
+	{
+		if (this.RespawnLocation)
+		{
+			return Object(this.RespawnLocation);
+		}
+		return nil;		
+	},
+};
+
