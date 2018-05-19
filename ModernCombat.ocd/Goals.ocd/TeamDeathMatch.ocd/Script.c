@@ -5,9 +5,7 @@
 
 func OnRoundStart(int round)
 {
-	SetTimeLimit(0, 30);
 	inherited(...);
-	
 	
 	var clock = CreateObject(GUI_Clock);
 	SetClock(clock);

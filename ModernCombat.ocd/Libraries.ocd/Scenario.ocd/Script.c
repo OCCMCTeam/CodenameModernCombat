@@ -153,14 +153,15 @@ private func OnRoundStart(int round_number)
 // 3) Round is over, clean up things, next call will be the reset
 private func OnRoundEnd(int round_number)
 {
-	Log("Round is over!");
-
 	// Interior objects and equipment should be remove at the end of the round
 	CleanUpInterior();
 	CleanUpEquipment();
 	
 	// Disable fog of war
 	UpdateFoW(nil, nil, false);
+	
+	// Aaaand we're done!
+	GameOver();
 	
 	_inherited(round_number, ...); // Does nothing for now
 }
