@@ -56,11 +56,13 @@ public func Initialize()
 	menu_icon = CreateObject(Dummy);
 	menu_icon.Visibility = [VIS_Select];
 	menu_icon->SetCategory(C4D_StaticBack | C4D_MouseSelect | C4D_IgnoreFoW);
-	menu_icon->SetShape(-32, -32, 64, 64);
-	menu_icon->SetGraphics(nil, Firestone, 1, GFXOV_MODE_IngamePicture);
+	menu_icon->SetShape(-50, -50, 100, 100);
+	menu_icon->SetGraphics("Neutral", CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
 	menu_icon.Plane = 10000;
 	menu_icon.location = this;
 	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
+	
+	UpdateMenuIcon();
 }
 
 /* --- Settings --- */
@@ -209,6 +211,8 @@ public func CreateMenuFor(int player, proplist callback_menu)
 	menu_list[player] = callback_menu;
 	menu_icon.Visibility[player + 1] = 1;
 	menu_icon->SetPosition(GetX(), GetY());
+	
+	UpdateMenuIcon();
 }
 
 public func CloseMenuFor(int player)
@@ -232,6 +236,19 @@ public func OnClick(int player)
 	}
 }
 
+func UpdateMenuIcon()
+{
+	var color;
+	if (GetTeam() && GetTeam() != NO_OWNER)
+	{
+		color = GetTeamColor(GetTeam());
+	}
+	else
+	{
+		color = RGB(255, 255, 255);
+	}
+	menu_icon->SetClrModulation(color, 1);
+}
 
 /* --- Editor properties --- */
 
