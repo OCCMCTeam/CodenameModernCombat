@@ -31,10 +31,6 @@ public func Initialize()
 // Player enters the game
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
 {
-	// For now, simply block the end of the round.
-	// It may start immediately (later this will not be the case, once we have the main scenario entry)
-	// Later, the goals should register themselves as round end blocker
-	RoundManager()->RegisterRoundEndBlocker(GetHiRank(player));
 	OnPlayerJoinedRound(player, team);
 	
 	// Do the usual stuff
@@ -157,6 +153,8 @@ private func OnRoundStart(int round_number)
 // 3) Round is over, clean up things, next call will be the reset
 private func OnRoundEnd(int round_number)
 {
+	Log("Round is over!");
+
 	// Interior objects and equipment should be remove at the end of the round
 	CleanUpInterior();
 	CleanUpEquipment();
