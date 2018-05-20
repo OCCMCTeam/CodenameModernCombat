@@ -70,7 +70,7 @@ public func GetStackRefillInterval() { return 20; }
 
 public func AllowStackRefill(object user)
 {
-	return true; // TODO: Allowed only for support class
+	return HasAmmoSkill(user);
 }
 
 /* --- User Interface --- */
@@ -230,6 +230,13 @@ func GetCreateAmmoInfo(id ammo_type, int available_points)
 		points_cost = units * exchange_rate,
 		points_required = max * exchange_rate,
 	};
+}
+
+
+func HasAmmoSkill(object user)
+{
+	return user.GetCrewClass                                   // User has the function for getting the class
+	    && user->GetCrewClass()->ClassImprovesAmmoEquipment(); // Class has the required ability
 }
 
 

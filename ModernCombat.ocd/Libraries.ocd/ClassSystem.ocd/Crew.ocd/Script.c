@@ -83,14 +83,14 @@ public func OnSelectClassTab(proplist menu, id class)
 {
 	// Update the class
 	SetCrewClass(class);
-	
+
 	// Update the contents box
 	menu->ResetContentBox();
-	
+
 	// --- Actual contents
-	
+
 	var icon_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
-	
+
 	// Description box
 	if (class.Description)
 	{
@@ -113,7 +113,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		};
 		description->SetHeight(200)->AddTo(menu->GetContentBox());
 	}
-	
+
 	// Ammo
 	if (class.Ammo)
 	{
@@ -149,6 +149,38 @@ public func OnSelectClassTab(proplist menu, id class)
 		ammo_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
 		         ->AddTo(menu->GetContentBox());
 	}
+
+	// Abilities
+	if (class->ClassHasAbilities())
+	{
+		var ability_info = new GUI_Element 
+		{
+			Priority = 3,
+			
+			box = 
+			{
+				BackgroundColor = GUI_CMC_Background_Color_Default,
+				Bottom = icon_size->ToString(),
+				Style = GUI_GridLayout,
+			}
+		};
+
+		var index = 1;
+
+		if (class->ClassImprovesAmmoEquipment())
+		{
+			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, LeadBullet, icon_size->ToString());
+		}
+
+		if (class->ClassImprovesMedicalEquipment())
+		{
+			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, Icon_Heart, icon_size->ToString());
+		}
+
+		ability_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
+		            ->AddTo(menu->GetContentBox());
+		
+	}
 	
 	// Weapons
 	if (class.Items)
@@ -158,7 +190,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		var size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size * item_count);
 		var item_info = new GUI_Element 
 		{
-			Priority = 3,
+			Priority = 4,
 
 			list = 
 			{
@@ -201,4 +233,20 @@ public func OnSelectClassTab(proplist menu, id class)
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
 	}
+}
+
+
+func AssembleClassTabAbilityIcon(int priority, id symbol, string size)
+{
+	return
+	{
+		Priority = priority,
+		Symbol = symbol,
+		Text = symbol->GetName(),
+		Tooltip = symbol.Description,
+
+		Right = size,
+		Bottom = size,
+		Style = GUI_TextBottom | GUI_TextRight,
+	};
 }

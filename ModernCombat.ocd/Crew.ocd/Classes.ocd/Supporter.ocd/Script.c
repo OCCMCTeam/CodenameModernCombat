@@ -21,6 +21,8 @@ local Grenades = {
 
 /* --- Abilities --- */
 
+local ImprovesAmmoEquipment = true;
+
 /* --- Properties --- */
 
 local Name = "$Name$";
