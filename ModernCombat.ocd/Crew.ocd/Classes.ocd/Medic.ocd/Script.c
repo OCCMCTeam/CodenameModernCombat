@@ -14,7 +14,7 @@ local Items = {
 };
 
 local Grenades = {
-	//CMC_Grenade_Field = 1,
+	CMC_Grenade_Field = 1,
 	//CMC_Grenade_Fragmentation = 2,
 	//CMC_Grenade_SensorBall = 1,
 };

@@ -192,6 +192,33 @@ public func OnSelectClassTab(proplist menu, id class)
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
 	}
+	
+	// Grenades
+	if (class.Grenades)
+	{
+		var grenade_types = GetProperties(class.Grenades);
+		var grenade_count = GetLength(grenade_types);
+		var size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size * grenade_count);
+		var grenade_info = new GUI_Element 
+		{
+			Priority = 5,
+
+			list = 
+			{
+				BackgroundColor = GUI_CMC_Background_Color_Default,
+				Bottom = size->ToString(),
+				Style = GUI_VerticalLayout,
+			}
+		};
+		var index = 0;
+		for (var grenade_type in grenade_types)
+		{
+			var grenade = GetDefinition(grenade_type);
+			grenade_info.list[item_type] = AssembleClassTabInventoryIcon(index++, grenade, class.Grenades[grenade_type], icon_size);
+		}
+		grenade_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		         ->AddTo(menu->GetContentBox());
+	}
 }
 
 
