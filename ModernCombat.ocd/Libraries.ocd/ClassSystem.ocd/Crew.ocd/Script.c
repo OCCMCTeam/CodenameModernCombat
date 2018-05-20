@@ -202,18 +202,26 @@ public func OnSelectClassTab(proplist menu, id class)
 
 
 // For respawn menu
-func AssembleClassTabAbilityIcon(int priority, id symbol, proplist icon_size)
+func AssembleClassTabAbilityIcon(int priority, id ability, proplist icon_size)
 {
 	return
 	{
 		Priority = priority,
-		Symbol = symbol,
-		Text = symbol->GetName(),
-		Tooltip = symbol.Description,
-
-		Right = icon_size->ToString(),
-		Bottom = icon_size->ToString(),
-		Style = GUI_TextBottom | GUI_TextRight,
+		Tooltip = ability.Description,
+		
+		icon = 
+		{
+			Right = icon_size->ToString(),
+			Bottom = icon_size->ToString(),
+			Symbol = ability,
+		},
+		
+		label = 
+		{
+			Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),
+			Style = GUI_TextVCenter,
+			Text = ability->GetName(),
+		},
 	};
 }
 
