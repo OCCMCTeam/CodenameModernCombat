@@ -263,8 +263,8 @@ local GrenadeFuse = new Effect
 			{
       			Exit(0, 0, 8);
       		}
-			else if ((container.GetHandItem && this == container->GetHandItem(0)) // Has inventory control? => Get correct item
-			     || (!container.GetHandItem && this == container->Contents(0)))   // No inventory control? => First item
+			else if ((container.GetHandItem && this.Target == container->GetHandItem(0)) // Has inventory control? => Get correct item
+			     || (!container.GetHandItem && this.Target == container->Contents(0)))   // No inventory control? => First item
 			{
 			    var progress = BoundBy(time * 1000 / Max(1, this.Target.Grenade_FuseTime), 0, 1000);
 				var color = InterpolateRGBa(progress,   0, RGB(0, 255, 0),
