@@ -19,8 +19,7 @@ local Items;    // proplist: { definition = amount }
 local Grenades; // proplist: { definition = amount }
 
 // Abilities
-local ImprovesAmmoEquipment = false;	// bool: Reload ammo bag, and further options?
-local ImprovesMedicalEquipment = false; // bool: Reload medical bag, and further options?
+local Abilities; // array: ability definitions, for icon, name, description
 
 /* --- Functions --- */
 
@@ -32,19 +31,11 @@ local ImprovesMedicalEquipment = false; // bool: Reload medical bag, and further
 // lots of items are expected to use it, so if we decide to refactor something
 // internally the function call is more safe in regards of detecting errors.
 
-
-public func ClassImprovesAmmoEquipment()
+public func HasAbility(id ability)
 {
-	return ImprovesAmmoEquipment;
-}
-
-public func ClassImprovesMedicalEquipment()
-{
-	return ImprovesMedicalEquipment;
-}
-
-public func ClassHasAbilities()
-{
-	return ClassImprovesAmmoEquipment()
-	    || ClassImprovesMedicalEquipment();
+	if (Abilities)
+	{
+		return IsValueInArray(Abilities, ability);
+	}
+	return false;
 }

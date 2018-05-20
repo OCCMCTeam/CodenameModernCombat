@@ -21,7 +21,7 @@ local Grenades = {
 
 /* --- Abilities --- */
 
-local ImprovesAmmoEquipment = true;
+local Abilities = [CMC_Ability_ImproveAmmoEquipment];
 
 /* --- Properties --- */
 

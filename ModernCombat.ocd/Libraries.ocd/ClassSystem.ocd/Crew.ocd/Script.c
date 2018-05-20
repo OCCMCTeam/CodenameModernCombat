@@ -141,7 +141,7 @@ public func OnSelectClassTab(proplist menu, id class)
 	}
 
 	// Abilities
-	if (class->ClassHasAbilities())
+	if (class.Abilities && GetLength(class.Abilities) > 0)
 	{
 		var ability_info = new GUI_Element 
 		{
@@ -156,15 +156,9 @@ public func OnSelectClassTab(proplist menu, id class)
 		};
 
 		var index = 0;
-
-		if (class->ClassImprovesAmmoEquipment())
+		for (var ability in class.Abilities)
 		{
-			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, LeadBullet, icon_size);
-		}
-
-		if (class->ClassImprovesMedicalEquipment())
-		{
-			ability_info.box.medical = AssembleClassTabAbilityIcon(index++, Icon_Heart, icon_size);
+			ability_info.box[Format("%i", ability)] = AssembleClassTabAbilityIcon(index++, ability, icon_size);
 		}
 
 		ability_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))

@@ -1,0 +1,2 @@
+DE:Fähigkeiten
+US:Abilities

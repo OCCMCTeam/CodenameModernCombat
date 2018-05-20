@@ -70,7 +70,7 @@ public func GetStackRefillInterval() { return 20; }
 
 public func AllowStackRefill(object user)
 {
-	return HasAmmoSkill(user);
+	return HasAmmoAbility(user);
 }
 
 /* --- User Interface --- */
@@ -233,10 +233,10 @@ func GetCreateAmmoInfo(id ammo_type, int available_points)
 }
 
 
-func HasAmmoSkill(object user)
+func HasAmmoAbility(object user)
 {
 	return user.GetCrewClass                                   // User has the function for getting the class
-	    && user->GetCrewClass()->ClassImprovesAmmoEquipment(); // Class has the required ability
+	    && user->GetCrewClass()->HasAbility(CMC_Ability_ImproveAmmoEquipment); // Class has the required ability
 }
 
 
