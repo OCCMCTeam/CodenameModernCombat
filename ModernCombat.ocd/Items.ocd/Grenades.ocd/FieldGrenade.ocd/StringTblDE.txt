@@ -1,0 +1,2 @@
+Name=Feldgranate
+Description=Erzeugt eine gefährliche, größere Explosion.

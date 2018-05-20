@@ -1,0 +1,2 @@
+Name=Field Grenade
+Description=Creates a dangerous and large explosion.
