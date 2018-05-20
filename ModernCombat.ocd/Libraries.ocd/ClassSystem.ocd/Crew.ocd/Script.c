@@ -133,17 +133,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		for (var ammo_type in ammo_types)
 		{
 			var ammo = GetDefinition(ammo_type);
-			ammo_info.box[ammo_type] = 
-			{
-				Priority = index,
-				Right = icon_size->ToString(),
-				Bottom = icon_size->ToString(),
-				
-				Symbol = ammo,
-				Text = Format("%dx", class.Ammo[ammo_type]),
-				Tooltip = ammo->GetName(),
-				Style = GUI_TextBottom | GUI_TextRight,
-			};
+			ammo_info.box[ammo_type] = AssembleClassTabAmmoIcon(index++, ammo, class.Ammo[ammo_type], icon_size);
 			index += 1;
 		}
 		ammo_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
@@ -165,16 +155,16 @@ public func OnSelectClassTab(proplist menu, id class)
 			}
 		};
 
-		var index = 1;
+		var index = 0;
 
 		if (class->ClassImprovesAmmoEquipment())
 		{
-			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, LeadBullet, icon_size->ToString());
+			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, LeadBullet, icon_size);
 		}
 
 		if (class->ClassImprovesMedicalEquipment())
 		{
-			ability_info.box.ammo = AssembleClassTabAbilityIcon(index++, Icon_Heart, icon_size->ToString());
+			ability_info.box.medical = AssembleClassTabAbilityIcon(index++, Icon_Heart, icon_size);
 		}
 
 		ability_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
@@ -203,32 +193,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		for (var item_type in item_types)
 		{
 			var item = GetDefinition(item_type);
-			item_info.list[item_type] = 
-			{
-				Priority = index,
-				Tooltip = item.Description,
-				
-				icon = 
-				{
-					Right = icon_size->ToString(),
-					Bottom = icon_size->ToString(),
-					Symbol = item,
-					
-					count = 
-					{			
-						Text = Format("%dx", class.Items[item_type]),
-						Style = GUI_TextBottom | GUI_TextRight,
-					},
-				},
-				
-				label = 
-				{
-					Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),
-					Style = GUI_TextVCenter,
-					Text = item->GetName(),
-				},
-			};
-			index += 1;
+			item_info.list[item_type] = AssembleClassTabInventoryIcon(index++, item, class.Items[item_type], icon_size);
 		}
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
@@ -236,7 +201,8 @@ public func OnSelectClassTab(proplist menu, id class)
 }
 
 
-func AssembleClassTabAbilityIcon(int priority, id symbol, string size)
+// For respawn menu
+func AssembleClassTabAbilityIcon(int priority, id symbol, proplist icon_size)
 {
 	return
 	{
@@ -245,8 +211,54 @@ func AssembleClassTabAbilityIcon(int priority, id symbol, string size)
 		Text = symbol->GetName(),
 		Tooltip = symbol.Description,
 
-		Right = size,
-		Bottom = size,
+		Right = icon_size->ToString(),
+		Bottom = icon_size->ToString(),
 		Style = GUI_TextBottom | GUI_TextRight,
+	};
+}
+
+// For respawn menu
+func AssembleClassTabAmmoIcon(int priority, id ammo, int amount, proplist icon_size)
+{
+	return
+	{
+		Priority = priority,
+		Right = icon_size->ToString(),
+		Bottom = icon_size->ToString(),
+		
+		Symbol = ammo,
+		Text = Format("%dx", amount),
+		Tooltip = ammo->GetName(),
+		Style = GUI_TextBottom | GUI_TextRight,
+	};
+}
+
+// For respawn menu
+func AssembleClassTabInventoryIcon(int priority, id item, int amount, proplist icon_size)
+{
+	return
+	{
+		Priority = priority,
+		Tooltip = item.Description,
+		
+		icon = 
+		{
+			Right = icon_size->ToString(),
+			Bottom = icon_size->ToString(),
+			Symbol = item,
+			
+			count = 
+			{			
+				Text = Format("%dx", amount),
+				Style = GUI_TextBottom | GUI_TextRight,
+			},
+		},
+		
+		label = 
+		{
+			Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),
+			Style = GUI_TextVCenter,
+			Text = item->GetName(),
+		},
 	};
 }
