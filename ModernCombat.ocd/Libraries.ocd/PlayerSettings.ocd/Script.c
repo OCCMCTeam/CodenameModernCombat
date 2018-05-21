@@ -10,6 +10,7 @@
 // Make unique strings to be saved in the Player.txt
 
 static const CMC_IRONSIGHT_TOGGLE = "CMC_Controls_IronsightToggle";
+static const CMC_GRENADE_HOLD = "CMC_Controls_GrenadeHold";
 
 /* --- Getters --- */
 

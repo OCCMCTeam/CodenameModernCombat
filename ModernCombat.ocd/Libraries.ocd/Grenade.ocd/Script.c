@@ -43,39 +43,47 @@ public func RejectUse(object user)
 
 public func ControlUseStart(object user, int x, int y)
 {
-	Log("ControlUseStart");
-	if (IsIronsightToggled(user->GetController()) && grenade_active)
-	{
-		if (grenade_aiming)
-		{
-			Log("ControlUseStart: Throw");
-			ThrowAimed(user, GetAimPosition(user, x, y));
-		}
-	}
-	else // This also applies if ironsight is not toggled: Fuse now, lob upon releasing the button
+	if (IsGrenadeHoldEnabled(user->GetController()))
 	{
 		Fuse();
 	}
 	return true;
 }
 
-public func ControlUseHolding(object clonk, int x, int y)
+public func ControlUseHolding(object user, int x, int y)
 {
+	if (IsGrenadeHoldEnabled())
+	{
+		user->SetAimPosition(GetAimPosition(user, x, y), true);
+	}
 	return true;
 }
 
 public func ControlUseCancel(object user, int x, int y)
 {
+	if (IsGrenadeHoldEnabled(user->GetController()) && grenade_active)
+	{
+		DoDrop(user);
+	}
 	return true;
 }
 
 public func ControlUseStop(object user, int x, int y)
 {
-	Log("ControlUseStop");
-	if (!IsIronsightToggled(user->GetController()) && grenade_active)
+	if (IsGrenadeHoldEnabled(user->GetController()))
 	{
-		var throwAngle = Angle(0, 0, x, y);
-		StartLob(user, throwAngle);
+		LaunchGrenade(user, x, y);
+	}
+	else
+	{
+		if (grenade_active)
+		{
+			LaunchGrenade(user, x, y);
+		}
+		else
+		{
+			Fuse();
+		}
 	}
 	return true;
 }
@@ -83,56 +91,25 @@ public func ControlUseStop(object user, int x, int y)
 
 public func ControlUseAltStart(object user, int x, int y)
 {
-	Log("ControlUSeAltStart");
-	if (IsIronsightToggled(user->GetController()))
-	{
-		ToggleAim(user, x, y);
-	}
-	else
-	{
-		Fuse();
-		ControlUseAltHolding(user, x, y);
-	}
+	ToggleAim(user, x, y);
 	return true;
 }
 
-// Update the angle on mouse movement
-public func ControlUseAltHolding(object user, int x, int y)
-{
-	Log("ControlUseAltHolding");
-	if (!IsIronsightToggled(user->GetController()))
-	{
-		StartAim(user, GetAimPosition(user, x, y));
-	}
-	return true;
-}
-
-// Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
-public func ControlUseAltStop(object user, int x, int y)
-{
-	Log("ControlUseAltStop");
-	if (!IsIronsightToggled(user->GetController()))
-	{
-		Log("ControlUseAltStop: Throw aimed");
-		ThrowAimed(user, GetAimPosition(user, x, y));
-	}
-	return true;
-}
 
 public func ControlUseAltCancel(object user, int x, int y)
 {
-	Log("ControlUseAltCancel");
-	CancelAim(user);
+	ToggleAim(user, x, y, true); // Make sure that it is toggled off
 	return true;
 }
+
 
 /* --- Aiming --- */
 
 
 // Right click will by default be a toggle control but can be switched to a holding control
-public func IsIronsightToggled(int player)
+public func IsGrenadeHoldEnabled(int player)
 {
-	return true; //CMC_Player_Settings->GetConfigurationValue(player, CMC_IRONSIGHT_TOGGLE, true);
+	return CMC_Player_Settings->GetConfigurationValue(player, CMC_GRENADE_HOLD, true);
 }
 
 
@@ -140,14 +117,19 @@ public func IsIronsightToggled(int player)
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object user, int x, int y)
 {
-	if (!IsIronsightToggled())
+	if (IsGrenadeHoldEnabled())
 	{
 		// In this case, the control should never fire
-		SetAimingCursor(user, false);
+		SetAimingCursor(user, false, true);
 		return true;
 	}
 
 	user->SetAimPosition(GetAimPosition(user, x, y), true);
+	
+	if (!user->HasActionProcedure(false))
+	{
+		CancelAim(user);
+	}
 }
 
 func GetAimPosition(object user, int x, int y)
@@ -162,7 +144,8 @@ func GetAimPosition(object user, int x, int y)
 	return angle;
 }
 
-func ToggleAim(object user, int x, int y)
+
+func ToggleAim(object user, int x, int y, bool ensure_off)
 {
 	if (grenade_aiming)
 	{
@@ -170,7 +153,7 @@ func ToggleAim(object user, int x, int y)
 		StopAim(user);
 		RemoveAimAnimation(user);
 	}
-	else
+	else if (!ensure_off)
 	{
 		StartAim(user, GetAimPosition(user, x, y));
 		grenade_aiming = true;
@@ -180,7 +163,6 @@ func ToggleAim(object user, int x, int y)
 
 func StartAim(object user, int angle)
 {
-	Log("Start aim, aiming on = %v", grenade_aiming);
 	if (!user->IsAiming())
 	{
 		user->StartAim(this, angle);
@@ -191,7 +173,6 @@ func StartAim(object user, int angle)
 
 func StopAim(object user)
 {
-	Log("Stop aim, aiming on = %v", grenade_aiming);
 	if (user->IsAiming())
 	{
 		user->StopAim();
@@ -202,15 +183,25 @@ func StopAim(object user)
 
 func CancelAim(object user)
 {
-	Log("Cancel aim, aiming on = %v", grenade_aiming);
 	user->CancelAiming(this);
-	grenade_aiming = false;
 	if (grenade_active)
 	{
 		DoDrop(user);
 	}
-	SetAimingCursor(user, false);
-	RemoveAimAnimation(user);
+	ToggleAim(user, nil, nil, true);
+}
+
+
+func LaunchGrenade(object user, int x, int y)
+{
+	if (grenade_aiming)
+	{
+		ThrowAimed(user, GetAimPosition(user, x, y));
+	}
+	else
+	{
+		StartLob(user, GetAimPosition(user, x, y));
+	}
 }
 
 
@@ -218,7 +209,6 @@ func ThrowAimed(object user, int angle)
 {
 	if (GetEffect("BlockGrenadeThrow", user))
 	{
-		Log("Throw blocked");
 		return false;
 	}
 	
@@ -227,10 +217,10 @@ func ThrowAimed(object user, int angle)
 }
 
 
-func SetAimingCursor(object user, bool value)
+func SetAimingCursor(object user, bool value, bool forced)
 {
 	var controller = user->GetController();
-	if (IsIronsightToggled(controller))
+	if (forced || !IsGrenadeHoldEnabled(controller))
 	{
 		// Mouse move will adjust aim angle
 		SetPlayerControlEnabled(controller, CON_CMC_AimingCursor, value);
@@ -315,10 +305,8 @@ func GetAnimationSet() { return animation_set; }
 // Callback from the clonk, when he actually has stopped aiming
 func FinishedAiming(object user, int angle)
 {
-	Log("Finished aiming");
 	if (grenade_aiming)
 	{
-		Log("Launch it!");
 		user->StartShoot(this);
 		grenade_aiming = false;
 		StopAim(user);
@@ -438,7 +426,6 @@ func Fuse()
 {
 	if (!grenade_active)
 	{
-		Log("Fuse");
 		PlaySoundActivate();
 		grenade_active = true;
 		grenade_detonated = false;
@@ -462,14 +449,9 @@ local GrenadeFuse = new Effect
 		var container = this.Target->Contained();
 		if (container)
 		{
-			if (container->~IsClonk() && !container->HasActionProcedure(false))
-			{
-				this.Target->CancelAim(container);
-			}
-		
 			if (container->~IsClonk() && !container->GetAlive() || container->~IsIncapacitated()) // FIXME: callback for wounded clonk
 			{
-      			this.Target->Exit(0, 8); // FIXME: Callback to DoDrop (yes, I seem lazy for not implementing this here :p)
+      			this.Target->DoDrop(container);
       		}
 			else if ((container.GetHandItem && this.Target == container->GetHandItem(0)) // Has inventory control? => Get correct item
 			     || (!container.GetHandItem && this.Target == container->Contents(0)))   // No inventory control? => First item
