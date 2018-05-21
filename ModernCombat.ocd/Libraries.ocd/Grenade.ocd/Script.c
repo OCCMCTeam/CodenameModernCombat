@@ -275,7 +275,6 @@ func Departure(object from)
 {
 	if (grenade_active)
 	{
-		SetCategory(C4D_Vehicle);
 		from->PlayerMessage(from->GetController(), "");
 	}
 	grenade_aiming = false;
@@ -407,13 +406,13 @@ func DetonateInContainer()
 	var container = Contained();
 	if (container && this.Grenade_ContainedDamage > 0)
 	{
-		if (container->GetOCF() & OCF_Alive)
+		if (container->GetAlive())
 		{
 			if (!container->Contained())
 			{
 				container->Fling(container->GetXDir()/10, container->GetYDir()/10 - 1);
 			}
-			container->DoEnergy(this.Grenade_ContainedDamage, false, FX_Call_EngBlast, this->GetController()); // FIXME: may be replaced with custom damage system
+			container->DoEnergy(-this.Grenade_ContainedDamage, false, FX_Call_EngBlast, this->GetController()); // FIXME: may be replaced with custom damage system
 		}
 	}
 	Exit();
@@ -431,6 +430,7 @@ func Fuse()
   		SetGraphics("Active");
 		CreateEffect(GrenadeFuse, 200, 1);
 		this.Collectible = false;
+		SetCategory(C4D_Vehicle);
 	}
 }
 
@@ -513,7 +513,7 @@ func FinishLob(object user, int angle)
 	SetPosition(user->GetX(), user->GetY() + 2);
 	if (!GetEffect("RollingFriction", this))
 	{
-		CreateEffect(RollingFriction, 1, 50); // Roll with reduced friction for 1.5 seconds
+		CreateEffect(RollingFriction, 1, 70); // Roll with reduced friction for 2 seconds
 	}
 	SetRDir(Sign(GetXDir()) * 10);
  }
@@ -592,7 +592,7 @@ local RollingFriction = new Effect
 			for (var i = 0; i < this.Target->GetVertexNum(); ++i)
 			{
 				this.Friction[i] = this.Target->GetVertex(i, VTX_Friction);
-				this.Target->SetVertex(i, VTX_Friction, this.Friction[i] / 6, 2);
+				this.Target->SetVertex(i, VTX_Friction, this.Friction[i] / 4, 2);
 			}
 		}
 	},
