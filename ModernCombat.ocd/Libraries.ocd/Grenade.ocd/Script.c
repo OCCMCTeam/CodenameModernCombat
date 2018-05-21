@@ -66,7 +66,7 @@ public func ControlUseStop(object user, int x, int y)
 
 			user->~SetHandAction(1); // Set hands ocupied
 			
-			user->CreateEffect(ThrowingAnimation, 1, 1, this, throwAngle, 10);
+			user->CreateEffect(ThrowingAnimation, 1, 1, this, throwAngle, true);
 		}
 	}
 	else
@@ -285,28 +285,32 @@ local GrenadeFuse = new Effect
 
 /* --- Animations --- */
 
-func Launch(int angle, int velocity)
+func Launch()
 {
 	if (Contained())
 	{
 		RemoveEffect("BlockGrenadeThrow", Contained());
 		AddEffect("BlockGrenadeThrow", Contained(), 1, this.Grenade_ThrowDelay, Contained());
 	}
-	Exit();
-	SetVelocity(angle, velocity);
 	SetRDir(RandomX(-6, +6));
+}
+
+func DoLob(int angle)
+{
+	Exit();
+	SetVelocity(angle, 20);
 }
 
 local ThrowingAnimation = new Effect
 {
-	Start = func (int temporary, object thrown, int angle, int velocity)
+	Start = func (int temporary, object thrown, int angle, bool lobbed)
 	{
 		if (!temporary)
 		{
 			this.Throw_Time = 16;
 			this.Throw_Object = thrown;
 			this.Throw_Angle = angle;
-			this.Throw_Velocity = velocity;
+			this.Throw_Lobbed = lobbed;
 			this.Target->PlayAnimation("ThrowArms", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, this.Target->GetAnimationLength("ThrowArms"), this.Throw_Time));
 		}
 	},
@@ -317,8 +321,15 @@ local ThrowingAnimation = new Effect
 		{
 			if (time == this.Throw_Time * 8 / 15)
 			{
-				//DoThrow(effect.targetobj, effect.angle);
-				this.Throw_Object->Launch(this.Throw_Angle, this.Throw_Velocity);
+				if (this.Throw_Lobbed)
+				{
+					this.Throw_Object->DoLob(this.Throw_Angle);
+				}
+				else
+				{
+					this.Target->DoThrow(this.Throw_Object, this.Throw_Angle);
+				}
+				this.Throw_Object->Launch();
 			}
 			if (time < this.Throw_Time)
 			{
