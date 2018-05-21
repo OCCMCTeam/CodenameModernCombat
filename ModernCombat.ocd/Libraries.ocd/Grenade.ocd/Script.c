@@ -4,17 +4,23 @@
 	@author Marky
 */
 
+#include Library_RangedWeapon
 
 /* --- Properties --- */
 
 local grenade_detonated = false; // bool: already detonated? Important for preventing multiple explosions, etc.
 local grenade_active = false;    // bool: active?
 
+local animation_set;
+
 local Grenade_ContainedDamage = 60;
 local Grenade_FuseTime = 105; // 3 seconds
 local Grenade_ThrowSpeed = 60;
 local Grenade_ThrowDelay = 20; // Time between consecutive throws
 local Grenade_MaxDamage = 10; // Take this many damage and it activates itself
+
+local DefaultShootTime = 16;
+local DefaultShootTime2 = 8;
 
 func NoDecoDamage(){ return true; } // Forgot what this does, but lets leave it in there for now
 func IsBouncy(){ return true; } // Gets launched by jump pad
@@ -32,9 +38,18 @@ public func HoldingEnabled()
 }
 
 
+public func RejectUse(object user)
+{
+	
+	return !user->HasHandAction(false, false, true) // The clonk must be able to use the hands
+	   && (!grenade_active                          // Pulling the splint is always allowed in this case
+	     || user->~IsWalking());                    // Throwing is allowed while walking only
+}
+
+
 public func ControlUseStart(object user, int x, int y)
 {
-	return user->~IsWalking();
+	return true;
 }
 
 public func ControlUseHolding(object clonk, int x, int y)
@@ -57,17 +72,7 @@ public func ControlUseStop(object user, int x, int y)
 	{
 		var throwAngle = Angle(0, 0, x, y);
 
-		if (user->~IsWalking() && user->~HasHandAction() && user->~IsClonk())
-		{
-			if (throwAngle < 180)
-				user->SetDir(DIR_Right);
-			else
-				user->SetDir(DIR_Left);
-
-			user->~SetHandAction(1); // Set hands ocupied
-			
-			user->CreateEffect(ThrowingAnimation, 1, 1, this, throwAngle, true);
-		}
+		DoLaunch(user, throwAngle, true);
 	}
 	else
 	{
@@ -77,14 +82,70 @@ public func ControlUseStop(object user, int x, int y)
 }
 
 
+
+public func ControlUseAltStart(object user, int x, int y)
+{
+	Fuse();
+	user->StartAim(this);
+	ControlUseHolding(user, x, y);
+	return true;
+}
+
+// Update the angle on mouse movement
+public func ControlUseAltHolding(object user, int x, int y)
+{
+	// Save new angle
+	var angle = Angle(0,0,x,y);
+	angle = Normalize(angle,-180);
+
+	if(angle >  160) angle =  160;
+	if(angle < -160) angle = -160;
+
+	user->SetAimPosition(angle);
+	
+	return true;
+}
+
+// Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
+public func ControlUseAltStop(object user, int x, int y)
+{
+	user->StopAim();
+	return true;
+}
+
+public func ControlUseAltCancel(object user, int x, int y)
+{
+	user->CancelAiming(this);
+	if (grenade_active)
+	{
+		DoDrop(user);
+	}
+	return true;
+}
+
+
 // Right click will by default be a toggle control but can be switched to a holding control
 public func IsIronsightToggled(int player)
 {
-	return CMC_Player_Settings->GetConfigurationValue(player, CMC_IRONSIGHT_TOGGLE, true);
+	return false; //CMC_Player_Settings->GetConfigurationValue(player, CMC_IRONSIGHT_TOGGLE, true);
 }
 
 
 /* --- Engine callbacks --- */
+
+func Initialize()
+{
+	DefaultLoadTime = this.Grenade_ThrowDelay;
+	animation_set = {
+		AimMode         = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
+		AnimationAim    = "SpearAimArms",
+		AnimationShoot  = "SpearThrowArms",
+		AnimationShoot2 = "SpearThrow2Arms",
+		AnimationShoot3 = "SpearThrow3Arms",
+		WalkBack        =  0,
+	};
+	_inherited(...);
+}
 
 
 func Hit(int xdir, int ydir)
@@ -129,6 +190,37 @@ func Damage(int change, int cause, int cause_plr)
 		}
 	}
 	return _inherited(change, cause, cause_plr, ...);
+}
+
+/* --- Callbacks from loading/aiming system --- */
+
+func GetAnimationSet() { return animation_set; }
+
+
+// Callback from the clonk, when he actually has stopped aiming
+func FinishedAiming(object user, int angle)
+{
+	user->StartShoot(this);
+	//DoLaunch(user, angle, false);
+	return true;
+}
+
+
+// Called in the half of the shoot animation (when ShootTime2 is over)
+public func DuringShoot(object user, int angle)
+{
+	user->DoThrow(this, angle);
+	Launch();
+}
+
+
+func ClonkAimLimit(object user, int angle)
+{
+	angle = Normalize(angle,-180);
+	if (Abs(angle) > 160) return false;
+	if (user->GetDir() == 1 && angle < 0) return false;
+	if (user->GetDir() == 0 && angle > 0) return false;
+	return true;
 }
 
 
@@ -285,20 +377,46 @@ local GrenadeFuse = new Effect
 
 /* --- Animations --- */
 
-func Launch()
+func Launch(object user)
 {
-	if (Contained())
+	user = user ?? Contained();
+	if (user)
 	{
-		RemoveEffect("BlockGrenadeThrow", Contained());
-		AddEffect("BlockGrenadeThrow", Contained(), 1, this.Grenade_ThrowDelay, Contained());
+		SetController(user->GetController());
+		RemoveEffect("BlockGrenadeThrow", user);
+		AddEffect("BlockGrenadeThrow", user, 1, this.Grenade_ThrowDelay, user);
 	}
 	SetRDir(RandomX(-6, +6));
+}
+
+func DoLaunch(object user, int angle)
+{
+	if (Normalize(angle, -180) >= 0)
+		user->SetDir(DIR_Right);
+	else
+		user->SetDir(DIR_Left);
+
+	if (user->~IsClonk())
+	{
+		user->~SetHandAction(1); // Set hands ocupied
+		user->CreateEffect(ThrowingAnimation, 1, 1, this, angle, true);
+	}
 }
 
 func DoLob(int angle)
 {
 	Exit();
 	SetVelocity(angle, 20);
+}
+
+func DoDrop(object user)
+{
+	Exit(0, 0, RandomX(-30, 30));
+	if (user)
+	{
+		SetSpeed(user->GetXDir(), user->GetYDir());
+	}
+	Launch();
 }
 
 local ThrowingAnimation = new Effect
