@@ -45,6 +45,7 @@ public func RejectUse(object user)
 
 public func ControlUseStart(object user, int x, int y)
 {
+	Fuse();
 	return true;
 }
 
@@ -65,10 +66,6 @@ public func ControlUseStop(object user, int x, int y)
 	{
 		var throwAngle = Angle(0, 0, x, y);
 		StartLob(user, throwAngle);
-	}
-	else
-	{
-		Fuse();
 	}
 	return true;
 }
@@ -398,7 +395,12 @@ func StartLob(object user, int angle)
 func FinishLob(object user, int angle)
 {
 	Launch(user);
+	var div = 60;
 	SetVelocity(angle, 20);
+	AddSpeed(div * user->GetXDir(1000) / 100 + Sin(angle, 400), 
+	         div * user->GetYDir(1000) / 100 - Cos(angle, 100),
+	         1000);
+	SetPosition(user->GetX(), user->GetY() + 2);
 }
 
 func DoThrow(object user, int angle)
