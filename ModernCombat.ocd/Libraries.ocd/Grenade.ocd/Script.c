@@ -113,7 +113,6 @@ public func IsGrenadeHoldEnabled(int player)
 }
 
 
-
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object user, int x, int y)
 {
@@ -507,12 +506,17 @@ func FinishLob(object user, int angle)
 {
 	Launch(user);
 	var div = 60;
-	SetVelocity(angle, 20);
-	AddSpeed(div * user->GetXDir(1000) / 100 + Sin(angle, 400), 
-	         div * user->GetYDir(1000) / 100 - Cos(angle, 100),
+	SetVelocity(angle, 30);
+	AddSpeed(div * user->GetXDir(1000) / 100, 
+	         div * user->GetYDir(1000) / 100,
 	         1000);
 	SetPosition(user->GetX(), user->GetY() + 2);
-}
+	if (!GetEffect("RollingFriction", this))
+	{
+		CreateEffect(RollingFriction, 1, 70); // Roll with reduced friction for 2 seconds
+	}
+	SetRDir(Sign(GetXDir()) * 10);
+ }
 
 func DoThrow(object user, int angle)
 {
@@ -577,3 +581,30 @@ local ThrowingAnimation = new Effect
 	},
 };
 
+
+local RollingFriction = new Effect
+{
+	Start = func (int temporary)
+	{
+		if (!temporary)
+		{
+			this.Friction = [];
+			for (var i = 0; i < this.Target->GetVertexNum(); ++i)
+			{
+				this.Friction[i] = this.Target->GetVertex(i, VTX_Friction);
+				this.Target->SetVertex(i, VTX_Friction, this.Friction[i] / 6, 2);
+			}
+		}
+	},
+	
+	Stop = func (int temporary)
+	{
+		if (!temporary)
+		{
+			for (var i = 0; i < this.Target->GetVertexNum(); ++i)
+			{
+				this.Target->SetVertex(i, VTX_Friction, this.Target->GetID()->GetVertex(i, VTX_Friction), 2);
+			}
+		}
+	},
+};
