@@ -276,7 +276,7 @@ func Collection(object by_object)
 {
  	if (by_object->GetCategory() & C4D_Living)
  	{
-    	PlaySoundCharge();
+    	PlaySoundDeploy();
 	}
 	_inherited(by_object, ...);
 }
@@ -343,9 +343,9 @@ func PlaySoundActivate()
 }
 
 
-func PlaySoundCharge()
+func PlaySoundDeploy()
 {
-	Sound("Grenade::Charge");
+	Sound("Grenade::Deploy?");
 }
 
 
