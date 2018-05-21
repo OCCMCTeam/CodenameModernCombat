@@ -508,12 +508,12 @@ func FinishLob(object user, int angle)
 	var div = 60;
 	SetVelocity(angle, 30);
 	AddSpeed(div * user->GetXDir(1000) / 100, 
-	         div * user->GetYDir(1000) / 100,
+	         div * user->GetYDir(1000) / 100 - 50,
 	         1000);
 	SetPosition(user->GetX(), user->GetY() + 2);
 	if (!GetEffect("RollingFriction", this))
 	{
-		CreateEffect(RollingFriction, 1, 70); // Roll with reduced friction for 2 seconds
+		CreateEffect(RollingFriction, 1, 50); // Roll with reduced friction for 1.5 seconds
 	}
 	SetRDir(Sign(GetXDir()) * 10);
  }
