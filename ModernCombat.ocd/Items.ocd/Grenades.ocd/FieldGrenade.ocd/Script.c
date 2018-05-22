@@ -16,6 +16,6 @@ local Grenade_ContainedDamage = 120;
 // What happens when the grenade explodes
 public func OnDetonation()
 {
-	BlastObjects(0, 0, 60, Contained(), GetController(), 80, GetObjectLayer());
+	BlastObjects(GetX(), GetY(), 60, Contained(), GetController(), 80, GetObjectLayer());
 	Explode(30, true);
 }
