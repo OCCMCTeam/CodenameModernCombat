@@ -243,7 +243,7 @@ global func Test2_Log() { return "K throws an activated grenade at V"; }
 global func Test2_Setup(object victim, object killer, object fake_killer)
 {
 	victim->SetPosition(125, 150);
-	victim->DoEnergy(-35);
+	victim->DoEnergy(35 - victim->GetEnergy());
 
 	var grenade = killer->CreateContents(CMC_Grenade_Field);
 	grenade->ControlUseStart(killer, +50, -50);
