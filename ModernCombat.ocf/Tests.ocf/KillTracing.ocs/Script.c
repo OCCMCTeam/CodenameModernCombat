@@ -88,26 +88,51 @@ static const IntKillTraceTestControl = new IntTestControl
 {
 	HasNextTest = func ()
 	{
-		return Global[Format("Test%d_Execute", this.testnr)];
+		return Global[Format("Test%d_Setup", this.testnr)];
 	},
 	
 	ExecuteTest = func ()
-	{
-		if (!this.setup)
+	{		
+		if (this.setup > 0)
+		{
+			// Timeout? in seconds
+			var runtime = FrameCounter() - this.setup;
+			if (runtime > ((this.timeout ?? 10) * 35))
+			{
+				return FailTest();
+			}
+
+			// Victim died
+			if (GetCrew(player_victim) == nil)
+			{
+				return Evaluate();
+			}
+		}
+		else
 		{
 			InitTest();
-			Call(Format("Test%d_Log", this.testnr));
+			
+			var output = Call(Format("~Test%d_Log", this.testnr));
+			if (output)
+			{
+				Log(output);
+			}
+
+			var victim = GetCrew(player_victim);
+			var killer = GetCrew(player_killer);
+			var fake_killer = GetCrew(player_killer_fake);
+			Call(Format("Test%d_Setup", this.testnr), victim, killer, fake_killer);
+			
+			this.setup = FrameCounter();
 		}
-		var victim = GetCrew(player_victim);
-		var killer = GetCrew(player_killer);
-		var fake_killer = GetCrew(player_killer_fake);
-		return Call(Format("Test%d_Execute", this.testnr), victim, killer, fake_killer);
+		return Wait();
 	},
 	
 
 	CleanupTest = func ()
 	{
-		this.setup = false;
+		this.setup = 0;
+		this.timeout = nil;
 	},
 	
 	OnDeath = func (int killer, object clonk)
@@ -203,52 +228,24 @@ global func CurrentTest()
 /* --- Tests --- */
 
 global func Test1_Log() { return "K throws an activated iron bomb at V (reference test case)"; }
-global func Test1_Execute(object victim, object killer, object fake_killer)
+global func Test1_Setup(object victim, object killer, object fake_killer)
 {
-	var test = CurrentTest();
-	if (test.setup)
-	{
-		if (victim == nil)
-		{
-			return Evaluate();
-		}
-	}
-	else
-	{
-		victim->SetPosition(145, 150);
-		victim->DoEnergy(10 - victim->GetMaxEnergy());
-			
-		var bomb = killer->CreateContents(IronBomb);
-		bomb->ControlUse(killer);
-		killer->SetHandAction(0);
-		killer->ControlThrow(bomb, 20, -20);
+	victim->SetPosition(145, 150);
+	victim->DoEnergy(10 - victim->GetMaxEnergy());
 		
-		test.setup = true;
-	}
-	return Wait();
+	var bomb = killer->CreateContents(IronBomb);
+	bomb->ControlUse(killer);
+	killer->SetHandAction(0);
+	killer->ControlThrow(bomb, 20, -20);
 }
 
 global func Test2_Log() { return "K throws an activated grenade at V"; }
-global func Test2_Execute(object victim, object killer, object fake_killer)
+global func Test2_Setup(object victim, object killer, object fake_killer)
 {
-	var test = CurrentTest();
-	if (test.setup)
-	{
-		if (victim == nil)
-		{
-			return Evaluate();
-		}
-	}
-	else
-	{
-		victim->SetPosition(125, 150);
-		victim->DoEnergy(-35);
-	
-		var grenade = killer->CreateContents(CMC_Grenade_Field);
-		grenade->ControlUseStart(killer, +50, -50);
-		grenade->ControlUseStop(killer, +50, -50);
-		
-		test.setup = true;
-	}
-	return Wait();
+	victim->SetPosition(125, 150);
+	victim->DoEnergy(-35);
+
+	var grenade = killer->CreateContents(CMC_Grenade_Field);
+	grenade->ControlUseStart(killer, +50, -50);
+	grenade->ControlUseStop(killer, +50, -50);
 }
