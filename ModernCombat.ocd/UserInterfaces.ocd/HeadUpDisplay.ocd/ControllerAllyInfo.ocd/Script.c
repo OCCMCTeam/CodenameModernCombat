@@ -248,19 +248,22 @@ func UpdateAllyInfo()
 			var cursor = GetCursor(ally);
 			
 			// Display class
-			var status_class = cursor->~GetCrewClass();
-			var identifier_class = Format("%i", CMC_Library_Class);
-			if (status_class)
+			if (cursor) // This has to be moved to the crew anyway
 			{
-				info->AddStatusIcon(status_class, identifier_class);
-			}
-			else
-			{
-				info->RemoveStatusIcon(identifier_class);
+				var status_class = cursor->~GetCrewClass();
+				var identifier_class = Format("%i", CMC_Library_Class);
+				if (status_class)
+				{
+					info->AddStatusIcon(status_class, identifier_class);
+				}
+				else
+				{
+					info->RemoveStatusIcon(identifier_class);
+				}
 			}
 			
 			// Health bar
-			if (info->GetHealthBar()->ShowForCrew(cursor, cursor->~IsRespawning()))
+			if (info->GetHealthBar()->ShowForCrew(cursor, !cursor || cursor->~IsRespawning()))
 			{
 				info->GetHealthBar()->SetHealth(cursor);
 			}
