@@ -120,7 +120,7 @@ static const IntTestControl = new Effect
 			this.global_result &= this.current_result;
 	
 			// Call the test on finished function.
-			Call(Format("~Test%d_OnFinished", this.testnr));
+			this->CleanupTest();
 			// Log result and increase test number.
 			Log("Test %d successfully completed.", this.testnr);
 			this.testnr++;
@@ -138,6 +138,12 @@ static const IntTestControl = new Effect
 	ExecuteTest = func ()
 	{
 		return Call(Format("Test%d_Execute", this.testnr));
+	},
+	
+	
+	CleanupTest = func ()
+	{
+		Call(Format("~Test%d_OnFinished", this.testnr));
 	},
 };
 
