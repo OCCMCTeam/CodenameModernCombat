@@ -10,7 +10,7 @@ local NoBurnDecay = 1;
 local Collectible = true;
 
 local Grenade_ContainedDamage = 120;
-local Grenade_SmokeColor = 0xffff0000;
+local Grenade_SmokeColor = 0xffdd0000;
 
 /* --- Callbacks --- */
 

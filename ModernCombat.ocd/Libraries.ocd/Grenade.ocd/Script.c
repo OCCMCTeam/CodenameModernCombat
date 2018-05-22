@@ -367,18 +367,17 @@ public func HandleTrail()
 	if (!Contained())
 	{
 		var speed = Abs(GetXDir()) + Abs(GetYDir());
-		var alpha = Min(205, 105 + speed);
-		var lifetime_base = speed / 3;
+		var alpha = Min(155, 55 + speed);
 		
 		var color = SplitRGBaValue(this.Grenade_SmokeColor ?? RGB(100, 100, 100));
 		
 		CreateParticle("Smoke",
 		               -GetXDir() / 6, -GetYDir() / 6,
 		                PV_Random(-10, 10), -5,
-		                PV_Random(10, 20),
+		                PV_Random(18, 36),
 		               {
-			               Prototype = Particles_Thrust(),
-			               Size = PV_Linear((lifetime_base + 20) / 10, (lifetime_base + 60) / 10),
+			               Prototype = Particles_Smoke(),
+			               Size = PV_Linear(PV_Random(3, 5), PV_Random(10, 20)),
 			               R = color.R, G = color.G, B = color.B, Alpha = alpha
 		               });
 	}
