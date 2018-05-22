@@ -1,0 +1,2 @@
+Name=Frag Grenade
+Description=Tosses sharp-edged shrapnels upon explosion.

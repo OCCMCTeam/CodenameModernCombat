@@ -1,0 +1,2 @@
+Name=Splittergranate
+Description=Verschleudert bei Explosion scharfkantige Splitter.
