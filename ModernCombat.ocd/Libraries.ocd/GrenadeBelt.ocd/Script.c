@@ -33,8 +33,11 @@ func Initialize()
  */
 public func TakeGrenade(id type)
 {
-	var name = Format("%v", type);
-	var count = cmc_grenade_belt.grenades[name];
+	if (!type)
+	{
+		return false;
+	}
+	var count = GetGrenadeCount(type);
 	if (count > 0)
 	{
 		var grenade = CreateObject(type, 0, 0, NO_OWNER);
@@ -45,7 +48,7 @@ public func TakeGrenade(id type)
 			// Collected it? Reduce the amount
 			if (grenade->Contained() == this)
 			{
-				DoGrenadeCount(name, -1);
+				DoGrenadeCount(type, -1);
 				
 				// Select the grenade, if possible
 				if (this.GetItemPos && this.SetHandItemPos)
@@ -197,7 +200,7 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 
 	if (control == CON_CMC_DrawGrenade && this->~HasActionProcedure(true))
 	{
-		return TakeGrenade(CMC_Grenade_Field);
+		return TakeGrenade(GetCurrentGrenadeType());
 	}
 
 	return _inherited(player, control, x, y, strength, repeat, status, ...);
