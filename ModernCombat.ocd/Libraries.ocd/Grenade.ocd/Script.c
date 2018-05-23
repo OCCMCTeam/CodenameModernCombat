@@ -23,8 +23,10 @@ local Grenade_MaxDamage = 10; // Take this many damage and it activates itself
 local DefaultShootTime = 16;
 local DefaultShootTime2 = 8;
 
-func NoDecoDamage(){ return true; } // Forgot what this does, but lets leave it in there for now
-func IsBouncy(){ return true; } // Gets launched by jump pad
+func NoDecoDamage() { return true; } // Forgot what this does, but lets leave it in there for now
+func IsBouncy()     { return true; } // Gets launched by jump pad
+func IsGrenade()    { return true; } // Identification by the grenade belt
+func IsActive()     { return grenade_active; }
 
 /* --- Using the grenade --- */
 

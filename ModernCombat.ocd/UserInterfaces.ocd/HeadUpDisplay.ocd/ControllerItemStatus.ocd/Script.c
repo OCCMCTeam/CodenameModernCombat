@@ -283,6 +283,7 @@ func AssembleItemStatus()
 	gui_cmc_item_status.Slash = slash;
 	gui_cmc_item_status.Total_Count = total_count;
 	gui_cmc_item_status.Grenade_Count = grenade_count;
+	gui_cmc_item_status.Grenade_Icon = grenade_icon;
 	
 	return menu;
 }
@@ -366,8 +367,18 @@ func UpdateItemStatus()
 	if (gui_cmc_item_status.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
 	{
 		// --- Grenades
-		var grenade_count = 0;
-		GetGrenadeCount()->SetValue(grenade_count);
+		
+		var grenade_type = cursor->~GetCurrentGrenadeType();
+		if (grenade_type)
+		{
+			GetGrenadeCount()->Show()->SetValue(cursor->GetGrenadeCount(grenade_type));
+			gui_cmc_item_status.Grenade_Icon->Show();
+		}
+		else
+		{
+			GetGrenadeCount()->Hide();
+			gui_cmc_item_status.Grenade_Icon->Hide();
+		}
 		
 		// --- Item status
 		var item = cursor->GetHandItem(0);
@@ -438,6 +449,7 @@ func UpdateItemStatus()
 		GetSlash()->Update();
 		GetGrenadeCount()->Update();
 		GetObjectConfiguration()->Update();
+		gui_cmc_item_status.Grenade_Icon->Update();
 	}
 }
 

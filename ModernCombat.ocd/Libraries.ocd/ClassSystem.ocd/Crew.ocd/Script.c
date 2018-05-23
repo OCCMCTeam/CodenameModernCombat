@@ -57,10 +57,11 @@ public func OnCrewRelaunchFinish()
 	var grenade_types = GetProperties(GetCrewClass().Grenades);
 	for (var grenade_type in grenade_types)
 	{
-		var grenade = GetDefinition(grenade_type);
 		var amount = GetCrewClass().Grenades[grenade_type];
-		// TODO - no grenades yet
+		this->~DoGrenadeCount(grenade_type, amount);
 	}
+	// Set the one with the most count active
+	this->~GetCurrentGrenadeType();
 }
 
 /* --- Callbacks from respawn system --- */

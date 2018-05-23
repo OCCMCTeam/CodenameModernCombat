@@ -3,6 +3,7 @@
 #include Clonk
 #include Library_AmmoManager
 #include CMC_Library_HasClass
+#include CMC_Library_GrenadeBelt
 
 /* --- Inventory management --- */
 
