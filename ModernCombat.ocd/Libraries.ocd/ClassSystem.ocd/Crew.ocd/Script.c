@@ -172,7 +172,7 @@ public func OnSelectClassTab(proplist menu, id class)
 	{
 		var item_types = GetProperties(class.Items);
 		var item_count = GetLength(item_types);
-		var size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size * item_count);
+		var size = icon_size->Scale(item_count);
 		var item_info = new GUI_Element 
 		{
 			Priority = 4,
@@ -199,7 +199,7 @@ public func OnSelectClassTab(proplist menu, id class)
 	{
 		var grenade_types = GetProperties(class.Grenades);
 		var grenade_count = GetLength(grenade_types);
-		var size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size * grenade_count);
+		var size = icon_size->Scale(grenade_count);
 		var grenade_info = new GUI_Element 
 		{
 			Priority = 5,
@@ -215,7 +215,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		for (var grenade_type in grenade_types)
 		{
 			var grenade = GetDefinition(grenade_type);
-			grenade_info.list[item_type] = AssembleClassTabInventoryIcon(index++, grenade, class.Grenades[grenade_type], icon_size);
+			grenade_info.list[grenade_type] = AssembleClassTabInventoryIcon(index++, grenade, class.Grenades[grenade_type], icon_size);
 		}
 		grenade_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
@@ -270,6 +270,8 @@ func AssembleClassTabInventoryIcon(int priority, id item, int amount, proplist i
 	{
 		Priority = priority,
 		Tooltip = item.Description,
+
+		Bottom = icon_size->ToString(),
 		
 		icon = 
 		{
