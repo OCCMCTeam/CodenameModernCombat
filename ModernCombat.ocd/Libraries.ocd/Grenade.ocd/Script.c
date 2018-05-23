@@ -297,6 +297,17 @@ func Damage(int change, int cause, int cause_plr)
 	return _inherited(change, cause, cause_plr, ...);
 }
 
+
+func RejectEntrance(object into)
+{
+	var other_grenade = FindObject(Find_Func("IsGrenade"), Find_Container(into));
+	if (other_grenade)
+	{
+		return true;
+	}
+	return _inherited(into, ...);	
+}
+
 /* --- Callbacks from loading/aiming system --- */
 
 func GetAnimationSet() { return animation_set; }

@@ -39,7 +39,7 @@ public func TakeGrenade(id type)
 	{
 		var grenade = CreateObject(type, 0, 0, NO_OWNER);
 		Collect(grenade);
-		
+
 		if (grenade)
 		{
 			// Collected it? Reduce the amount
