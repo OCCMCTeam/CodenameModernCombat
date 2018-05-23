@@ -263,13 +263,31 @@ func Hit(int xdir, int ydir)
 }
 
 
-func Collection(object by_object)
+func Selection(object container)
 {
- 	if (by_object->GetCategory() & C4D_Living)
- 	{
-    	PlaySoundDeploy();
+	if (container && container->~IsClonk())
+	{
+		PlaySoundDeploy();
 	}
-	_inherited(by_object, ...);
+	return _inherited(container, ...);
+}
+
+
+func Deselection(object container)
+{
+	var self = this;
+	if (container->~IsClonk())
+	{
+		TryStashGrenade(container);
+	}
+	if (self)
+	{
+		return _inherited(container, ...);
+	}
+	else
+	{
+		return false;
+	}
 }
 
 
@@ -551,6 +569,23 @@ func DoDrop(object user)
 	if (user)
 	{
 		SetSpeed(user->GetXDir(), user->GetYDir());
+	}
+}
+
+
+func TryStashGrenade(object user)
+{
+	// User has a grenade belt? Stash it!
+	if (user && user.StashGrenade)
+	{
+		if (IsActive())
+		{
+			DoDrop(user);
+		}
+		else
+		{
+			user->StashGrenade(this);
+		}
 	}
 }
 
