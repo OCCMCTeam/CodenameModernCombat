@@ -22,12 +22,46 @@ public func OnDetonation()
 	DoShockwave(GetX(), GetY(), level, GetController(), GetObjectLayer());
 	ExplosionEffect(level, 0, 0, 0, true, level);
 	
-	var r = Angle(GetXDir(), GetYDir());
-	var speed = BoundBy(Distance(GetXDir(), GetYDir()), 0, 80);
-	for (var i = 40; i > 0; --i)
+	// Determine free angles
+	var angles = GetPathFreeAngles(level);
+	var min_angle = Min(angles) ?? -90;
+	var max_angle = Max(angles) ?? +90;
+	var avg_angle = GetAverage(angles);
+	
+	// Determine cones
+	var neg_angle = (min_angle + avg_angle) / 2;
+	var pos_angle = (max_angle + avg_angle) / 2;
+	
+	Log("Determined free angles, %v - will launch from %d - %d - %d - %d", angles, min_angle, neg_angle, pos_angle, max_angle);
+	
+	// Cast shrapnel in 3 cones, preferrably sideways
+	var shrapnel_count = 40;
+	var spread = 5;
+	LaunchShrapnel(min_angle, neg_angle, spread, 2 * shrapnel_count / 5);
+	LaunchShrapnel(neg_angle, pos_angle, spread, 1 * shrapnel_count / 5);
+	LaunchShrapnel(pos_angle, max_angle, spread, 2 * shrapnel_count / 5);
+
+	RemoveObject();
+}
+
+func LaunchShrapnel(int min_angle, int max_angle, int spread, int amount)
+{
+	var min = Min(min_angle, max_angle);
+	var max = Max(min_angle, max_angle);
+	
+	var steps = Max(1, (max - min) / Max(1, amount));
+	
+	for (var angle = min; amount > 0; --amount)
 	{
-		var angle = InterpolateLinear(speed, 0, RandomX(-180, 180), 80, r);
-		
+		Log("Launch shrapnel %d", angle);
+		var shrapnel = CreateObject(Shrapnel, 0, 0, NO_OWNER);
+		shrapnel->SetVelocity(angle + RandomX(-spread, +spread), RandomX(70, 100));
+		shrapnel->SetRDir(RandomX(-30, +30));
+		shrapnel->Launch(GetController());
+		shrapnel.ProjectileDamage = this.ShrapnelDamage;
+		CreateObject(BulletTrail)->Set(shrapnel, 2, 30);
+	
+		/*
 		var frag = CreateObject(CMC_Projectile_Bullet); // FIXME: Lazy again :) But seriously, the fragment code is loooong
 		frag->Velocity(RandomX(70, 100))
 		    ->Range(RandomX(200, 300))
@@ -36,7 +70,11 @@ public func OnDetonation()
 		    ->DamageAmount(20)
 		    ->Shooter(this);
 		frag->Launch(angle);
+		*/
+	
+		angle += steps;
 	}
-
-	RemoveObject();
 }
+
+
+func ShrapnelDamage(){ return 20; }

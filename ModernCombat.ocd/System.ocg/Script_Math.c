@@ -45,3 +45,37 @@ global func InterpolateLinear(int progress, int x0, int y0, int x1, int y1, int 
 		return (factor * y1 + (interval - factor) * y0) / Max(1, interval);
 	}
 }
+
+
+global func GetPathFreeAngles(int radius, int steps)
+{
+	AssertObjectContext();
+	steps = steps ?? 5;
+	var angles = [];
+	for (var angle = -180; angle < +180; angle += steps)
+	{
+		var x = +Sin(angle, radius);
+		var y = -Cos(angle, radius);
+		if (PathFree(GetX(), GetY(), GetX() + x, GetY() + y))
+		{
+			PushBack(angles, angle);
+		}
+	}
+	return angles;
+}
+
+
+global func GetAverage(array values)
+{
+	var length = GetLength(values);
+	if (length > 0)
+	{
+		var count = 0;
+		for (var value in values)
+		{
+			count += value;
+		}
+		return count / length;
+	}
+	return nil;
+}
