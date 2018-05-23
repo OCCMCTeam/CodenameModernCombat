@@ -155,6 +155,12 @@ public func GetGrenadeCount(id type)
 
 func GetCurrentGrenadeType()
 {
+	// No grenades left? Reset active type
+	if (cmc_grenade_belt.active_type && GetGrenadeCount(cmc_grenade_belt.active_type) == 0)
+	{
+		cmc_grenade_belt.active_type = nil;
+	}
+	// No type set? Switch to type with max count
 	if (cmc_grenade_belt.active_type == nil)
 	{
 		var active_count = 0;
@@ -170,6 +176,15 @@ func GetCurrentGrenadeType()
 		}
 	}
 	return cmc_grenade_belt.active_type;
+}
+
+
+func SetCurrentGrenadeType(id type)
+{
+	if (type->~IsGrenade())
+	{
+		cmc_grenade_belt.active_type = type;
+	}
 }
 
 
