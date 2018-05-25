@@ -1,0 +1,14 @@
+[DefCore]
+id=CMC_Grenade_SmokeHelper
+Version=8,0
+Category=C4D_Vehicle
+Width=2
+Height=2
+Offset=-1,-1
+Vertices=4
+VertexX=-1,1,0,0
+VertexY=0,0,-1,1
+VertexCNAT=CNAT_Left,CNAT_Right,CNAT_Top,CNAT_Bottom
+VertexFriction=10
+Mass=1
+HideInCreator=true

@@ -309,7 +309,7 @@ func Damage(int change, int cause, int cause_plr)
 	{
 		if (GetDamage() >= this.Grenade_MaxDamage)
 		{
-			Fuse();
+			this->~OnMaxDamage(change, cause, cause_plr);
 		}
 	}
 	return _inherited(change, cause, cause_plr, ...);
@@ -390,6 +390,12 @@ func PlaySoundThrow()
 public func OnDetonation()
 {
 	Explode(30, true, 60);
+}
+
+// If max damage is acquired
+public func OnMaxDamage(int change, int cause, int cause_player)
+{
+	Fuse();
 }
 
 // How the trail is drawn
