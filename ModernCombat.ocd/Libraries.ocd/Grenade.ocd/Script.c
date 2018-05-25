@@ -305,11 +305,12 @@ func Departure(object from)
 func Damage(int change, int cause, int cause_plr)
 {
 	// Only do stuff if the object has the HitPoints property.
-	if (this && this.Grenade_MaxDamage != nil)
+	var self = this;
+	if (self && self.Grenade_MaxDamage != nil)
 	{
 		if (GetDamage() >= this.Grenade_MaxDamage)
 		{
-			this->~OnMaxDamage(change, cause, cause_plr);
+			self->~OnMaxDamage(change, cause, cause_plr);
 		}
 	}
 	return _inherited(change, cause, cause_plr, ...);
@@ -395,7 +396,7 @@ public func OnDetonation()
 // If max damage is acquired
 public func OnMaxDamage(int change, int cause, int cause_player)
 {
-	Fuse();
+	Detonate();
 }
 
 // How the trail is drawn
