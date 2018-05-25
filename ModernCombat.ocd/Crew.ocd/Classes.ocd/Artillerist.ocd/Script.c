@@ -15,7 +15,7 @@ local Items = {
 };
 
 local Grenades = {
-	//CMC_Grenade_Phosphor = 2,
+	CMC_Grenade_Phosphor = 2,
 	CMC_Grenade_Field = 2,
 };
 

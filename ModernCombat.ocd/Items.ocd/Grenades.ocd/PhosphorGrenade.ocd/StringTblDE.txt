@@ -1,0 +1,2 @@
+Name=Phosphorgranate
+Description=Verschleudert bei Detonation brandgefährliches Phosphor welches an Objekten und Oberflächen haftet.

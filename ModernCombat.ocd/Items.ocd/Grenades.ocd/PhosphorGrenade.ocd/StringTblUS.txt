@@ -1,0 +1,2 @@
+Name=Phosphor Grenade
+Description=Scatters highly dangerous phosphor upon explosion which sticks onto objects and surfaces.

@@ -15,7 +15,7 @@ local Items = {
 };
 
 local Grenades = {
-	//CMC_Grenade_Stun = 2,
+	CMC_Grenade_Stun = 2,
 	CMC_Grenade_Smoke = 1,
 };
 
