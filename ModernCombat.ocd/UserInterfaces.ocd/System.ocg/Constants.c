@@ -1,4 +1,10 @@
 
+/* --- Priorities --- */
+
+static const GUI_CMC_Priority_ScreenColor = 10;
+
+static const GUI_CMC_Priority_HUD = 1000;
+
 /* --- Margins --- */
 
 /* Margin for left and right sides of the screen.

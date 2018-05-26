@@ -136,6 +136,7 @@ func AssembleCrewBarsPosition()
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
+		Priority = GUI_CMC_Priority_HUD,
 	};
 
 	menu->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
