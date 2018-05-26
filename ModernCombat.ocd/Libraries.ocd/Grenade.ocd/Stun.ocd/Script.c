@@ -89,7 +89,7 @@ local BlindedByFlash = new Effect
 	
 	AddIntensity = func (int additional)
 	{
-		var subtract = Min((this.Intensity * 100 / 300) / 2, 50);
+		var subtract = Min(this.Intensity / 6, 50);
 		var percentage = (100 - subtract);
 		this.Intensity += percentage * additional / 100;
 	},
