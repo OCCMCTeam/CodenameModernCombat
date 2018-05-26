@@ -5,6 +5,7 @@
 #include CMC_Library_HasClass
 #include CMC_Library_GrenadeBelt
 #include CMC_Library_AffectedBySmokeGrenade
+#include CMC_Library_AffectedByStunGrenade
 
 /* --- Inventory management --- */
 
