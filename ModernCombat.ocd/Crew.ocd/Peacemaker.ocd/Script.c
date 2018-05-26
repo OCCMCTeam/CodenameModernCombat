@@ -4,6 +4,7 @@
 #include Library_AmmoManager
 #include CMC_Library_HasClass
 #include CMC_Library_GrenadeBelt
+#include CMC_Library_AffectedBySmokeGrenade
 
 /* --- Inventory management --- */
 

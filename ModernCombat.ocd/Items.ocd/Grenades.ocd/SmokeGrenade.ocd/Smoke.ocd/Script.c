@@ -100,83 +100,34 @@ func DoStuff(int time)
 		SetYDir(GetYDir(100) - GetGravity() / 2, 100);
 
 		// Blind livings
-		var targets = FindObjects(Find_Distance(smoke_size / 2), Find_NoContainer(), Find_OCF(OCF_Alive | OCF_CrewMember));
+		// The function name could be a string, but it seems that checking it this way is more safe for detecting incompatible changes
+		// TODO: Concerning the radius, see below.
+		var targets = FindObjects(Find_Distance(smoke_size / 2), Find_Func(GetFunctionName(CMC_Library_AffectedBySmokeGrenade.IsAffectedBySmokeGrenade))); 
 		for (var target in targets)
 		{
-			if (!GetEffect("BlindedBySmoke", target))
-			{
-				target->CreateEffect(BlindedBySmoke, 1, 1, GetController());
-			}
+			target->BlindedBySmokeGrenade(this);
 		}
 	}
 }
 
-/* --- Destroys tracer darts --- */
+/* --- Internals --- */
 
 func DestroyTracers()
 {
 	for (var target in FindObjects(Find_Distance(40),
 					Find_Category(C4D_Living | C4D_Structure | C4D_Vehicle),
 					Find_Allied(GetOwner())))
-		if (GetEffect("TracerDart", target))
+		if (GetEffect("TracerDart", target)) // TODO: There are no tracer darts yet.
 			RemoveEffect("TracerDart", target);
 }
 
 
-/* --- Blind crew members --- */
-
-local BlindedBySmoke = new Effect 
+func CanAffect(object target)
 {
-	Start = func (int temp, int by_player)
-	{
-		if (!temp)
-		{
-			//this.by_player = by_player;
-			//EffectVar(0, pTarget, iEffectNumber) = ScreenRGB(pTarget, RGBa(150, 150, 150, 254), 0, 0, false, SR4K_LayerSmoke);
-		}
-	},
+	return ObjectDistance(target) <= smoke_size / 2 // TODO: After testing I would actually increase this to full smoke_size
+	    && target->~IsAffectedBySmokeGrenade(this);
+}
 
-	Timer = func (int time)
-	{
-	/*
-		//Sichteffekt ermitteln
-		var rgb = EffectVar(0, pTarget, iEffectNumber);
-		if(!rgb) return 0;
-
-		// Objekt noch im Rauch?
-		var blinded = false;
-		if (!Contained() || Contained()->GetID() == FKDT)
-		{
-			for(var smoke in FindObjects(pTarget->Find_AtPoint(), Find_ID(SM4K), Find_Func("IsSmoking")))
-			{
-				if (GetCon(smoke)/2 > Distance(GetX(smoke),GetY(smoke),GetX(pTarget),GetY(pTarget)))
-				{
-					blinded = true;
-					break;
-				}
-			}
-		}
-
-		//Bildschirmeffekt verdunkeln oder aufl�sen
-		if (blinded)
-			rgb->DoAlpha(+10, 0, 254);
-		else
-		{
-			rgb->DoAlpha(-10, 0, 254);
-			if (rgb->GetAlpha() >= 254)
-				return -1;
-		}
-	*/
-	},
-
-	Stop = func ()
-	{
-		// TODO: Remove screen fade effect
-	},
-};
-
-
-/* --- Internals --- */
 
 func Damp(int strength)
 {
