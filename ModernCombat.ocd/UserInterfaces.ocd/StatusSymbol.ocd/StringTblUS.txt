@@ -1,0 +1,2 @@
+Name=Status Symbol
+Description=Shows a certain state of an object.
