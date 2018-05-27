@@ -5,6 +5,7 @@ local Visibility = VIS_Allies | VIS_Owner | VIS_Editor;
 local Plane = 1000;
 
 local Host;
+local EnergyBar;
 local RemoveTime = 26; // Was the same value in all calls in the old implementation, makes sense to have it as a property immediately.
 
 local lifetime;
@@ -37,6 +38,14 @@ func AttachTargetLost()
 }
 	
 func SaveScenarioObject() { return false; }
+
+func Destruction()
+{
+	if (EnergyBar)
+	{
+		EnergyBar->RemoveObject();
+	}
+}
 
 
 /* --- Interface --- */
@@ -100,7 +109,13 @@ func Init(object to, object host, string graphics_name)
 	// Energy bar for livings
 	if (alive)
 	{
-		// TODO: Energy bar effect
+		EnergyBar = to->AddEnergyBar();
+		
+		if (EnergyBar)
+		{
+			EnergyBar->SetOwner(GetOwner());
+			EnergyBar.Visibility = this.Visibility;
+		}
 	}
 }
 
@@ -182,3 +197,4 @@ public func FxShowEnergyBarStop(object target, int nr, int reason, bool temp)
   if(EffectVar(0, target, nr))
     RemoveObject(EffectVar(0, target, nr));
 }
+*/
