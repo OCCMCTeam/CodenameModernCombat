@@ -8,6 +8,7 @@
 
 /* --- Properties --- */
 
+local symbol_current; // Name of current symbol
 local symbols;        // All symbols
 local offset_y = 7;   // Offset from the target to the bottom border of the symbol
 local offset_top;     // Offset from the target object to its top border
@@ -57,14 +58,14 @@ public func GetStatusSymbolHelper(object to)
 }
 
 
-global func ShowStatusSymbol(id symbol_id, int priority, string graphics_name, int visibility, bool blink, int color)
+global func ShowStatusSymbol(id symbol_id, int priority)
 {
 	if (this) 
 	{
 		var helper = CMC_StatusSymbol->GetStatusSymbolHelper(this);
 		if (helper)
 		{
-			helper->AddSymbol(symbol_id, graphics_name, priority, visibility, blink, color);
+			helper->AddSymbol(symbol_id, priority);
 			return helper;
 		}
 	}
@@ -104,29 +105,42 @@ func Init(object to)
 	return;
 }
 
-func AddSymbol(id symbol_id, string graphics_name, int priority, int visibility, bool blink, int color)
+func AddSymbol(id symbol_id, int priority)
 {
-	var color_values = SplitRGBaValue(color ?? RGBa(255, 255, 255, 255));
-	symbols[Format("%v", symbol_id)] = 
+	var symbol_name = Format("%v", symbol_id);
+	var symbol = symbols[symbol_name];
+	
+	if (symbol)
 	{
-		Symbol = symbol_id,
-		GraphicsName = graphics_name,
-		Priority = priority,
-		Added = FrameCounter(),
-		Blink = blink,
-		Visibility = visibility ?? GetActionTarget().Visibility,
-		R = color_values.R,
-		G = color_values.G,
-		B = color_values.B,
-		Alpha = color_values.Alpha,
-	};
-	Update();
+		if (symbol.Priority != priority)
+		{
+			symbol.Priority = priority;
+			UpdateSymbol();
+		}
+	}
+	else
+	{
+		symbols[symbol_name] = 
+		{
+			Symbol = symbol_id,
+			GraphicsName = nil,
+			Priority = priority,
+			Added = FrameCounter(),
+			Blink = false,
+			Visibility = GetActionTarget().Visibility,
+			R = nil,
+			G = nil,
+			B = nil,
+			Alpha = nil,
+		};
+		UpdateSymbol();
+	}
 }
 
 func RemoveSymbol(id symbol_id, int priority)
 {
 	symbols[Format("%v", symbol_id)] = nil;
-	Update();
+	UpdateSymbol();
 }
 
 func GetSymbol(id symbol_id)
@@ -134,7 +148,7 @@ func GetSymbol(id symbol_id)
 	return symbols[Format("%v", symbol_id)];
 }
 
-func Update()
+func UpdateSymbol()
 {
 	var symbol;
 	for (var current in GetProperties(symbols))
@@ -145,6 +159,7 @@ func Update()
 		    || (symbols[current].Priority == symbol.Priority && symbols[current].Added > symbol.Added)))
 		{
 			symbol = symbols[current];
+			symbol_current = current;
 		}
 	}
 
@@ -165,11 +180,47 @@ func Update()
 
 		SetVertex(0, VTX_Y, above, 2);
 		SetShape(sym_x, sym_y, sym_width, sym_height);
-
-		SetGraphics(symbol.GraphicsName, symbol.Symbol, 1, GFXOV_MODE_Base);
-		SetClrModulation(RGBa(symbol.R, symbol.G, symbol.B, symbol.Alpha));
 		this.Visibility = symbol.Visibility;
 		Blink(symbol.Blink);
+		UpdateData(symbol);
+	}
+}
+
+
+func SetSymbolGraphics(id symbol_id, string graphics_name)
+{
+	var symbol = GetSymbol(symbol_id);
+	if (symbol)
+	{
+		symbol.GraphicsName = graphics_name;
+		UpdateData(symbol);
+	}
+	return this;
+}
+
+
+func SetSymbolColor(id symbol_id, int r, int g, int b, int alpha)
+{
+	var symbol = GetSymbol(symbol_id);
+	if (symbol)
+	{
+		if (r) symbol.R = r;
+		if (g) symbol.G = g;
+		if (b) symbol.B = b;
+		if (alpha) symbol.Alpha = alpha;
+		
+		UpdateData(symbol);
+	}
+	return this;
+}
+
+
+func UpdateData(proplist symbol)
+{
+	if (Format("%v", symbol.Symbol) == symbol_current)
+	{
+		SetGraphics(symbol.GraphicsName, symbol.Symbol, 1, GFXOV_MODE_Base);
+		SetClrModulation(RGBa(symbol.R ?? 255, symbol.G ?? 255, symbol.B ?? 255, symbol.Alpha ?? 255), 1);
 	}
 }
 
@@ -182,6 +233,7 @@ public func Blink(bool should_blink, int visibility)
 	{
 		CreateEffect(Blinking, 1, 16, visibility);
 	}
+	return this;
 }
 
 local Blinking = new Effect 
