@@ -1,0 +1,2 @@
+Name=Sensor Ball
+Description=Scans the surrounding area for a longer period of time, marking specific enemy units and hazards.

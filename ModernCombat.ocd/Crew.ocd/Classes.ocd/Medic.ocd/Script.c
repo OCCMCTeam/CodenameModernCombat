@@ -16,7 +16,7 @@ local Items = {
 local Grenades = {
 	CMC_Grenade_Field = 1,
 	CMC_Grenade_Frag = 2,
-	//CMC_Grenade_SensorBall = 1,
+	CMC_Grenade_SensorBall = 1,
 };
 
 /* --- Abilities --- */
