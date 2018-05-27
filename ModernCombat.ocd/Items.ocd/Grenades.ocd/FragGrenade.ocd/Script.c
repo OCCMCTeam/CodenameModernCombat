@@ -32,8 +32,6 @@ public func OnDetonation()
 	var neg_angle = (min_angle + avg_angle) / 2;
 	var pos_angle = (max_angle + avg_angle) / 2;
 	
-	Log("Determined free angles, %v - will launch from %d - %d - %d - %d", angles, min_angle, neg_angle, pos_angle, max_angle);
-	
 	// Cast shrapnel in 3 cones, preferrably sideways
 	var shrapnel_count = 40;
 	var spread = 5;
@@ -53,7 +51,6 @@ func LaunchShrapnel(int min_angle, int max_angle, int spread, int amount)
 	
 	for (var angle = min; amount > 0; --amount)
 	{
-		Log("Launch shrapnel %d", angle);
 		var shrapnel = CreateObject(Shrapnel, 0, 0, NO_OWNER);
 		shrapnel->SetVelocity(angle + RandomX(-spread, +spread), RandomX(70, 100));
 		shrapnel->SetRDir(RandomX(-30, +30));
