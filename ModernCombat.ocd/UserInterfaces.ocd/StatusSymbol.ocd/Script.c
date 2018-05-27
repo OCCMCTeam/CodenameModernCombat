@@ -8,7 +8,9 @@
 
 /* --- Properties --- */
 
-local symbols;
+local symbols;        // All symbols
+local offset_y = 7;   // Offset from the target to the bottom border of the symbol
+local offset_top;     // Offset from the target object to its top border
 
 local Name = "$Name$";
 local Description = "$Description$";
@@ -93,10 +95,9 @@ func Init(object to)
 	symbols = {};
 	
 	// Above the object.
-	var height = to->GetDefCoreVal("Height", "DefCore") / 2;
-	SetVertex(0, VTX_Y, height, 1);
+	offset_top = to->GetTop();
 	var x = to->GetVertex(0, VTX_X);
-	SetVertex(0, VTX_X, x);
+	SetVertex(0, VTX_X, x, 1);
 
 	// Set plane to be higher than the object attached to.
 	this.Plane = Max(to.Plane + 1, 1000);	
@@ -139,7 +140,6 @@ func Update()
 		    || (symbols[current].Priority == symbol.Priority && symbols[current].Added > symbol.Added)))
 		{
 			symbol = symbols[current];
-			Log("New symbol is %v", symbol);
 		}
 	}
 
@@ -151,7 +151,15 @@ func Update()
 	}
 	else
 	{
-		SetShape(symbol.Symbol->GetDefOffset(0), symbol.Symbol->GetDefOffset(1), symbol.Symbol->GetDefWidth(), symbol.Symbol->GetDefHeight());
+		var sym_x = symbol.Symbol->GetDefOffset(0);
+		var sym_y = symbol.Symbol->GetDefOffset(1);
+		var sym_width = symbol.Symbol->GetDefWidth();
+		var sym_height = symbol.Symbol->GetDefHeight();
+		var above = sym_y + sym_height + offset_y - offset_top;
+		
+		SetVertex(0, VTX_Y, above, 2);
+		SetShape(sym_x, sym_y, sym_width, sym_height);
+
 		SetGraphics(symbol.GraphicsName, symbol.Symbol, 1, GFXOV_MODE_Base);
 		this.Visibility = symbol.Visibility;
 		Blink(symbol.Blink);
