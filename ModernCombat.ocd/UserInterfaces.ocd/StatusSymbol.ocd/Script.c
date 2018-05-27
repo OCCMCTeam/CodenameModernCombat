@@ -6,22 +6,41 @@
 	@author Zapper, Maikel (orignal code), Marky (made it more modular)
 */
 
+/* --- Properties --- */
 
 local symbol;
 
-public func Init(object to)
+local Name = "$Name$";
+local Description = "$Description$";
+local Plane = 1000;
+
+local ActMap =
 {
-	SetAction("Be", to);
-	
-	// Above the object.
-	var hgt = to->GetDefCoreVal("Height", "DefCore") / 2;
-	SetVertex(0, VTX_Y, hgt);
-	var x = to->GetVertex(0, VTX_X);
-	SetVertex(0, VTX_X, x);
-	// Set plane to be higher than the object attached to.
-	this.Plane = Max(to.Plane + 1, 1000);	
-	return;
+	Be = 
+	{
+		Prototype = Action,
+		Name = "Be",
+		Procedure = DFA_ATTACH,
+		NextAction = "Be",
+		Length = 1,
+		FacetBase = 1,
+		AbortCall = "AttachTargetLost"
+	}
+};
+
+/* --- Callbacks --- */
+
+
+// Callback from the engine: this symbol has lost its parent.
+func AttachTargetLost()
+{
+	return RemoveObject();
 }
+	
+func SaveScenarioObject() { return false; }
+
+
+/* --- Interface --- */
 
 public func GetStatusSymbolHelper(object to)
 {
@@ -56,13 +75,29 @@ global func RemoveStatusSymbol(id symbol)
 	return true;
 }
 
-public func AddSymbol(id symbol_id)
+/* --- Internals --- */
+
+func Init(object to)
+{
+	SetAction("Be", to);
+	
+	// Above the object.
+	var hgt = to->GetDefCoreVal("Height", "DefCore") / 2;
+	SetVertex(0, VTX_Y, hgt);
+	var x = to->GetVertex(0, VTX_X);
+	SetVertex(0, VTX_X, x);
+	// Set plane to be higher than the object attached to.
+	this.Plane = Max(to.Plane + 1, 1000);	
+	return;
+}
+
+func AddSymbol(id symbol_id)
 {
 	symbol = symbol_id;
 	Update();
 }
 
-public func RemoveSymbol(id symbol_id)
+func RemoveSymbol(id symbol_id)
 {
 	if (symbol != symbol_id)
 		return;
@@ -70,7 +105,7 @@ public func RemoveSymbol(id symbol_id)
 	Update();
 }
 
-public func Update()
+func Update()
 {
 	if (!symbol)
 	{
@@ -83,6 +118,8 @@ public func Update()
 	Blink();
 	return;
 }
+
+/* --- Optional: Blinking --- */
 
 public func Blink()
 {
@@ -118,32 +155,3 @@ protected func FxBlinkingTimer(object target, proplist effect)
 	}
 	return FX_OK;
 }
-
-// Callback from the engine: this symbol has lost its parent.
-protected func AttachTargetLost()
-{
-	return RemoveObject();
-}
-	
-public func SaveScenarioObject() { return false; }
-
-
-/*-- Properties --*/
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Plane = 1000;
-
-local ActMap =
-{
-	Be = 
-	{
-		Prototype = Action,
-		Name = "Be",
-		Procedure = DFA_ATTACH,
-		NextAction = "Be",
-		Length = 1,
-		FacetBase = 1,
-		AbortCall = "AttachTargetLost"
-	}
-};
