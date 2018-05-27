@@ -186,14 +186,15 @@ public func FailedIronsight()
 // Transition into ironsight successful, start aiming
 public func FinishIronsight(object clonk, int x, int y)
 {
-	clonk->StartAim(this);
-
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
+	clonk->StartAim(this, angle, "Ironsight");
 	clonk->SetAimPosition(angle);
 
 	is_in_ironsight = true;
 
+	// TODO: Test & maybe make depended on weapon shoot mode?
+	clonk->SetAimViewOffset(75);
 	if (IsIronsightToggled())
 	{
 		// Mouse move will adjust aim angle
@@ -258,7 +259,18 @@ local IronsightHelper = new Effect {
 
 func DoIronsightFireCycle(object clonk, int x, int y)
 {
-	
+	if (!IsReadyToFire())
+		return;
+
+	var angle = GetAngle(x, y);
+	clonk->~SetAimPosition(angle);
+
+	// Check if reload is necessary
+	if (!StartReload(clonk, x, y))
+		// Check if the weapon still needs charging
+		if (!StartCharge(clonk, x, y))
+			// Fire away
+			Fire(clonk, x, y);
 }
 
 /* --- Ammo handling --- */
