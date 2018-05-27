@@ -31,7 +31,7 @@ func Initialize()
 {
 	lifetime = RandomX(300, 400);
 
-	SetLightRange(40, 40);
+	SetLightRange(20, 40);
 	// TODO: AddFireEffect(this, 0, RGB(0, 255, 255), 0, RandomX(-5, -20));
 
 	AddTimer(this.Timer, 1);
@@ -54,7 +54,7 @@ func Timer()
 	{
 		var modulation = BoundBy(speed, 1, 40) * 255 / 40;
 		var rgb = RGB(modulation, BoundBy(modulation, 140, 255), 255);
-		SetLightColor(rgb);		
+		SetLightColor(rgb);	
 	}
 
 	BurnObjects();

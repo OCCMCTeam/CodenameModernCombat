@@ -12,7 +12,7 @@ local Collectible = true;
 
 local Grenade_SmokeColor = nil; // No smoke
 local Grenade_FuseTime = 60;
-local Grenade_ThrowSpeed = 65;
+local Grenade_ThrowSpeed = 22;
 local Grenade_MaxDamage = 20;
 local Grenade_ContainedDamage = 10;
 local Sensor_Distance = 190;
