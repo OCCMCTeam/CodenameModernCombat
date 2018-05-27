@@ -8,7 +8,7 @@ local Ammo = {
 };
 
 local Items = {
-	//CMC_Weapon_AssaultRifle = 1,
+	CMC_Weapon_AssaultRifle = 1,
 	CMC_Weapon_Pistol = 1,
 	//CMC_Tool_C4Detonator = 3,
 	//CMC_Tool_Dragnin = 1,
