@@ -52,27 +52,34 @@ public func GetStatusSymbolHelper(object to)
 	return obj;
 }
 
+
 global func ShowStatusSymbol(id symbol)
 {
-	if (!this) 
-		return false;
-	var h = StatusSymbol->GetStatusSymbolHelper(this);
-	if(!h) 
-		return false;
-	
-	h->AddSymbol(symbol);
-	return true;
+	if (this) 
+	{
+		var helper = StatusSymbol->GetStatusSymbolHelper(this);
+		if (helper) 
+		{
+			helper->AddSymbol(symbol);
+			return true;
+		}
+	}
+	return false;
 }
+
 
 global func RemoveStatusSymbol(id symbol)
 {
-	if (!this) 
-		return false;
-	var h = StatusSymbol->GetStatusSymbolHelper(this);
-	if (!h) 
-		return false;
-	h->RemoveSymbol(symbol);
-	return true;
+	if (this) 
+	{
+		var helper = StatusSymbol->GetStatusSymbolHelper(this);
+		if (helper) 
+		{
+			helper->RemoveSymbol(symbol);
+			return true;
+		}
+	}
+	return false;
 }
 
 /* --- Internals --- */
@@ -82,10 +89,11 @@ func Init(object to)
 	SetAction("Be", to);
 	
 	// Above the object.
-	var hgt = to->GetDefCoreVal("Height", "DefCore") / 2;
-	SetVertex(0, VTX_Y, hgt);
+	var height = to->GetDefCoreVal("Height", "DefCore") / 2;
+	SetVertex(0, VTX_Y, height);
 	var x = to->GetVertex(0, VTX_X);
 	SetVertex(0, VTX_X, x);
+
 	// Set plane to be higher than the object attached to.
 	this.Plane = Max(to.Plane + 1, 1000);	
 	return;
