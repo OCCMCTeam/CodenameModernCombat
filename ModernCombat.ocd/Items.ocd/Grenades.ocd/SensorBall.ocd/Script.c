@@ -149,8 +149,7 @@ func Beep()
 	Flash(beep_interval / 2);
 	PlaySoundBeep();
 
-	//TODO: Kreissymbol erstellen
-	//CreateObject(SM09,0,0,GetOwner())->Set(this);
+	CMC_Icon_SensorBall_Circle->AddTo(this);
 }
 
 /* Entfernung */
