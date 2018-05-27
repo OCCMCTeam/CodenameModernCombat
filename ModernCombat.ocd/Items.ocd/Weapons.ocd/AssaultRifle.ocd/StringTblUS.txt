@@ -1,0 +1,11 @@
+Name=Assault Rifle
+Description=The assault rilfe provides penetrating power and high accuracy when shooting in controlled bursts.||A grenade launcher attachment enables the weapon to fire rifle grenades.
+
+# Bullets
+Burst=Burst
+Single=Single
+
+# Grenades
+Explosive=Explosive
+Cluster=Frag
+Smoke=Smoke

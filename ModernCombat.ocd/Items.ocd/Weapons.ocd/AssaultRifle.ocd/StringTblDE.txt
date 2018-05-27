@@ -1,0 +1,11 @@
+﻿Name=Sturmgewehr
+Description=Das Sturmgewehr bietet Durchschlagskraft und eine hohe Genauigkeit bei kontrolliertem Schießen.|Ein Granatenwerferaufsatz erlaubt das Abfeuern von Gewehrgranaten.
+
+# Kugeln
+Burst=Feuerstoß
+Single=Einzeln
+
+# Granaten
+Explosive=Explosiv
+Cluster=Splitter
+Smoke=Rauch

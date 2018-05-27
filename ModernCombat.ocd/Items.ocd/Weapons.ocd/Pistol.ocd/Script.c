@@ -105,7 +105,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	var x = +Sin(angle, firemode->GetProjectileDistance());
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
-	//EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
 	
 	// Casing
 	x = +Sin(angle, firemode->GetProjectileDistance() / 2);
