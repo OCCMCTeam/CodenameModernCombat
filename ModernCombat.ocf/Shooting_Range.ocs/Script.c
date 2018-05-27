@@ -11,5 +11,5 @@ func InitializePlayer(int plr)
 		return;
 
 	clonk->SetPosition(35, 170);
-	clonk->CreateContents(Pistol);
+	clonk->CreateContents(CMC_Weapon_Pistol);
 }
