@@ -57,14 +57,14 @@ public func GetStatusSymbolHelper(object to)
 }
 
 
-global func ShowStatusSymbol(id symbol_id, int priority, string graphics_name, int visibility, bool blink)
+global func ShowStatusSymbol(id symbol_id, int priority, string graphics_name, int visibility, bool blink, int color)
 {
 	if (this) 
 	{
 		var helper = CMC_StatusSymbol->GetStatusSymbolHelper(this);
 		if (helper)
 		{
-			helper->AddSymbol(symbol_id, graphics_name, priority, visibility, blink);
+			helper->AddSymbol(symbol_id, graphics_name, priority, visibility, blink, color);
 			return helper;
 		}
 	}
@@ -104,8 +104,9 @@ func Init(object to)
 	return;
 }
 
-func AddSymbol(id symbol_id, string graphics_name, int priority, int visibility, bool blink)
+func AddSymbol(id symbol_id, string graphics_name, int priority, int visibility, bool blink, int color)
 {
+	var color_values = SplitRGBaValue(color ?? RGBa(255, 255, 255, 255));
 	symbols[Format("%v", symbol_id)] = 
 	{
 		Symbol = symbol_id,
@@ -114,6 +115,10 @@ func AddSymbol(id symbol_id, string graphics_name, int priority, int visibility,
 		Added = FrameCounter(),
 		Blink = blink,
 		Visibility = visibility ?? GetActionTarget().Visibility,
+		R = color_values.R,
+		G = color_values.G,
+		B = color_values.B,
+		Alpha = color_values.Alpha,
 	};
 	Update();
 }
@@ -148,6 +153,7 @@ func Update()
 		SetGraphics(nil, nil, 1);
 		this.Visibility = VIS_None;
 		Blink(false);
+		SetClrModulation();
 	}
 	else
 	{
@@ -156,11 +162,12 @@ func Update()
 		var sym_width = symbol.Symbol->GetDefWidth();
 		var sym_height = symbol.Symbol->GetDefHeight();
 		var above = sym_y + sym_height + offset_y - offset_top;
-		
+
 		SetVertex(0, VTX_Y, above, 2);
 		SetShape(sym_x, sym_y, sym_width, sym_height);
 
 		SetGraphics(symbol.GraphicsName, symbol.Symbol, 1, GFXOV_MODE_Base);
+		SetClrModulation(RGBa(symbol.R, symbol.G, symbol.B, symbol.Alpha));
 		this.Visibility = symbol.Visibility;
 		Blink(symbol.Blink);
 	}
