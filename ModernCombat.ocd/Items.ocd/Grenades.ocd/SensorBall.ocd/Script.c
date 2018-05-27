@@ -118,17 +118,16 @@ func Sense ()
 		if (Hostile(GetController(), menace->GetController()))
 		{
 			Beep();
-			var tag = nil; // TODO: = FindObject2(Find_ID(SM08), Find_Action("Attach"), Find_ActionTarget(pObj), Find_Allied(GetOwner()))
+			var tag = CMC_Icon_SensorBall_Tag->Get(menace, GetController());
 			if (tag)
 			{
 				tag->~RefreshRemoveTimer(this);
 			}
 			else
 			{
-				//Ansonsten markieren
-				//CreateObject(SM08, GetX(pObj), GetY(pObj), GetOwner())->Set(pObj, this, GetOCF(pObj) & OCF_Alive, 26);
+				CMC_Icon_SensorBall_Tag->AddTo(menace, this);
 
-				//Achievement-Fortschritt (Intelligence)
+				//TODO: Achievement-Fortschritt (Intelligence)
 				//DoAchievementProgress(1, AC21, GetOwner());
 			}
 		}

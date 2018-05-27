@@ -21,6 +21,18 @@ local ActMap =
 };
 
 
+/* --- Callbacks --- */
+
+
+// Callback from the engine: this symbol has lost its parent.
+func AttachTargetLost()
+{
+	return RemoveObject();
+}
+	
+func SaveScenarioObject() { return false; }
+
+
 /* --- Interface --- */
 
 public func AddTo(object target, bool ignore_fadeout)
@@ -60,12 +72,6 @@ func Init(object to)
 	// Update colors and ownership continuously
 	UpdateOwner();
 	AddTimer(this.UpdateOwner, 1);	
-}
-
-
-func AttachTargetLost()
-{
-	RemoveObject();
 }
 
 
