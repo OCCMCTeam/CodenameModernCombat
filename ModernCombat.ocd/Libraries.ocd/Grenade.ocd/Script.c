@@ -357,7 +357,7 @@ public func DuringShoot(object user, int angle)
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::Activate");
+	Sound("Grenade::Activate?");
 }
 
 
