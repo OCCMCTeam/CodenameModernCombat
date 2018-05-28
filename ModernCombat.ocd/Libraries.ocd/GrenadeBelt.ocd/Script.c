@@ -35,6 +35,7 @@ public func TakeGrenade(id type)
 {
 	if (!type)
 	{
+		PlayerMessage(GetOwner(), "$MsgNoGrenadesInBelt$");
 		return false;
 	}
 	var count = GetGrenadeCount(type);
@@ -198,9 +199,16 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 	if (!this)
 		return false;
 
-	if (control == CON_CMC_DrawGrenade && this->~HasActionProcedure(true))
+	// Somewhat redundant, spawn menu blocks the option menu anyway
+	if (control == CON_CMC_DrawGrenade && !this->~IsRespawning())
 	{
-		return TakeGrenade(GetCurrentGrenadeType());
+		// Has to be walking, jumping, not scaling
+		if (this->~HasActionProcedure(false))
+		{
+			TakeGrenade(GetCurrentGrenadeType());
+		}
+		// While not respawning block the option menu always!
+		return true;
 	}
 
 	return _inherited(player, control, x, y, strength, repeat, status, ...);
