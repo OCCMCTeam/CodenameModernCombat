@@ -7,3 +7,4 @@ OutsideBattlefield=Schlachtfeldgrenze
 TeamSpawn=Team Spawn Bereich
 InstantDeath=Sofortiger Tod
 Team=Team
+GoBack=Dir bleiben %d Sekunden zur Umkehr!

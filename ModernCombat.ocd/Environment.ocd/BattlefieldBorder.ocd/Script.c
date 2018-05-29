@@ -1,8 +1,8 @@
 
-local Name="$Name$";
-local Description="$Description$";
+local Name = "$Name$";
+local Description = "$Description$";
 
-local Visibility=VIS_Editor; // Only visible in Editor Mode
+local Visibility = VIS_Editor; // Only visible in Editor Mode
 
 local area = [-20, -20, 40, 40]; // Area to check
 local zonetype = 0; // Type of zone. 0 = Outside of the battlefield, 1 = Spawn area for specific team, 2 = Instant death zone
@@ -69,16 +69,28 @@ local fxinsidedeathzone = new Effect
 	
 	Timer = func()
 	{
+		// Remove effect from dead or respawning targets
+		if (!Target->GetAlive() || Target->~IsRespawning())
+		{
+			return FX_Execute_Kill;
+		}
+	
+
 		// Remove Effect if clonk leaves the area
 		// The combination of Find_Not and Find_Exclude reduces the possible objects to find to just the clonk. We only want to check for this clonk if it's still inside the area.
 		// If we can't find it here, it has moved out of the area.
-		if (!zoneobject->FindObject( Find_Not(Find_Exclude(Target)), Find_InRect(zoneobject.area[0], zoneobject.area[1], zoneobject.area[2], zoneobject.area[3]))) return -1;
-		
-		Target->Message("Go back! %d Seconds left!", (MaxAreaTime - Time) / 35);
+		if (!zoneobject->FindObject(Find_Not(Find_Exclude(Target)), Find_InRect(zoneobject.area[0], zoneobject.area[1], zoneobject.area[2], zoneobject.area[3])))
+		{
+			return FX_Execute_Kill;
+		}
+
+		// Show remaining time
+		Target->PlayerMessage(Target->GetOwner(), "$GoBack$", (MaxAreaTime - Time) / 35);
 		
 		if (Time > MaxAreaTime)
 		{
 			// TODO: Maybe adjust killtracing if needed
+			Target->PlayerMessage(Target->GetOwner(), "");
 			Target->Kill();
 		}
 	}

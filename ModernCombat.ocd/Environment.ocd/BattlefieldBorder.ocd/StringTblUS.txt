@@ -7,3 +7,4 @@ OutsideBattlefield=Battlefield border
 TeamSpawn=Team spawn area
 InstantDeath=Instant death
 Team=Team
+GoBack=Go back! %d seconds left!
