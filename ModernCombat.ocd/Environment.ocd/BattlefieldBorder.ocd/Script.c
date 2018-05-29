@@ -1,4 +1,6 @@
 
+/* --- Properties --- */
+
 local Name = "$Name$";
 local Description = "$Description$";
 
@@ -12,6 +14,9 @@ static const ZONETYPE_NORMAL = 0;
 static const ZONETYPE_TEAMSPAWN = 1;
 static const ZONETYPE_INSTANTDEATH = 2;
 
+
+/* --- Functionality --- */
+
 // Effect for zone checks
 local fxzonecheck = new Effect
 {
@@ -22,7 +27,7 @@ local fxzonecheck = new Effect
 		if (Target.zonetype == ZONETYPE_NORMAL)
 		{
 			// Outside Battlefield. Find everything that is in this area.
-			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"));
+			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target());
 			
 			for (var obj in objs)
 			{
@@ -32,7 +37,7 @@ local fxzonecheck = new Effect
 		else if (Target.zonetype == ZONETYPE_TEAMSPAWN)
 		{
 			// Team Spawn. Find everything but clonks from the specified team.
-			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"), Find_Not(Find_Team(Target.team)));
+			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target(), Find_Not(Find_Team(Target.team)));
 			
 			for (var obj in objs)
 			{
@@ -42,7 +47,7 @@ local fxzonecheck = new Effect
 		else if (Target.zonetype == ZONETYPE_INSTANTDEATH)
 		{
 			// Instant Death Zone. Kill everything instantaneously in this area.
-			objs = Target->FindObjects(Find_InRect(Target.area[0],Target.area[1],Target.area[2],Target.area[3]), Find_Func("IsClonk"));
+			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target());
 			
 			// TODO: Maybe adjust killtracing if needed
 			for (var obj in objs)
@@ -52,6 +57,7 @@ local fxzonecheck = new Effect
 		}
 	}
 };
+
 
 // Effect applied to clonks that entered a death zone
 local fxinsidedeathzone = new Effect
@@ -79,7 +85,7 @@ local fxinsidedeathzone = new Effect
 		// Remove Effect if clonk leaves the area
 		// The combination of Find_Not and Find_Exclude reduces the possible objects to find to just the clonk. We only want to check for this clonk if it's still inside the area.
 		// If we can't find it here, it has moved out of the area.
-		if (!zoneobject->FindObject(Find_Not(Find_Exclude(Target)), Find_InRect(zoneobject.area[0], zoneobject.area[1], zoneobject.area[2], zoneobject.area[3])))
+		if (!zoneobject->FindObject(Find_Not(Find_Exclude(Target)), zoneobject->Find_InZone()))
 		{
 			return FX_Execute_Kill;
 		}
@@ -90,16 +96,39 @@ local fxinsidedeathzone = new Effect
 		if (Time > MaxAreaTime)
 		{
 			// TODO: Maybe adjust killtracing if needed
-			Target->PlayerMessage(Target->GetOwner(), "");
 			Target->Kill();
 		}
-	}
+	},
+	
+	Stop = func (int temp)
+	{
+		if (!temp && Target)
+		{
+			Target->PlayerMessage(Target->GetOwner(), "");
+		}
+	},
 };
+
+	
+func Find_InZone()
+{
+	return Find_InRect(area[0], area[1], area[2], area[3]);
+}
+
+
+func Find_Target()
+{
+	return Find_And(Find_Func("IsClonk"), Find_Func("GetAlive"), Find_Not(Find_Func("IsRespawning")));
+}
+
+/* --- Engine callbacks --- */
+
 
 func Initialize()
 {
 	CreateEffect(fxzonecheck,1,1);
 }
+
 
 func Definition(def)
 {
@@ -145,12 +174,16 @@ func Definition(def)
 	};
 }
 
-/* Setter functions for EditorProps */
+
+/* --- Setter functions for EditorProps --- */
+
+
 func SetAreaRect(array new_area_rect)
 {
 	area = new_area_rect;
 	return true;
 }
+
 
 func SetZoneType(int new_type)
 {
@@ -163,13 +196,15 @@ func SetZoneType(int new_type)
 	return true;
 }
 
+
 func SetTeam(int new_team)
 {
 	team = new_team;
 	return true;
 }
 
-/* Scenario Saving */
+/* --- Scenario Saving --- */
+
 
 func SaveScenarioObject(props)
 {
