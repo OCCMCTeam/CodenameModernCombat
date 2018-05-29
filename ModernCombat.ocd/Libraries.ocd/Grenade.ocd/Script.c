@@ -10,14 +10,14 @@
 
 local grenade_detonated = false; // bool: already detonated? Important for preventing multiple explosions, etc.
 local grenade_active = false;    // bool: active?
-local grenade_aiming = false;    // bool: aiming? Used for separating "ironsight" toggle from normal clonk aiming
+//local grenade_aiming = false;    // bool: aiming? Used for separating "ironsight" toggle from normal clonk aiming
 
 local animation_set;
 
 local Grenade_ContainedDamage = 60;
 local Grenade_FuseTime = 105; // 3 seconds
 local Grenade_ThrowSpeed = 20; // Multiplication factor to clonk.ThrowSpeed
-local Grenade_ThrowDelay = 20; // Time between consecutive throws
+local Grenade_ThrowDelay = 10; // Time aiming and throwing in case of holding-enabled grenades
 local Grenade_MaxDamage = 10; // Take this many damage and it activates itself
 
 local DefaultShootTime = 16;
@@ -77,7 +77,7 @@ public func ControlUseStop(object user, int x, int y)
 {
 	if (IsGrenadeHoldEnabled(user->GetController()) || IsActive())
 	{
-		ThrowAimed(user, GetAimPosition(user, x, y));
+		SetDelayedAction(this.ThrowAimed, user, GetAimPosition(user, x, y));
 	}
 	else
 	{
@@ -117,7 +117,7 @@ public func ControlUseAltStop(object user, int x, int y)
 {
 	if (IsGrenadeHoldEnabled(user->GetController()))
 	{
-		StartLob(user, GetAimPosition(user, x, y));
+		SetDelayedAction(this.StartLob, user, GetAimPosition(user, x, y));
 	}
 	else
 	{
@@ -156,6 +156,13 @@ func GetAimPosition(object user, int x, int y)
 
 	if (angle >  160) angle =  160;
 	if (angle < -160) angle = -160;
+	
+	// Update delayed effect
+	var fx = GetEffect("BlockGrenadeThrow", user);
+	if (fx)
+	{
+		fx.Angle = angle;
+	}
 
 	return angle;
 }
@@ -183,6 +190,7 @@ func StopAim(object user)
 
 func CancelAim(object user)
 {
+	CancelDelayedAction(user);
 	user->CancelAiming(this);
 	if (IsActive())
 	{
@@ -192,16 +200,30 @@ func CancelAim(object user)
 }
 
 
-func LaunchGrenade(object user, int x, int y)
+func SetDelayedAction(call, object user, int angle)
 {
-	if (grenade_aiming)
+	var fx = GetEffect("BlockGrenadeThrow", user);
+	if (fx)
 	{
-		ThrowAimed(user, GetAimPosition(user, x, y));
+		fx.OnFinish = call;
+		fx.Grenade = this;
+		fx.Angle = angle;
 	}
 	else
 	{
-		StartLob(user, GetAimPosition(user, x, y));
+		Call(call, user, angle);
 	}
+}
+
+
+func CancelDelayedAction(user)
+{
+	var fx = GetEffect("BlockGrenadeThrow", user);
+	if (fx)
+	{
+		fx.OnFinish = nil;
+		RemoveEffect("BlockGrenadeThrow", user);
+	}	
 }
 
 
@@ -305,7 +327,6 @@ func Departure(object from)
 	{
 		from->PlayerMessage(from->GetController(), "");
 	}
-	grenade_aiming = false;
 	_inherited(from, ...);
 }
 
@@ -478,8 +499,54 @@ func Fuse()
 		CreateEffect(GrenadeFuse, 200, 1);
 		this.Collectible = false;
 		SetCategory(C4D_Vehicle);
+		
+		var user = Contained();
+		if (user)
+		{
+			user->CreateEffect(BlockGrenadeThrow, 1, 1, this, this.Grenade_ThrowDelay);
+		}
 	}
 }
+
+local BlockGrenadeThrow = new Effect
+{
+	OnFinish = nil, // Function call when finished
+	Grenade = nil,  // Object that will do the function call
+	Angle = nil,    // Angle for the function call
+
+	Start = func (int temp, object grenade, int lifetime)
+	{
+		if (!temp)
+		{
+			this.Grenade = grenade;
+			this.Lifetime = lifetime;
+		}
+		return FX_OK;
+	},
+	
+	Timer = func (int time)
+	{
+		if (!this.Grenade || time > this.Lifetime)
+		{
+			return FX_Execute_Kill;
+		}
+		if (this.Grenade->RejectUse(this.Target))
+		{
+			this.Grenade->CancelAim(this.Target);
+			return FX_Execute_Kill;
+		}
+		return FX_OK;
+	},
+	
+	Stop = func (int temp)
+	{
+		if (!temp && this.Target && this.OnFinish && this.Grenade)
+		{
+			this.Grenade->Call(this.OnFinish, this.Target, this.Angle);
+			this.OnFinish = nil;
+		}
+	},
+};
 
 local GrenadeFuse = new Effect
 {
@@ -529,7 +596,6 @@ func Launch(object user)
 	{
 		SetController(user->GetController());
 		RemoveEffect("BlockGrenadeThrow", user);
-		AddEffect("BlockGrenadeThrow", user, 1, this.Grenade_ThrowDelay, user);
 		user->UpdateAttach();
 	}
 	SetRDir(RandomX(-6, +6));
