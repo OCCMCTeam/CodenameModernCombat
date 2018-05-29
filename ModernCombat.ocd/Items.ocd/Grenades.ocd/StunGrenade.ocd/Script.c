@@ -70,4 +70,33 @@ func OnDetonation()
 			target->BlindedByStunGrenade(this, intensity);
 		};
 	}
+	
+	Flashbang();
+	FadeOut(35, true);
+}
+
+func Flashbang()
+{
+	var flash =
+	{
+		Prototype = Particles_Flash(),
+		Size = PV_KeyFrames(0, 0, 0, 100, 4 * this.Grenade_Radius / 5, 1000, 0),
+	};
+	
+	var angles = GetPathFreeAngles(10, 5);
+	
+	for (var i = 0; i < 100; ++i)
+	{
+		var radius = RandomX(this.Grenade_Radius / 20, this.Grenade_Radius / 5);
+		var angle = angles[Random(GetLength(angles))];
+
+		var x = +Sin(angle, radius);
+		var y = -Cos(angle, radius);
+		var xdir = x / 2;
+		var ydir = y / 2;
+		
+		CreateParticle("MagicFire", x, y, PV_Random(xdir - 10, xdir + 10), PV_Random(ydir - 10, ydir + 10), PV_Random(10, 40), Particles_Glimmer(), 1);
+	}
+	
+	CreateParticle("Flash", 0, 0, 0, 0, 20, flash);
 }

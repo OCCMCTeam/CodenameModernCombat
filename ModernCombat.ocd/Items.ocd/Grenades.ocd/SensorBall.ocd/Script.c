@@ -80,11 +80,23 @@ func OnDetonation()
 
 	Flash();
 
-
-	// Light flash
+	// Permanent light
 	SetLightColor(GetPlayerColor(GetController()));
 	SetLightRange(this.Sensor_Distance, 40);
-	ScheduleCall(this, Global.SetLightColor, 10, 0, RGB(128, 128, 128));
+	
+	// Light flash
+	var flash_colors = SplitRGBaValue(GetPlayerColor(GetController()));
+	var flash =
+	{
+		Prototype = Particles_Flash(),
+		Size = PV_KeyFrames(0, 0, 0, 100, this.Sensor_Distance, 1000, 0),
+		R = flash_colors.R,
+		G = flash_colors.G,
+		B = flash_colors.B,
+		Attach = ATTACH_Front | ATTACH_MoveRelative,
+	};
+	CreateParticle("Flash", 0, 0, 0, 0, 15, flash);
+	
 
 	// TODO: CheckLimitation();
 
@@ -162,6 +174,7 @@ func DestroySensor()
 	  Sound("Limitation.ogg");*/
 	// TODO: Should not be necessary upon removal Sound("SNSR_Scan.ogg", false, this, 50, 0, -1);
 
+	ExplosionEffect(5, 0, 0, 0, true);
 	RemoveObject();
 }
 
