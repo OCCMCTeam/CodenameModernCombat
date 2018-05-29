@@ -17,6 +17,9 @@
 	[ControlDef]
 	Identifier=CMC_DrawGrenade
 	
+	[ControlDef]
+	Identifier=CMC_Reload
+	
 
 [ControlSets]
 
@@ -27,6 +30,11 @@
 		Key=F
 		Priority=999
 		Control=CMC_DrawGrenade
+		
+		[Assignment]
+		Key=R
+		Priority=999
+		Control=CMC_Reload
 
 	[ControlSet]
 	Name=WASD_Hotkeys_IntQueue_MouseCon_

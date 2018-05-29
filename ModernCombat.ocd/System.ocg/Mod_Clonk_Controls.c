@@ -28,19 +28,31 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!this)
 		return false;
 
-	if (ctrl == CON_CMC_AimingCursor)
+
+
+	var contents = this->GetHandItem(0);
+	if (contents)
 	{
-		// save last mouse position:
-		// if the using has to be canceled, no information about the current x,y
-		// is available. Thus, the last x,y position needs to be saved
-		this.control.mlastx = x;
-		this.control.mlasty = y;
-
-		var contents = this->GetHandItem(0);
-
-		if (contents)
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
+		if (ctrl == CON_CMC_Reload)
+		{
+			if (contents->~StartReload(this, x, y, true))
+			{
 				return true;
+			}
+		}
+		if (ctrl == CON_CMC_AimingCursor)
+		{
+			// save last mouse position:
+			// if the using has to be canceled, no information about the current x,y
+			// is available. Thus, the last x,y position needs to be saved
+			this.control.mlastx = x;
+			this.control.mlasty = y;
+	
+			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
+			{
+				return true;
+			}
+		}
 	}
 
 	return _inherited(plr, ctrl, x, y, strength, repeat, status);
