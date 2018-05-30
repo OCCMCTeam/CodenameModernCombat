@@ -22,36 +22,35 @@ func GetUseCallString(string action)
 	return Format("~%sUse%s%s", control_string, estr, action);
 }
 
-// Handle CON_CMC_AimingCursor
+// Handle controls to the clonk
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
 {
 	if (!this)
 		return false;
 
-
-
-	var contents = this->GetHandItem(0);
-	if (contents)
+	// Handle reloading?
+	if (ctrl == CON_CMC_Reload)
 	{
-		if (ctrl == CON_CMC_Reload)
+		var contents = this->GetHandItem(0);
+		if (contents && contents->~StartReload(this, x, y, true))
 		{
-			if (contents->~StartReload(this, x, y, true))
-			{
-				return true;
-			}
+			return true;
 		}
-		if (ctrl == CON_CMC_AimingCursor)
-		{
-			// save last mouse position:
-			// if the using has to be canceled, no information about the current x,y
-			// is available. Thus, the last x,y position needs to be saved
-			this.control.mlastx = x;
-			this.control.mlasty = y;
+	}
 	
-			if (ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
-			{
-				return true;
-			}
+	// Handle aiming?
+	if (ctrl == CON_CMC_AimingCursor)
+	{
+		// save last mouse position:
+		// if the using has to be canceled, no information about the current x,y
+		// is available. Thus, the last x,y position needs to be saved
+		this.control.mlastx = x;
+		this.control.mlasty = y;
+
+		var contents = this->GetHandItem(0);
+		if (contents && ControlUse2Script(ctrl, x, y, strength, repeat, status, contents))
+		{
+			return true;
 		}
 	}
 
