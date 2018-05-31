@@ -216,3 +216,13 @@ func FxIntAimStop(object target, effect, int reason, bool temp)
 	if (effect.view_offset)
 		SetViewOffset(this->GetOwner(), 0,0);
 }
+
+// Also reset all new settings
+
+public func ResetHands()
+{
+	_inherited();
+
+	aim_cancel_on_jump = nil;
+	aim_type = nil;
+}
