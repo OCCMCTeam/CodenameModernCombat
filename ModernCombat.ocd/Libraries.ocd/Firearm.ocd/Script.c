@@ -12,6 +12,10 @@
 
 /* --- Constants --- */
 
+// Different types of aiming
+static const WEAPON_AIM_TYPE_IRONSIGHT = "Ironsight";
+static const WEAPON_AIM_TYPE_HIPFIRE   = "HipFire";
+
 // Transition from carrying to ironsight
 static const WEAPON_FM_IronsightAnim =  0; // With an animtion
 static const WEAPON_FM_IronsightBlend = 1; // Animation blending
@@ -158,7 +162,7 @@ func StartHipShooting(object clonk, int x, int y)
 
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
-	clonk->StartAim(this, angle, "HipFire");
+	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_HIPFIRE);
 	clonk->SetAimPosition(angle);
 
 	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
@@ -271,7 +275,7 @@ public func FinishIronsight(object clonk, int x, int y)
 {
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
-	clonk->StartAim(this, angle, "Ironsight");
+	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_IRONSIGHT);
 	clonk->SetAimPosition(angle);
 	clonk->SetCancelOnJump(true);
 
@@ -464,7 +468,7 @@ public func GetAnimationSet(object clonk)
 	// Different aim sets for different aiming styles
 	var type = clonk->GetAimType();
 
-	if (type == "HipFire")
+	if (type == WEAPON_AIM_TYPE_HIPFIRE)
 	{
 		// Aiming animation
 		var aim_animation = GetFiremode()->GetHipFireAimingAnimation();
@@ -473,7 +477,7 @@ public func GetAnimationSet(object clonk)
 		// No hindrance on walking speed
 		ret.walk_speed_front = nil;
 		ret.walk_speed_back  = nil;
-	} else if (type == "Ironsight")
+	} else if (type == WEAPON_AIM_TYPE_IRONSIGHT)
 	{
 		var aim_animation = GetFiremode()->GetIronsightAimingAnimation();
 		if (aim_animation != nil)
