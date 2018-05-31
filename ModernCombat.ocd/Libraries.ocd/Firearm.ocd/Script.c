@@ -17,8 +17,17 @@ static const WEAPON_FM_IronsightAnim =  0; // With an animtion
 static const WEAPON_FM_IronsightBlend = 1; // Animation blending
 static const WEAPON_FM_IronsightInst  = 2; // Instant ironsight
 
+// Hip shooting stop delay when releasing the firing button
+static const WEAPON_HipFireDelay = 6 * 35;
+
 /* --- Variables --- */
 
+// Currently aiming / shooting from hips
+local hipfire = false;
+// The hip shooting target position (in global coordinates)
+local hipfire_target;
+// The firing button is pressed during hip shooting
+local hipfire_pressed = false;
 // Ironsight is done or initiatied
 local ironsight = false;
 // Transition from carrying to ironsight is done, ready to fire
@@ -40,6 +49,14 @@ func OnPressUse(object clonk, int x, int y)
 
 func OnHoldingUse(object clonk, int x, int y)
 {
+	return true;
+}
+
+// Called by the shooter library in ControlUseStop
+func OnUseStop(object clonk, int x, int y)
+{
+	CheckHipShootingStop();
+
 	return true;
 }
 
@@ -126,12 +143,78 @@ func OnUseAltStop(object clonk, int x, int y)
 	return true;
 }
 
-/* --- Hip Firing --- */
+/* --- Hip firing --- */
 
 func StartHipShooting(object clonk, int x, int y)
 {
-	
+	if (hipfire)
+		return;
+
+	hipfire = true;
+	if (hipfire_target)
+		hipfire_target = CreateArray(2);
+	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
+	hipfire_pressed = true;
+
+	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
+	angle = Normalize(angle, -180);
+	clonk->StartAim(this, angle, "HipFire");
+	clonk->SetAimPosition(angle);
+
+	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
 }
+
+func CheckHipShootingStop()
+{
+	if (!hipfire)
+		return;
+
+	// Take notice that the firing button was released
+	hipfire_pressed = false;
+	// The firing process will do the rest and stop aiming after a delay
+}
+
+func StopHipShooting(object clonk)
+{
+	if (clonk && clonk->IsAiming())
+		clonk->StopAim();
+
+	hipfire = false;
+	hipfire_pressed = false;
+}
+
+local HipShootingEffect = new Effect {
+	Construction = func (object clonk) {
+		// Time duration in which no firing command was issued
+		this.timeout = 0;
+
+		this.clonk = clonk;
+	},
+	Timer = func() {
+		// If no firing button is pressed: schedule stop
+		if (!this.Target.hipfire_pressed)
+		{
+			this.timeout++;
+			if (this.timeout >= WEAPON_HipFireDelay)
+				return FX_Execute_Kill;
+		} else if (this.timeout > 0)
+			this.timeout = 0;
+		// Clonk cannot aim anymore
+		if (!this.clonk || (!this.clonk->IsWalking() && !this.clonk->IsJumping()))
+			return FX_Execute_Kill;
+		// Keep the clonk on target
+		var x_target = this.Target.hipfire_target[0] - this.clonk->GetX();
+		var y_target = this.Target.hipfire_target[1] - this.clonk->GetY();
+		var angle = Angle(0, 0, x_target, y_target + this.Target->GetFiremode()->GetYOffset());
+		angle = Normalize(angle, -180);
+		this.clonk->SetAimPosition(angle);
+		return FX_OK;
+	},
+	Destruction = func() {
+		if (this.Target)
+			this.Target->StopHipShooting(this.clonk);
+	}
+};
 
 /* --- Ironsight aiming --- */
 
@@ -161,7 +244,7 @@ public func StartIronSight(object clonk, int x, int y)
 	{
 		var delay = GetFiremode()->GetIronsightDelay();
 		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
-		var anim = GetFiremode()->GetAimingAnimation();
+		var anim = GetFiremode()->GetIronsightAimingAnimation();
 		var delay = GetFiremode()->GetIronsightDelay();
 		var length = clonk->GetAnimationLength(anim);
 		var y_offset = GetFiremode()->GetYOffset();
@@ -190,6 +273,7 @@ public func FinishIronsight(object clonk, int x, int y)
 	angle = Normalize(angle, -180);
 	clonk->StartAim(this, angle, "Ironsight");
 	clonk->SetAimPosition(angle);
+	clonk->SetCancelOnJump(true);
 
 	is_in_ironsight = true;
 
@@ -343,7 +427,6 @@ public func GetGuiItemStatusProperties(object user)
 	return status;
 }
 
-
 /**
  * Tells a possible container that the firearm was
  * changed.
@@ -369,15 +452,38 @@ func NotifyContainer()
 	}
 }
 
-
 /* --- Misc --- */
 
-public func GetAnimationSet()
+public func GetAnimationSet(object clonk)
 {
+	if (!clonk)
+		return FatalError("CMC Firearm Library: GetAnimationSet was called without a parameter."); // Don't what is wanted
+
 	var ret = _inherited();
 
-	var aim_animation = GetFiremode()->GetAimingAnimation();
-	if (aim_animation != nil)
-		ret.AnimationAim = aim_animation;
+	// Different aim sets for different aiming styles
+	var type = clonk->GetAimType();
+
+	if (type == "HipFire")
+	{
+		// Aiming animation
+		var aim_animation = GetFiremode()->GetHipFireAimingAnimation();
+		if (aim_animation != nil)
+			ret.AnimationAim = aim_animation;
+		// No hindrance on walking speed
+		ret.walk_speed_front = nil;
+		ret.walk_speed_back  = nil;
+	} else if (type == "Ironsight")
+	{
+		var aim_animation = GetFiremode()->GetIronsightAimingAnimation();
+		if (aim_animation != nil)
+			ret.AnimationAim = aim_animation;
+	} else if (type == "Default")
+	{
+		// Do nothing here but also don't fail!
+	} else {
+		FatalError("CMC Firearm Library: GetAnimationSet with an unknown aiming mode set.");
+	}
+	
 	return ret;
 }

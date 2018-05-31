@@ -75,7 +75,7 @@ func FiremodeBullets()
 	// Ironsight aiming
 	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
 	mode->SetIronsightDelay(15);
-	mode->SetAimingAnimation("AimArmsGeneric.R");
+	mode->SetIronsightAimingAnimation("AimArmsGeneric.R");
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
 	
