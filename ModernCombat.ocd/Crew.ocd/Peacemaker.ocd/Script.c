@@ -185,7 +185,21 @@ func UpdateFirearmSpread()
 		}
 	}
 	
+	// Get weapon data
+	var firemode, cursor_type, spread_limit;
+	var weapon = this->GetHandItem(0);
+	if (weapon)
+	{
+		firemode = weapon->~GetFiremode();
+	}
+	if (firemode)
+	{
+		cursor_type = firemode->~GetAimCursor();
+		spread_limit = firemode->~GetSpreadLimit();
+	}
+	
 	// Apply the values
+	SetFirearmSpreadLimit(spread_limit ?? CLONK_SPREAD_Max);
 	DoFirearmSpread(spread_reduction);
 	RaiseFirearmSpread(action_spread_min);
 	
@@ -193,16 +207,6 @@ func UpdateFirearmSpread()
 	var cursor = CMC_Virtual_Cursor->Get(this);
 	if (cursor)
 	{
-		var firemode, cursor_type;
-		var weapon = this->GetHandItem(0);
-		if (weapon)
-		{
-			firemode = weapon->~GetFiremode();
-		}
-		if (firemode)
-		{
-			cursor_type = firemode->~GetAimCursor();
-		}
 		if (this->IsAiming() && cursor_type && GetCursor(GetOwner()) == this)
 		{
 			cursor->SetCursorType(cursor_type);

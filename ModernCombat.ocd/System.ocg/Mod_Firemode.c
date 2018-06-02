@@ -74,6 +74,15 @@ public func GetSpreadBySelection()
 }
 
 /**
+	Set the maximum spread that the user can have
+	in this fire mode.
+ */
+public func GetSpreadLimit()
+{
+	return this.spread_limit;
+}
+
+/**
 	Get the type of cursor that is shown
 	while aiming. Nil means no cursor.
  */
@@ -146,6 +155,16 @@ public func SetFireSound(string name, int count)
 public func SetSpreadBySelection(int value)
 {
 	this.spread_by_selection = value;
+	return this;
+}
+
+/**
+	Set the maximum spread that the user can have
+	in this fire mode.
+ */
+public func SetSpreadLimit(int value)
+{
+	this.spread_limit = value;
 	return this;
 }
 

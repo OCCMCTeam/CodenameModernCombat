@@ -79,11 +79,12 @@ func FiremodeBullets()
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
 	
-	// Spread, TODO
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(100));
-	// Max spread 450
+	// Spread
 	mode->SetSpreadPerShot(ProjectileDeviationCmc(55));
-	
+	mode->SetSpreadBySelection(ProjectileDeviationCmc(100));
+	mode->SetSpreadLimit(ProjectileDeviationCmc(450));
+
+	// Crosshair, CMC Custom
 	mode->SetAimCursor(CMC_Cursor_Default);
 
 	// Effects, CMC custom
