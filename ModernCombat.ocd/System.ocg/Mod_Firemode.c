@@ -73,6 +73,15 @@ public func GetSpreadBySelection()
 	return this.spread_by_selection;
 }
 
+/**
+	Get the type of cursor that is shown
+	while aiming. Nil means no cursor.
+ */
+public func GetAimCursor()
+{
+	return this.aim_cursor;
+}
+
 
 /* --- Setters --- */
 
@@ -137,5 +146,15 @@ public func SetFireSound(string name, int count)
 public func SetSpreadBySelection(int value)
 {
 	this.spread_by_selection = value;
+	return this;
+}
+
+/**
+	Set the type of cursor that is shown
+	while aiming. Nil means no cursor.
+ */
+public func SetAimCursor(id cursor)
+{
+	this.aim_cursor = cursor;
 	return this;
 }

@@ -1,0 +1,11 @@
+[DefCore]
+id=CMC_Cursor_Default
+Version=8,0
+Category=C4D_None | C4D_MouseIgnore | C4D_IgnoreFoW
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=1
+VertexX=0
+VertexY=0
+HideInCreator=true

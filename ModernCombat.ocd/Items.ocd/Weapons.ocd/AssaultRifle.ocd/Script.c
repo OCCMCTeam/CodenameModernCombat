@@ -83,6 +83,8 @@ func FiremodeBullets()
 	mode->SetSpreadBySelection(ProjectileDeviationCmc(100));
 	// Max spread 450
 	mode->SetSpreadPerShot(ProjectileDeviationCmc(55));
+	
+	mode->SetAimCursor(CMC_Cursor_Default);
 
 	// Effects, CMC custom
 	mode->SetFireSound("Weapon::AssaultRifle::Fire", 3);

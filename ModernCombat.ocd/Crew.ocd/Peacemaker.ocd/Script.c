@@ -6,6 +6,18 @@
 #include CMC_Library_GrenadeBelt
 #include CMC_Library_AffectedBySmokeGrenade
 #include CMC_Library_AffectedByStunGrenade
+#include Plugin_Firearm_DynamicSpread
+
+/* --- Engine callbacks --- */
+
+func Recruitment(int player)
+{
+	if (GetPlayerType(player) == C4PT_User)
+	{
+		CMC_Virtual_Cursor->AddTo(this)->SetCursorType(CMC_Cursor_Default);
+	}
+	return _inherited(player, ...);
+}
 
 /* --- Inventory management --- */
 
@@ -171,6 +183,31 @@ func UpdateFirearmSpread()
 	// Apply the values
 	DoFirearmSpread(spread_reduction);
 	RaiseFirearmSpread(action_spread_min);
+	
+	// Crosshair
+	var cursor = CMC_Virtual_Cursor->Get(this);
+	if (cursor)
+	{
+		var firemode, cursor_type;
+		var weapon = this->GetHandItem(0);
+		if (weapon)
+		{
+			firemode = weapon->~GetFiremode();
+		}
+		if (firemode)
+		{
+			cursor_type = firemode->~GetAimCursor();
+		}
+		if (this->IsAiming() && cursor_type && GetCursor(GetOwner()) == this)
+		{
+			cursor->Show();
+			cursor->UpdateAimSpread(weapon->ComposeSpread(this, firemode));
+		}
+		else
+		{
+			cursor->Hide();
+		}
+	}
 }
 
 

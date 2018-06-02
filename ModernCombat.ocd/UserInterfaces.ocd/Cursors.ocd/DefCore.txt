@@ -1,0 +1,12 @@
+[DefCore]
+id=CMC_Virtual_Cursor
+Version=8,0
+Category=C4D_None | C4D_MouseIgnore
+Width=3
+Height=3
+Offset=-1,-11
+Vertices=2
+VertexX=0,0
+VertexY=0,0
+HideInCreator=true
+
