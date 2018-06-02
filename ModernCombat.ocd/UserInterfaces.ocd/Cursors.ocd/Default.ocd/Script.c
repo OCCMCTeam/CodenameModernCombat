@@ -87,6 +87,11 @@ local ScheduledUpdate = new Effect
 
 func DoUpdate()
 {
+	// The distance at which to display should be tangens actually, but I left it at sinus for the following reasons:
+	// a) Depending how you implement the calculations you either get numbers that exceed the integer limit (by scaling
+	//    to early), or you get very rough values (by scaling in the end). Both looks terrible :)
+	// b) The sinus value is not so far off most of the time, and the projectiles are unlikely to be launched at the very
+	//    end of the spread range
 	var precision = 1000;
 	var radius = Sin(Cursor_Spread, Cursor_Distance * precision, precision);
 	UpdateGraphics(radius);
