@@ -200,6 +200,7 @@ func UpdateFirearmSpread()
 		}
 		if (this->IsAiming() && cursor_type && GetCursor(GetOwner()) == this)
 		{
+			cursor->SetCursorType(cursor_type);
 			cursor->Show();
 			cursor->UpdateAimSpread(weapon->ComposeSpread(this, firemode));
 		}

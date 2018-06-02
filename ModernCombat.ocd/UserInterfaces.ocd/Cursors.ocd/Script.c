@@ -53,12 +53,24 @@ public func Get(object to)
 
 public func SetCursorType(id type)
 {
+	var current, spread;
 	if (CursorObject)
 	{
-		CursorObject->Remove();
+		current = CursorObject->GetID();
+		spread = CursorObject.Cursor_Spread;
+		
 	}
-	CursorObject = CreateObject(type, 0, 0, GetOwner());
-	CursorObject->Init(this);
+	if (current != type)
+	{
+		if (CursorObject)
+		{
+			CursorObject->RemoveObject();
+		}
+		CursorObject = CreateObject(type, 0, 0, GetOwner());
+		CursorObject->Init(this);
+		UpdateAimPosition(GetVertex(0, VTX_X), GetVertex(0, VTX_Y));
+		UpdateAimSpread([spread]);
+	}
 	return CursorObject;
 }
 

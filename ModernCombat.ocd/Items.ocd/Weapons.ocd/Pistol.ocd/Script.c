@@ -83,6 +83,13 @@ func FiremodeStandard()
 	mode->SetIronsightAimingAnimation("CrossbowAimArms");
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
+	
+	mode->SetSpreadPerShot(ProjectileDeviationCmc(70));
+	mode->SetSpreadBySelection(ProjectileDeviationCmc(30));
+	mode->SetSpread(ProjectileDeviationCmc(20));
+	//if(data == FM_MaxSpread)	return 220 - (iAttachment == AT_Laserpointer)*70;	//Maximaler Streuungswert
+	
+	mode->SetAimCursor(CMC_Cursor_Cone);
 
 	// Effects, CMC custom
 	mode->SetFireSound("Weapon::Pistol::Fire", 2);
