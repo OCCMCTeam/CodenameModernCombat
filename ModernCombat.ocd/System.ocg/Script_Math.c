@@ -79,3 +79,9 @@ global func GetAverage(array values)
 	}
 	return nil;
 }
+
+
+global func ProjectileDeviationCmc(int amount)
+{
+	return amount * 5;
+}

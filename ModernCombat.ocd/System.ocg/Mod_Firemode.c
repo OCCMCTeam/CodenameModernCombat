@@ -1,12 +1,10 @@
-/*
-	Mod_Firemode.c
-
+/**
 	Extends the firemode template with some information.
  */
 
 #appendto Library_Firearm_Firemode
 
-/*-- Getters --*/
+/* --- Getters --- */
 
 /**
  Get the aiming animation for ironsight aiming
@@ -65,7 +63,18 @@ public func GetCurrentFireSound()
 	return Format("%s%d", GetFireSound(), this.sound_fire_counter + 1);
 }
 
-/*-- Setters --*/
+/**
+	Get the spread that the user gets
+	initially after selecting the weapon
+	in this fire mode.
+ */
+public func GetSpreadBySelection()
+{
+	return this.spread_by_selection;
+}
+
+
+/* --- Setters --- */
 
 /**
  Set the aiming animation for ironsight aiming
@@ -117,5 +126,16 @@ public func SetFireSound(string name, int count)
 	this.sound_fire_counter = 0;
 	this.sound_fire_max = count ?? 1;
 	this.sound_fire = name;
+	return this;
+}
+
+/**
+	Set the spread that the user gets
+	initially after selecting the weapon
+	in this fire mode.
+ */
+public func SetSpreadBySelection(int value)
+{
+	this.spread_by_selection = value;
 	return this;
 }

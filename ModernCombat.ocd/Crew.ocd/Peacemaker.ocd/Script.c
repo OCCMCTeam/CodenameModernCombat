@@ -124,6 +124,56 @@ func DoRoll(bool is_falling)
 	inherited(is_falling, ...);
 }
 
+/* --- Firearm spread management --- */
+
+// Opening angle is half the cone here
+static const CLONK_SPREAD_Max = 25000;
+static const CLONK_SPREAD_Jumping_Min = 10000;
+static const CLONK_SPREAD_Running_Min =  5000;
+static const CLONK_SPREAD_Walking_Min =  2500;
+
+static const CLONK_SPREAD_Reduction_Base = -15;
+static const CLONK_SPREAD_Reduction_Aiming = -20;
+static const CLONK_SPREAD_Reduction_Crawling = -20;
+
+func UpdateFirearmSpread()
+{
+	// Reduce constantly on its own
+	var spread_reduction = 0;
+	if (this->IsAiming() && this->GetAimType() == WEAPON_AIM_TYPE_IRONSIGHT)
+	{
+		spread_reduction = CLONK_SPREAD_Reduction_Aiming;
+	}
+	else if (IsWalking())
+	{
+		spread_reduction = CLONK_SPREAD_Reduction_Base;
+	}
+	
+	// Certain actions set a minimum spread
+	var action_spread_min = 0;
+	if (IsJumping() || GetEffect("Rolling", this))
+	{
+		action_spread_min = CLONK_SPREAD_Jumping_Min;
+	}
+	else if (IsWalking())
+	{
+		var animation = GetCurrentWalkAnimation();
+		if (animation == Clonk_WalkRun)
+		{
+			action_spread_min = CLONK_SPREAD_Running_Min;
+		}
+		else if (animation == Clonk_WalkStand)
+		{
+			action_spread_min = CLONK_SPREAD_Walking_Min;
+		}
+	}
+	
+	// Apply the values
+	DoFirearmSpread(spread_reduction);
+	RaiseFirearmSpread(action_spread_min);
+}
+
+
 /* --- Better death animation --- */
 
 func StartDead()
