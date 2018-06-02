@@ -143,10 +143,11 @@ static const CLONK_SPREAD_Max = 25000;
 static const CLONK_SPREAD_Jumping_Min = 10000;
 static const CLONK_SPREAD_Running_Min =  5000;
 static const CLONK_SPREAD_Walking_Min =  2500;
+static const CLONK_SPREAD_Standing_Min =  1000;
 
-static const CLONK_SPREAD_Reduction_Base = -15;
-static const CLONK_SPREAD_Reduction_Aiming = -20;
-static const CLONK_SPREAD_Reduction_Crawling = -20;
+static const CLONK_SPREAD_Reduction_Base = -150;
+static const CLONK_SPREAD_Reduction_Aiming = -200;
+static const CLONK_SPREAD_Reduction_Crawling = -200;
 
 func UpdateFirearmSpread()
 {
@@ -174,9 +175,13 @@ func UpdateFirearmSpread()
 		{
 			action_spread_min = CLONK_SPREAD_Running_Min;
 		}
-		else if (animation == Clonk_WalkStand)
+		else if (animation == Clonk_WalkWalk)
 		{
 			action_spread_min = CLONK_SPREAD_Walking_Min;
+		}
+		else if (animation == Clonk_WalkStand)
+		{
+			action_spread_min = CLONK_SPREAD_Standing_Min;
 		}
 	}
 	

@@ -83,5 +83,5 @@ global func GetAverage(array values)
 
 global func ProjectileDeviationCmc(int amount)
 {
-	return amount * 5;
+	return amount * 50;
 }
