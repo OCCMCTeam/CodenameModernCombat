@@ -386,6 +386,18 @@ public func OnAmmoChange(id ammo_type)
 	_inherited(ammo_type, ...);
 }
 
+/* --- Selection --- */
+
+func Selection(object user)
+{
+	var firemode = GetFiremode();
+	if (firemode)
+	{
+		user->~RaiseFirearmSpread(firemode->~GetSpreadBySelection());
+	}
+	_inherited(user, ...);
+}
+
 /* --- Reloading --- */
 
 public func NeedsReload(object user, proplist firemode)
