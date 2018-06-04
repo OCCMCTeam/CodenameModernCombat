@@ -111,11 +111,8 @@ local IntHammerspaceAnimation = new Effect
 				this.Anim_Side = "R";
 			}
 			var dir = this.Target->GetCalcDir();
-			this.AnimPos_Arm_Upper = [90 * dir, 50 * dir, -30];
-			this.AnimIndex_Arm_Upper = this.Target->TransformBone(Format("skeleton_arm_upper.%s", this.Anim_Side), Trans_Identity(), CLONK_ANIM_SLOT_Arms + 1, Anim_Linear(0, 0, 1000, 3 * this.ReachTime, ANIM_Remove));
+			this.AnimIndex_Arm_Upper = this.Target->PlayAnimation("Hammerspace", CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, this.Target->GetAnimationLength("Hammerspace"), this.ReachTime, ANIM_Hold), Anim_Const(1000));
 
-			this.AnimPos_Arm_Lower = [(-40) * dir, 60 * dir];
-			this.AnimIndex_Arm_Lower = this.Target->TransformBone(Format("skeleton_arm_lower.%s", this.Anim_Side), Trans_Identity(), CLONK_ANIM_SLOT_Arms + 1, Anim_Linear(0, 0, 1000, 3 * this.ReachTime, ANIM_Remove));
 		}
 
 		if (this.AnimIndex_Arm_Upper != nil)
@@ -124,27 +121,11 @@ local IntHammerspaceAnimation = new Effect
 			{
 				this.Target->StopAnimation(this.AnimIndex_Arm_Upper);
 				this.AnimIndex_Arm_Upper = nil;
-				
-				this.Target->StopAnimation(this.AnimIndex_Arm_Lower);
-				this.AnimIndex_Arm_Lower = nil;
 			}
 			else
 			{
-				var u0 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[0] / 1000, 1, 0, 0);
-				var u1 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[1] / 1000, 0, 1, 0);
-				var u2 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[2] / 1000, 0, 0, 1);
-				
-				//var upper = Trans_Mul(u0, u1, u2);
-				var upper = Trans_Mul(u1, u2, u0);
-				
-				var l1 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Lower[0] / 1000, 0, 1, 0);
-				var l2 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Lower[1] / 1000, 0, 0, 1);
-				
-				//var lower = Trans_Mul(l1, l2);
-				var lower = Trans_Mul(l2, l1);
-
-				this.Target->SetAnimationBoneTransform(this.AnimIndex_Arm_Upper, upper);
-				this.Target->SetAnimationBoneTransform(this.AnimIndex_Arm_Lower, lower);
+				this.Target->SetAnimationPosition(this.AnimIndex_Arm_Upper, Anim_Const(this.AnimProgress / 2));
+				this.Target->SetAnimationWeight(this.AnimIndex_Arm_Upper, Anim_Const(BoundBy(this.AnimProgress * 2, 0, 1000)));
 			}
 		}
 	},
