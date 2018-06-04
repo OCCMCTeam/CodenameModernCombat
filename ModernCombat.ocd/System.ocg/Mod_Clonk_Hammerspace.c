@@ -75,6 +75,10 @@ local IntHammerspaceAnimation = new Effect
 			{
 				this.Target->StopAnimation(this.AnimIndex_Arm_Upper);
 			}
+			if (this.AnimIndex_Arm_Lower)
+			{
+				this.Target->StopAnimation(this.AnimIndex_Arm_Lower);
+			}
 		}
 	},
 
@@ -106,9 +110,12 @@ local IntHammerspaceAnimation = new Effect
 			{
 				this.Anim_Side = "R";
 			}
-			
-			this.AnimPos_Arm_Upper = this.Target->GetCalcDir() * 90;
-			this.AnimIndex_Arm_Upper = this.Target->TransformBone(Format("skeleton_arm_upper.%s", this.Anim_Side), Trans_Identity(), CLONK_ANIM_SLOT_Arms + 1, Anim_Const(1000));
+			var dir = this.Target->GetCalcDir();
+			this.AnimPos_Arm_Upper = [90 * dir, 50 * dir, -30];
+			this.AnimIndex_Arm_Upper = this.Target->TransformBone(Format("skeleton_arm_upper.%s", this.Anim_Side), Trans_Identity(), CLONK_ANIM_SLOT_Arms + 1, Anim_Linear(0, 0, 1000, 3 * this.ReachTime, ANIM_Remove));
+
+			this.AnimPos_Arm_Lower = [(-40) * dir, 60 * dir];
+			this.AnimIndex_Arm_Lower = this.Target->TransformBone(Format("skeleton_arm_lower.%s", this.Anim_Side), Trans_Identity(), CLONK_ANIM_SLOT_Arms + 1, Anim_Linear(0, 0, 1000, 3 * this.ReachTime, ANIM_Remove));
 		}
 
 		if (this.AnimIndex_Arm_Upper != nil)
@@ -116,12 +123,28 @@ local IntHammerspaceAnimation = new Effect
 			if (this.AnimProgress == 0 && this.AnimProgress_Change < 0)
 			{
 				this.Target->StopAnimation(this.AnimIndex_Arm_Upper);
-				this.AnimIndex_ArmUpper = nil;
+				this.AnimIndex_Arm_Upper = nil;
+				
+				this.Target->StopAnimation(this.AnimIndex_Arm_Lower);
+				this.AnimIndex_Arm_Lower = nil;
 			}
 			else
 			{
-				var angle = this.AnimProgress * this.AnimPos_Arm_Upper / 1000;
-				this.Target->SetAnimationBoneTransform(this.AnimIndex_Arm_Upper, Trans_Rotate(angle, 0, 0, 1));
+				var u0 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[0] / 1000, 1, 0, 0);
+				var u1 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[1] / 1000, 0, 1, 0);
+				var u2 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Upper[2] / 1000, 0, 0, 1);
+				
+				//var upper = Trans_Mul(u0, u1, u2);
+				var upper = Trans_Mul(u1, u2, u0);
+				
+				var l1 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Lower[0] / 1000, 0, 1, 0);
+				var l2 = Trans_Rotate(this.AnimProgress * this.AnimPos_Arm_Lower[1] / 1000, 0, 0, 1);
+				
+				//var lower = Trans_Mul(l1, l2);
+				var lower = Trans_Mul(l2, l1);
+
+				this.Target->SetAnimationBoneTransform(this.AnimIndex_Arm_Upper, upper);
+				this.Target->SetAnimationBoneTransform(this.AnimIndex_Arm_Lower, lower);
 			}
 		}
 	},
