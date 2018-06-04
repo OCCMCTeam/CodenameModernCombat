@@ -80,7 +80,7 @@ func FiremodeStandard()
 	// Ironsight aiming
 	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
 	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("CrossbowAimArms");
+	mode->SetIronsightAimingAnimation("AimPistol");
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
 	
