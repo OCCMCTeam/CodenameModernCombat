@@ -69,16 +69,13 @@ local IntHammerspaceAnimation = new Effect
 
 	Stop = func (int temp)
 	{
-		if (!temp)
+		if (!temp && this.Target)
 		{
 			if (this.AnimIndex_Arm_Upper)
 			{
 				this.Target->StopAnimation(this.AnimIndex_Arm_Upper);
 			}
-			if (this.AnimIndex_Arm_Lower)
-			{
-				this.Target->StopAnimation(this.AnimIndex_Arm_Lower);
-			}
+			this.Target->UpdateAttach();
 		}
 	},
 
@@ -96,6 +93,7 @@ local IntHammerspaceAnimation = new Effect
 			time = this.ReachTime;
 		}
 		this.AnimProgress_Change = (-1000) / time;
+		this.Target->UpdateAttach();
 	},
 
 	Animation = func ()
@@ -160,4 +158,51 @@ local IntHammerspaceAnimation = new Effect
 
 /* --- Prevent using items --- */
 
-// TODO
+func IsSwitchingItems(bool is_stashing)
+{
+
+	var hammerspace = GetEffect("IntHammerspaceAnimation", this);
+	if (is_stashing)
+	{
+		return hammerspace && hammerspace.AnimProgress_Change >= 0;
+	}
+	else
+	{
+		return !!hammerspace;
+	}
+}
+
+// Handle controls to the clonk
+public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, int status)
+{
+	if (!this)
+		return false;
+
+	// Handle reloading?
+	if (ctrl == CON_CMC_Reload
+	 || ctrl == CON_CMC_DrawGrenade
+	 || ctrl == CON_CMC_UseAlt
+	 || ctrl == CON_Use
+	 || ctrl == CON_UseAlt
+	 || ctrl == CON_Throw)
+	{
+		if (IsSwitchingItems()) // Block all actions until the selection time is over
+		{
+			return true;
+		}
+	}
+	
+	return _inherited(plr, ctrl, x, y, strength, repeat, status);
+}
+
+func HasHandAction(slot, just_wear, bool needs_both_hands)
+{
+	if ((!slot || needs_both_hands) // First hand, or needs both hands
+	 && IsSwitchingItems(true))     // Only while putting the item back, so that it is displayed in the hand when reaching forward
+	{
+		return false;
+	}
+
+	return inherited(slot, just_wear, needs_both_hands);
+}
+
