@@ -327,6 +327,9 @@ local IronsightHelper = new Effect {
 	},
 	Timer = func()
 	{
+		// This effect should end now if it hasn't ended (see Reset())
+		if (this.end_if_not_ended)
+			return FX_Execute_Kill;
 		// Ironsight failed because of unknown things
 		if (!this.clonk->IsWalking())
 		{
@@ -468,7 +471,7 @@ func NotifyContainer()
 	}
 }
 
-/* --- Misc --- */
+/* --- Aim Manager Interface --- */
 
 public func GetAnimationSet(object clonk)
 {
@@ -502,4 +505,25 @@ public func GetAnimationSet(object clonk)
 	}
 	
 	return ret;
+}
+
+// The clonk stops aiming. Just to be sure, reset all variables (under regular circumstances, this will probably set variables two times)
+public func Reset(object clonk)
+{
+	ironsight = false;
+	is_in_ironsight = false;
+
+	hipfire = false;
+	hipfire_pressed = false;
+	hipfire_target = nil;
+
+	var effect = GetEffect("IronsightHelper", this);
+	// This will end the effect on the next Timer call.
+	// Because the effect might just be regularly removed by StopIronsight()
+	if (effect)
+		effect.end_if_not_ended = true;
+
+	effect = GetEffect("HipShootingEffect", this);
+	if (effect)
+		RemoveEffect(nil, nil, effect);
 }
