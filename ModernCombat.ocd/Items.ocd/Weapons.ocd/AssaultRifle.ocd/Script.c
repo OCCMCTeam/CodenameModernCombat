@@ -35,7 +35,7 @@ public func GetCarryMode(object clonk, bool not_selected)
 	}
 	else
 	{
-		return CARRY_Hand;
+		return CARRY_Blunderbuss;
 	}
 }
 public func GetCarryBone() { return "grip"; }
@@ -47,8 +47,12 @@ public func GetCarryTransform(object clonk, bool not_selected, bool nohand, bool
 	}
 	else
 	{
-		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-90, 0, 0, 1), Trans_Translate(0, -1500, 0));
+		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-10, 0, 0, 1));
 	}
+}
+public func GetCarrySpecial(clonk)
+{
+	if(IsAiming()) return "pos_hand2";
 }
 
 /* --- Fire modes --- */
@@ -75,7 +79,7 @@ func FiremodeBullets()
 	// Ironsight aiming
 	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
 	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("AimArmsGeneric.R");
+	mode->SetIronsightAimingAnimation("MusketAimArms");
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
 	

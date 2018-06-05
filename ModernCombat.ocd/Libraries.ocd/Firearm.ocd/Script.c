@@ -84,7 +84,7 @@ func OnPressUseAlt(object clonk, int x, int y)
 	}
 
 	// Check if the clonk can currently perform an action with hands
-	if (!clonk->HasHandAction(true, nil, true))
+	if (!clonk->HasHandAction(nil, nil, true))
 		return true;
 
 	// Great. Go into ironsight aiming
