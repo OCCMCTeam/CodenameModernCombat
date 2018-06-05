@@ -164,6 +164,7 @@ func StartHipShooting(object clonk, int x, int y)
 	angle = Normalize(angle, -180);
 	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_HIPFIRE);
 	clonk->SetAimPosition(angle);
+	clonk->UpdateAttach();
 
 	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
 }
@@ -278,11 +279,12 @@ public func FinishIronsight(object clonk, int x, int y)
 	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_IRONSIGHT);
 	clonk->SetAimPosition(angle);
 	clonk->SetCancelOnJump(true);
+	ScheduleCall(clonk, "UpdateAttach", 1);
 
 	is_in_ironsight = true;
 
 	// TODO: Test & maybe make depended on weapon shoot mode?
-	clonk->SetAimViewOffset(75);
+	clonk->SetAimViewOffset(50);
 	if (IsIronsightToggled())
 	{
 		// Mouse move will adjust aim angle
@@ -526,4 +528,11 @@ public func Reset(object clonk)
 	effect = GetEffect("HipShootingEffect", this);
 	if (effect)
 		RemoveEffect(nil, nil, effect);
+}
+
+/* --- Status --- */
+
+public func IsAiming()
+{
+	return is_in_ironsight || hipfire;
 }

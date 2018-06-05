@@ -49,6 +49,10 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 		return Trans_Mul(this.MeshTransformation, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 	}
 }
+public func GetCarrySpecial(clonk)
+{
+	if(IsAiming()) return "pos_hand2";
+}
 
 /* --- Fire modes --- */
 
