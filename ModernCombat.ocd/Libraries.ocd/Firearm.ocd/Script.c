@@ -492,8 +492,8 @@ public func GetAnimationSet(object clonk)
 		if (aim_animation != nil)
 			ret.AnimationAim = aim_animation;
 		// No hindrance on walking speed
-		ret.walk_speed_front = nil;
-		ret.walk_speed_back  = nil;
+		ret.WalkBack = nil;
+		ret.WalkSpeed = nil;
 	} else if (type == WEAPON_AIM_TYPE_IRONSIGHT)
 	{
 		var aim_animation = GetFiremode()->GetIronsightAimingAnimation();
@@ -505,7 +505,7 @@ public func GetAnimationSet(object clonk)
 	} else {
 		FatalError("CMC Firearm Library: GetAnimationSet with an unknown aiming mode set.");
 	}
-	
+
 	return ret;
 }
 
