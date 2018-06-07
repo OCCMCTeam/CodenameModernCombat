@@ -19,7 +19,7 @@ local ActMap =
 	}
 };
 
-local CursorObject = nil;
+local CursorObjects = [];
 
 
 /* --- Callbacks --- */
@@ -51,27 +51,41 @@ public func Get(object to)
 	return FindObject(Find_ID(this), Find_ActionTarget(to));
 }
 
-public func SetCursorType(id type)
+public func SetCursorType(type, int index)
 {
-	var current, spread;
-	if (CursorObject)
+	if (GetType(type) == C4V_Def)
 	{
-		current = CursorObject->GetID();
-		spread = CursorObject.Cursor_Spread;
-		
-	}
-	if (current != type)
-	{
-		if (CursorObject)
+		var current, spread;
+		if (CursorObjects[index])
 		{
-			CursorObject->RemoveObject();
+			current = CursorObjects[index]->GetID();
+			spread = CursorObjects[index].Cursor_Spread;
+			
 		}
-		CursorObject = CreateObject(type, 0, 0, GetOwner());
-		CursorObject->Init(this);
-		UpdateAimPosition(GetVertex(0, VTX_X), GetVertex(0, VTX_Y));
-		UpdateAimSpread([spread]);
+		if (current != type)
+		{
+			if (CursorObjects[index])
+			{
+				CursorObjects[index]->RemoveObject();
+			}
+			CursorObjects[index] = CreateObject(type, 0, 0, GetOwner());
+			CursorObjects[index]->Init(this);
+			UpdateAimPosition(GetVertex(0, VTX_X), GetVertex(0, VTX_Y));
+			UpdateAimSpread([spread]);
+		}
+		return CursorObjects[index];
 	}
-	return CursorObject;
+	else if (GetType(type) == C4V_Array)
+	{
+		for (var i = 0; i < GetLength(type); ++i)
+		{
+			SetCursorType(type[i], i);
+		}
+	}
+	else
+	{
+		FatalError("Pass array or id");
+	}
 }
 
 /* --- Internals --- */
@@ -103,18 +117,18 @@ func UpdateAimPosition(int x, int y)
 {
 	SetVertex(0, VTX_X, x);
 	SetVertex(0, VTX_Y, y);
-	if (CursorObject)
+	for (var cursor in CursorObjects)
 	{
-		CursorObject->~UpdateAimPosition(x, y);
+		if (cursor) cursor->~UpdateAimPosition(x, y);
 	}
 }
 
 
 func UpdateAimSpread(array spread)
 {
-	if (CursorObject)
+	for (var cursor in CursorObjects)
 	{
-		CursorObject->~UpdateAimSpread(spread);
+		if (cursor) cursor->~UpdateAimSpread(spread);
 	}
 }
 
@@ -122,9 +136,9 @@ func UpdateAimSpread(array spread)
 func Show()
 {
 	this.Visibility = VIS_Owner;
-	if (CursorObject)
+		for (var cursor in CursorObjects)
 	{
-		CursorObject.Visibility = VIS_Owner;
+		if (cursor) cursor.Visibility = VIS_Owner;
 	}
 }
 
@@ -132,8 +146,8 @@ func Show()
 func Hide()
 {
 	this.Visbility = VIS_None;
-	if (CursorObject)
+	for (var cursor in CursorObjects)
 	{
-		CursorObject.Visibility = VIS_None;
+		if (cursor) cursor.Visibility = VIS_None;
 	}
 }

@@ -89,7 +89,7 @@ func FiremodeBullets()
 	mode->SetSpreadLimit(ProjectileDeviationCmc(450));
 
 	// Crosshair, CMC Custom
-	mode->SetAimCursor(CMC_Cursor_Default);
+	mode->SetAimCursor([CMC_Cursor_Cone, CMC_Cursor_Default]);
 
 	// Effects, CMC custom
 	mode->SetFireSound("Weapon::AssaultRifle::Fire", 3);

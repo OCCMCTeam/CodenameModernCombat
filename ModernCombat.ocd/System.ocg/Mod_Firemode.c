@@ -171,8 +171,12 @@ public func SetSpreadLimit(int value)
 /**
 	Set the type of cursor that is shown
 	while aiming. Nil means no cursor.
+	
+	@par cursor Can be an ID in case of one cursor,
+	            or an array of IDs if you desire
+	            multiple cursors at the same time.
  */
-public func SetAimCursor(id cursor)
+public func SetAimCursor(cursor)
 {
 	this.aim_cursor = cursor;
 	return this;
