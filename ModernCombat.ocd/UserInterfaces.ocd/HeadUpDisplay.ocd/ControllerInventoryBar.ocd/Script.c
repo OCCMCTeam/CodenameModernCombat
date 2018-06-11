@@ -150,7 +150,7 @@ func AssembleInventoryButton(int slot)
 	{
 		ID = slot + 1,
 	};
-	button->Assemble();
+	button->Assemble(slot + 1);
 	return button;
 }
 
