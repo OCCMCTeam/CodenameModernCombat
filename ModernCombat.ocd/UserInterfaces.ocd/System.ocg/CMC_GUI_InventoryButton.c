@@ -6,7 +6,7 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 	GUI_Width_Expanded = nil, // int - em unit width of the item when it is expanded
 	GUI_Item_Name = nil,      // Name of the item
 
-	Assemble = func ()
+	Assemble = func (int slot_number)
 	{
 		this.GUI_Width_Compact  = GUI_CMC_Element_Inventory_Width + GUI_CMC_Element_Icon_Size;
 		this.GUI_Width_Expanded = GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size;
@@ -38,6 +38,21 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 		item_name->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width))       // Left border: Item symbol
 		         ->SetRight(GuiDimensionCmc(nil, GUI_CMC_Element_Inventory_Width)) // Right border: Button hint
 		         ->AddTo(this, nil, "item_name");
+
+		// Button hint:
+		var button_hint = new GUI_Element
+		{
+			actual_button =
+			{
+				Margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)->ToString(),
+				Symbol = CMC_Icon_Button,
+				GraphicsName = Format("%d", slot_number),
+			}
+		};
+		button_hint->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+		           ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+		           ->AlignRight()
+		           ->AddTo(this);
 		return this;
 	},
 	
