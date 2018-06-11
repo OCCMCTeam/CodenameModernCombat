@@ -189,7 +189,12 @@ func AssembleItemStatus()
 	field->SetWidth(separator_button_row_h)
 	     ->SetHeight(2 * line_height)
 	     ->AddTo(menu);
-
+	     
+	// Get button assignments
+	
+	var button_grenade = GetPlayerControlAssignment(GetOwner(), CON_CMC_DrawGrenade, true, true);
+	var button_reload = GetPlayerControlAssignment(GetOwner(), CON_CMC_Reload, true, true);
+	
 	// Rightmost element: A vertical button row
 	var vertical_button_row = new GUI_Element
 	{
@@ -197,24 +202,24 @@ func AssembleItemStatus()
 		{
 			Top = ToPercentString(0 * line_height + field_small_digit_margin),
 			Bottom = ToPercentString(1 * line_height - field_small_digit_margin),
-			Symbol = CMC_Icon_Number,
-			GraphicsName = "Hash",
+			Symbol = CMC_Icon_Button,
+			GraphicsName = button_reload,
 		},
 		
 		button_2 = 
 		{
 			Top = ToPercentString(1 * line_height + field_small_digit_margin),
 			Bottom = ToPercentString(2 * line_height - field_small_digit_margin),
-			Symbol = CMC_Icon_Number,
-			GraphicsName = "Hash",
+			Symbol = CMC_Icon_Button,
+			GraphicsName = button_grenade,
 		},
 		
 		button_3 = 
 		{
 			Top = ToPercentString(2 * line_height + field_small_digit_margin),
 			Bottom = ToPercentString(3 * line_height - field_small_digit_margin),
-			Symbol = CMC_Icon_Number,
-			GraphicsName = "Hash",
+			Symbol = CMC_Icon_Button,
+			GraphicsName = "",
 		},
 	};
 	vertical_button_row->SetLeft(separator_button_row_h)
