@@ -152,11 +152,9 @@ func OnUseAltStop(object clonk, int x, int y)
 func StartHipShooting(object clonk, int x, int y)
 {
 	if (hipfire)
-		return;
+		ContinueHipShooting(clonk, x, y);
 
 	hipfire = true;
-	if (hipfire_target)
-		hipfire_target = CreateArray(2);
 	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
 	hipfire_pressed = true;
 
@@ -186,6 +184,20 @@ func StopHipShooting(object clonk)
 
 	hipfire = false;
 	hipfire_pressed = false;
+}
+
+func ContinueHipShooting(object clonk, int x, int y)
+{
+	var effect = GetEffect("HipShootingEffect", this);
+	if (!effect) // ???
+	{
+		hipfire = false;
+		return StartHipShooting(clonk, x, y);
+	}
+
+	effect.timeout = 0;
+	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
+	hipfire_pressed = true;
 }
 
 local HipShootingEffect = new Effect {
