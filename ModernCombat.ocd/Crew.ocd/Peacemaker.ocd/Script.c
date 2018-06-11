@@ -12,10 +12,7 @@
 
 func Recruitment(int player)
 {
-	if (GetPlayerType(player) == C4PT_User)
-	{
-		CMC_Virtual_Cursor->AddTo(this)->SetCursorType(CMC_Cursor_Default);
-	}
+	AddCmcVirtualCursor(player);
 	return _inherited(player, ...);
 }
 
@@ -220,6 +217,22 @@ func UpdateFirearmSpread()
 	}
 }
 
+
+func AddCmcVirtualCursor(int player)
+{
+	if (GetPlayerType(player) == C4PT_User && CMC_Virtual_Cursor->Get(this) == nil)
+	{
+		CMC_Virtual_Cursor->AddTo(this);
+	}
+}
+
+/* --- Callback from aim manager --- */
+
+public func StartAim(object weapon, int angle, string type)
+{
+	AddCmcVirtualCursor(GetOwner());
+	return inherited(weapon, angle, type, ...);
+}
 
 /* --- Better death animation --- */
 
