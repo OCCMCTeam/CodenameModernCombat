@@ -234,6 +234,59 @@ public func StartAim(object weapon, int angle, string type)
 	return inherited(weapon, angle, type, ...);
 }
 
+/* --- Going prone --- */
+
+public func GoProne()
+{
+	var prone_speed = 25;
+
+	SetXDir(0);
+	SetAction("GoProne");
+	PlayAnimation("GoProne", CLONK_ANIM_SLOT_Movement, Anim_Linear(0, 0, GetAnimationLength("GoProne"), prone_speed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
+	ScheduleCall(this, "EndGoProne", prone_speed);
+}
+
+func EndGoProne()
+{
+	if(GetAction() == "GoProne") SetAction("Crawl");
+}
+
+/* --- Crawl --- */
+
+func StartCrawl()
+{
+	if(!GetEffect("IntCrawl", this))
+		CreateEffect(IntCrawl, 1, 1);
+}
+
+func StopCrawl()
+{
+	if(GetAction() != "Crawl") RemoveEffect("IntCrawl", this);
+}
+
+local IntCrawl = new Effect {
+	Construction = func() {
+		var position = Anim_X(0, 0, this.Target->GetAnimationLength("Crawl"), 11);
+		var weight = Anim_Linear(0, 0, 1000, 5, ANIM_Remove);
+		this.animation_id = this.Target->PlayAnimation("Crawl", CLONK_ANIM_SLOT_Movement, position, weight);
+	},
+	Timer = func() {
+		// Test Waterlevel -- taken from IntWalk
+		if(this.Target->InLiquid() && this.Target->GBackLiquid(0, -5) && !this.Target->Contained())
+		{
+			this.Target->SetAction("Swim");
+			if(this.Target->GetComDir() == COMD_Left)
+				this.Target->SetComDir(COMD_UpLeft);
+			else if(this.Target->GetComDir() == COMD_Right)
+				this.Target->SetComDir(COMD_UpRight);
+			else if(this.Target->GetComDir() != COMD_Down && this.Target->GetComDir() != COMD_DownLeft && this.Target->GetComDir() != COMD_DownRight)
+				this.Target->SetComDir(COMD_Up);
+			return;
+		}
+	}
+};
+
 /* --- Better death animation --- */
 
 func StartDead()
@@ -267,6 +320,45 @@ func OverlayDeathAnimation(int slot)
 	var animation = "Dead";
 	PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
 }
+
+/* --- ActMap --- */
+
+local ActMap = {
+	Prototype = Clonk.ActMap,
+
+	Crawl = {
+		Prototype = Action,
+		Name = "Crawl",
+		Procedure = DFA_WALK,
+		Accel = 2,
+		Decel = 6,
+		Speed = 25,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 1,
+		Delay = 0,
+		X = 0,
+		Y = 0,
+		Wdt = 8,
+		Hgt = 20,
+		StartCall = "StartCrawl",
+		AbortCall = "StopCrawl",
+	},
+	GoProne = {
+		Prototype = Action,
+		Name = "GoProne",
+		Procedure = DFA_KNEEL,
+		Directions = 2,
+		FlipDir = 0,
+		Length = 1,
+		Delay = 0,
+		X = 0,
+		Y = 0,
+		Wdt = 8,
+		Hgt = 20,
+		InLiquidAction = "Swim",
+	}
+};
 
 /* --- Properties --- */
 

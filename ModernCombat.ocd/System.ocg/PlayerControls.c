@@ -12,3 +12,26 @@ global func PlayerControl(int player, int control, id spec_id, int x, int y, int
 
 	return _inherited(player, control, spec_id, x, y, strength, repeat, status);
 }
+
+// Called when CON_Left/Right/Up/Down controls are issued/released
+// Return whether handled
+global func ObjectControlMovement(int plr, int ctrl, int strength, int status, bool repeat)
+{
+	if (!this) return false;
+
+	// movement is only possible when not contained
+	if (Contained()) return false;
+
+	var proc = GetProcedure();
+
+	if (status == CONS_Down)
+	{
+		if (ctrl == CON_Down && proc == "WALK" && Abs(GetXDir()) < 5)
+		{
+			this->GoProne();
+			return true;
+		}
+	}
+
+	return _inherited(plr, ctrl, strength, status, repeat);
+}
