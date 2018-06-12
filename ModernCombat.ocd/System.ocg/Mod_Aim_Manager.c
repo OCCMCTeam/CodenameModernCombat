@@ -20,6 +20,12 @@ public func SetCancelOnJump(bool cancel)
 	aim_cancel_on_jump = cancel;
 }
 
+func PauseAim()
+{
+	if (aim_cancel_on_jump) return CancelAiming();
+	return _inherited();
+}
+
 // Modify the aim manager to take in an 'aim type' variable.
 // Because in CMC one weapon has different styles of aiming (ironsight, hip shooting, lying down), the aim manager
 // should preserve a value to distinguish these.

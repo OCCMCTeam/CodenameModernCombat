@@ -64,6 +64,17 @@ func OnUseStop(object clonk, int x, int y)
 	return true;
 }
 
+// Called by the shooter library in ControlUseCancel
+// Because both mouse buttons are used in CMC, cancelling manually is not possible
+// but this will nonetheless be called by PauseAim() from the Aim Manager
+func OnUseCancel(object clonk, int x, int y)
+{
+	StopIronsight(clonk);
+	StopHipShooting(clonk);
+
+	return true;
+}
+
 /* --- Right click controls --- */
 
 // Right click will by default be a toggle control but can be switched to a holding control
@@ -152,11 +163,18 @@ func OnUseAltStop(object clonk, int x, int y)
 func StartHipShooting(object clonk, int x, int y)
 {
 	if (hipfire)
-		ContinueHipShooting(clonk, x, y);
+		return ContinueHipShooting(clonk, x, y);
 
 	hipfire = true;
 	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
-	hipfire_pressed = true;
+	// Double check whether the use button is really held
+	// This function (or ControlUseStart) will also be called by the Clonk Use Control through ReIssueCommand
+	// But no release call will follow, possibly stucking the clonk in an endless hip aiming procedure
+	// TODO: possibly have a way to circumvent this for AI clonks (if ever needed)
+	if (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0)
+		hipfire_pressed = true;
+	else
+		hipfire_pressed = false;
 
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
@@ -184,6 +202,12 @@ func StopHipShooting(object clonk)
 
 	hipfire = false;
 	hipfire_pressed = false;
+
+	// This effect can get stuck on the clonk, preventing scaling and hangling
+	// because usually aiming and button presses are tied together
+	// Because hip shooting disconnects these two action, just make sure the effect is gone
+	if (clonk)
+		RemoveEffect("IntControlFreeHands", clonk);
 }
 
 func ContinueHipShooting(object clonk, int x, int y)
@@ -312,16 +336,14 @@ public func StopIronsight(object clonk)
 	if (!ironsight)
 		return;
 
-	if (is_in_ironsight)
+	if (clonk && clonk->IsAiming())
 		clonk->StopAim();
-	else
+
+	var effect = GetEffect("IronsightHelper", this);
+	if (effect)
 	{
-		var effect = GetEffect("IronsightHelper", this);
-		if (effect)
-		{
-			effect->Cancel();
-			RemoveEffect(nil, nil, effect, true);
-		}
+		effect->Cancel();
+		RemoveEffect(nil, nil, effect, true);
 	}
 
 	ironsight = false;
