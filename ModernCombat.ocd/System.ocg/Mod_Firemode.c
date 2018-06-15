@@ -91,6 +91,20 @@ public func GetAimCursor()
 	return this.aim_cursor;
 }
 
+/**
+	Get an override for the <ammo name> in the status GUI
+	info "<ammo name> - <fire technique>".
+
+	@return string An override for the <ammo name>. If not
+	               defined this defaults to the name of
+	               the ammo ID.
+ */
+public func GetAmmoName()
+{
+	return this.ammo_name;
+}
+
+
 
 /* --- Setters --- */
 
@@ -179,5 +193,19 @@ public func SetSpreadLimit(int value)
 public func SetAimCursor(cursor)
 {
 	this.aim_cursor = cursor;
+	return this;
+}
+
+/**
+	Set an override for the <ammo name> in the status GUI
+	info "<ammo name> - <fire technique>".
+
+	@par name An override for the <ammo name>. If not
+	          defined this defaults to the name of
+	          the ammo ID.
+ */
+public func SetAmmoName(string name)
+{
+	this.ammo_name = name;
 	return this;
 }

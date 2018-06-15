@@ -534,7 +534,7 @@ public func GetGuiItemStatusProperties(object user)
 			// This should display a colored "fire mode" - "fire technique"
 			// In the shooter library the CMC fire technique is named firemode
 			// whereas the CMC fire mode is actually the ammo type that the weapon uses
-			status->SetObjectConfiguration(Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, ammo_type->GetName(), firemode->GetName()));
+			status->SetObjectConfiguration(Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, firemode->GetAmmoName() ?? ammo_type->GetName(), firemode->GetName()));
 	}
 
 	return status;
