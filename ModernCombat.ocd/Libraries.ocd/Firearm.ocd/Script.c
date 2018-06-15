@@ -183,6 +183,8 @@ func StartHipShooting(object clonk, int x, int y)
 	clonk->UpdateAttach();
 
 	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
+
+	DoHipShootingFireCycle(clonk, x, y);
 }
 
 func CheckHipShootingStop()
@@ -222,6 +224,8 @@ func ContinueHipShooting(object clonk, int x, int y)
 	effect.timeout = 0;
 	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
 	hipfire_pressed = true;
+
+	DoHipShootingFireCycle(clonk, x, y);
 }
 
 local HipShootingEffect = new Effect {
@@ -256,6 +260,22 @@ local HipShootingEffect = new Effect {
 			this.Target->StopHipShooting(this.clonk);
 	}
 };
+
+func DoHipShootingFireCycle(object clonk, int x, int y)
+{
+	if (!IsReadyToFire())
+		return;
+
+	var angle = GetAngle(x, y);
+	clonk->~SetAimPosition(angle);
+
+	// Check if reload is necessary
+	if (!StartReload(clonk, x, y))
+		// Check if the weapon still needs charging
+		if (!StartCharge(clonk, x, y))
+			// Fire away
+			Fire(clonk, x, y);
+}
 
 /* --- Ironsight aiming --- */
 
