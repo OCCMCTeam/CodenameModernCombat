@@ -73,7 +73,7 @@ func FiremodeBullets()
 	// Projectile
 	mode->SetProjectileID(CMC_Projectile_Bullet);
 	mode->SetProjectileSpeed(270);
-	mode->SetProjectileRange(800);
+	mode->SetProjectileRange(550);
 	mode->SetProjectileDistance(12);
 	mode->SetYOffset(-6);
 
