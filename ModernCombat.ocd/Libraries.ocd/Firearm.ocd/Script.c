@@ -53,6 +53,14 @@ func OnPressUse(object clonk, int x, int y)
 
 func OnHoldingUse(object clonk, int x, int y)
 {
+	// Autofiring weapons will continue to fire
+	if (IsAutoFiring())
+	{
+		if (ironsight)
+			DoIronsightFireCycle(clonk, x, y);
+		if (hipfire)
+			DoHipShootingFireCycle();
+	}
 	return true;
 }
 
@@ -589,4 +597,9 @@ public func Reset(object clonk)
 public func IsAiming()
 {
 	return is_in_ironsight || hipfire;
+}
+
+public func IsAutoFiring()
+{
+	return GetFiremode()->GetMode() == WEAPON_FM_Auto;
 }
