@@ -112,14 +112,14 @@ func PlaySoundMovementRustleLand()
 
 func Footstep()
 {
-    if(GBackLiquid(0, 6))
-    {
-    	PlaySoundMovementStepWater();
-    }
-    else
-    {
-    	inherited(...);
-    }
+	if(GBackLiquid(0, 6))
+	{
+		PlaySoundMovementStepWater();
+	}
+	else
+	{
+		inherited(...);
+	}
 }
 
 func DoRoll(bool is_falling)
