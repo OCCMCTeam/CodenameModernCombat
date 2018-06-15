@@ -226,6 +226,16 @@ func AddCmcVirtualCursor(int player)
 	}
 }
 
+
+func UpdateCmcVirtualCursor(int x, int y)
+{
+	var cursor = CMC_Virtual_Cursor->Get(this);
+	if (cursor)
+	{
+		cursor->UpdateAimPosition(x, y);
+	}
+}
+
 /* --- Callback from aim manager --- */
 
 public func StartAim(object weapon, int angle, string type)

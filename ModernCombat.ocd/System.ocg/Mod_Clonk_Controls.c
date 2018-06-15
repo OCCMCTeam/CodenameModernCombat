@@ -93,11 +93,7 @@ func AimingUseControl(int x, int y, object obj)
 	var handled = obj->Call(GetUseCallString("Aiming"), this, x, y);
 	
 	// Adjust cursor
-	var cursor = CMC_Virtual_Cursor->Get(this);
-	if (cursor)
-	{
-		cursor->UpdateAimPosition(x, y);
-	}
+	this->~UpdateCmcVirtualCursor(x, y);
 
 	return handled;
 }

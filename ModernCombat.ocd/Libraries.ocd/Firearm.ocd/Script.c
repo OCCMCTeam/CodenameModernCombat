@@ -60,6 +60,9 @@ func OnHoldingUse(object clonk, int x, int y)
 			DoIronsightFireCycle(clonk, x, y);
 		if (hipfire)
 			DoHipShootingFireCycle(clonk);
+			
+		// Adjust cursor
+		clonk->~UpdateCmcVirtualCursor(x, y);
 	}
 	return true;
 }
@@ -193,6 +196,9 @@ func StartHipShooting(object clonk, int x, int y)
 	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
 
 	DoHipShootingFireCycle(clonk);
+	
+	// Adjust cursor
+	clonk->~UpdateCmcVirtualCursor(x, y);
 }
 
 func CheckHipShootingStop()
