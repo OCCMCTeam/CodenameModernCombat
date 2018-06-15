@@ -59,7 +59,7 @@ func OnHoldingUse(object clonk, int x, int y)
 		if (ironsight)
 			DoIronsightFireCycle(clonk, x, y);
 		if (hipfire)
-			DoHipShootingFireCycle();
+			DoHipShootingFireCycle(clonk);
 	}
 	return true;
 }
@@ -192,7 +192,7 @@ func StartHipShooting(object clonk, int x, int y)
 
 	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
 
-	DoHipShootingFireCycle(clonk, x, y);
+	DoHipShootingFireCycle(clonk);
 }
 
 func CheckHipShootingStop()
@@ -233,7 +233,7 @@ func ContinueHipShooting(object clonk, int x, int y)
 	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
 	hipfire_pressed = true;
 
-	DoHipShootingFireCycle(clonk, x, y);
+	DoHipShootingFireCycle(clonk);
 }
 
 local HipShootingEffect = new Effect {
@@ -269,13 +269,13 @@ local HipShootingEffect = new Effect {
 	}
 };
 
-func DoHipShootingFireCycle(object clonk, int x, int y)
+func DoHipShootingFireCycle(object clonk)
 {
 	if (!IsReadyToFire())
 		return;
 
-	var angle = GetAngle(x, y);
-	clonk->~SetAimPosition(angle);
+	var x = hipfire_target[0];
+	var y = hipfire_target[1];
 
 	// Check if reload is necessary
 	if (!StartReload(clonk, x, y))
