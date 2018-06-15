@@ -1,0 +1,7 @@
+Name=Submachine Gun
+Description=The submachine gun provides a very high fire rate which literally perforates targets.||Using the full auto, burst and single fire modes also allows to accurately hit targets from the distance.
+
+# Bullets
+Auto=Auto
+Burst=Burst
+Single=Single

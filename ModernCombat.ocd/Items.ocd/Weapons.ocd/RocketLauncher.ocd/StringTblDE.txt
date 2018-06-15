@@ -1,0 +1,7 @@
+﻿Name=Raketenwerfer
+Description=Der Raketenwerfer feuert hochexplosive Raketen und eignet sich so zur Zerstörung gepanzerter Ziele.||Abgefeuerte Raketen können optisch ins Ziel gelenkt werden, indem der Raketenwerfer in die entsprechende Richtung zeigt.
+
+# Raketen
+Optical=Optisches Lenken
+Unguided=Ungelenkt
+NotEnoughAmmo=Nicht genug {{%i}}!

@@ -1,0 +1,6 @@
+﻿Name=Antipanzerungswaffe
+Description=Eine Einweg-Antipanzerungswaffe, feuert eine einzelne und effektive panzerbrechende Rakete.||Die Rakete ist nicht peilsenderkompatibel, sodass sie manuell ins Ziel gelenkt werden muss.
+
+Missiles=AT-Rakete
+Optical=Optisches Lenken
+Unguided=Ungelenkt

@@ -1,0 +1,6 @@
+Name=Revolver
+Description=The projectiles of the revolver can penetrate multiple targets which make it a powerful sidearm. But its also slower and less accurate then normal pistols.||A tracer dart attachment enables the weapon to mark targets.
+
+#Bullets
+TracerDart=Tracer Darts
+Single=Single

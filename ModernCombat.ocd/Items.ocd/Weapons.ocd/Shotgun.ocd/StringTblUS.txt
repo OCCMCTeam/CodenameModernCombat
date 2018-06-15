@@ -1,0 +1,5 @@
+Name=Shotgun
+Description=The shotgun can hit multiple targets with its deadly rounds and also penetrate more than one object per projectile which can cause serious harm, making it the ultimate close combat weapon.
+
+Pellets=Pellets
+SpreadShot=Spread Shot

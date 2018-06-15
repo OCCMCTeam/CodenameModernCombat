@@ -1,0 +1,6 @@
+Name=Anti-Tank Weapon
+Description=A disposable anti-tank weapon, fires a single and effective armor-piercing missile.||The missile does not support tracer darts and therefore needs to be guided manually into the intended target.
+
+Missiles=AT Missile
+Optical=Optical Guidance
+Unguided=Unguided

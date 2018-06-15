@@ -1,0 +1,7 @@
+﻿Name=Granatwerfer
+Description=Der Granatwerfer ist eine Langstreckenwaffe, welche Gewehrgranaten über weite Distanzen und mit hoher Feuerrate abfeuert.||Die verfügbaren Granatentypen erlauben dabei verschiedene Strategien.
+
+# Granaten
+Explosive=Explosiv
+Cluster=Splitter
+Smoke=Rauch

@@ -1,0 +1,7 @@
+Name=Rocket Launcher
+Description=The rocket launcher fires high explosive missiles which are suited to destroy armored targets.||Launched missiles can be optically guided into the target by pointing the rocket launcher to the respective direction.
+
+# Missiles
+Optical=Optical Guidance
+Unguided=Unguided
+NotEnoughAmmo=Not enough {{%i}}!

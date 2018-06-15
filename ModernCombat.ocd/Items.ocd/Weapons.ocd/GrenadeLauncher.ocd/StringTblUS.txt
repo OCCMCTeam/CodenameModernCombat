@@ -1,0 +1,7 @@
+Name=Grenade Launcher
+Description=The grenade launcher is a long-range weapon which fires rifle grenades over great distances and with a high firing rate.||The available grenade types allow for different strategies.
+
+# Grenades
+Explosive=Explosive
+Cluster=Frag
+Smoke=Smoke
