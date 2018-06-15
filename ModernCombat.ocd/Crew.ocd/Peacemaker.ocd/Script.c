@@ -133,6 +133,14 @@ func DoRoll(bool is_falling)
 	inherited(is_falling, ...);
 }
 
+func Grab(object target, bool grab)
+{
+	if (grab)
+		Sound("Clonk::Action::Grab?");
+	else
+		Sound("Clonk::Action::UnGrab");
+}
+
 /* --- Firearm spread management --- */
 
 // Opening angle is half the cone here
