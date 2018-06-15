@@ -280,8 +280,8 @@ func DoHipShootingFireCycle(object clonk)
 	if (!IsReadyToFire())
 		return;
 
-	var x = hipfire_target[0];
-	var y = hipfire_target[1];
+	var x = hipfire_target[0] - clonk->GetX();
+	var y = hipfire_target[1] - clonk->GetY();
 
 	// Check if reload is necessary
 	if (!StartReload(clonk, x, y))
