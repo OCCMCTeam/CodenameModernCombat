@@ -381,6 +381,27 @@ public func StopIronsight(object clonk)
 		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
 }
 
+// Cancel ironsight aiming, regardless of the current state (aiming or transitional state)
+// Unlike StopIronsight, this will not call StopAim on the clonk
+public func CancelIronsight(object clonk)
+{
+	if (!ironsight)
+		return;
+
+	var effect = GetEffect("IronsightHelper", this);
+	if (effect)
+	{
+		effect->Cancel();
+		RemoveEffect(nil, nil, effect, true);
+	}
+
+	ironsight = false;
+	is_in_ironsight = false;
+	// Disable CMC Aiming control if necessary
+	if (IsIronsightToggled())
+		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
+}
+
 local IronsightHelper = new Effect {
 	Construction = func(object clonk, int x, int y, int anim)
 	{
@@ -455,7 +476,7 @@ public func OnAmmoChange(id ammo_type)
 
 /* --- Selection --- */
 
-func Selection(object user)
+public func Selection(object user)
 {
 	var firemode = GetFiremode();
 	if (firemode)
@@ -463,6 +484,15 @@ func Selection(object user)
 		user->~RaiseFirearmSpread(firemode->~GetSpreadBySelection());
 	}
 	_inherited(user, ...);
+}
+
+public func Deselection(object user)
+{
+	// Properly stop all aiming procedures
+	if (user && user->IsAiming())
+		user->CancelAiming(this);
+	if (ironsight && !is_in_ironsight)
+		CancelIronsight(user);
 }
 
 /* --- Reloading --- */
