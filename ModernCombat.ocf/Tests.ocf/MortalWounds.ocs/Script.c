@@ -101,6 +101,8 @@ global func InitTest()
 
 /* --- Tests --- */
 
+//--------------------------------------------------------
+
 global func Test1_OnStart(int player){ return InitTest();}
 global func Test1_OnFinished(){ return; }
 global func Test1_Execute()
@@ -123,11 +125,40 @@ global func Test1_Execute()
 		}
 		else
 		{
-			return FailTest("Victim was not created");
+			return FailTest(); // Victim was not created
 		}
 	}
 }
 global func Test1_OnClonkDeath(object clonk, int killer)
+{
+	ScheduleCall(clonk, Global.RemoveObject, 25, 1);
+}
+
+
+//--------------------------------------------------------
+
+global func Test2_OnStart(int player){ CreateObject(CMC_Rule_MortalWounds); return InitTest();}
+global func Test2_OnFinished(){ return; }
+global func Test2_Execute()
+{
+	Log("Test that clonks do not die immediately if the rule is active");
+	
+	var victim = GetCrew(player_victim);
+	
+	if (victim)
+	{
+		victim->DoEnergy(-12);
+		victim->DoEnergy(+5);
+	
+		Log("GetAlive: %v", victim->GetAlive());
+		
+		victim->DoEnergy(-1000);
+		Log("GetAlive: %v", victim->GetAlive());
+	}
+	
+	return FailTest(); // Test not implemented
+}
+global func Test2_OnClonkDeath(object clonk, int killer)
 {
 	ScheduleCall(clonk, Global.RemoveObject, 25, 1);
 }
