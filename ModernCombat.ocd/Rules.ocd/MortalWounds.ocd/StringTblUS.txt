@@ -1,0 +1,2 @@
+Name=Mortal Wounds
+Description=If this rule is active a crew member counts as mortally wounded for a short time before dying. In this state they can be reanimated.

@@ -1,0 +1,2 @@
+Name=Schwerverletzte
+Description=Wenn diese Regel aktiviert ist, sterben Crewmitglieder nicht sofort, sondern gelten vor dem Ableben für eine gewisse Zeit als schwer verletzt. In diesem Zeitraum besteht die Möglichkeit, das Crewmitglied wiederzubeleben.
