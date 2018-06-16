@@ -144,21 +144,76 @@ global func Test2_Execute()
 	Log("Test that clonks do not die immediately if the rule is active");
 	
 	var victim = GetCrew(player_victim);
-	
-	if (victim)
+	if (CurrentTest().test2_killed)
 	{
-		victim->DoEnergy(-12);
-		victim->DoEnergy(+5);
-	
-		Log("GetAlive: %v", victim->GetAlive());
-		
-		victim->DoEnergy(-1000);
-		Log("GetAlive: %v", victim->GetAlive());
+		doTest("Victim should be removed upon death. Object is %v, expected %v", victim, nil);
+		return Evaluate();
 	}
+	else
+	{
+		if (victim)
+		{
+			Log("Full energy");
+		
+			doTest("Energy is %d, should be %d", victim->GetEnergy(), victim.MaxEnergy / 1000);
+			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), true);
+			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, OCF_Alive);
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), false);
 	
-	return FailTest(); // Test not implemented
+	
+			Log("Half energy");
+			var diff = victim.MaxEnergy / 2000;
+			victim->DoEnergy(-diff);
+			
+			doTest("Energy is %d, should be %d", victim->GetEnergy(), victim.MaxEnergy / 1000 - diff);
+			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), true);
+			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, OCF_Alive);
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), false);
+			
+			Log("Dead");
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+			
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			
+			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
+			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
+			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			Log("Heal a little, clonk still counts as incapacitated");
+			
+			victim->DoEnergy(4);
+	
+			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
+			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 5);
+			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
+			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			Log("Kill() call still kills the victim");
+			
+			CurrentTest().test2_killed = true;
+			victim->Kill();
+			
+			return Wait(30);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
 }
 global func Test2_OnClonkDeath(object clonk, int killer)
 {
-	ScheduleCall(clonk, Global.RemoveObject, 25, 1);
+	if (CurrentTest().test2_killed)
+	{
+		ScheduleCall(clonk, Global.RemoveObject, 25, 1);
+	}
+	else // Unexpected, remove immediately.
+	{
+		clonk->RemoveObject();
+	}
 }

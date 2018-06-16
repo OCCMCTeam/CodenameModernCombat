@@ -43,9 +43,11 @@ local RuleMortalWoundsCheck = new Effect
 	{
 		if (!temp)
 		{
-			Log("Modded functions!");
 			this.Target.IsIncapacitated = CMC_Rule_MortalWounds.IsIncapacitated;
 			this.Target.GetAlive = CMC_Rule_MortalWounds.GetAlive;
+			this.Target.GetEnergy = CMC_Rule_MortalWounds.GetEnergy;
+			this.Target.GetOCF = CMC_Rule_MortalWounds.GetOCF;
+			this.is_incapacitated = false;
 		}
 		return FX_OK;
 	},
@@ -68,12 +70,10 @@ local RuleMortalWoundsCheck = new Effect
 		// In case the victim would die
 		else if (health_change < 0 && (health_change + 1000 * this.Target->GetEnergy() <= 0))
 		{
-			Log("Target got incapacitated");
 			var stay_at_one_health = (1 - this.Target->GetEnergy()) * 1000;
 			this.is_incapacitated = true;
 			return stay_at_one_health;
 		}
-		Log("Health change: %d", health_change);
 		return health_change;
 	},
 	
@@ -96,13 +96,44 @@ func IsIncapacitated()
 
 func GetAlive()
 {
-	Log("Mortal wounds get alive");
 	if (this->~IsIncapacitated())
 	{
 		return false;
 	}
 	else
 	{
-		return Call(this->GetID().GetAlive);
+		// Calling inherited calls the inherited function of the rule, instead of the object.
+		// Using the ID is a reference seems fair enough, most objects do not overload
+		// these functions anyway.
+		return Call(this->GetID().GetAlive); 
+	}
+}
+
+func GetOCF()
+{
+	// Calling inherited calls the inherited function of the rule, instead of the object.
+	var ocf = Call(this->GetID().GetOCF);
+
+	// Remove alive flag if incapacitated	
+	if (this->~IsIncapacitated() && (ocf & OCF_Alive))
+	{
+		return ocf - OCF_Alive;
+	}
+	else
+	{
+		return ocf;
+	}
+}
+
+func GetEnergy()
+{	
+	if (this->~IsIncapacitated())
+	{
+		return 0;
+	}
+	else
+	{
+		// Calling inherited calls the inherited function of the rule, instead of the object.
+		return Call(this->GetID().GetEnergy);
 	}
 }
