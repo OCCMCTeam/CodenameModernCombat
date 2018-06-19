@@ -98,7 +98,7 @@ func FiremodeStandard()
 	mode->SetAimCursor(CMC_Cursor_Cone);
 
 	// Effects, CMC custom
-	mode->SetFireSound("Weapon::Pistol::Fire", 2);
+	mode->SetFireSound("Items::Weapons::Pistol::Fire", 2);
 	return mode;
 }
 

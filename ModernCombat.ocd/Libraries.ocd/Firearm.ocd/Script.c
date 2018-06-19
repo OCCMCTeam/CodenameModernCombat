@@ -471,7 +471,7 @@ public func OnNoAmmo(object user, proplist firemode)
 {
 	_inherited(user, firemode);
 	
-	Sound("Weapon::Shared::LastRound?", {player = user->GetOwner()});
+	Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
 }
 
 public func OnAmmoChange(id ammo_type)

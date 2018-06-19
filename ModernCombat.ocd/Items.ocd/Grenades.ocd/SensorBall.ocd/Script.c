@@ -29,23 +29,23 @@ public func LimitationCount()	{return 2;} // TODO: Limitation is not active yet
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::SensorBall::Activate");
+	Sound("Items::Grenades::SensorBall::Activate");
 }
 
 func PlaySoundBeep()
 {
-	Sound("Grenade::SensorBall::Beep");
+	Sound("Items::Grenades::SensorBall::Beep");
 }
 
 func PlaySoundExplosion()
 {
-	Sound("Grenade::SensorBall::StartScan");
-	Sound("Grenade::SensorBall::Scan", {volume = 50, loop_count = +1});
+	Sound("Items::Grenades::SensorBall::StartScan");
+	Sound("Items::Grenades::SensorBall::Scan", {volume = 50, loop_count = +1});
 }
 
 func PlaySoundHit()
 {
-	Sound("BoobyTrap::Hit?", {multiple = true});
+	Sound("Items::Tools::BoobyTrap::Hit?", {multiple = true});
 }
 
 /* --- Engine callback --- */

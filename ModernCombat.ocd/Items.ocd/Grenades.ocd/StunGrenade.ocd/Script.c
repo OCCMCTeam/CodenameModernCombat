@@ -20,24 +20,24 @@ local Grenade_Radius = 250;
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::StunGrenade::Activate");
+	Sound("Items::Grenades::StunGrenade::Activate");
 }
 
 func PlaySoundDetonation()
 {
-	Sound("Grenade::StunGrenade::Explosion");
+	Sound("Items::Grenades::StunGrenade::Explosion");
 }
 
 func PlaySoundHit()
 {
-	Sound("Grenade::StunGrenade::Hit?", {multiple = true});
+	Sound("Items::Grenades::StunGrenade::Hit?", {multiple = true});
 }
 
 func PlaySoundFlashbang(object target)
 {
 	var for_player = target->GetOwner();
-	target->Sound("Grenade::StunGrenade::Bang?", { player = for_player});
-	target->Sound("Grenade::StunGrenade::EarRinging?", { player = for_player});
+	target->Sound("Items::Grenades::StunGrenade::Bang?", { player = for_player});
+	target->Sound("Items::Grenades::StunGrenade::EarRinging?", { player = for_player});
 }
 
 /* --- Detonation --- */

@@ -18,18 +18,18 @@ public func BlastRadius()	{return 10;}			//Explosionsradius
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::SmokeGrenade::Activate");
+	Sound("Items::Grenades::SmokeGrenade::Activate");
 }
 
 func PlaySoundDetonation()
 {
-	Sound("Grenade::PhosphorGrenade::Explosion");
+	Sound("Items::Grenades::PhosphorGrenade::Explosion");
 	inherited();
 }
 
 func PlaySoundHit()
 {
-	Sound("Grenade::SmokeGrenade::Hit?", {multiple = true});
+	Sound("Items::Grenades::SmokeGrenade::Hit?", {multiple = true});
 }
 
 /* --- Detonation --- */

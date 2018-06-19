@@ -185,7 +185,7 @@ func CreateAmmoBox(proplist parameters)
 	
 	// Remove points
 	DoStackCount(-ammo_info.points_cost);
-	ammo_box->Sound("Tool::AmmoBox::ResupplyOut?", {player = user->GetOwner()});
+	ammo_box->Sound("Items::Tools::AmmoBox::ResupplyOut?", {player = user->GetOwner()});
 
 	// Collect it
 	if (user->Collect(ammo_box))

@@ -28,7 +28,7 @@ func Ejection(object item)
 
 func Hit()
 {
-	Sound("Tool::AmmoBox::Hit?");
+	Sound("Items::Tools::AmmoBox::Hit?");
 }
 
 

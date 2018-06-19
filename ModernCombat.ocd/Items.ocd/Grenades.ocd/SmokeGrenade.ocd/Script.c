@@ -21,19 +21,19 @@ local smoke_progress = 1;
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::SmokeGrenade::Activate");
+	Sound("Items::Grenades::SmokeGrenade::Activate");
 }
 
 
 func PlaySoundDetonation()
 {
-	Sound("Grenade::SmokeGrenade::Fused");
+	Sound("Items::Grenades::SmokeGrenade::Fused");
 }
 
 
 func PlaySoundHit()
 {
-	Sound("Grenade::SmokeGrenade::Hit?", {multiple = true});
+	Sound("Items::Grenades::SmokeGrenade::Hit?", {multiple = true});
 }
 
 /* --- Overloads --- */

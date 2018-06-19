@@ -388,31 +388,31 @@ public func DuringShoot(object user, int angle)
 
 func PlaySoundActivate()
 {
-	Sound("Grenade::Activate?");
+	Sound("Items::Grenades::Activate?");
 }
 
 
 func PlaySoundDeploy()
 {
-	Sound("Grenade::Deploy?");
+	Sound("Items::Grenades::Deploy?");
 }
 
 
 func PlaySoundDetonation()
 {
-	Sound("Grenade::Explosion?");
+	Sound("Items::Grenades::Explosion?");
 }
 
 
 func PlaySoundHit()
 {
-	Sound("Grenade::Hit?", {multiple = true});
+	Sound("Items::Grenades::Hit?", {multiple = true});
 }
 
 
 func PlaySoundThrow()
 {
-	Sound("Grenade::Throw?", {multiple = true});
+	Sound("Items::Grenades::Throw?", {multiple = true});
 }
 
 
