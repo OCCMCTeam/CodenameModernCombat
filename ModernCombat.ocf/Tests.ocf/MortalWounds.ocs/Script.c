@@ -103,11 +103,16 @@ global func InitTest()
 
 //--------------------------------------------------------
 
-global func Test1_OnStart(int player){ return InitTest();}
-global func Test1_OnFinished(){ return; }
+global func Test1_OnStart(int player){ CreateObject(CMC_Rule_MortalWounds); return InitTest();}
+global func Test1_OnFinished()
+{
+	if (CMC_Rule_MortalWounds->GetInstance()) 
+		CMC_Rule_MortalWounds->GetInstance()->RemoveObject(); 
+	return;
+}
 global func Test1_Execute()
 {
-	Log("Test that clonks die normally if the rule is not active");
+	Log("Test that clonks die normally if the rule is active");
 	
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test1_killed)
@@ -137,7 +142,7 @@ global func Test1_OnClonkDeath(object clonk, int killer)
 
 //--------------------------------------------------------
 
-global func Test2_OnStart(int player){ CreateObject(CMC_Rule_MortalWounds); return InitTest();}
+global func Test2_OnStart(int player){ return InitTest();}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {

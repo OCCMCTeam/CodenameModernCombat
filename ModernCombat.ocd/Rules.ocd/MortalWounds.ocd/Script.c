@@ -22,14 +22,38 @@ func Activate(int for_player)
 	return true;
 }
 
+func Construction(object creator)
+{
+	_inherited(creator, ...);
+	
+	SetDelayedDeath(false); // Creating the rule disables delayed death
+}
+
+func Destruction()
+{
+	SetDelayedDeath(true); // Destroying it resotres delayed death for everyone
+}
+
+/* --- Interface --- */
+
 
 // When crew is being recruited - non recruited crew may die normally :D
-public func OnClonkRecruitment(object crew, int player)
+public func SetDelayedDeath(bool enable, object crew)
 {
-	var check = GetEffect("RuleMortalWoundsCheck", crew);
-	if (!check)
+	if (nil == crew) // Set for all?
 	{
-		crew->CreateEffect(RuleMortalWoundsCheck, 1, 1); // Does not need to be top priority, let other effects modify damage first, and so on
+		for (var crew in FindObjects(Find_OCF(OCF_CrewMember), Find_Func("IsClonk")))
+		{
+			if (crew) SetDelayedDeath(enable, crew);
+		}
+	}
+	else // specific
+	{
+		var check = GetEffect("RuleMortalWoundsCheck", crew);
+		if (!check)
+		{
+			crew->CreateEffect(RuleMortalWoundsCheck, 1, 1); // Does not need to be top priority, let other effects modify damage first, and so on
+		}
 	}
 }
 
