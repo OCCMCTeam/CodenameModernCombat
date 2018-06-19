@@ -8,6 +8,9 @@ static player_killer_fake;
 
 func Initialize()
 {
+	// Disable delayed death for now
+	CreateObject(CMC_Rule_MortalWounds);
+
 	// Create script players for these tests.
 	CreateScriptPlayer("Victim",     RGB(0, 0, 255), nil, CSPF_NoEliminationCheck);
 	CreateScriptPlayer("Killer",     RGB(0, 255, 0), nil, CSPF_NoEliminationCheck);
