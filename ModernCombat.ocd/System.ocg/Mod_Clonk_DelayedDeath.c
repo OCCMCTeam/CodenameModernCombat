@@ -1,5 +1,19 @@
 #appendto Clonk
 
+/* --- Properties --- */
+
+local ActMap = {
+Incapacitated = {
+	Prototype = Action,
+	Name = "Incapacitated",
+	Directions = 2,
+	Length = 1,
+	Delay = 0,
+	NextAction = "Hold",
+	ObjectDisabled = 1,
+},
+};
+
 /* --- Engine callbacks --- */
 
 func Recruitment(int player)
@@ -9,13 +23,27 @@ func Recruitment(int player)
 	return _inherited(player, ...);
 }
 
+/* --- Incapacitation --- */
+
+func OnIncapacitated(int health_change, int cause, int by_player)
+{
+	SetAction("Incapacitated");
+	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
+}
+
 /* --- Better death animation --- */
 
 func StartDead()
 {
+	StartDeathAnimation();
+}
+
+func StartDeathAnimation(int animation_slot)
+{
+	animation_slot = animation_slot ?? CLONK_ANIM_SLOT_Death;
 	// Blend death animation with other animations, except for the death slot
 	var merged_animations = false;	
-	for (var slot = 0; slot < CLONK_ANIM_SLOT_Death; ++slot)
+	for (var slot = 0; slot < animation_slot; ++slot)
 	{
 		if (GetRootAnimation(slot) == nil) continue;
 		OverlayDeathAnimation(slot);
@@ -25,7 +53,7 @@ func StartDead()
 	// Force the death animation if there were no other animations active
 	if (!merged_animations)
 	{
-		OverlayDeathAnimation(CLONK_ANIM_SLOT_Death);
+		OverlayDeathAnimation(animation_slot);
 	}
 
 	// Update carried items

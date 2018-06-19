@@ -115,6 +115,7 @@ local RuleMortalWoundsCheck = new Effect
 		{
 			var stay_at_one_health = (1 - this.Target->GetEnergy()) * 1000;
 			this.is_incapacitated = true;
+			this.Target->~OnIncapacitated(health_change, cause, by_player);
 			return stay_at_one_health;
 		}
 		return health_change;
