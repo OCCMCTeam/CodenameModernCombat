@@ -62,6 +62,7 @@ public func SetDelayedDeath(bool enable, object crew)
 local RuleMortalWoundsCheck = new Effect
 {
 	Name = "RuleMortalWoundsCheck",
+	TimerMax = 15 * 35,
 	
 	Start = func (int temp)
 	{
@@ -72,8 +73,26 @@ local RuleMortalWoundsCheck = new Effect
 			this.Target.GetEnergy = CMC_Rule_MortalWounds.GetEnergy;
 			this.Target.GetOCF = CMC_Rule_MortalWounds.GetOCF;
 			this.is_incapacitated = false;
+			this.death_timer = this.TimerMax;
 		}
 		return FX_OK;
+	},
+	
+	Timer = func ()
+	{
+		var change = +1;
+		// Already wounded?
+		if (IsIncapacitated())
+		{
+			if (this.death_timer <= 0)
+			{
+				this.Target->Kill(); // TODO: This will very likely cause problems with kill tracing at the moment
+				return FX_Execute_Kill;
+			}
+			change = -1;
+		}
+		
+		this.death_timer = BoundBy(this.death_timer + change, 0, this.TimerMax);
 	},
 	
 	Damage = func (int health_change, int cause, int by_player)
