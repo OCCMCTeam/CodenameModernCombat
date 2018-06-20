@@ -84,7 +84,7 @@ local RuleMortalWoundsCheck = new Effect
 		// Already wounded?
 		if (IsIncapacitated())
 		{
-			if (this.death_timer <= 0)
+			if (this.death_timer <= 1) // Would reduce to 0 at the end of the function, but skip another timer call
 			{
 				this.Target->Kill(); // TODO: This will very likely cause problems with kill tracing at the moment
 				return FX_Execute_Kill;

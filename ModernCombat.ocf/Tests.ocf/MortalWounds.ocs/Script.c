@@ -112,7 +112,6 @@ global func Test1_OnFinished()
 }
 global func Test1_Execute()
 {
-	Log("Test that clonks die normally if the rule is active");
 	
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test1_killed)
@@ -122,6 +121,7 @@ global func Test1_Execute()
 	}
 	else
 	{
+		Log("Test that clonks die normally if the rule is active");
 		if (victim)
 		{
 			victim->Kill();
@@ -146,7 +146,6 @@ global func Test2_OnStart(int player){ return InitTest();}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
-	Log("Test that clonks do not die immediately if the rule is active");
 	
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test2_killed)
@@ -156,6 +155,7 @@ global func Test2_Execute()
 	}
 	else
 	{
+		Log("Test that clonks do not die immediately if the rule is active");
 		if (victim)
 		{
 			Log("Full energy");
@@ -221,4 +221,56 @@ global func Test2_OnClonkDeath(object clonk, int killer)
 	{
 		clonk->RemoveObject();
 	}
+}
+
+
+//--------------------------------------------------------
+
+global func Test3_OnStart(int player){ return InitTest();}
+global func Test3_OnFinished(){ return; }
+global func Test3_Execute()
+{
+	
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test3_incapacitated)
+	{
+		if (CurrentTest().test3_killed)
+		{
+			doTest("Victim died at frame %d, expected %d", CurrentTest().test3_killed, CurrentTest().test3_expected);
+			return Evaluate();
+		}
+		else if (FrameCounter() > CurrentTest().test3_timeout)
+		{
+			return FailTest();
+		}
+		return Wait(10);
+	}
+	else
+	{
+		Log("Test that clonks die after 15 seconds");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+			
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			CurrentTest().test3_incapacitated = FrameCounter();
+			CurrentTest().test3_timeout = (16 * 35) + CurrentTest().test3_incapacitated;
+			CurrentTest().test3_expected = (15 * 35) + CurrentTest().test3_incapacitated;
+
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test3_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test3_killed = FrameCounter();
 }
