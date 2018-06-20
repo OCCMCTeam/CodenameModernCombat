@@ -57,6 +57,11 @@ public func SetDelayedDeath(bool enable, object crew)
 	}
 }
 
+public func GetDelayedDeathEffect(object target)
+{
+	return GetEffect("RuleMortalWoundsCheck", target);
+}
+
 /* --- Functionality --- */
 
 local RuleMortalWoundsCheck = new Effect
@@ -69,6 +74,7 @@ local RuleMortalWoundsCheck = new Effect
 		if (!temp)
 		{
 			this.Target.IsIncapacitated = CMC_Rule_MortalWounds.IsIncapacitated;
+			this.Target.DoReanimate = CMC_Rule_MortalWounds.DoReanimate;
 			this.Target.GetAlive = CMC_Rule_MortalWounds.GetAlive;
 			this.Target.GetEnergy = CMC_Rule_MortalWounds.GetEnergy;
 			this.Target.GetOCF = CMC_Rule_MortalWounds.GetOCF;
@@ -128,6 +134,17 @@ local RuleMortalWoundsCheck = new Effect
 		return this.is_incapacitated;
 	},
 	
+	DoReanimate = func (int by_player)
+	{
+		if (IsIncapacitated())
+		{	
+			this.is_incapacitated = false;
+			this.Target->~OnReanimated(by_player);
+			return true;
+		}
+		return false;
+	},
+	
 };
 
 /* --- Functions, are being added to clonks if the rule is active --- */
@@ -136,6 +153,12 @@ func IsIncapacitated()
 {
 	var fx = GetEffect("RuleMortalWoundsCheck", this);
 	return fx && fx->IsIncapacitated();
+}
+
+func DoReanimate(int by_player)
+{
+	var fx = GetEffect("RuleMortalWoundsCheck", this);
+	return fx && fx->DoReanimate(by_player);
 }
 
 func GetAlive()

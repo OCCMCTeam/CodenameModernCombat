@@ -101,6 +101,9 @@ global func InitTest()
 
 /* --- Tests --- */
 
+global func Death_Timeout() {return 16 * 35;}
+global func Death_Expected() {return 15 * 35;}
+
 //--------------------------------------------------------
 
 global func Test1_OnStart(int player){ CreateObject(CMC_Rule_MortalWounds); return InitTest();}
@@ -259,8 +262,8 @@ global func Test3_Execute()
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
 			
 			CurrentTest().test3_incapacitated = FrameCounter();
-			CurrentTest().test3_timeout = (16 * 35) + CurrentTest().test3_incapacitated;
-			CurrentTest().test3_expected = (15 * 35) + CurrentTest().test3_incapacitated;
+			CurrentTest().test3_timeout = Death_Timeout() + CurrentTest().test3_incapacitated;
+			CurrentTest().test3_expected = Death_Expected() + CurrentTest().test3_incapacitated;
 
 			return Wait(10);
 		}
@@ -273,4 +276,65 @@ global func Test3_Execute()
 global func Test3_OnClonkDeath(object clonk, int killer)
 {
 	CurrentTest().test3_killed = FrameCounter();
+}
+
+
+
+//--------------------------------------------------------
+
+global func Test4_OnStart(int player){ return InitTest();}
+global func Test4_OnFinished(){ return; }
+global func Test4_Execute()
+{
+	
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test4_incapacitated)
+	{
+		if (CurrentTest().test4_killed)
+		{
+			return FailTest();
+		}
+		else if (FrameCounter() > CurrentTest().test4_timeout)
+		{
+			doTest("Energy is %d, should be %d", victim->GetEnergy(), 1);
+			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 1);
+			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), true);
+			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, OCF_Alive);
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), false);
+			return Evaluate();
+		}
+
+		return Wait(10);
+	}
+	else
+	{
+		Log("Test that clonks can be reanimated until the timeout is exceeded");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+			
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			CurrentTest().test4_incapacitated = FrameCounter();
+			CurrentTest().test4_timeout = Death_Timeout() + CurrentTest().test4_incapacitated;
+			CurrentTest().test4_expected = Death_Expected() + CurrentTest().test4_incapacitated;
+			
+			// Resurrect 1 frame before he dies
+			ScheduleCall(victim, victim.DoReanimate, Death_Expected() - 1, 1);
+
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test4_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test4_killed = FrameCounter();
 }

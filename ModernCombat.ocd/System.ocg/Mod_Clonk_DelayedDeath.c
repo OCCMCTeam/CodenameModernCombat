@@ -31,6 +31,18 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
 }
 
+func OnReanimated(int by_player)
+{
+	// Remove animations
+	var fx = CMC_Rule_MortalWounds->GetDelayedDeathEffect(this);
+	if (fx) for (var anim in fx.animations)
+	{
+		StopAnimation(anim);
+	}
+	// Get up!
+	this->~DoKneel();
+}
+
 /* --- Better death animation --- */
 
 func StartDead()
@@ -41,19 +53,33 @@ func StartDead()
 func StartDeathAnimation(int animation_slot)
 {
 	animation_slot = animation_slot ?? CLONK_ANIM_SLOT_Death;
+	
+	// Save animation slots
+	var fx = CMC_Rule_MortalWounds->GetDelayedDeathEffect(this);
+	if (fx) fx.animations = [];
+	
 	// Blend death animation with other animations, except for the death slot
 	var merged_animations = false;	
 	for (var slot = 0; slot < animation_slot; ++slot)
 	{
 		if (GetRootAnimation(slot) == nil) continue;
-		OverlayDeathAnimation(slot);
+		var anim = OverlayDeathAnimation(slot);
 		merged_animations = true;
+		
+		if (fx)
+		{
+			PushBack(fx.animations, anim);
+		}
 	}
 
 	// Force the death animation if there were no other animations active
 	if (!merged_animations)
 	{
-		OverlayDeathAnimation(animation_slot);
+		var anim = OverlayDeathAnimation(animation_slot);
+		if (fx)
+		{
+			PushBack(fx.animations, anim);
+		}
 	}
 
 	// Update carried items
@@ -65,8 +91,8 @@ func StartDeathAnimation(int animation_slot)
 // Merges the animation in an animation slot with the death animation
 // More variation is possible if we considered adding a random value for the length,
 // or if we set the parameters according to current speed, etc.
-func OverlayDeathAnimation(int slot)
+func OverlayDeathAnimation(int slot, string animation)
 {
-	var animation = "Dead";
-	PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
+	animation = animation ?? "Dead";
+	return PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
 }
