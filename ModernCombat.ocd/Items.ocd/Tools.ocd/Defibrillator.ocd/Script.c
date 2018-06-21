@@ -14,6 +14,10 @@ local Collectible = true;
 
 func SelectionTime() { return 20; }
 
+// Charge counters - these count the progress when charging the item before releasing a shock
+local PowerUpUse = 0;
+local PowerUpMax = 30;
+
 
 /* --- Engine callbacks --- */
 
@@ -27,6 +31,7 @@ func Initialize(...)
 
 func Selection(object container)
 {
+	// Play sounds
 	if (container && container->~IsClonk())
 	{
 		PlaySoundDeploy();
@@ -35,6 +40,9 @@ func Selection(object container)
 			ScheduleCall(this, this.PlaySoundBeep, SelectionTime());
 		}
 	}
+	
+	// Reset the charge, just to be sure
+	PowerUpUse = 0;
 	return _inherited(container, ...);
 }
 
@@ -94,11 +102,16 @@ public func HoldingEnabled()
 public func RejectUse(object user)
 {
 	return !user->HasActionProcedure(false) // The clonk must be able to use the hands
-         || user->Contained();              // and not in a building or vehicle
+         || user->Contained()               // and not in a building or vehicle
+         || GetEffect("IntCooldown", this);
 }
 
 func ControlUseStart(object user, int x, int y)
 {
+	// Reset powerup charge
+	PowerUpUse = 0;
+	
+	// Handle the other things
 	if (IsCharged())
 	{
 		return true;
@@ -112,6 +125,10 @@ func ControlUseStart(object user, int x, int y)
 
 func ControlUseHolding(object user, int x, int y)
 {
+	// Charge
+	PowerUpUse = BoundBy(PowerUpUse + 1, 0, PowerUpMax);
+
+	// Effects
 	DoShockSparks(GetShockPoint(x, y), 0, 1);
 	return true;
 }
@@ -124,6 +141,7 @@ func ControlUseStop(object user, int x, int y)
 
 func ControlUseCancel(object user, int x, int y)
 {
+	PowerUpUse = 0;
 	return true;
 }
 
@@ -143,25 +161,34 @@ func ReleaseShock(object user, int x, int y)
 {
 	if (!IsCharged()) return;
 
-	// TODO: Requires at least 10 ammo points
 	var shock_point = GetShockPoint(x, y);
 	var find_target = Find_Target(shock_point.x, shock_point.y, shock_point.radius);
 	
+	var ammo_cost = 10;
 	if (ShockAlly(user, find_target) || ShockEnemy(user, find_target))
 	{
 		PlaySoundShockTarget();
-		DoAmmoCount(-20);
+
+		// Use 10 ammo if not charged, so that a short click costs more ammo
+		// while a fully charged shock uses ammo most effectively;
+		// added 5 points, so that charging for a few frames still costs 20 ammo total
+		ammo_cost += Max(5 + PowerUpMax - PowerUpUse, 0) * 10 / PowerUpMax;
 	}
 	else
 	{
 		PlaySoundShockFail();
-		DoAmmoCount(-10);
 	}
-	
+
+	DoAmmoCount(-ammo_cost);	
 	DoShockSparks(shock_point, 5, 10);
 	
 	// AddLightFlash(40+Random(20),0,0,RGB(0,140,255));
-	ScheduleCall(this, this.PlaySoundBeep, SelectionTime());
+	
+	// Cooldown and reset use; cooldown is inverted, so that a short powerup causes a long cooldown period
+	var cooldown = Max(5, 35 - PowerUpUse);
+	AddEffect("IntCooldown", this, 1, cooldown);
+	PowerUpUse = 0;
+	ScheduleCall(this, this.PlaySoundBeep, cooldown);
 }
 
 func ShockAlly(object user, array find_target)
@@ -193,7 +220,7 @@ func ShockEnemy(object user, array find_target)
 	{
 		if (!enemy) continue;
 		
-		var strength = 10;
+		var strength = 10 + PowerUpUse;
 		
 		// Fling enemy
 		var precision = 1000;
@@ -208,8 +235,7 @@ func ShockEnemy(object user, array find_target)
 			enemy->SetKiller(user->GetOwner());
 		}
 		
-		// TODO: Full damage is 30 to 40 at random
-		enemy->DoEnergy(-strength, false, FX_Call_DmgFire, user->GetOwner());
+		enemy->DoEnergy(-30, false, FX_Call_DmgFire, user->GetOwner());
 		
 		// Killed him? Incapacitated enemies do count as not alive, too :)
 		if (!enemy->GetAlive())
