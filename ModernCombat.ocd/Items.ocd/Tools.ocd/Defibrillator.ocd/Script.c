@@ -2,6 +2,8 @@
 	Defibrillator
 */
 
+#include Library_AmmoManager
+#include Library_CMC_Pack
 
 /* --- Engine callbacks --- */
 
@@ -95,6 +97,17 @@ func ControlUseCancel(object user, int x, int y)
 }
 
 
+/* --- Functionality --- */
+
+public func MaxAmmo() { return 30; }
+
+public func AllowAmmoRefill(object user)
+{
+	return true;
+}
+
+/* --- Internals --- */
+
 func ReleaseShock(object user, int x, int y)
 {
 	// TODO: Requires at least 10 ammo points
@@ -103,13 +116,13 @@ func ReleaseShock(object user, int x, int y)
 	
 	if (ShockAlly(user, find_target) || ShockEnemy(user, find_target))
 	{
-		// TODO: Takes 20/30 ammo points
 		PlaySoundShockTarget();
+		DoAmmoCount(-20);
 	}
 	else
 	{
-		// TODO: Takes less ammo, only 10/30 points
 		PlaySoundShockFail();
+		DoAmmoCount(-10);
 	}
 	
 	DoShockSparks(shock_point, 5, 10);

@@ -2,7 +2,7 @@
 	Ammo Bag
 */
 
-#include Library_Stackable
+#include Library_AmmoManager
 #include Library_CMC_Pack
 
 /* --- Engine callbacks --- */
@@ -58,17 +58,11 @@ public func GetCarryPhase()
 
 /* --- Functionality --- */
 
-// At the moment, this is a stack, because it seemed to be more in line 
-// with the how things are in the predecessor;
-// Can be switched to work like ammo later, if desired
-//
-// Having ammo instead of stack count might be better actually:
-// Stack always gets removed if the thing is empty, ammo does not
-public func MaxStackCount() { return 200; }
+public func MaxAmmo() { return 200; }
 
-public func GetStackRefillInterval() { return 20; }
+public func GetAmmoRefillInterval() { return 20; }
 
-public func AllowStackRefill(object user)
+public func AllowAmmoRefill(object user)
 {
 	return HasAmmoAbility(user);
 }
@@ -100,6 +94,13 @@ public func OpenMenuCreateAmmoBox(object user)
 	{
 		return;
 	}
+	
+	// No ammo and cannot refill? Destroy
+	if (GetAmmoCount() == 0 && !AllowAmmoRefill(user))
+	{
+		RemoveObject();
+		return;
+	}
 
 	var main_menu = new CMC_GUI_SelectionListMenu {};
 	main_menu->Assemble()
@@ -118,7 +119,7 @@ public func OpenMenuCreateAmmoBox(object user)
 		for (var ammo_type in available_types) 
 		{
 			// Collect the current info
-			var ammo_info = GetCreateAmmoInfo(ammo_type, GetStackCount());
+			var ammo_info = GetCreateAmmoInfo(ammo_type, GetAmmoCount());
 
 			// Text and description
 			var text_color = 0xffffffff;
@@ -176,7 +177,7 @@ func CreateAmmoBox(proplist parameters)
 	AssertNotNil(ammo_type);
 
 	// Get info again, in case something has changed in the meantime
-	var ammo_info = GetCreateAmmoInfo(ammo_type, GetStackCount());
+	var ammo_info = GetCreateAmmoInfo(ammo_type, GetAmmoCount());
 	
 	// Create the box
 	var ammo_box = CreateObject(CMC_Ammo_Box, 0, 0, user->GetOwner());
@@ -184,7 +185,7 @@ func CreateAmmoBox(proplist parameters)
 	ammo->SetStackCount(ammo_info.ammo_count);
 	
 	// Remove points
-	DoStackCount(-ammo_info.points_cost);
+	DoAmmoCount(-ammo_info.points_cost);
 	ammo_box->Sound("Items::Tools::AmmoBox::ResupplyOut?", {player = user->GetOwner()});
 
 	// Collect it
@@ -235,7 +236,8 @@ func GetCreateAmmoInfo(id ammo_type, int available_points)
 
 func HasAmmoAbility(object user)
 {
-	return user->~GetCrewClass()                                               // User has the function for getting the class
+	return user 
+	    && user->~GetCrewClass()                                               // User has the function for getting the class
 	    && user->GetCrewClass()->HasAbility(CMC_Ability_ImproveAmmoEquipment); // Class has the required ability
 }
 
