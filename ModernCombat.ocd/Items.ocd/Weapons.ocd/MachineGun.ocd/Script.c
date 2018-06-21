@@ -84,6 +84,7 @@ func FiremodeBullets()
 	mode->SetBackwardWalkingSpeed(65);
 	
 	// Spread
+	mode->SetSpread(ProjectileDeviationCmc(20));
 	mode->SetSpreadPerShot(ProjectileDeviationCmc(30));
 	mode->SetSpreadBySelection(ProjectileDeviationCmc(220));
 	mode->SetSpreadLimit(ProjectileDeviationCmc(420));
@@ -103,9 +104,6 @@ func FiremodeBullets_TechniqueAuto()
 	// Generic info
 	mode->SetName("$Auto$");
 	mode->SetMode(WEAPON_FM_Auto);
-	
-	// Min spread
-	mode->SetProjectileSpread(ProjectileDeviationCmc(20));
 	return mode;
 }
 
@@ -146,7 +144,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	var x = +Sin(angle, firemode->GetProjectileDistance());
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
-	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+	EffectMuzzleFlash(user, x, y, angle, RandomX(35, 50), false, true);
 	
 	// Casing
 	x = +Sin(angle, firemode->GetProjectileDistance() / 3);
