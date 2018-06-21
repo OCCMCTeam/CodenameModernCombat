@@ -11,7 +11,7 @@ public func Initialize(...)
 {
 	SetGraphics(nil, DynamiteBox);
 	this.PictureTransformation = Trans_Scale(); // Scale the picture of the box mesh, so that it does not appear in the game
-	SetGraphics(nil, CMC_Defibrillator, 1, GFXOV_MODE_Picture);
+	SetGraphics(nil, CMC_Tool_Defibrillator, 1, GFXOV_MODE_Picture);
 	return _inherited(...);
 }
 

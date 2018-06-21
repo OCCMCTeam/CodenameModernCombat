@@ -1,5 +1,5 @@
 [DefCore]
-id=CMC_Ammo_Bag
+id=CMC_Tool_Ammo_Bag
 Version=8,0
 Category=C4D_Object
 Width=8
