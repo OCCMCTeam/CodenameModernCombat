@@ -1,0 +1,16 @@
+[DefCore]
+id=CMC_Defibrillator
+Version=8,0
+Category=C4D_Object
+Width=6
+Height=6
+Offset=-3,-3
+Vertices=3
+VertexX=2,0,-3
+VertexY=2,-3,2
+VertexFriction=80,60,80
+Picture=0,6,64,64
+Value=40
+Mass=15
+Rotate=1
+Float=1

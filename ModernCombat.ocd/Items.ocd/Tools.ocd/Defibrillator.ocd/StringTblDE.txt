@@ -1,0 +1,5 @@
+Name=Defibrillator
+Description=Der Defibrillator kann Schwerverletzte mithilfe von elektrischen Schlägen wiederbeleben. Kann auch benutzt werden um Feinde zu verletzen.|Benutzen zum Abgeben eines elektrischen Schocks.
+
+NotCharged=Lade {{%i}}!
+MsgReanimation=%s hat %s wiederbelebt

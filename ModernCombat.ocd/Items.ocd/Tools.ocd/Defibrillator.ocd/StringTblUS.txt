@@ -1,0 +1,5 @@
+Name=Defibrillator
+Description=The defibrillator can reanimate badly injured clonks by using electric shocks. Can also be used to hurt enemies.|Use to create an electric shock.
+
+NotCharged=Loading {{%i}}!
+MsgReanimation=%s has revived %s
