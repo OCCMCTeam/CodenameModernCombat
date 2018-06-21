@@ -106,15 +106,11 @@ local RuleMortalWoundsCheck = new Effect
 		// Already wounded?
 		if (IsIncapacitated())
 		{
-			// Do not die if the change would kill you
-			if (health_change < 0)
-			{
-				return 0;
-			}
-			else // Healing is allowed
-			{
-				return health_change;
-			}
+			// Do not die, but do not heal either
+			// This is important, because healing effects stay active even if the target is not "alive"!
+			// Healing effects should, however, not boost the victim while they are incapacitated.
+			// Normally I'd overload the healing effect, but preventing the healing here is easier.  
+			return 0;
 		}
 		// In case the victim would die
 		else if (health_change < 0 && (health_change + 1000 * this.Target->GetEnergy() <= 0))

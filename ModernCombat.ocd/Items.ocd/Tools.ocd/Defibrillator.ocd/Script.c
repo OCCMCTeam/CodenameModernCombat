@@ -18,6 +18,9 @@ func SelectionTime() { return 20; }
 local PowerUpUse = 0;
 local PowerUpMax = 30;
 
+// Healing effect
+local HealAmount = 70;
+local HealInterval = 3;
 
 /* --- Engine callbacks --- */
 
@@ -172,7 +175,7 @@ func ReleaseShock(object user, int x, int y)
 		// Use 10 ammo if not charged, so that a short click costs more ammo
 		// while a fully charged shock uses ammo most effectively;
 		// added 5 points, so that charging for a few frames still costs 20 ammo total
-		ammo_cost += Max(5 + PowerUpMax - PowerUpUse, 0) * 10 / PowerUpMax;
+		ammo_cost += ScalePowerUpInverse(10);
 	}
 	else
 	{
@@ -198,11 +201,11 @@ func ShockAlly(object user, array find_target)
 	{
 		if (!ally) continue;
 		
-		// Reanimate with min energy
+		// Reanimate with min energy, add healing effect
 		ally->DoReanimate();
 		ally->DoEnergy(Max(0, 30 - ally->GetEnergy()));
+		ally->Heal(this.HealAmount, this.HealInterval + ScalePowerUpInverse(Max(5, 25 - this.HealInterval)));
 		
-		// TODO: AddEffect("ShockPaddlesHeal",obj,20,1,0,GetID(),HealAmount(),HealRate());
 		// Event message?
 		// EventInfo4K(0,Format("$MsgReanimation$",GetTaggedPlayerName(GetOwner(caller)), GetTaggedPlayerName(GetOwner(obj))),IC04);
 		// Achievement progress (Shock Therapist)
@@ -295,6 +298,11 @@ func OnAmmoCountChange(int change)
 	{
 		PlaySoundBeep();
 	}
+}
+
+func ScalePowerUpInverse(int value)
+{
+	return Max(5 + PowerUpMax - PowerUpUse, 0) * value / PowerUpMax;
 }
 
 /* --- Sounds --- */

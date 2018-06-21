@@ -187,16 +187,17 @@ global func Test2_Execute()
 			}
 			
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
+			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 1);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
 			
-			Log("Heal a little, clonk still counts as incapacitated");
+			Log("Heal a little, healing has no effect, clonk still counts as incapacitated");
 			
 			victim->DoEnergy(4);
 	
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
-			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 5);
+			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 1);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
