@@ -66,6 +66,7 @@ func DoAmmoCount(int change)
 	if (difference && Contained())
 	{
 		Contained()->~OnInventoryChange(); // Notify HUD
+		this->~OnAmmoCountChange(difference);
 	}
 	return difference;
 }

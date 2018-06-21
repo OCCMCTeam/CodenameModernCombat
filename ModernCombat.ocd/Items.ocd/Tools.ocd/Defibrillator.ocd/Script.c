@@ -5,14 +5,37 @@
 #include Library_AmmoManager
 #include Library_CMC_Pack
 
+
+/* --- Properties --- */
+
+local Name = "$Name$";
+local Description = "$Description$";
+local Collectible = true;
+
+func SelectionTime() { return 20; }
+
+
 /* --- Engine callbacks --- */
 
-public func Initialize(...)
+func Initialize(...)
 {
 	SetGraphics(nil, DynamiteBox);
 	this.PictureTransformation = Trans_Scale(); // Scale the picture of the box mesh, so that it does not appear in the game
 	SetGraphics(nil, CMC_Tool_Defibrillator, 1, GFXOV_MODE_Picture);
 	return _inherited(...);
+}
+
+func Selection(object container)
+{
+	if (container && container->~IsClonk())
+	{
+		PlaySoundDeploy();
+		if (IsCharged())
+		{
+			ScheduleCall(this, this.PlaySoundBeep, SelectionTime());
+		}
+	}
+	return _inherited(container, ...);
 }
 
 /* --- Display --- */
@@ -71,12 +94,20 @@ public func HoldingEnabled()
 public func RejectUse(object user)
 {
 	return !user->HasActionProcedure(false) // The clonk must be able to use the hands
-			 || user->Contained();							// and not in a building or vehicle
+         || user->Contained();              // and not in a building or vehicle
 }
 
 func ControlUseStart(object user, int x, int y)
 {
-	return true;
+	if (IsCharged())
+	{
+		return true;
+	}
+	else
+	{
+		user->PlayerMessage(user->GetOwner(), "$NotCharged$", Library_PowerConsumer);
+		return false;
+	}
 }
 
 func ControlUseHolding(object user, int x, int y)
@@ -110,6 +141,8 @@ public func AllowAmmoRefill(object user)
 
 func ReleaseShock(object user, int x, int y)
 {
+	if (!IsCharged()) return;
+
 	// TODO: Requires at least 10 ammo points
 	var shock_point = GetShockPoint(x, y);
 	var find_target = Find_Target(shock_point.x, shock_point.y, shock_point.radius);
@@ -128,6 +161,7 @@ func ReleaseShock(object user, int x, int y)
 	DoShockSparks(shock_point, 5, 10);
 	
 	// AddLightFlash(40+Random(20),0,0,RGB(0,140,255));
+	ScheduleCall(this, this.PlaySoundBeep, SelectionTime());
 }
 
 func ShockAlly(object user, array find_target)
@@ -224,8 +258,31 @@ func DoShockSparks(proplist shock_point, int a, int b)
     }
 }
 
+func IsCharged()
+{
+	return GetAmmoCount() >= 10;
+}
+
+func OnAmmoCountChange(int change)
+{
+	if (change > 0 && GetAmmoCount() == 10)
+	{
+		PlaySoundBeep();
+	}
+}
+
 /* --- Sounds --- */
 
+
+func PlaySoundDeploy()
+{
+	Sound("Items::Tools::Defibrillator::Deploy");
+}
+
+func PlaySoundBeep()
+{
+	Sound("Items::Tools::Defibrillator::Ready", {multiple = true});
+}
 
 func PlaySoundShockTarget()
 {
@@ -236,10 +293,3 @@ func PlaySoundShockFail()
 {
 	Sound("Items::Tools::Defibrillator::Shock", {multiple = true});
 }
-
-
-/* --- Properties --- */
-
-local Name = "$Name$";
-local Description = "$Description$";
-local Collectible = true;
