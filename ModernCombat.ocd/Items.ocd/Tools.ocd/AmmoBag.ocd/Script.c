@@ -83,6 +83,16 @@ func ControlUse(object user, int x, int y)
 	return true;
 }
 
+
+func ControlMenu(object user, int control, int x, int y, int strength, bool repeat, int status)
+{
+	if (status == CONS_Down && (control == CON_GUIClick1 || control == CON_GUIClick2))
+	{
+		CloseMenuCreateAmmoBox();
+	}
+}
+
+
 // Opens the 
 public func OpenMenuCreateAmmoBox(object user)
 {
@@ -144,7 +154,7 @@ public func OpenMenuCreateAmmoBox(object user)
 		active_menu = {};
 		active_menu.user = user;
 		active_menu.menu = main_menu;
-		active_menu.user->~SetMenu(main_menu->GetRootID());
+		active_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
 	}
 }
 

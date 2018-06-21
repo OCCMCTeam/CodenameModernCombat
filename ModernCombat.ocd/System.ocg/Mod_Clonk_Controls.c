@@ -97,3 +97,29 @@ func AimingUseControl(int x, int y, object obj)
 
 	return handled;
 }
+
+/* --- Menu controls --- */
+
+func Control2Menu(int control, int x, int y, int strength, bool repeat, int status)
+{
+	if (this->GetMenu())
+	{
+		var control_object = this->GetMenu().ControlObject;
+		if (control_object)
+		{
+			control_object->~ControlMenu(this, control, x, y, strength, repeat, status);
+		}
+	}
+	return _inherited(control, x, y, strength, repeat, status);
+}
+
+// Additional parameter: control_object
+func SetMenu(new_menu, bool unclosable, object control_object)
+{
+	var menu = _inherited(new_menu, unclosable);
+	if (GetType(menu) == C4V_PropList && control_object)
+	{
+		menu.ControlObject = control_object;
+	}
+	return menu;
+}
