@@ -106,9 +106,8 @@ public func OpenMenuCreateAmmoBox(object user)
 	}
 	
 	// No ammo and cannot refill? Destroy
-	if (GetAmmoCount() == 0 && !AllowAmmoRefill(user))
+	if (RemoveEmptyAmmoBag(user))
 	{
-		RemoveObject();
 		return;
 	}
 
@@ -197,6 +196,9 @@ func CreateAmmoBox(proplist parameters)
 	// Remove points
 	DoAmmoCount(-ammo_info.points_cost);
 	ammo_box->Sound("Items::Tools::AmmoBox::ResupplyOut?", {player = user->GetOwner()});
+	
+	// Remove if empty, do this before collecting the ammo box, so that you can unpack from a full inventory
+	RemoveEmptyAmmoBag(user);
 
 	// Collect it
 	if (user->Collect(ammo_box))
@@ -249,6 +251,18 @@ func HasAmmoAbility(object user)
 	return user 
 	    && user->~GetCrewClass()                                               // User has the function for getting the class
 	    && user->GetCrewClass()->HasAbility(CMC_Ability_ImproveAmmoEquipment); // Class has the required ability
+}
+
+
+func RemoveEmptyAmmoBag(object user)
+{
+	if (GetAmmoCount() == 0 && !AllowAmmoRefill(user))
+	{
+		RemoveObject();
+		user->~UpdateAttach();
+		return true;
+	}
+	return false;
 }
 
 
