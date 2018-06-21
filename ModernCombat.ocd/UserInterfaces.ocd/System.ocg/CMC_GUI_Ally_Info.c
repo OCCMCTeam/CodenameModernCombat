@@ -18,6 +18,11 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 		var rank = new GUI_Element
 		{
 			Margin = ToEmString(5),
+			grade = 
+			{
+				Right = ToPercentString(500),
+				Bottom = ToPercentString(500),
+			},
 		};
 		rank->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
 		    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
@@ -83,9 +88,18 @@ static const CMC_GUI_Ally_Info = new GUI_Element
 		return this;
 	},
 
-	SetRankSymbol = func (id symbol)
+	SetRankSymbol = func (id symbol, int rank, int graphics_amount)
 	{
+		// Default graphics amount
+		graphics_amount = graphics_amount ?? 24;
+		
+		// Rank itself
 		this.player_rank.Symbol = symbol;
+		this.player_rank.GraphicsName = Format("%d", rank % graphics_amount);
+		
+		// Upgrade
+		this.player_rank.grade.Symbol = symbol;
+		this.player_rank.grade.GraphicsName = Format("Upgrade%d", rank / graphics_amount);
 		return this;
 	},
 	

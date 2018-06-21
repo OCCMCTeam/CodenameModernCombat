@@ -237,16 +237,17 @@ func UpdateAllyInfo()
 			{
 				color = GUI_CMC_Text_Color_Highlight;
 			}
-			
-			// Player info
-	
-			info->Show();
-			info->SetNameLabel(GetPlayerName(ally), color);
-			info->SetRankSymbol(Rule_TeamAccount);		
-			info->Update();
 	
 			// Selected clonk info
+			var rank = 0;
 			var cursor = GetCursor(ally);
+			if (cursor) rank = cursor->~GetRank(); // FIXME: Uses cursor rank for now, but should be CMC player rank 
+			
+			// Player info
+			info->Show();
+			info->SetNameLabel(GetPlayerName(ally), color);
+			info->SetRankSymbol(Icon_Rank, rank, 24);
+			info->Update();
 			
 			// Display class
 			if (cursor) // This has to be moved to the crew anyway
