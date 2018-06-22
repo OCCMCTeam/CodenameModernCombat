@@ -1,0 +1,16 @@
+[DefCore]
+id=CMC_Projectile_Missile
+Version=8,0
+Category=C4D_Vehicle
+Width=5
+Height=11
+Offset=-3,-5
+Mass=5
+Picture=6,0,64,64
+Vertices=2
+VertexY=-5,+5
+VertexFriction=70, 70
+Rotate=1
+Float=100000
+NoStabilize=1
+HideInCreator=true

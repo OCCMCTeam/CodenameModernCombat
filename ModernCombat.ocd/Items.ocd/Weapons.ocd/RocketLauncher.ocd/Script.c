@@ -74,7 +74,7 @@ func FiremodeMissiles()
 	mode->SetDamage(0);
 
 	// Projectile
-	mode->SetProjectileID(CMC_Projectile_Bullet); // FIXME - obviously
+	mode->SetProjectileID(CMC_Projectile_Missile);
 	mode->SetProjectileSpeed(100);
 	mode->SetProjectileRange(10000);
 	mode->SetProjectileDistance(12);
