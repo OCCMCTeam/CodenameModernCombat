@@ -1,0 +1,15 @@
+[DefCore]
+id=CMC_Weapon_AntiTankWeapon
+Version=8,0
+Category=C4D_Object
+Width=12
+Height=7
+Offset=-6,-4
+Vertices=4
+VertexX=9,0,0,-10
+VertexY=0,2,-4,0
+VertexFriction=100,100,80,100
+Value=40
+Mass=15
+Rotate=1
+Picture=0,0,64,64
