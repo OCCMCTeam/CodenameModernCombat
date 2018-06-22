@@ -7,6 +7,8 @@ local Description = "$Description$";
 local Collectible = true;
 local ForceFreeHands = true;
 
+func SelectionTime() { return 20; }
+
 /* --- Engine callbacks --- */
 
 public func Initialize()
