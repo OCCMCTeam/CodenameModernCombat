@@ -103,6 +103,7 @@ global func InitTest()
 
 global func Death_Timeout() {return 16 * 35;}
 global func Death_Expected() {return 15 * 35;}
+global func Death_MinDelay() {return 5 * 35;}
 
 //--------------------------------------------------------
 
@@ -280,7 +281,6 @@ global func Test3_OnClonkDeath(object clonk, int killer)
 }
 
 
-
 //--------------------------------------------------------
 
 global func Test4_OnStart(int player){ return InitTest();}
@@ -339,3 +339,122 @@ global func Test4_OnClonkDeath(object clonk, int killer)
 {
 	CurrentTest().test4_killed = FrameCounter();
 }
+
+
+//--------------------------------------------------------
+
+global func Test5_OnStart(int player){ return InitTest();}
+global func Test5_OnFinished(){ return; }
+global func Test5_Execute()
+{
+	
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test5_incapacitated)
+	{
+		if (CurrentTest().test5_killed)
+		{
+			doTest("Victim died at frame %d, expected %d", CurrentTest().test5_killed, CurrentTest().test5_expected);
+			return Evaluate();
+		}
+		else if (FrameCounter() > CurrentTest().test5_timeout)
+		{
+			return FailTest();
+		}
+		return Wait(10);
+	}
+	else
+	{
+		Log("Test that clonk death delay is regenerated");
+		Log("Reanimate after 8 seconds (7s left to live), kill again after 9 seconds (8s left to live)");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+			
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			CurrentTest().test5_incapacitated = FrameCounter();
+			var second_life = 8 * 35;
+			var second_death = 9 * 35; // 35 frames to recharge the interval
+			CurrentTest().test5_expected =  second_death + (Death_Expected() - second_life + 35) + CurrentTest().test5_incapacitated;
+			CurrentTest().test5_timeout = CurrentTest().test5_expected + 35;
+
+			// Resurrect before he dies, kill again
+			ScheduleCall(victim, victim.DoReanimate, second_life, 1);
+			ScheduleCall(victim, victim.DoEnergy, second_death, 1, - victim.MaxEnergy / 1000);
+
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test5_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test5_killed = FrameCounter();
+}
+
+
+//--------------------------------------------------------
+
+global func Test6_OnStart(int player){ return InitTest();}
+global func Test6_OnFinished(){ return; }
+global func Test6_Execute()
+{
+	
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test6_incapacitated)
+	{
+		if (CurrentTest().test6_killed)
+		{
+			doTest("Victim died at frame %d, expected %d", CurrentTest().test6_killed, CurrentTest().test6_expected);
+			return Evaluate();
+		}
+		else if (FrameCounter() > CurrentTest().test6_timeout)
+		{
+			return FailTest();
+		}
+		return Wait(10);
+	}
+	else
+	{
+		Log("Test that clonk death has a minimum time");
+		Log("Reanimate after 14 seconds (1 second left to live), kill again immediately afterwards (5 seconds left to live)");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+			
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+			
+			CurrentTest().test6_incapacitated = FrameCounter();
+			var second_life = 14 * 35;
+			var second_death = second_life + 1;
+			CurrentTest().test6_expected =  second_death + Death_MinDelay() + CurrentTest().test6_incapacitated - 1; // Is one frame less, but that does not matter
+			CurrentTest().test6_timeout = CurrentTest().test6_expected + 35;
+
+			// Resurrect before he dies, kill again
+			ScheduleCall(victim, victim.DoReanimate, second_life, 1);
+			ScheduleCall(victim, victim.DoEnergy, second_death, 1, - victim.MaxEnergy / 1000);
+
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test6_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test6_killed = FrameCounter();
+}
+

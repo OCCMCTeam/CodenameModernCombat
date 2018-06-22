@@ -68,6 +68,7 @@ local RuleMortalWoundsCheck = new Effect
 {
 	Name = "RuleMortalWoundsCheck",
 	TimerMax = 15 * 35,
+	TimerMin = 5 * 35,
 	
 	Start = func (int temp)
 	{
@@ -117,6 +118,7 @@ local RuleMortalWoundsCheck = new Effect
 		{
 			var stay_at_one_health = (1 - this.Target->GetEnergy()) * 1000;
 			this.is_incapacitated = true;
+			this.death_timer = Max(this.TimerMin, this.death_timer);
 			this.Target->~OnIncapacitated(health_change, cause, by_player);
 			return stay_at_one_health;
 		}
