@@ -9,7 +9,7 @@ local Ammo = {
 
 local Items = {
 	CMC_Weapon_MachineGun = 1,
-	//CMC_Weapon_RocketLauncher = 1,
+	CMC_Weapon_RocketLauncher = 1,
 	//CMC_Tool_BlowTorch = 1,
 	CMC_Tool_Ammo_Bag = 1, // FIXME - Has to be denied if the rule "no ammo" is active
 };
