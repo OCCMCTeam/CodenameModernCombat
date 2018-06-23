@@ -59,13 +59,13 @@ func Damage(int change, int cause, int cause_plr)
 
 func PlaySoundDetonation()
 {
-	Sound("Items::Grenades::Explosion?");
+	Sound("Items::Grenades::FieldGrenade::Explosion?");
 }
 
 
 func PlaySoundHit()
 {
-	Sound("Items::Grenades::Hit?", {multiple = true});
+	Sound("Items::Grenades::Shared::Hit?", {multiple = true});
 }
 
 
