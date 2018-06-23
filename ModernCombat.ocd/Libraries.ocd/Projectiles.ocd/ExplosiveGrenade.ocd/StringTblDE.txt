@@ -1,3 +1,3 @@
-Name=Granate
-Description=Absolute Sprengkraft.
+Name=Explosivgranate
+Description=Explodiert.
 
