@@ -385,7 +385,6 @@ func Fuse()
   		SetGraphics("Active");
 		this.Collectible = false;
 		SetCategory(C4D_Vehicle);
-		CreateEffect(GrenadeFuse, 200, 1);
 		
 		var user = Contained();
 		if (user)
@@ -438,45 +437,29 @@ local BlockGrenadeThrow = new Effect
 };
 
 
-
-
-local GrenadeFuse = new Effect
+func HandleTrail(int time)
 {
-	Timer = func (int time)
+	var container = Contained();
+	if (container)
 	{
-		if (time > this.Target.Grenade_FuseTime)
+		if (container->~IsClonk() && !container->GetAlive() || container->~IsIncapacitated())
 		{
-			this.Target->DetonateInContainer();
-			this.Target->Detonate();
-			return FX_Execute_Kill;
-		}
-
-		var container = this.Target->Contained();
-		if (container)
+  			this->DoDrop(container);
+  		}
+		else if ((container.GetHandItem && this == container->GetHandItem(0)) // Has inventory control? => Get correct item
+		     || (!container.GetHandItem && this == container->Contents(0)))   // No inventory control? => First item
 		{
-			if (container->~IsClonk() && !container->GetAlive() || container->~IsIncapacitated()) // FIXME: callback for wounded clonk
-			{
-      			this.Target->DoDrop(container);
-      		}
-			else if ((container.GetHandItem && this.Target == container->GetHandItem(0)) // Has inventory control? => Get correct item
-			     || (!container.GetHandItem && this.Target == container->Contents(0)))   // No inventory control? => First item
-			{
-			    var progress = BoundBy(time * 1000 / Max(1, this.Target.Grenade_FuseTime), 0, 1000);
-				var color = InterpolateRGBa(progress,   0, RGB(0, 255, 0),
-				                                      500, RGB(255, 255, 0),
-				                                     1000, RGB(255, 0, 0));
+		    var progress = BoundBy(time * 1000 / Max(1, this.Grenade_FuseTime), 0, 1000);
+			var color = InterpolateRGBa(progress,   0, RGB(0, 255, 0),
+			                                      500, RGB(255, 255, 0),
+			                                     1000, RGB(255, 0, 0));
 
-				container->PlayerMessage(container->GetController(),"<c %x>{{Rock}}</c>", color); // FIXME: placeholder for graphics
-			}
+			container->PlayerMessage(container->GetController(),"<c %x>{{Rock}}</c>", color); // FIXME: placeholder for graphics
 		}
-		else
-		{
-			this.Target->~HandleTrail();
-		}
-
-		return FX_OK;
-	},
-};
+	}
+	
+	inherited(time);
+}
 
 /* --- Animations --- */
 

@@ -84,7 +84,7 @@ public func OnMaxDamage(int change, int cause, int cause_player)
 }
 
 // How the trail is drawn
-public func HandleTrail()
+public func HandleTrail(int time)
 {
 	if (!Contained())
 	{
@@ -152,5 +152,22 @@ func Fuse()
 	{
 		grenade_active = true;
 		grenade_detonated = false;
+		CreateEffect(GrenadeFuse, 200, 1);
 	}
 }
+
+
+local GrenadeFuse = new Effect
+{
+	Timer = func (int time)
+	{
+		if (time > this.Target.Grenade_FuseTime)
+		{
+			this.Target->DetonateInContainer();
+			this.Target->Detonate();
+			return FX_Execute_Kill;
+		}
+		this.Target->~HandleTrail(time);
+		return FX_OK;
+	},
+};
