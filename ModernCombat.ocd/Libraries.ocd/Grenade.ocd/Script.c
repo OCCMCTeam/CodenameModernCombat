@@ -10,7 +10,6 @@
 
 local grenade_detonated = false; // bool: already detonated? Important for preventing multiple explosions, etc.
 local grenade_active = false;    // bool: active?
-//local grenade_aiming = false;    // bool: aiming? Used for separating "ironsight" toggle from normal clonk aiming
 
 
 local Grenade_ContainedDamage = 60;
