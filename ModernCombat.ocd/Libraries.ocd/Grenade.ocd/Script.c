@@ -27,11 +27,15 @@ func IsActive()     { return grenade_active; }
 
 func Hit(int xdir, int ydir)
 {
-	PlaySoundHit();
-	if (GBackSolid( 0, +5)) return SetYDir(-ydir/26);
-	if (GBackSolid( 0, -5)) return SetYDir(-ydir/26);
-	if (GBackSolid(-5,  0)) return SetXDir(-xdir/16);
-	if (GBackSolid(+5,  0)) return SetXDir(-xdir/16);
+	_inherited(xdir, ydir, ...);
+	if (this)
+	{
+		PlaySoundHit();
+		if (GBackSolid( 0, +5)) return SetYDir(-ydir/26);
+		if (GBackSolid( 0, -5)) return SetYDir(-ydir/26);
+		if (GBackSolid(-5,  0)) return SetXDir(-xdir/16);
+		if (GBackSolid(+5,  0)) return SetXDir(-xdir/16);
+	}
 }
 
 
@@ -103,6 +107,11 @@ public func HandleTrail()
 
 
 /* --- Explosion logic --- */
+
+func HasDetonated()
+{
+	return grenade_detonated;
+}
 
 // Callback that triggers detonation.
 func Detonate() 
