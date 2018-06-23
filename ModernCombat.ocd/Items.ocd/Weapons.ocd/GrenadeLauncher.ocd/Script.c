@@ -107,7 +107,7 @@ func FiremodeGrenades_Explosive()
 	mode->SetName("$Explosive$");
 	
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_Bullet); // FIXME: obviously :D
+	mode->SetProjectileID(CMC_Projectile_ExplosiveShell);
 	return mode;
 }
 

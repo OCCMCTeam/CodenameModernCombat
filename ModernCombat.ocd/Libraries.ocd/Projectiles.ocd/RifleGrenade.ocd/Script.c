@@ -28,6 +28,7 @@ func OnLaunch()
 	Grenade_StartFrame = FrameCounter();
 	
 	Fuse();
+	StayOnHit();
 }
 
 public func DoDamageObject(object target)
