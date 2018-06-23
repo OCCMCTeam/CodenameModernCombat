@@ -161,7 +161,8 @@ local GrenadeFuse = new Effect
 {
 	Timer = func (int time)
 	{
-		if (time > this.Target.Grenade_FuseTime)
+		if (this.Target.Grenade_FuseTime &&
+		    this.Target.Grenade_FuseTime < time)
 		{
 			this.Target->DetonateInContainer();
 			this.Target->Detonate();
