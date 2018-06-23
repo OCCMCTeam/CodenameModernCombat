@@ -119,7 +119,7 @@ func FiremodeGrenades_Cluster()
 	mode->SetName("$Cluster$");
 	
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_Bullet); // FIXME: obviously :D
+	mode->SetProjectileID(CMC_Projectile_FragmentationShell);
 	return mode;
 }
 
@@ -131,7 +131,7 @@ func FiremodeGrenades_Smoke()
 	mode->SetName("$Smoke$");
 	
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_Bullet); // FIXME: obviously :D
+	mode->SetProjectileID(CMC_Projectile_SmokeShell);
 	return mode;
 }
 
