@@ -1,4 +1,4 @@
-#include CMC_Library_Grenade
+#include CMC_Library_GrenadeItem
 
 /* --- Properties --- */
 
