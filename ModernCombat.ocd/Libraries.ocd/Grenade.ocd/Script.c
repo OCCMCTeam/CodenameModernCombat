@@ -65,7 +65,7 @@ func PlaySoundDetonation()
 
 func PlaySoundHit()
 {
-	Sound("Items::Grenades::Shared::Hit?", {multiple = true});
+	Sound("Items::Grenades::FieldGrenade::Hit?", {multiple = true});
 }
 
 
