@@ -39,16 +39,16 @@ public func GetCarryMode(object clonk, bool not_selected)
 		return CARRY_Blunderbuss;
 	}
 }
-public func GetCarryBone() { return "Grip"; }
+public func GetCarryBone() { return "grip"; }
 public func GetCarryTransform(object clonk, bool not_selected, bool nohand, bool onback)
 {
 	if (not_selected || !IsUserReadyToUse(clonk)) // On belt?
 	{
-		return Trans_Mul(Trans_Translate(0, 200), Trans_Rotate(90, 1, 0, 0));
+		return Trans_Mul(Trans_Translate(3000, 500, 3000), Trans_Rotate(90, 1, 0, 0));
 	}
 	else
 	{
-		return Trans_Mul(Trans_Rotate(90, 1, 0, 0), Trans_Rotate(5, 0, 0, 1), Trans_Translate(-2500, 500, 0));
+		return Trans_Rotate(90, 1, 0, 0);
 	}
 }
 public func GetCarrySpecial(clonk)
