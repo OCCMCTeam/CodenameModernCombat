@@ -1,58 +1,133 @@
-#include Library_Projectile
+#include CMC_Library_GrenadeProjectile
 
 /* --- Properties --- */
 
-local detonated = false;
-local guided = false;
-local speed = 0;
+local Grenade_MaxDamage = 5;
+local Grenade_SecureDelay = 25;
+local Grenade_SecureDistance = 0;
+local Grenade_FuseTime = 200;
 
-/* --- Callbacks --- */
+local Missile_Guided = false;
+local Missile_Speed = 5;
+local Missile_RDir = 3;
 
-func Hit()
+local Missile_HasFuel = true;
+local Missile_IsDamaged = false;
+
+/* --- Callbacks from projectile --- */
+
+public func Launch(int angle, deviation)
 {
-	Detonate();
+	SetR(angle);
+	inherited(angle, deviation, ...);
 }
 
-func Damage()
+func OnLaunch()
 {
-	if (GetDamage() > 5) Detonate();
+	inherited(...);
+	SetAction("Travel");
+	SetLightColor(RGB(255, 200, 200));
+	SetLightRange(70);
+	SetColor(GetPlayerColor(GetController()));
 }
 
-/* --- Detonation --- */
+
+/* --- Sounds --- */
 
 func PlaySoundDetonation()
 {
-	Sound("Items::Grenades::Explosion?");
+	Sound("Items::Grenades::Shared::Explosion?");
 }
 
-
-func Detonate() 
+func PlaySoundMalfunction()
 {
-	RemoveEffect("GrenadeFuse", this, nil, true);
-
-	if (!detonated)
-	{
-		detonated = true;
-		PlaySoundDetonation();
-		this->OnDetonation();
-	}
+	// TODO
 }
+
+/* --- Events --- */
 
 
 // What happens when it explodes
 public func OnDetonation()
 {
-	Explode(25, true, 25);
+	if (this.Missile_IsDamaged)
+	{
+		Explode(15, true);
+	}
+	else
+	{
+		Explosion([25, 40], [50, 40], true);
+	}
 }
 
-/* --- Projectile control --- */
+// If max damage is acquired
+public func OnMaxDamage(int change, int cause, int cause_player)
+{
+	if (this.Missile_IsDamaged)
+	{
+		Detonate();
+	}
+	else
+	{
+		Malfunction();
+	}
+}
+
+
+public func DoDamageObject(object target)
+{
+	if (IsSecure() || this.Missile_IsDamaged)
+	{
+		target->DoEnergy(this.Missile_Speed / 5);
+	}
+	else
+	{
+		Detonate();
+	}
+}
+
+func OnHitLandscape()
+{
+	if (IsSecure())
+	{
+		CreateImpactEffect(3);
+	}
+	else
+	{
+		Detonate();
+	}
+}
+
+
+func Fall()
+{
+	SetAction("TravelBallistic");
+	this.Missile_HasFuel = false;
+}
+
+
+func Malfunction()
+{
+	if (!this.Missile_IsDamaged)
+	{
+		this.Missile_IsDamaged = true;
+		
+		//if(!IsSecure() && Hostile(iLastAttacker, GetController()))
+		//{
+		//	//Punkte bei Belohnungssystem (Projektil abgefangen)
+		//	DoPlayerPoints(BonusPoints("Protection"), RWDS_TeamPoints, iLastAttacker, GetCursor(iLastAttacker), IC16);
+		//}
+		PlaySoundMalfunction();
+		SetAction("TravelBallistic");
+	}
+}
 
 
 /* --- Internals --- */
 
 public func Acceleration()
 {
-	if (guided)
+	if (this.Missile_Guided)
 	{
 		return 3;
 	}
@@ -64,7 +139,7 @@ public func Acceleration()
 
 public func MaxSpeed()
 {
-	if (guided)
+	if (this.Missile_Guided)
 	{
 		return 100;
 	}
@@ -74,44 +149,57 @@ public func MaxSpeed()
 	}
 }
 
-
-public func Launch(int angle, deviation)
+func ControlSpeed()
 {
-	SetR(angle);
-	AddTimer(this.HandleTrail, 1);
-	_inherited(angle, deviation, ...);
-}
-
-private func OnLaunch()
-{
-	SetAction("Travel");
-	AddEffect("Grenade", this, 1, 1, this);
-	SetLightColor(RGB(255, 200, 200));
-	SetLightRange(70);
-}
-
-protected func ControlSpeed()
-{
-	if(speed < this->MaxSpeed())
-		speed = BoundBy(speed + this->Acceleration(), 0, this->MaxSpeed());
-
-	velocity_x =  Sin(GetR(), speed);
-	velocity_y = -Cos(GetR(), speed);
-
 	if (GetAction() == "Travel")
 	{
+		if (this.Missile_Speed < this->MaxSpeed())
+		{
+			this.Missile_Speed = BoundBy(this.Missile_Speed + this->Acceleration(), 0, this->MaxSpeed());
+		}
+	
+		velocity_x = +Sin(GetR(), this.Missile_Speed);
+		velocity_y = -Cos(GetR(), this.Missile_Speed);
+
 		SetXDir(velocity_x);
 		SetYDir(velocity_y);
 	}
+	
+	var target_r = Angle(0, 0, GetXDir(), GetYDir());
+	var diff_r = BoundBy(target_r - GetR(), -this.Missile_RDir, +this.Missile_RDir);
+	SetR(GetR() + diff_r);
 }
 
-func HandleTrail()
+
+func OnTravelling()
+{
+	if (GBackLiquid())
+	{
+		Fall();
+	}
+	
+	if (GetY() < -500)
+	{
+		Detonate();
+	}
+	
+	HandleSmokeTrail();
+}
+
+
+func OnFuseTimeout()
+{
+	Fall();
+}
+
+
+func HandleSmokeTrail()
 {
 	var distance = Distance(0, 0, GetXDir(), GetYDir());
 	var max_x = +Sin(GetR(), distance / 10);
 	var max_y = -Cos(GetR(), distance / 10);
-	var off_x = max_x;
-	var off_y = max_y;
+	var off_x = -max_x;
+	var off_y = -max_y;
 	var particle_distance = 25;
 
 	for(var i = 0; i < distance; i += particle_distance)
@@ -125,16 +213,32 @@ func HandleTrail()
 		
 		var size_thrust = RandomX(8, 10);
 		var size_smoke = RandomX(10, 12);
+		
+		if (this.Missile_IsDamaged)
+		{
+			off_x *= -1;
+			off_y *= -1;
+			size_thrust /= 2;
+		}
 
-		CreateParticle("Thrust", x - off_x, y - off_y, GetXDir()/2, GetYDir()/2, PV_Random(5, 10),
+		// Damaged missile or missile with fule creates fire
+		if (this.Missile_IsDamaged || this.Missile_HasFuel)
 		{
-			Prototype = Particles_ThrustColored(255, 200, 200),
-			Size = size_thrust,
-		});
-		CreateParticle("Smoke2", 2 * (x - off_x), 2 * (y - off_y) + 1, xdir, ydir, PV_Random(30, 40),
+			CreateParticle("Thrust", x + off_x, y + off_y, GetXDir()/2, GetYDir()/2, PV_Random(5, 10),
+			{
+				Prototype = Particles_ThrustColored(255, 200, 200),
+				Size = size_thrust,
+			});
+		}
+		
+		// Missile with fuel creates smoke
+		if (this.Missile_HasFuel)
 		{
-			Prototype = Particles_ThrustColored(220, 200, 180),
-			Size = size_smoke,
-		});
+			CreateParticle("Smoke2", 2 * (x + off_x), 2 * (y + off_y) + 1, xdir, ydir, PV_Random(30, 40),
+			{
+				Prototype = Particles_ThrustColored(220, 200, 180),
+				Size = size_smoke,
+			});
+		}
 	}
 }

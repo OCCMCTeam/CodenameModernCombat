@@ -156,6 +156,13 @@ func Fuse()
 }
 
 
+func OnFuseTimeout()
+{
+	DetonateInContainer();
+	Detonate();
+}
+
+
 local GrenadeFuse = new Effect
 {
 	Timer = func (int time)
@@ -163,8 +170,7 @@ local GrenadeFuse = new Effect
 		if (this.Target.Grenade_FuseTime &&
 		    this.Target.Grenade_FuseTime < time)
 		{
-			this.Target->DetonateInContainer();
-			this.Target->Detonate();
+			this.Target->~OnFuseTimeout();
 			return FX_Execute_Kill;
 		}
 		this.Target->~HandleTrail(time);

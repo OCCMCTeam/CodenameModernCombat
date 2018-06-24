@@ -13,4 +13,5 @@ VertexFriction=70, 70
 Rotate=1
 Float=100000
 NoStabilize=1
+ColorByOwner=1
 HideInCreator=true
