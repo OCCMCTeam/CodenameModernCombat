@@ -95,6 +95,7 @@ func FiremodeMissiles()
 
 	// Effects, CMC custom
 	mode->SetFireSound("Items::Weapons::AssaultRifle::Fire", 3);
+	mode->SetHipShootingDisabled(true);
 	return mode;
 }
 

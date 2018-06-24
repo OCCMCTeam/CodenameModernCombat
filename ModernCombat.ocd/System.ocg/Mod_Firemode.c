@@ -104,7 +104,16 @@ public func GetAmmoName()
 	return this.ammo_name;
 }
 
+/**
+	Get whether hip shooting mode is disabled.
 
+	@return bool Should be {@code true} if hip
+	             shooting is disabled.
+ */
+public func GetHipShootingDisabled()
+{
+	return this.hip_shooting_disabled;
+}
 
 /* --- Setters --- */
 
@@ -207,5 +216,18 @@ public func SetAimCursor(cursor)
 public func SetAmmoName(string name)
 {
 	this.ammo_name = name;
+	return this;
+}
+
+/**
+	Set the hip shooting mode disabled. This makes
+	sense for weapons that allow aimed firing only.
+
+	@par disabled Should be {@code true} if hip
+	              shooting is disabled.
+ */
+public func SetHipShootingDisabled(bool disabled)
+{
+	this.hip_shooting_disabled = disabled;
 	return this;
 }

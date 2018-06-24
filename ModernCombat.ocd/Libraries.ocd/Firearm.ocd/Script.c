@@ -173,6 +173,13 @@ func OnUseAltStop(object clonk, int x, int y)
 
 func StartHipShooting(object clonk, int x, int y)
 {
+	if (GetFiremode()->~GetHipShootingDisabled())
+	{
+		if (hipfire)
+			StopHipShooting(clonk);
+		return;
+	}
+
 	if (hipfire)
 		return ContinueHipShooting(clonk, x, y);
 
