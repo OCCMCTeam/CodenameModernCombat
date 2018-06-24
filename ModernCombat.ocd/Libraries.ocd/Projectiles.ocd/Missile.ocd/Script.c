@@ -14,12 +14,17 @@ local Missile_RDir = 3;
 local Missile_HasFuel = true;
 local Missile_IsDamaged = false;
 
+local Missile_AngleValue = 0;
+local Missile_AnglePrecision = 1000;
+
 /* --- Callbacks from projectile --- */
 
-public func Launch(int angle, deviation)
+public func LaunchAsProjectile(int angle, int precision)
 {
-	SetR(angle);
-	inherited(angle, deviation, ...);
+	this.Missile_AngleValue = angle;
+	this.Missile_AnglePrecision = precision;
+	SetR(this.Missile_AngleValue / this.Missile_AnglePrecision);
+	inherited(angle, precision);
 }
 
 func OnLaunch()
@@ -158,8 +163,8 @@ func ControlSpeed()
 			this.Missile_Speed = BoundBy(this.Missile_Speed + this->Acceleration(), 0, this->MaxSpeed());
 		}
 	
-		velocity_x = +Sin(GetR(), this.Missile_Speed);
-		velocity_y = -Cos(GetR(), this.Missile_Speed);
+		velocity_x = +Sin(this.Missile_AngleValue, this.Missile_Speed, this.Missile_AnglePrecision);
+		velocity_y = -Cos(this.Missile_AngleValue, this.Missile_Speed, this.Missile_AnglePrecision);
 
 		SetXDir(velocity_x);
 		SetYDir(velocity_y);
@@ -232,7 +237,7 @@ func HandleSmokeTrail()
 		}
 		
 		// Missile with fuel creates smoke
-		if (this.Missile_HasFuel)
+		if (this.Missile_HasFuel && !this.Missile_IsDamaged)
 		{
 			CreateParticle("Smoke2", 2 * (x + off_x), 2 * (y + off_y) + 1, xdir, ydir, PV_Random(30, 40),
 			{
