@@ -7,6 +7,8 @@ local Description = "$Description$";
 local Collectible = true;
 local ForceFreeHands = true;
 
+local RocketLauncher_Laser = nil; // Laser aim object
+
 func SelectionTime() { return 45; }
 
 /* --- Engine callbacks --- */
@@ -118,6 +120,61 @@ func FiremodeMissiles_TechniqueUnguided()
 	return mode;
 }
 
+/* --- Optical aiming --- */
+
+// Will happen always at the moment, will be restricted to optical aiming firemode
+func AimOptical(object user, int x, int y, proplist firemode)
+{
+	var precision = 1000;
+
+	// Start in global coordinates	
+	var x_start = user->GetX();
+	var y_start = user->GetY() - 5;
+	
+	var aim_angle = Angle(x_start, y_start, user->GetX() + x, user->GetY() + y, precision);
+	
+	var max_distance = Distance(0, 0, LandscapeWidth(), LandscapeHeight());
+	
+	var x_target = x_start + Sin(aim_angle, max_distance, precision);
+	var y_target = y_start - Cos(aim_angle, max_distance, precision);
+	
+	var end = PathFree2(x_start, y_start, x_target, y_target);
+	
+	if (end)
+	{
+		var x_end = end[0];
+		var y_end = end[1];
+			
+		if (!this.RocketLauncher_Laser)
+		{
+			this.RocketLauncher_Laser = CreateObject(LaserEffect, 0, 0, user->GetController());
+			this.RocketLauncher_Laser.Visibility = VIS_Owner;
+			this.RocketLauncher_Laser
+				 ->SetWidth(2)
+				 ->Color(RGB(200, 0, 0))
+				 ->Activate();
+		}
+		
+		if (this.RocketLauncher_Laser)
+		{
+			this.RocketLauncher_Laser->SetPosition(x_start, y_start);
+			this.RocketLauncher_Laser->Line(x_start, y_start, x_end, y_end)->Update();
+		}
+	}
+	else
+	{
+		// Path is free, for whatever reason, remove the laser
+		if (this.RocketLauncher_Laser) this.RocketLauncher_Laser->RemoveObject();
+	}
+}
+
+
+// Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
+public func ControlUseAiming(object user, int x, int y)
+{
+	inherited(user, x, y);
+	AimOptical(user, x, y, GetFiremode());
+}
 
 /* --- Effects --- */
 
