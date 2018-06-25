@@ -29,8 +29,8 @@ static const WEAPON_HipFireDelay = 6 * 35;
 
 // Currently aiming / shooting from hips
 local hipfire = false;
-// The hip shooting target position (in global coordinates)
-local hipfire_target;
+// The shooting target position (in global coordinates)
+local aim_target;
 // The firing button is pressed during hip shooting
 local hipfire_pressed = false;
 // Ironsight is done or initiatied
@@ -162,6 +162,7 @@ public func ControlUseAiming(object clonk, int x, int y)
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
 	clonk->SetAimPosition(angle);
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 }
 
 // Called by the shooter library in ControlUseAltStop
@@ -190,7 +191,7 @@ func StartHipShooting(object clonk, int x, int y)
 		return ContinueHipShooting(clonk, x, y);
 
 	hipfire = true;
-	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 	// Double check whether the use button is really held
 	// This function (or ControlUseStart) will also be called by the Clonk Use Control through ReIssueCommand
 	// But no release call will follow, possibly stucking the clonk in an endless hip aiming procedure
@@ -249,7 +250,7 @@ func ContinueHipShooting(object clonk, int x, int y)
 	}
 
 	effect.timeout = 0;
-	hipfire_target = [clonk->GetX() + x, clonk->GetY() + y];
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 	hipfire_pressed = true;
 
 	DoHipShootingFireCycle(clonk);
@@ -275,8 +276,8 @@ local HipShootingEffect = new Effect {
 		if (!this.clonk || (!this.clonk->IsWalking() && !this.clonk->IsJumping()))
 			return FX_Execute_Kill;
 		// Keep the clonk on target
-		var x_target = this.Target.hipfire_target[0] - this.clonk->GetX();
-		var y_target = this.Target.hipfire_target[1] - this.clonk->GetY();
+		var x_target = this.Target.aim_target[0] - this.clonk->GetX();
+		var y_target = this.Target.aim_target[1] - this.clonk->GetY();
 		var angle = Angle(0, 0, x_target, y_target + this.Target->GetFiremode()->GetYOffset());
 		angle = Normalize(angle, -180);
 		this.clonk->SetAimPosition(angle);
@@ -293,8 +294,8 @@ func DoHipShootingFireCycle(object clonk)
 	if (!IsReadyToFire())
 		return;
 
-	var x = hipfire_target[0] - clonk->GetX();
-	var y = hipfire_target[1] - clonk->GetY();
+	var x = aim_target[0] - clonk->GetX();
+	var y = aim_target[1] - clonk->GetY();
 
 	// Check if reload is necessary
 	if (!StartReload(clonk, x, y))
@@ -318,6 +319,7 @@ public func StartIronSight(object clonk, int x, int y)
 
 	ironsight = true;
 	is_in_ironsight = false;
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 
 	// Instant transition into ironsight
 	if (trans_type == WEAPON_FM_IronsightInst)
@@ -482,6 +484,7 @@ public func StartProneAim(object clonk, int x, int y)
 
 	prone_aim = true;
 	is_in_prone_aim = false;
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 
 	// Instant transition into ironsight, works similar here
 	if (trans_type == WEAPON_FM_IronsightInst)
@@ -757,7 +760,7 @@ public func Reset(object clonk)
 
 	hipfire = false;
 	hipfire_pressed = false;
-	hipfire_target = nil;
+	aim_target = nil;
 
 	prone_aim = false;
 	is_in_prone_aim = false;
@@ -782,6 +785,13 @@ public func Reset(object clonk)
 public func IsAiming()
 {
 	return is_in_ironsight || hipfire;
+}
+
+public func GetAimTarget()
+{
+	if (!aim_target)
+		return [nil, nil];
+	return aim_target[:];
 }
 
 public func IsAutoFiring()
