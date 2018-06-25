@@ -2,12 +2,40 @@
 
 // Modify the aim procedure check, to cancel aiming on certain other events
 // if wanted.
+// Further modify to accomodate for prone aiming
 
 local aim_cancel_on_jump;
 
 func FxIntAimCheckProcedureTimer()
 {
-	_inherited(...);
+	// Care about the aim schedules
+	if(aim_schedule_timer != nil)
+	{
+		aim_schedule_timer--;
+		if(aim_schedule_timer == 0)
+		{
+			Call(aim_schedule_call);
+			aim_schedule_call = nil;
+			aim_schedule_timer = nil;
+		}
+	}
+	if(aim_schedule_timer2 != nil)
+	{
+		aim_schedule_timer2--;
+		if(aim_schedule_timer2 == 0)
+		{
+			Call(aim_schedule_call2);
+			aim_schedule_call2 = nil;
+			aim_schedule_timer2 = nil;
+		}
+	}
+
+	// check procedure
+	if(!ReadyToAction() && aim_type != WEAPON_AIM_TYPE_PRONE)
+		PauseAim();
+	if (aim_type == WEAPON_AIM_TYPE_PRONE)
+		if (this->GetAction() != "Crawl")
+			return CancelAiming();
 
 	if (this->IsAiming())
 		if (aim_cancel_on_jump)

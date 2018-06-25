@@ -7,6 +7,14 @@
 /* --- Getters --- */
 
 /**
+ Get the aiming animation for prone aiming
+*/
+public func GetProneAimingAnimation()
+{
+	return this.prone_anim_aim;
+}
+
+/**
  Get the aiming animation for ironsight aiming
 */
 public func GetIronsightAimingAnimation()
@@ -116,6 +124,15 @@ public func GetHipShootingDisabled()
 }
 
 /* --- Setters --- */
+
+/**
+ Set the aiming animation for prone aiming
+*/
+public func SetProneAimingAnimation(string name)
+{
+	this.prone_anim_aim = name;
+	return this;
+}
 
 /**
  Set the aiming animation for ironsight aiming

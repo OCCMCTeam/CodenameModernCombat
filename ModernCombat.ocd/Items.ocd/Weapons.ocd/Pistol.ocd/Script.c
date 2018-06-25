@@ -80,6 +80,9 @@ func FiremodeStandard()
 	mode->SetProjectileDistance(8);
 	mode->SetYOffset(-6);
 
+	// Prone aiming
+	mode->SetProneAimingAnimation("ProneAim");
+
 	// Hip shooting
 	mode->SetHipFireAimingAnimation("AimArmsGeneric.R");
 

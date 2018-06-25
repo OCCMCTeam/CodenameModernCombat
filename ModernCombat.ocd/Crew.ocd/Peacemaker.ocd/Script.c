@@ -270,6 +270,11 @@ func EndGoProne()
 	if(GetAction() == "GoProne") SetAction("Crawl");
 }
 
+public func IsProne()
+{
+	return GetAction() == "Crawl";
+}
+
 /* --- Crawl --- */
 
 func StartCrawl()
