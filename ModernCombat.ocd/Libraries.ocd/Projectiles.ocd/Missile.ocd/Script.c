@@ -22,7 +22,7 @@ local Missile_AnglePrecision = 1000;
 public func LaunchAsProjectile(int angle, int precision)
 {
 	this.Missile_AngleValue = angle;
-	this.Missile_AnglePrecision = precision;
+	this.Missile_AnglePrecision = precision ?? 1;
 	SetR(this.Missile_AngleValue / this.Missile_AnglePrecision);
 	inherited(angle, precision);
 }
@@ -130,7 +130,7 @@ func Malfunction()
 
 /* --- Internals --- */
 
-public func Acceleration()
+func Acceleration()
 {
 	if (this.Missile_Guided)
 	{
@@ -142,7 +142,7 @@ public func Acceleration()
 	}
 }
 
-public func MaxSpeed()
+func MaxSpeed()
 {
 	if (this.Missile_Guided)
 	{
@@ -153,6 +153,20 @@ public func MaxSpeed()
 		return 150;
 	}
 }
+
+func MaxTurn()
+{
+	// TODO: if aiming at a tracer, allow a turn of 8!
+	return 6;
+}
+
+func IsGuidable()
+{
+	return this.Missile_Guided
+	   &&  this.Missile_HasFuel
+	   && !this.Missile_IsDamaged;
+}
+
 
 func ControlSpeed()
 {
@@ -170,6 +184,7 @@ func ControlSpeed()
 		SetYDir(velocity_y);
 	}
 	
+	// Adjust rotation while falling!
 	var target_r = Angle(0, 0, GetXDir(), GetYDir());
 	var diff_r = BoundBy(target_r - GetR(), -this.Missile_RDir, +this.Missile_RDir);
 	SetR(GetR() + diff_r);
@@ -247,3 +262,30 @@ func HandleSmokeTrail()
 		}
 	}
 }
+
+/* --- Homing / Target approach --- */
+
+
+func FollowTarget()
+{
+	// TODO: GuideTo(homing_target->GetX(), homing_target->GetY());
+}
+
+// Guide to target position, global coordinates
+func GuideTo(int x, int y)
+{
+	if (IsGuidable())
+	{
+		// Rotate towards target rotation
+	    var current_angle = this.Missile_AngleValue;
+		var target_angle = Angle(GetX(), GetY(), x, y, this.Missile_AnglePrecision);
+	
+	    var difference = Normalize(target_angle - current_angle, -180 * this.Missile_AnglePrecision, this.Missile_AnglePrecision);
+	    var turn = Min(Abs(difference), MaxTurn() * this.Missile_AnglePrecision);
+	    
+	    // Update angle and rotation
+		this.Missile_AngleValue += turn * Sign(difference);
+	    SetR(this.Missile_AngleValue / this.Missile_AnglePrecision);
+    }
+}
+

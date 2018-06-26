@@ -8,6 +8,7 @@ local Collectible = true;
 local ForceFreeHands = true;
 
 local RocketLauncher_Laser = nil; // Laser aim object
+local RocketLauncher_Missile = nil; // The guided missile
 
 func SelectionTime() { return 45; }
 
@@ -159,6 +160,11 @@ func AimOptical(object user, int x, int y)
 		this.RocketLauncher_Laser->SetPosition(x_start, y_start);
 		this.RocketLauncher_Laser->Line(x_start, y_start, x_end, y_end)->Update();
 	}
+	
+	if (this.RocketLauncher_Missile)
+	{
+		this.RocketLauncher_Missile->GuideTo(x_end, y_end);
+	}
 }
 
 
@@ -174,8 +180,7 @@ func AimOpticalReset()
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object user, int x, int y)
 {
-	var mode = GetFiremode();
-	if (is_in_ironsight && mode && mode->GetIndex() == 0)
+	if (is_in_ironsight && CanFiremodeGuide())
 	{
 		AimOptical(user, x, y);
 	}
@@ -204,6 +209,12 @@ public func Reset(object user)
 	return inherited(user, ...);
 }
 
+func CanFiremodeGuide(proplist firemode)
+{
+	firemode = firemode ?? GetFiremode();
+	return firemode && firemode->GetIndex() == 0;
+}
+
 /* --- Effects --- */
 
 func FireSound(object user, proplist firemode)
@@ -213,7 +224,10 @@ func FireSound(object user, proplist firemode)
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
-	// Nothing
+	if (CanFiremodeGuide(firemode))
+	{
+		RocketLauncher_Missile = projectile;
+	}
 }
 
 func FireEffect(object user, int angle, proplist firemode)
