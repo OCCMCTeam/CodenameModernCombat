@@ -138,33 +138,26 @@ func AimOptical(object user, int x, int y, proplist firemode)
 	var x_target = x_start + Sin(aim_angle, max_distance, precision);
 	var y_target = y_start - Cos(aim_angle, max_distance, precision);
 	
-	var end = PathFree2(x_start, y_start, x_target, y_target);
+	// If path is free the target is OK - the distance was chosen in such a way that it always hits the border of a landscape
+	var end = PathFree2(x_start, y_start, x_target, y_target) ?? [x_target, y_target];
 	
-	if (end)
-	{
-		var x_end = end[0];
-		var y_end = end[1];
-			
-		if (!this.RocketLauncher_Laser)
-		{
-			this.RocketLauncher_Laser = CreateObject(LaserEffect, 0, 0, user->GetController());
-			this.RocketLauncher_Laser.Visibility = VIS_Owner;
-			this.RocketLauncher_Laser
-				 ->SetWidth(2)
-				 ->Color(RGB(200, 0, 0))
-				 ->Activate();
-		}
+	var x_end = end[0];
+	var y_end = end[1];
 		
-		if (this.RocketLauncher_Laser)
-		{
-			this.RocketLauncher_Laser->SetPosition(x_start, y_start);
-			this.RocketLauncher_Laser->Line(x_start, y_start, x_end, y_end)->Update();
-		}
-	}
-	else
+	if (!this.RocketLauncher_Laser)
 	{
-		// Path is free, for whatever reason, remove the laser
-		if (this.RocketLauncher_Laser) this.RocketLauncher_Laser->RemoveObject();
+		this.RocketLauncher_Laser = CreateObject(LaserEffect, 0, 0, user->GetController());
+		this.RocketLauncher_Laser.Visibility = VIS_Owner;
+		this.RocketLauncher_Laser
+			 ->SetWidth(2)
+			 ->Color(RGB(200, 0, 0))
+			 ->Activate();
+	}
+	
+	if (this.RocketLauncher_Laser)
+	{
+		this.RocketLauncher_Laser->SetPosition(x_start, y_start);
+		this.RocketLauncher_Laser->Line(x_start, y_start, x_end, y_end)->Update();
 	}
 }
 
