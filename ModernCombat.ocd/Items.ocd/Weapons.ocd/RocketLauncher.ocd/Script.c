@@ -123,7 +123,7 @@ func FiremodeMissiles_TechniqueUnguided()
 /* --- Optical aiming --- */
 
 // Will happen always at the moment, will be restricted to optical aiming firemode
-func AimOptical(object user, int x, int y, proplist firemode)
+func AimOptical(object user, int x, int y)
 {
 	var precision = 1000;
 
@@ -162,11 +162,46 @@ func AimOptical(object user, int x, int y, proplist firemode)
 }
 
 
+func AimOpticalReset()
+{
+	if (this.RocketLauncher_Laser)
+	{
+		this.RocketLauncher_Laser->RemoveObject();
+	}
+}
+
+
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object user, int x, int y)
 {
-	inherited(user, x, y);
-	AimOptical(user, x, y, GetFiremode());
+	var mode = GetFiremode();
+	if (mode && mode->GetIndex() == 0)
+	{
+		AimOptical(user, x, y);
+	}
+	else
+	{
+		AimOpticalReset();
+	}
+	return inherited(user, x, y);
+}
+
+public func CancelIronsight(object user)
+{
+	AimOpticalReset();
+	return inherited(user, ...);
+}
+
+public func StopIronsight(object user)
+{
+	AimOpticalReset();
+	return inherited(user, ...);
+}
+
+public func Reset(object user)
+{
+	AimOpticalReset();
+	return inherited(user, ...);
 }
 
 /* --- Effects --- */
