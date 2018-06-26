@@ -175,7 +175,7 @@ func AimOpticalReset()
 public func ControlUseAiming(object user, int x, int y)
 {
 	var mode = GetFiremode();
-	if (mode && mode->GetIndex() == 0)
+	if (is_in_ironsight && mode && mode->GetIndex() == 0)
 	{
 		AimOptical(user, x, y);
 	}
