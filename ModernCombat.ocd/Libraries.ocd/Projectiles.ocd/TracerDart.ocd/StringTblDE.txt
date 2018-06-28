@@ -1,0 +1,4 @@
+Name=Peilsender
+Description=Ein magnetischer und mit speziellem Klebstoff versehener Peilsender. Dieser erlaubt automatischen Waffensystemen Ziele anzuvisieren.
+
+TargetMarked=<c %x>%s</c> hat ein Ziel markiert, Einheiten mit <c ffff33>Raketenwerfern</c>, feuerbereit halten.

@@ -1,0 +1,4 @@
+Name=Tracer Dart
+Description=A magnetic tracer dart which is coated in special glue. Enables automated weapon systems to home into targets.
+
+TargetMarked=<c %x>%s</c> has painted a target, units with <c ffff33>rocket launchers</c>, standby to fire.
