@@ -172,17 +172,22 @@ func RemoveTimer()
 {
 	if (lifetime >= RemoveTime)
 	{
-		if (GetAction() != "Fade")
-		{
-			if (EnergyBar)
-			{
-				EnergyBar->RemoveObject();
-			}
-			SetAction("Fade", GetActionTarget());
-		}
+		Remove();
 	}
 	else
 	{
 		++lifetime;
+	}
+}
+
+func Remove()
+{
+	if (GetAction() != "Fade")
+	{
+		if (EnergyBar)
+		{
+			EnergyBar->RemoveObject();
+		}
+		SetAction("Fade", GetActionTarget());
 	}
 }

@@ -81,15 +81,16 @@ public func OnHitObject(object target, proplist hitcheck_effect)
 		{
 			return Remove();
 		}
-	
+		
+		// TODO: Tracer has to ignore the target and keep flying if it cannot be added
 	
 		if ((Hostile(target->GetOwner(), GetController()) || target->~AttractTracer(this))
 	    && !target->InLiquid()
 	    && !target->~IgnoreTracer()
-	    && !GetEffect("TracerDart", target))
+	    && !HasTracer(target))
 		{
 			PlaySoundAttach(target);
-			
+
 			target->CreateEffect(TracerDartTimer, 20, 1, GetController(), Tracer_Color);
 
 			// Broadcast to allies
@@ -203,6 +204,14 @@ local TracerDartTimer = new Effect
 	{
 		if (!temp)
 		{
+			// Remove tag, if it did not happen already
+			var tag = CMC_Icon_SensorBall_Tag->Get(this.Target, player, CMC_Projectile_TracerDart);
+			if (tag)
+			{
+				tag->Remove();
+			}
+			
+			// Do some achievement points
 			var player = this.By_Player;
 			if (!GetPlayerName(player)) return;
 		    if (!Hostile(this.Target->GetKiller(), player) && this.Target->GetKiller() != player)
@@ -246,3 +255,36 @@ local TracerDartTimer = new Effect
 		}
 	},
 };
+
+/* --- Definition calls --- */
+
+// There actually should be only one tracer per target, but lets iterate nonetheless
+
+func HasTracer(object target, int player)
+{
+	var tracer;
+	for (var i = 0; tracer = GetEffect("TracerDart", target, i); ++i)
+	{
+		// Regardless of owner?
+		if (player == nil)
+		{
+			return tracer;
+		}
+		// Only for allies
+		if (!Hostile(player, tracer.By_Player))
+		{
+			return tracer;
+		}
+	}
+	return nil;
+}
+
+func RemoveTracers(object target)
+{
+	var tracer;
+	for (var i = 0; tracer = GetEffect("TracerDart", target, i); ++i)
+	{
+		RemoveEffect(nil, target, tracer);
+	}
+}
+
