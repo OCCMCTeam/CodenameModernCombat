@@ -135,6 +135,10 @@ func Init(object to, int host_player, id type, string graphics_name)
 			EnergyBar.Visibility = this.Visibility;
 		}
 	}
+	
+	// Reveal FoW
+	SetLightColor(RGB(128, 128, 128));
+	SetLightRange(10, 40);
 }
 
 
