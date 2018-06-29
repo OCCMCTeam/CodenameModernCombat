@@ -6,6 +6,7 @@ local Plane = 1000;
 
 local EnergyBar;
 local RemoveTime = 26; // Was the same value in all calls in the old implementation, makes sense to have it as a property immediately.
+local Type = nil;
 
 local lifetime;
 
@@ -49,15 +50,15 @@ func Destruction()
 
 /* --- Interface --- */
 
-public func AddTo(object target, object host, string graphics_name)
+public func AddTo(object target, int host_player, id type, string graphics_name)
 {
 	AssertDefinitionContext();
 	var tag = CreateObject(this, 0, 0, target->GetOwner());
-	tag->Init(target, host, graphics_name, );
+	tag->Init(target, host_player, type, graphics_name);
 	return tag;
 }
 
-public func Get(object to, int for_player)
+public func Get(object to, int for_player, id type)
 {
 	AssertDefinitionContext();	
 	
@@ -67,15 +68,16 @@ public func Get(object to, int for_player)
 		allied = Find_Allied(for_player);
 	}
 	
-	return FindObject(Find_ID(this), Find_ActionTarget(to), allied);
+	return FindObject(Find_ID(this), Find_ActionTarget(to), allied, Find_Func("IsTagType", type));
 }
 
 
 /* --- Internals --- */
 
-func Init(object to, int host_player, string graphics_name)
+func Init(object to, int host_player, id type, string graphics_name)
 {
 	// Initialize
+	Type = type;
 	SetAction("Be", to);
 	SetOwner(host_player);
 	var alive = to->GetOCF() & OCF_Alive;
@@ -124,6 +126,18 @@ func UpdateOwnerColor()
 	{
 		SetColor(GetActionTarget()->GetColor());
 // TODO		SetOwner(GetActionTarget()->GetController());
+	}
+}
+
+func IsTagType(id type)
+{
+	if (type)
+	{
+		return type == Type;
+	}
+	else // Generic search
+	{
+		return true;
 	}
 }
 

@@ -130,14 +130,14 @@ func Sense ()
 		if (Hostile(GetController(), menace->GetController()))
 		{
 			Beep();
-			var tag = CMC_Icon_SensorBall_Tag->Get(menace, GetController());
+			var tag = CMC_Icon_SensorBall_Tag->Get(menace, GetController(), CMC_Grenade_SensorBall);
 			if (tag)
 			{
 				tag->~RefreshRemoveTimer(this);
 			}
 			else
 			{
-				CMC_Icon_SensorBall_Tag->AddTo(menace, GetController());
+				CMC_Icon_SensorBall_Tag->AddTo(menace, GetController(), CMC_Grenade_SensorBall);
 
 				//TODO: Achievement-Fortschritt (Intelligence)
 				//DoAchievementProgress(1, AC21, GetOwner());

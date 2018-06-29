@@ -90,7 +90,7 @@ public func OnHitObject(object target, proplist hitcheck_effect)
 		{
 			PlaySoundAttach(target);
 			
-			target->CreateEffect(TracerDartTimer, 20, 1, GetController());
+			target->CreateEffect(TracerDartTimer, 20, 1, GetController(), Tracer_Color);
 
 			// Broadcast to allies
 			for (var i = 0; i < GetPlayerCount(); ++i)
@@ -148,7 +148,7 @@ func DrawLaserBeam()
 {
 	var laser = CreateObject(LaserEffect, 0, 0, user->GetController());
 	laser.Visibility = VIS_Owner;
-	laser->Line(GetX(), GetY(), Tracer_StartX, Tracer_StartY, )
+	laser->Line(GetX(), GetY(), Tracer_StartX, Tracer_StartY)
 	     ->SetWidth(1)
 		 ->Color(Tracer_Color)
 		 ->SetLifetime(4)
@@ -171,13 +171,30 @@ func PlaySoundAttach(object target)
 
 local TracerDartTimer = new Effect 
 {
-	Start = func (int temp, int player)
+	Start = func (int temp, int player, int color)
 	{
 		if (!temp)
 		{
 			this.By_Player = player;
 			this.LifeTime = 50 * 35;
 			this.Team = GetPlayerTeam(player);
+			color = SplitRGBaValue(GetPlayerColor(player));
+			this.Color = RGBa(color.R, color.G, color.B, 250); //color;
+			
+			// Tag the target
+			var tag = CMC_Icon_SensorBall_Tag->Get(this.Target, player, CMC_Projectile_TracerDart);
+			if (tag)
+			{
+				tag->~RefreshRemoveTimer(this);
+			}
+			else
+			{
+				tag = CMC_Icon_SensorBall_Tag->AddTo(this.Target, player, CMC_Projectile_TracerDart, "Target");
+				if (tag)
+				{
+					tag.RemoveTime = this.LifeTime;
+				}
+			}
 		}
 		return FX_OK;
 	},
@@ -223,10 +240,9 @@ local TracerDartTimer = new Effect
 			return FX_Execute_Kill;
 		}
 		
-		if (time % 25 == 0)
+		if (time % 5 == 0)
 		{
-			var color = GetPlayerColor(this.By_Player);
-			this.Target->CreateLEDEffect(color, 0, 0, 4, 15, true);
+			this.Target->CreateLEDEffect(this.Color, 0, -2, 7, 15, true);
 		}
 	},
 };
