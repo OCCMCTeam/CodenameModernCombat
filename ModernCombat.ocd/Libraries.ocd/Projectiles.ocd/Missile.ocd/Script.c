@@ -17,6 +17,11 @@ local Missile_IsDamaged = false;
 local Missile_AngleValue = 0;
 local Missile_AnglePrecision = 1000;
 
+local Missile_TracerRadius = 350;   // Max radius for finding tracer effects
+local Missile_TracerControl = nil;  // The last detected tracer effect
+local Missile_TracerLinked = false; // Are we linked to that tracer?
+local Missile_TracerLaser = nil;    // Visualization which target is being approaced
+
 /* --- Callbacks from projectile --- */
 
 public func LaunchAsProjectile(int angle, int precision)
@@ -204,6 +209,8 @@ func OnTravelling()
 	}
 	
 	HandleSmokeTrail();
+	
+	ConnectToTracer();
 }
 
 
@@ -266,12 +273,8 @@ func HandleSmokeTrail()
 /* --- Homing / Target approach --- */
 
 
-func FollowTarget()
-{
-	// TODO: GuideTo(homing_target->GetX(), homing_target->GetY());
-}
-
 // Guide to target position, global coordinates
+// TODO: Make sure this is called only once per frame, and not by tracer and player at the same time
 func GuideTo(int x, int y)
 {
 	if (IsGuidable())
@@ -289,3 +292,78 @@ func GuideTo(int x, int y)
     }
 }
 
+/* --- Tracer handling --- */
+
+func ConnectToTracer()
+{
+	if (!IsGuidable())
+	{
+		return;
+	}
+	
+	// Found a tracer already?
+	if (this.Missile_TracerControl)
+	{
+		var target = this.Missile_TracerControl.Target;
+
+		// Follow the target if linked
+		if (this.Missile_TracerLinked && HasLineOfSight(target))
+		{
+			return FollowTarget(target);
+		}
+		else // Look for another one immediately, therefore no return :)
+		{
+			LoseTarget();
+		}
+	}
+	
+	// Look for the next closest laser
+	if (!this.Missile_TracerControl)
+	{
+		var tracer = FindTracer();
+		if (tracer)
+		{
+			this.Missile_TracerControl = tracer;
+		}
+	}
+}
+
+func ConfirmTracerLink() // Interface for users to confirm the currently selected tracer
+{
+	if (this.Missile_TracerControl)
+	{
+		this.Missile_TracerLinked = true;
+	}
+}
+
+func FollowTarget(object target)
+{
+	GuideTo(target->GetX(), target->GetY());
+}
+
+func LoseTarget()
+{
+	this.Missile_TracerControl = false;
+	this.Missile_TracerLinked = false;
+}
+
+func FindTracer()
+{
+	var targets = FindObjects(Find_Distance(this.Missile_TracerRadius), Sort_Distance());
+	for (var target in targets)
+	{
+		var tracer = CMC_Projectile_TracerDart->HasTracer(target, GetController());
+		if (tracer && HasLineOfSight(target))
+		{
+			return tracer;
+		}
+	}
+	return nil;
+}
+
+func HasLineOfSight(object target)
+{
+	return target
+       && (Distance(GetX(), GetY(), target->GetX(), target->GetY()) <= this.Missile_TracerRadius)
+	   &&  PathFree(GetX(), GetY(), target->GetX(), target->GetY());
+}
