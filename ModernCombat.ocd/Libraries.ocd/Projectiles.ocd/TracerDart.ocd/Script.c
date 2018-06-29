@@ -240,9 +240,9 @@ local TracerDartTimer = new Effect
 			return FX_Execute_Kill;
 		}
 		
-		if (time % 5 == 0)
+		if (time % 10 == 0)
 		{
-			this.Target->CreateLEDEffect(this.Color, 0, -2, 7, 15, true);
+			this.Target->CreateLEDEffect(this.Color, 0, 0, 20, 20, true);
 		}
 	},
 };
