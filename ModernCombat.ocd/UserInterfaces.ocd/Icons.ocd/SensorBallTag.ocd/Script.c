@@ -24,7 +24,21 @@ local ActMap =
 		//FacetBase = 1,
 		X = 0, Y = 0, Wdt = 25, Hgt = 25,
 		AbortCall = "AttachTargetLost",
-	}
+	},
+	
+	Fade = 
+	{
+		Prototype = Action,
+		Name = "Fade",
+		Procedure = DFA_ATTACH,
+		NextAction = "Hold",
+		Length = 5,
+		Delay = 2,
+		X = 0, Y = 0, Wdt = 25, Hgt = 25,
+		AbortCall = "AttachTargetLost",
+		EndCall = "AttachTargetLost",
+		Reverse = 1,
+	},
 };
 
 
@@ -34,6 +48,10 @@ local ActMap =
 // Callback from the engine: this symbol has lost its parent.
 func AttachTargetLost()
 {
+	if (GetAction() == "Fade" && GetActTime() == 0)
+	{
+		return; // This simply happens when changing the action
+	}
 	return RemoveObject();
 }
 	
@@ -150,7 +168,14 @@ func RemoveTimer()
 {
 	if (lifetime >= RemoveTime)
 	{
-		RemoveObject();
+		if (GetAction() != "Fade")
+		{
+			if (EnergyBar)
+			{
+				EnergyBar->RemoveObject();
+			}
+			SetAction("Fade", GetActionTarget());
+		}
 	}
 	else
 	{
