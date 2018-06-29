@@ -137,7 +137,7 @@ func Sense ()
 			}
 			else
 			{
-				CMC_Icon_SensorBall_Tag->AddTo(menace, this);
+				CMC_Icon_SensorBall_Tag->AddTo(menace, GetController());
 
 				//TODO: Achievement-Fortschritt (Intelligence)
 				//DoAchievementProgress(1, AC21, GetOwner());

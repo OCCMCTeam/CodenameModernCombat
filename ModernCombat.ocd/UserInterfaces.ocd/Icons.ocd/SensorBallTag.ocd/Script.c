@@ -4,7 +4,6 @@
 local Visibility = VIS_Allies | VIS_Owner | VIS_Editor;
 local Plane = 1000;
 
-local Host;
 local EnergyBar;
 local RemoveTime = 26; // Was the same value in all calls in the old implementation, makes sense to have it as a property immediately.
 
@@ -74,12 +73,11 @@ public func Get(object to, int for_player)
 
 /* --- Internals --- */
 
-func Init(object to, object host, string graphics_name)
+func Init(object to, int host_player, string graphics_name)
 {
 	// Initialize
 	SetAction("Be", to);
-	Host = host;
-	SetOwner(host->GetOwner());
+	SetOwner(host_player);
 	var alive = to->GetOCF() & OCF_Alive;
 	
 	// Graphics, if supplied
@@ -107,7 +105,7 @@ func Init(object to, object host, string graphics_name)
 	AddTimer(this.RemoveTimer, 1);
 	
 	// Energy bar for livings
-	if (alive)
+	if (alive && graphics_name != "Target")
 	{
 		EnergyBar = to->AddEnergyBar();
 		
