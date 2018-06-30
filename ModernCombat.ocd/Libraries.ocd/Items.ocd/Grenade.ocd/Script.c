@@ -200,6 +200,10 @@ func SetDelayedAction(call, object user, int angle)
 		fx.OnFinish = call;
 		fx.Grenade = this;
 		fx.Angle = angle;
+		if (user->IsAiming())
+		{
+			user->SetAimPosition(angle);
+		}
 	}
 	else
 	{

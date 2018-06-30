@@ -246,7 +246,7 @@ global func Test1_Setup(object victim, object killer, object fake_killer)
 global func Test2_Log() { return "K throws an activated field grenade at V"; }
 global func Test2_Setup(object victim, object killer, object fake_killer)
 {
-	victim->SetPosition(125, 150);
+	victim->SetPosition(240, 150);
 	victim->DoEnergy(35 - victim->GetEnergy());
 
 	var grenade = killer->CreateContents(CMC_Grenade_Field);
@@ -258,11 +258,10 @@ global func Test2_Setup(object victim, object killer, object fake_killer)
 global func Test3_Log() { return "K throws an activated frag grenade at V"; }
 global func Test3_Setup(object victim, object killer, object fake_killer)
 {
-	victim->SetPosition(125, 150);
+	victim->SetPosition(280, 150);
 	victim->DoEnergy(85 - victim->GetEnergy());
 
 	var grenade = killer->CreateContents(CMC_Grenade_Frag);
 	grenade->ControlUseStart(killer, +50, -50);
 	grenade->ControlUseStop(killer, +50, -50);
 }
-
