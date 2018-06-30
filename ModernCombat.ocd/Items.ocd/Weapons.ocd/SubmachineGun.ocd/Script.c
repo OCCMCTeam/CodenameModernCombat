@@ -93,7 +93,7 @@ func FiremodeBullets()
 	mode->SetProjectileSpread(ProjectileDeviationCmc(60)); // Min spread
 
 	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone, CMC_Cursor_Default]);
+	mode->SetAimCursor([CMC_Cursor_Cone]);
 
 	// Effects, CMC custom
 	mode->SetFireSound("Items::Weapons::SubmachineGun::Fire", 2);
