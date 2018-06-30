@@ -50,9 +50,13 @@ public func SetDelayedDeath(bool enable, object crew)
 	else // specific
 	{
 		var check = GetEffect("RuleMortalWoundsCheck", crew);
-		if (!check)
+		if (enable && !check)
 		{
 			crew->CreateEffect(RuleMortalWoundsCheck, 1, 1); // Does not need to be top priority, let other effects modify damage first, and so on
+		}
+		if (!enable && check)
+		{
+			RemoveEffect(nil, crew, check);
 		}
 	}
 }
