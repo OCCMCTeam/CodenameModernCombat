@@ -271,7 +271,6 @@ func HasTracer(object target, int player)
 			return tracer;
 		}
 		// Only for allies
-		Log("   Found tracer for %d / %d / Hostile = %v", player, tracer.By_Player, Hostile(player, tracer.By_Player));
 		if (!Hostile(player, tracer.By_Player))
 		{
 			return tracer;
