@@ -17,7 +17,8 @@ public func Initialize()
 
 	// Fire mode list
 	ClearFiremodes();
-	AddFiremode(FiremodeStandard());
+	AddFiremode(FiremodeBullets_TechniqueSingle());
+	AddFiremode(FiremodeBullets_TechniqueTracerDart());
 }
 
 func Definition(id def)
@@ -53,30 +54,23 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 }
 public func GetCarrySpecial(clonk)
 {
-	if(IsAiming()) return "pos_hand2";
+	if (IsAiming()) return "pos_hand2";
 }
 
 /* --- Fire modes --- */
 
-func FiremodeStandard()
+func FiremodeBullets()
 {
 	var mode = new Library_Firearm_Firemode {};
-
+	
 	// Generic info
-	mode->SetName("$Single$");
 	mode->SetMode(WEAPON_FM_Single);
 
 	// Reloading
 	mode->SetAmmoID(CMC_Ammo_Bullets);
-	mode.ammo_load = 15; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
 	mode->SetRecoveryDelay(5);
-	mode->SetReloadDelay(40);
-	mode->SetDamage(11);
 
 	// Projectile
-	mode->SetProjectileID(CMC_Projectile_Bullet);
-	mode->SetProjectileSpeed(250);
-	mode->SetProjectileRange(450);
 	mode->SetProjectileDistance(8);
 	mode->SetYOffset(-6);
 
@@ -93,17 +87,69 @@ func FiremodeStandard()
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
 	
+
+
+	// Crosshair, CMC Custom
+	mode->SetAimCursor([CMC_Cursor_Cone]);
+
+	// Effects, CMC custom
+	mode->SetFireSound("Items::Weapons::Pistol::Fire", 2);
+	return mode;
+}
+
+func FiremodeBullets_TechniqueSingle()
+{
+	var mode = FiremodeBullets();
+
+	// Generic info
+	mode->SetName("$Single$");
+	mode->SetProjectileID(CMC_Projectile_Bullet);
+	
+	// Reloading
+	mode.ammo_load = 15; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode->SetReloadDelay(40);
+	mode->SetDamage(11);
+	
+	// Projectile
+	mode->SetProjectileSpeed(250);
+	mode->SetProjectileRange(450);
+	
 	// Spread
 	mode->SetSpread(ProjectileDeviationCmc(20));
 	mode->SetSpreadPerShot(ProjectileDeviationCmc(70));
 	mode->SetSpreadBySelection(ProjectileDeviationCmc(30));
 	mode->SetSpreadLimit(ProjectileDeviationCmc(220));
 	
-	// Crosshair, CMC Custom
-	mode->SetAimCursor(CMC_Cursor_Cone);
+	// Identification
+	mode.IsTracer = false;
+	return mode;
+}
 
-	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::Pistol::Fire", 2);
+
+func FiremodeBullets_TechniqueTracerDart()
+{
+	var mode = FiremodeBullets();
+
+	// Generic info
+	mode->SetName("$TracerDart$");
+	mode->SetProjectileID(CMC_Projectile_TracerDart);
+
+	// Reloading
+	mode.ammo_load = 1; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode->SetReloadDelay(90);
+	mode->SetDamage(0);
+	
+	// Projectile
+	mode->SetProjectileSpeed(180);
+	mode->SetProjectileRange(1000);
+	
+	// Spread
+	mode->SetSpreadPerShot(ProjectileDeviationCmc(60));
+	mode->SetSpreadBySelection(ProjectileDeviationCmc(10));
+	mode->SetSpreadLimit(ProjectileDeviationCmc(200));
+	
+	// Identification
+	mode.IsTracer = true;
 	return mode;
 }
 
@@ -116,8 +162,11 @@ func FireSound(object user, proplist firemode)
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
-	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
-	projectile->HitScan();
+	if (!firemode.IsTracer)
+	{
+		projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
+		projectile->HitScan();
+	}
 }
 
 func FireEffect(object user, int angle, proplist firemode)
@@ -128,9 +177,25 @@ func FireEffect(object user, int angle, proplist firemode)
 
 	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
 	
+	if (!firemode.IsTracer)
+	{
+		Casing(user, angle, firemode);
+	}
+}
+
+func OnStartReload(object user, int x, int y, proplist firemode)
+{
+	if (firemode.IsTracer)
+	{
+		Casing(user, Angle(0, 0, x, y), firemode);
+	}
+}
+
+func Casing(object user, int angle, proplist firemode)
+{
 	// Casing
-	x = +Sin(angle, firemode->GetProjectileDistance() / 2);
-	y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
+	var x = +Sin(angle, firemode->GetProjectileDistance() / 2);
+	var y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
 
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + Sin(-angle, 5), user->GetYDir() - RandomX(15, 20));
 }
