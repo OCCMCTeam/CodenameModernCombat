@@ -181,6 +181,8 @@ global func InitTest()
 	GetCrew(player_killer)->SetPosition(50, 150);
 	GetCrew(player_killer_fake)->SetPosition(20, 150);
 	GetCrew(player_victim)->CreateEffect(IntLogEnergyChange, 1, 1);
+	
+	ResetHostility();
 	return;
 }
 
@@ -228,6 +230,33 @@ global func CurrentTest()
 	return GetEffect("IntKillTraceTestControl", Scenario);
 }
 
+
+global func Test_WeaponSingleCall(string call, object weapon, int delay, object user, int x, int y)
+{
+	ScheduleCall(weapon, Format("Control%sStart", call), delay + 0, 1, user, x, y);
+	ScheduleCall(weapon, Format("Control%sHolding", call), delay + 1, 1, user, x, y);
+	ScheduleCall(weapon, Format("Control%sStop", call), delay + 2, 1, user, x, y);
+}
+
+global func ResetHostility()
+{
+	SetPlayersAllied(player_victim, player_killer);
+	SetPlayersAllied(player_victim, player_killer_fake);
+	SetPlayersAllied(player_killer, player_killer_fake);
+}
+
+global func SetPlayersAllied(int a, int b)
+{
+	SetHostility(a, b, false, true);
+	SetHostility(b, a, false, true);
+}
+
+global func SetPlayersHostile(int a, int b)
+{
+	SetHostility(a, b, true, true);
+	SetHostility(b, a, true, true);
+}
+
 /* --- Tests --- */
 
 global func Test1_Log() { return "K throws an activated iron bomb at V (reference test case)"; }
@@ -264,4 +293,53 @@ global func Test3_Setup(object victim, object killer, object fake_killer)
 	var grenade = killer->CreateContents(CMC_Grenade_Frag);
 	grenade->ControlUseStart(killer, +50, -50);
 	grenade->ControlUseStop(killer, +50, -50);
+}
+
+global func Test4_Log() { return "K fires missile at V"; }
+global func Test4_Setup(object victim, object killer, object fake_killer)
+{
+	victim->SetPosition(280, 150);
+	victim->DoEnergy(85 - victim->GetEnergy());
+
+	var weapon = killer->CreateContents(CMC_Weapon_RocketLauncher);
+	weapon->DoAmmo(CMC_Ammo_Missiles, 1);
+	
+	var aim_x = victim->GetX() - killer->GetX();
+	Test_WeaponSingleCall("UseAlt", weapon, 1, killer, aim_x, 0);
+	Test_WeaponSingleCall("Use", weapon, 50, killer, aim_x, 0);
+}
+
+global func Test5_Log() { return "K fires guided missile at V, with tracer from F"; }
+global func Test5_Setup(object victim, object killer, object fake_killer)
+{
+	// Victim must be hostile, so that tracer sticks
+	SetPlayersHostile(player_victim, player_killer);
+	SetPlayersHostile(player_victim, player_killer_fake);
+
+	// Get in position!
+	victim->SetPosition(480, 150);
+	victim->DoEnergy(85 - victim->GetEnergy());
+	
+	fake_killer->SetPosition(280, 150);
+	fake_killer->DoEnergy(85 - victim->GetEnergy());
+
+	// Create launcher and tracer
+	var weapon = killer->CreateContents(CMC_Weapon_RocketLauncher);
+	weapon->DoAmmo(CMC_Ammo_Missiles, 1);
+
+	var tracer = fake_killer->CreateContents(CMC_Weapon_Pistol);
+	tracer->DoAmmo(CMC_Ammo_Bullets, 1);
+	tracer->SetFiremode(1, true);
+	
+	// Let fake killer fire a tracer at the victim
+	var f_aim_x = victim->GetX() - fake_killer->GetX();
+	Test_WeaponSingleCall("Use", tracer, 10, fake_killer, f_aim_x, 0);
+	
+	// Let killer fire the missile into the air, than do an uplink to the tracer
+	var k_aim_x = 100;
+	var k_aim_y = -50;
+	
+	Test_WeaponSingleCall("UseAlt", weapon, 1, killer, k_aim_x, k_aim_y); // Start aiming
+	Test_WeaponSingleCall("Use", weapon, 50, killer, k_aim_x, k_aim_y);   // Fire high
+	Test_WeaponSingleCall("Use", weapon, 75, killer, k_aim_x, k_aim_y);   // Confirm uplink
 }

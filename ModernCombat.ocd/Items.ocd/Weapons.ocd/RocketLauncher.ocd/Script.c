@@ -121,11 +121,35 @@ func FiremodeMissiles_TechniqueUnguided()
 	return mode;
 }
 
+/* --- Missile control --- */
+
+// Called by the shooter library in ControlUseStart
+func OnPressUse(object user, int x, int y)
+{
+	// Does nothing while missile is there
+	if (this.RocketLauncher_Missile)
+	{
+		if (this.RocketLauncher_Missile->PossibleTracerLink())
+		{
+			this.RocketLauncher_Missile->ConfirmTracerLink();
+		}
+		return true;
+	}
+	
+	return inherited(user, x, y, ...);
+}
+
 /* --- Optical aiming --- */
 
 // Will happen always at the moment, will be restricted to optical aiming firemode
 func AimOptical(object user, int x, int y)
 {
+	// No optical aiming while linked to a tracer
+	if (this.RocketLauncher_Missile && this.RocketLauncher_Missile->HasTracerLink())
+	{
+		return AimOpticalReset();
+	}
+
 	var precision = 1000;
 
 	// Start in global coordinates	

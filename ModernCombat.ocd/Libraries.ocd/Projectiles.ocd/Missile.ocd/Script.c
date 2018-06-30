@@ -345,6 +345,16 @@ func ConfirmTracerLink() // Interface for users to confirm the currently selecte
 	}
 }
 
+func PossibleTracerLink()
+{
+	return this.Missile_TracerControl && !this.Missile_TracerLinked;
+}
+
+func HasTracerLink()
+{
+	return this.Missile_TracerControl && this.Missile_TracerLinked;
+}
+
 func FollowTarget(object target)
 {
 	GuideTo(target->GetX(), target->GetY());
@@ -387,7 +397,7 @@ func LaserUpdate(object target)
 	if (!this.Missile_TracerLaser)
 	{
 		this.Missile_TracerLaser = CreateObject(LaserEffect, 0, 0, GetController());
-		this.Missile_TracerLaser.Visibility = VIS_Owner;
+		this.Missile_TracerLaser.Visibility = VIS_Owner | VIS_Editor;
 		this.Missile_TracerLaser
 			 ->SetWidth(2)
 			 ->Color(SetRGBaByV(GetPlayerColor(GetController())))
