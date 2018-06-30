@@ -37,9 +37,9 @@ func PlaySoundBeep()
 	Sound("Items::Grenades::SensorBall::Beep");
 }
 
-func PlaySoundExplosion()
+func PlaySoundDetonation()
 {
-	Sound("Items::Grenades::SensorBall::StartScan");
+	Sound("Items::Grenades::SensorBall::Fused");
 	Sound("Items::Grenades::SensorBall::Scan", {volume = 50, loop_count = +1});
 }
 
