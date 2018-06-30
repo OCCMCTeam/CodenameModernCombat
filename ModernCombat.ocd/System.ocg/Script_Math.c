@@ -85,3 +85,15 @@ global func ProjectileDeviationCmc(int amount)
 {
 	return amount * 50;
 }
+
+
+// Sets the 'value' value of the color. 
+// @par rgba The color
+// @par v The 'value' value. 
+global func SetRGBaByV(int rgba, int v)
+{
+	v = v ?? 255;
+	var color = SplitRGBaValue(rgba);
+	var max = Max([color.R, color.G, color.B]);
+	return RGBa(color.R * v / max, color.G * v / max, color.B * v / max, color.A);
+}

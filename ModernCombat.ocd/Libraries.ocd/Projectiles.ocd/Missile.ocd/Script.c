@@ -22,6 +22,14 @@ local Missile_TracerControl = nil;  // The last detected tracer effect
 local Missile_TracerLinked = false; // Are we linked to that tracer?
 local Missile_TracerLaser = nil;    // Visualization which target is being approaced
 
+/* --- Engine callbacks --- */
+
+func Destruction()
+{
+	LaserReset();
+	return _inherited(...);
+}
+
 /* --- Callbacks from projectile --- */
 
 public func LaunchAsProjectile(int angle, int precision)
@@ -40,7 +48,6 @@ func OnLaunch()
 	SetLightRange(70);
 	SetColor(GetPlayerColor(GetController()));
 }
-
 
 /* --- Sounds --- */
 
@@ -298,6 +305,7 @@ func ConnectToTracer()
 {
 	if (!IsGuidable())
 	{
+		LaserReset();
 		return;
 	}
 	
@@ -324,6 +332,7 @@ func ConnectToTracer()
 		if (tracer)
 		{
 			this.Missile_TracerControl = tracer;
+			LaserUpdate(tracer.Target);
 		}
 	}
 }
@@ -366,4 +375,36 @@ func HasLineOfSight(object target)
 	return target
        && (Distance(GetX(), GetY(), target->GetX(), target->GetY()) <= this.Missile_TracerRadius)
 	   &&  PathFree(GetX(), GetY(), target->GetX(), target->GetY());
+}
+
+func LaserUpdate(object target)
+{
+	if (!target)
+	{
+		return LaserReset();
+	}
+	
+	if (!this.Missile_TracerLaser)
+	{
+		this.Missile_TracerLaser = CreateObject(LaserEffect, 0, 0, GetController());
+		this.Missile_TracerLaser.Visibility = VIS_Owner;
+		this.Missile_TracerLaser
+			 ->SetWidth(2)
+			 ->Color(SetRGBaByV(GetPlayerColor(GetController())))
+			 ->Activate();
+	}
+
+	if (this.Missile_TracerLaser)
+	{
+		this.Missile_TracerLaser->SetPosition(GetX(), GetX());
+		this.Missile_TracerLaser->Line(GetX(), GetY(), target->GetX(), target->GetY())->Update();
+	}
+}
+
+func LaserReset()
+{
+	if (this.Missile_TracerLaser)
+	{
+		this.Missile_TracerLaser->RemoveObject();
+	}
 }
