@@ -180,6 +180,12 @@ func IsGuidable()
 }
 
 
+func SetGuided(bool guided)
+{
+	this.Missile_Guided = guided;
+}
+
+
 func ControlSpeed()
 {
 	if (GetAction() == "Travel")
@@ -309,6 +315,12 @@ func ConnectToTracer()
 		return;
 	}
 	
+	// Remove laser if there is an uplink
+	if (this.Missile_TracerLinked)
+	{
+		LaserReset();
+	}
+	
 	// Found a tracer already?
 	if (this.Missile_TracerControl)
 	{
@@ -406,7 +418,7 @@ func LaserUpdate(object target)
 
 	if (this.Missile_TracerLaser)
 	{
-		this.Missile_TracerLaser->SetPosition(GetX(), GetX());
+		this.Missile_TracerLaser->SetPosition(GetX(), GetY());
 		this.Missile_TracerLaser->Line(GetX(), GetY(), target->GetX(), target->GetY())->Update();
 	}
 }

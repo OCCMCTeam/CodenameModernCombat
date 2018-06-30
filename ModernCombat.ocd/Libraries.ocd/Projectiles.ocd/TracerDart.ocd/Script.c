@@ -263,7 +263,7 @@ local TracerDartTimer = new Effect
 func HasTracer(object target, int player)
 {
 	var tracer;
-	for (var i = 0; tracer = GetEffect("TracerDart", target, i); ++i)
+	for (var i = 0; tracer = GetEffect("TracerDartTimer", target, i); ++i)
 	{
 		// Regardless of owner?
 		if (player == nil)
@@ -271,6 +271,7 @@ func HasTracer(object target, int player)
 			return tracer;
 		}
 		// Only for allies
+		Log("   Found tracer for %d / %d / Hostile = %v", player, tracer.By_Player, Hostile(player, tracer.By_Player));
 		if (!Hostile(player, tracer.By_Player))
 		{
 			return tracer;
@@ -282,7 +283,7 @@ func HasTracer(object target, int player)
 func RemoveTracers(object target)
 {
 	var tracer;
-	for (var i = 0; tracer = GetEffect("TracerDart", target, i); ++i)
+	for (var i = 0; tracer = GetEffect("TracerDartTimer", target, i); ++i)
 	{
 		RemoveEffect(nil, target, tracer);
 	}

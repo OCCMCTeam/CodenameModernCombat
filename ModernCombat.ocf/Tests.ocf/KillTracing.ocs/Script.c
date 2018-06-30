@@ -320,7 +320,7 @@ global func Test5_Setup(object victim, object killer, object fake_killer)
 	victim->SetPosition(480, 150);
 	victim->DoEnergy(85 - victim->GetEnergy());
 	
-	fake_killer->SetPosition(280, 150);
+	fake_killer->SetPosition(180, 150);
 	fake_killer->DoEnergy(85 - victim->GetEnergy());
 
 	// Create launcher and tracer
@@ -340,6 +340,10 @@ global func Test5_Setup(object victim, object killer, object fake_killer)
 	var k_aim_y = -50;
 	
 	Test_WeaponSingleCall("UseAlt", weapon, 1, killer, k_aim_x, k_aim_y); // Start aiming
-	Test_WeaponSingleCall("Use", weapon, 50, killer, k_aim_x, k_aim_y);   // Fire high
-	Test_WeaponSingleCall("Use", weapon, 75, killer, k_aim_x, k_aim_y);   // Confirm uplink
+	Test_WeaponSingleCall("Use", weapon, 20, killer, k_aim_x, k_aim_y);   // Fire high
+	Test_WeaponSingleCall("Use", weapon, 55, killer, k_aim_x, k_aim_y);   // Confirm uplink
+	
+	// Let the victim run to the left a little
+	ScheduleCall(victim, victim.SetComDir, 60, 1, COMD_Left); 
+	
 }

@@ -251,6 +251,7 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 	if (CanFiremodeGuide(firemode))
 	{
 		RocketLauncher_Missile = projectile;
+		RocketLauncher_Missile->SetGuided(true);
 	}
 }
 
