@@ -23,22 +23,44 @@ func UpdateGraphics(int distance)
 
 func UpdateCursorBar(int angle, spread, int overlay)
 {
+	// FIXME: Has to take the firearm muzzle position into account - this could replace the bottom margin, by the way
+	// Currently you will see that it goes to the center of the clonk, but the spread is actually from the muzzle
+
 	var full_size = 1000;
+	var half_size = 500;
 	var precision = 1000;
 	
+	var min_length = 30;    // Minimal length for the bar. If the cursor gets nearer, the bar fades out
+	var max_length = 100;   // Maximal length for the bar.
 	
+	var margin_top = 10;    // Margin from the top of the cone graphics to the crosshair
+	var margin_bottom = 10; // Margin from the bottom of the cone graphics to the user
+	
+	// Determine offset position
+	var cursor_top    = Max(Cursor_Distance - margin_top, min_length);
+	var cursor_bottom = Max(margin_bottom, cursor_top - max_length);
+	var cursor_length = cursor_top - cursor_bottom;
+	var cursor_center = cursor_top + cursor_bottom;
+
+	// Determine parameters for transformation
+	var relative_length = full_size * cursor_length / GetDefHeight();
 	var sin = Sin(angle + spread, full_size, precision);
 	var cos = Cos(angle + spread, full_size, precision);
+
+	var dist_side = Sin(spread, cursor_center * half_size, precision);
+	var xoff_side = Cos(angle, dist_side, precision);
+	var yoff_side = Sin(angle, dist_side, precision);
+	var xoff_center = +Sin(angle, cursor_center * half_size, precision) - Sin(angle, Cursor_Distance * full_size, precision);
+	var yoff_center = -Cos(angle, cursor_center * half_size, precision) + Cos(angle, Cursor_Distance * full_size, precision);
 	
-	var dist = Sin(spread, Cursor_Distance * full_size, precision);
-	var xoff = Cos(angle, dist, precision);
-	var yoff = Sin(angle, dist, precision);
-	
-	
+	// Draw it!
 	SetObjDrawTransform
 	(
-		+cos, -sin, xoff,
-        +sin, +cos, yoff,
+		+cos, -sin * relative_length / full_size, xoff_center + xoff_side,
+        +sin, +cos * relative_length / full_size, yoff_center + yoff_side,
         overlay
 	);
+	
+	// Update alpha if the cone is too near.
+	SetClrModulation(RGBa(255, 255, 255, BoundBy(Cursor_Distance * 128 / min_length, 0, 255)), overlay);
 }
