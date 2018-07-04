@@ -42,6 +42,9 @@ local prone_aim = false;
 // Transition from crawling to prone aim is done, ready to fire
 local is_in_prone_aim = false;
 
+// Menu for firemode selection
+local cmc_firemode_menu = nil;
+
 /* --- Left click controls --- */
 
 // Called by the shooter library in ControlUseStart
@@ -677,11 +680,18 @@ public func GetGuiItemStatusProperties(object user)
 			// This should display a colored "fire mode" - "fire technique"
 			// In the shooter library the CMC fire technique is named firemode
 			// whereas the CMC fire mode is actually the ammo type that the weapon uses
-			status->SetObjectConfiguration(Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, firemode->GetAmmoName() ?? ammo_type->GetName(), firemode->GetName()));
+			status->SetObjectConfiguration(GuiGetFiremodeString(firemode));
 	}
 
 	return status;
 }
+
+func GuiGetFiremodeString(proplist firemode, id ammo_type)
+{
+	ammo_type = ammo_type ?? firemode->GetAmmoID();
+	return Format("<c %x>%s</c> - %s", GUI_CMC_Text_Color_Highlight, firemode->GetAmmoName() ?? ammo_type->GetName(), firemode->GetName());
+}
+
 
 /**
  * Tells a possible container that the firearm was
@@ -797,4 +807,104 @@ public func GetAimTarget()
 public func IsAutoFiring()
 {
 	return GetFiremode()->GetMode() == WEAPON_FM_Auto;
+}
+
+/* --- Firemode selection --- */
+
+public func ControlUseItemConfig(object user, int x, int y)
+{
+	OpenMenuFiremodeSelection(user);
+	return true;
+}
+
+
+func ControlMenu(object user, int control, int x, int y, int strength, bool repeat, int status)
+{
+	if (status == CONS_Down && (control == CON_GUIClick1 || control == CON_GUIClick2))
+	{
+		CloseMenuFiremodeSelection();
+	}
+}
+
+
+// Opens the 
+public func OpenMenuFiremodeSelection(object user)
+{
+	// Close existing menu
+	CloseMenuFiremodeSelection();
+	
+	// If another menu is already open cancel the action.
+	if (user->~GetMenu())
+	{
+		return;
+	}
+
+	var main_menu = new CMC_GUI_SelectionListMenu {};
+	main_menu->Assemble()
+	         ->AlignCenterH();
+	
+	// Fill with contents
+	var available_modes = GetAvailableFiremodes();
+	if (GetLength(available_modes) == 0)
+	{
+		FatalError("CMC Firearm Library: No firemodes available...");
+	}
+	else
+	{
+		var list = main_menu->GetList();
+		
+		var last_ammo_type = nil;
+		for (var firemode in available_modes) 
+		{
+			// Separate ammo types by an empty line
+			var current_ammo_type = firemode->GetAmmoID();
+			if (last_ammo_type && last_ammo_type != current_ammo_type)
+			{
+				list->AddItem(nil, "", nil, this, this.DoMenuFiremodeNothing);
+			}
+			last_ammo_type = current_ammo_type;
+		
+			// Text and description
+			var call_on_click = this.DoMenuFiremodeSelection;
+			var name = GuiGetFiremodeString(firemode);
+			var index = firemode->GetIndex();
+			list->AddItem(nil, Format("%d. %s", index + 1, name), nil, this, call_on_click, {Target = user, Index = index});
+		}
+		main_menu->AdjustHeightToEntries()
+	             ->AlignCenterV()
+	             ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
+		         ->Open(user->GetOwner());
+		cmc_firemode_menu = {};
+		cmc_firemode_menu.user = user;
+		cmc_firemode_menu.menu = main_menu;
+		cmc_firemode_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
+	}
+}
+
+public func CloseMenuFiremodeSelection()
+{
+	if (cmc_firemode_menu)
+	{
+		cmc_firemode_menu.menu->Close();
+		if (cmc_firemode_menu.user) cmc_firemode_menu.user->MenuClosed();
+	}
+	cmc_firemode_menu = nil;
+}
+
+public func DoMenuFiremodeNothing(){}
+
+public func DoMenuFiremodeSelection(proplist parameters)
+{
+	// Close the menu first
+	CloseMenuFiremodeSelection();
+
+	AssertNotNil(parameters);
+	
+	var user = parameters.Target;
+	var index = parameters.Index;
+
+	AssertNotNil(user);
+	AssertNotNil(index);
+	
+	ScheduleSetFiremode(index);
 }

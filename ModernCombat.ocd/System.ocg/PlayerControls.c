@@ -9,6 +9,12 @@ global func PlayerControl(int player, int control, id spec_id, int x, int y, int
 	{
 		control = CON_UseAlt;
 	}
+	
+	// Map the CON_QuickSwitch key to CON_CMC_ItemConfig
+	if (control == CON_QuickSwitch)
+	{
+		control = CON_CMC_ItemConfig;
+	}
 
 	return _inherited(player, control, spec_id, x, y, strength, repeat, status);
 }
@@ -19,7 +25,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, int status, b
 {
 	if (!this) return false;
 
-	// movement is only possible when not contained
+	// Movement is only possible when not contained
 	if (Contained()) return false;
 
 	var proc = GetProcedure();

@@ -75,7 +75,6 @@ func FiremodeGrenades()
 
 	// Projectile
 	mode->SetProjectileSpeed(120);
-	mode->SetProjectileRange(10000); // FIXME, not necessary once there are grenades
 	mode->SetProjectileDistance(12);
 	mode->SetYOffset(-6);
 
@@ -153,9 +152,6 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 	{
 		SetPlrView(controller, projectile);
 	}
-	
-	// TODO: Can be removed again later
-	ScheduleCall(projectile, projectile.SetAction, 1, 1, "TravelBallistic");
 	
 }
 

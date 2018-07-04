@@ -18,6 +18,9 @@
 	Identifier=CMC_DrawGrenade
 	
 	[ControlDef]
+	Identifier=CMC_ItemConfig
+	
+	[ControlDef]
 	Identifier=CMC_Reload
 	
 

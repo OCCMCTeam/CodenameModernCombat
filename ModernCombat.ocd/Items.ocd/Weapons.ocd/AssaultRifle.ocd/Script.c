@@ -19,6 +19,9 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueBurst());
 	AddFiremode(FiremodeBullets_TechniqueSingle());
+	AddFiremode(FiremodeGrenades_Explosive());
+	AddFiremode(FiremodeGrenades_Cluster());
+	AddFiremode(FiremodeGrenades_Smoke());
 }
 
 func Definition(id weapon)
@@ -108,7 +111,6 @@ func FiremodeBullets_TechniqueSingle()
 	return mode;
 }
 
-
 func FiremodeBullets_TechniqueBurst()
 {
 	var mode = FiremodeBullets();
@@ -117,6 +119,82 @@ func FiremodeBullets_TechniqueBurst()
 	mode->SetName("$Burst$");
 	mode->SetMode(WEAPON_FM_Burst);
 	mode->SetBurstAmount(3);
+	return mode;
+}
+
+
+
+func FiremodeGrenades()
+{
+	var mode = new Library_Firearm_Firemode {};
+
+	// Reloading
+	mode->SetAmmoID(CMC_Ammo_Grenades);
+	mode.ammo_load = 1;
+	mode->SetRecoveryDelay(1);
+	mode->SetCooldownDelay(80);
+	mode->SetReloadDelay(80);
+	mode->SetDamage(20);
+
+	// Projectile
+	mode->SetProjectileSpeed(90);
+	mode->SetProjectileDistance(12);
+	mode->SetYOffset(-6);
+
+	// Ironsight aiming
+	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
+	mode->SetIronsightDelay(15);
+	mode->SetIronsightAimingAnimation("MusketAimArms");
+	mode->SetForwardWalkingSpeed(95);
+	mode->SetBackwardWalkingSpeed(65);
+	
+	// Spread
+	mode->SetSpreadPerShot(ProjectileDeviationCmc(200));
+	mode->SetSpreadBySelection(ProjectileDeviationCmc(100));
+	mode->SetSpreadLimit(ProjectileDeviationCmc(400));
+
+	// Crosshair, CMC Custom
+	mode->SetAimCursor([CMC_Cursor_Cone]);
+
+	// Effects, CMC custom
+	mode->SetFireSound("Items::Weapons::AssaultRifle::FireLauncher", 2);
+	return mode;
+}
+
+func FiremodeGrenades_Explosive()
+{
+	var mode = FiremodeGrenades();
+	
+	// Generic info
+	mode->SetName("$Explosive$");
+	
+	// Grenade
+	mode->SetProjectileID(CMC_Projectile_ExplosiveShell);
+	return mode;
+}
+
+func FiremodeGrenades_Cluster()
+{
+	var mode = FiremodeGrenades();
+	
+	// Generic info
+	mode->SetName("$Cluster$");
+	
+	// Grenade
+	mode->SetProjectileID(CMC_Projectile_FragmentationShell);
+	return mode;
+}
+
+func FiremodeGrenades_Smoke()
+{
+	var mode = FiremodeGrenades();
+	
+	// Generic info
+	mode->SetName("$Smoke$");
+	
+	// Grenade
+	mode->SetProjectileID(CMC_Projectile_SmokeShell);
+	mode->SetDamage(mode->GetDamage() + 10);
 	return mode;
 }
 
@@ -130,8 +208,19 @@ func FireSound(object user, proplist firemode)
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
-	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
-	projectile->HitScan();
+	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
+	{
+		projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
+		projectile->HitScan();
+	}
+	else
+	{
+		var controller = user->GetController();
+		if (GetType(controller) == C4PT_User)
+		{
+			SetPlrView(controller, projectile);
+		}
+	}
 }
 
 func FireEffect(object user, int angle, proplist firemode)
@@ -140,13 +229,33 @@ func FireEffect(object user, int angle, proplist firemode)
 	var x = +Sin(angle, firemode->GetProjectileDistance());
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
-	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
-	
-	// Casing
-	x = +Sin(angle, firemode->GetProjectileDistance() / 3);
-	y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
-	var xdir = user->GetCalcDir() * 14 * RandomX(-2, -1);
-	var ydir = RandomX(-11, -13);
+	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
+	{
+		EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+		
+		// Casing
+		x = +Sin(angle, firemode->GetProjectileDistance() / 3);
+		y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
+		var xdir = user->GetCalcDir() * 14 * RandomX(-2, -1);
+		var ydir = RandomX(-11, -13);
 
-	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+		CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+	}
+	else
+	{
+		var user_xdir = user->GetXDir();
+		var user_ydir = user->GetYDir();
+		
+		CreateParticle("Smoke2", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(user_xdir, user_xdir + xdir), PV_Random(user_ydir, user_ydir + ydir), PV_Random(15, 25),
+		{
+			Prototype = Particles_ThrustColored(200, 200, 200),
+			Size = PV_Random(5, 10),
+		}, 10);
+	
+		CreateParticle("Thrust", x, y, user_xdir, user_ydir, PV_Random(20, 30),
+		{
+			Prototype = Particles_ThrustColored(255, 200, 200),
+			Size = 8,
+		});
+	}
 }

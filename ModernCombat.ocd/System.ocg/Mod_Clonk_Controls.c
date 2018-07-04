@@ -38,6 +38,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		}
 	}
 	
+	// Handle item configuration
+	// This sort of blends in with the use calls,
+	// so that it becomes clear that it cannot be
+	// done while RejectUse() returns true.
+	if (ctrl == CON_CMC_ItemConfig && status == CONS_Up)
+	{
+		var contents = this->GetHandItem(0);
+		if (contents
+		&& !contents->~RejectUse(this)
+		&&  contents->~ControlUseItemConfig(this, x, y))
+		{
+			return true;
+		}
+	}
+	
 	// Handle aiming?
 	if (ctrl == CON_CMC_AimingCursor)
 	{
