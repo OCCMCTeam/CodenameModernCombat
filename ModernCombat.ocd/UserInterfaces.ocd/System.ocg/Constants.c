@@ -115,7 +115,7 @@ static const GUI_CMC_Element_ListIcon_Size = 35;
  
  Given in pixel-scaled-em. 
  */
-static const GUI_CMC_Element_SelectionList_Width = 140;
+static const GUI_CMC_Element_SelectionList_Width = 250;
 
 /*
  Horizontal margin of selection list menu entry elements.
