@@ -40,17 +40,8 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 		         ->AddTo(this, nil, "item_name");
 
 		// Button hint:
-		var button_hint = new GUI_Element
-		{
-			actual_button =
-			{
-				Margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)->ToString(),
-				Symbol = CMC_Icon_Button,
-				GraphicsName = Format("%d", slot_number),
-			}
-		};
-		button_hint->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
-		           ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
+		var button_hint = new CMC_GUI_ButtonHint{};
+		button_hint->Assemble(nil, Format("%d", slot_number))
 		           ->AlignRight()
 		           ->AddTo(this);
 		return this;
