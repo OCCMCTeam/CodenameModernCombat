@@ -93,7 +93,7 @@ func ControlUse(object user, int x, int y)
 // Opens the 
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	main_menu->SetHeaderCaption(Format("<c %x>Munition entpacken</c>", GUI_CMC_Text_Color_HeaderCaption)); // TODO: Localize and/or remove
+	main_menu->SetHeaderCaption("$TakeAmmo$");
 
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
@@ -123,7 +123,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				call_on_click = this.CreateNothing;
 			}
 			
-			var name = Format("<c %x>%d %s</c>", text_color, ammo_info.ammo_count, ammo_type->GetName());
+			var name = Format("<c %x>%s (%dx)</c>", text_color, ammo_type->GetName(), ammo_info.ammo_count);
 			var menu_item = ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
 			ammo_list->AddButtonPrompt(menu_item);
 		}

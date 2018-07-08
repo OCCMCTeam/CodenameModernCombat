@@ -52,7 +52,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 	
 	SetHeaderCaption = func (string text)
 	{
-		this.header.Text = text;
+		this.header.Text = Format("<c %x>%s</c>", GUI_CMC_Text_Color_HeaderCaption, text);
 		this.header->Update();
 		return this;
 	},

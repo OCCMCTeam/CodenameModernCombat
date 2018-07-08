@@ -822,7 +822,7 @@ public func ControlUseItemConfig(object user, int x, int y)
 // Opens the 
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	main_menu->SetHeaderCaption(Format("<c %x>$ConfigureFirearm$</c>", GUI_CMC_Text_Color_HeaderCaption));
+	main_menu->SetHeaderCaption("$ConfigureFirearm$");
 	
 	// Fill with contents
 	var available_modes = GetAvailableFiremodes();
