@@ -66,9 +66,16 @@ public func GetFireSound()
 */
 public func GetCurrentFireSound()
 {
-	// Cycle through the sounds with a zero-based index
-	this.sound_fire_counter = (this.sound_fire_counter + 1) % this.sound_fire_max;
-	return Format("%s%d", GetFireSound(), this.sound_fire_counter + 1);
+	if (this.sound_fire_max)
+	{
+		// Cycle through the sounds with a zero-based index
+		this.sound_fire_counter = (this.sound_fire_counter + 1) % this.sound_fire_max;
+		return Format("%s%d", GetFireSound(), this.sound_fire_counter + 1);
+	}
+	else
+	{
+		return GetFireSound();
+	}
 }
 
 /**
@@ -175,14 +182,16 @@ public func SetHipFireAimingAnimation(string name)
  Set the fire sound for this fire mode.
  
  @par name The sound name. Must not contain numbers.
- @par count The amount of sounds of this type. Defaults to 1;
+ @par count The amount of sounds of this type.
+            A value of 'nil' means that there is no sound playlist,
+            but a random sound;
 */
 public func SetFireSound(string name, int count)
 {
 	AssertNotNil(name);
 
 	this.sound_fire_counter = 0;
-	this.sound_fire_max = count ?? 1;
+	this.sound_fire_max = count;
 	this.sound_fire = name;
 	return this;
 }

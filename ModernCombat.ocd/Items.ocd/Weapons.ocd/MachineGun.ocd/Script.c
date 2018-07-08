@@ -95,7 +95,7 @@ func FiremodeBullets()
 	mode->SetAimCursor([CMC_Cursor_Cone]);
 
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::AssaultRifle::Fire", 3);
+	mode->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
 	return mode;
 }
 

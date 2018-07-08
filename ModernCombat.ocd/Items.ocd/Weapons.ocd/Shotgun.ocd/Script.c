@@ -94,7 +94,7 @@ func FiremodeBullets()
 	mode->SetAimCursor([CMC_Cursor_Cone]);
 
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::Shotgun::Fire", 2);
+	mode->SetFireSound("Items::Weapons::Shotgun::Fire?");
 
 	// Ammo name override, CMC custom
 	mode->SetAmmoName("$Pellets$");
