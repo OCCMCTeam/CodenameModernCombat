@@ -97,7 +97,7 @@ func FiremodeMissiles()
 	mode->SetAimCursor([CMC_Cursor_Cone]);
 
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
+	mode->SetFireSound("Items::Weapons::RocketLauncher::Fire?");
 	mode->SetHipShootingDisabled(true);
 	return mode;
 }
