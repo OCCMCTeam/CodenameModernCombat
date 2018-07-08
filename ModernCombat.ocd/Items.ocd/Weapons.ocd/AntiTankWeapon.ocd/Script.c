@@ -121,11 +121,6 @@ func FiremodeMissiles_TechniqueUnguided()
 
 /* --- Effects --- */
 
-func FireSound(object user, proplist firemode)
-{
-	Sound(firemode->GetCurrentFireSound(), {multiple = true});
-}
-
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	// Nothing

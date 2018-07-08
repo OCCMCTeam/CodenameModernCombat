@@ -201,11 +201,6 @@ func FiremodeGrenades_Smoke()
 
 /* --- Effects --- */
 
-func FireSound(object user, proplist firemode)
-{
-	Sound(firemode->GetCurrentFireSound(), {multiple = true});
-}
-
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)

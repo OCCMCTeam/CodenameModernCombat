@@ -872,3 +872,10 @@ public func DoMenuFiremodeSelection(proplist parameters)
 	
 	ScheduleSetFiremode(index);
 }
+
+/* --- Effects --- */
+
+func FireSound(object user, proplist firemode)
+{
+	Sound(firemode->GetCurrentFireSound(), {multiple = true});
+}

@@ -145,11 +145,6 @@ func FiremodeBullets_TechniqueSingle()
 
 /* --- Effects --- */
 
-func FireSound(object user, proplist firemode)
-{
-	Sound(firemode->GetCurrentFireSound(), {multiple = true});
-}
-
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/

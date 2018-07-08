@@ -155,11 +155,6 @@ func FiremodeBullets_TechniqueTracerDart()
 
 /* --- Effects --- */
 
-func FireSound(object user, proplist firemode)
-{
-	Sound(firemode->GetCurrentFireSound(), {multiple = true});
-}
-
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	if (!firemode.IsTracer)

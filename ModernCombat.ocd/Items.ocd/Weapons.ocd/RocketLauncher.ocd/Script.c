@@ -241,11 +241,6 @@ func CanFiremodeGuide(proplist firemode)
 
 /* --- Effects --- */
 
-func FireSound(object user, proplist firemode)
-{
-	Sound(firemode->GetCurrentFireSound(), {multiple = true});
-}
-
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	if (CanFiremodeGuide(firemode))
