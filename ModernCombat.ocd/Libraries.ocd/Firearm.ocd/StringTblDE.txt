@@ -1,0 +1,1 @@
+ConfigureFirearm=Waffe konfigurieren

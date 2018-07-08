@@ -841,7 +841,8 @@ public func OpenMenuFiremodeSelection(object user)
 
 	var main_menu = new CMC_GUI_SelectionListMenu {};
 	main_menu->Assemble()
-	         ->AlignCenterH();
+	         ->AlignCenterH()
+	         ->SetHeaderCaption(Format("<c %x>$ConfigureFirearm$</c>", GUI_CMC_Text_Color_HeaderCaption));
 	
 	// Fill with contents
 	var available_modes = GetAvailableFiremodes();
@@ -860,7 +861,8 @@ public func OpenMenuFiremodeSelection(object user)
 			var current_ammo_type = firemode->GetAmmoID();
 			if (last_ammo_type && last_ammo_type != current_ammo_type)
 			{
-				list->AddItem(nil, "", nil, this, this.DoMenuFiremodeNothing);
+			// FIXME: Replace with adding a separator then
+			//	list->AddItem(nil, "", nil, this, this.DoMenuFiremodeNothing);
 			}
 			last_ammo_type = current_ammo_type;
 		
@@ -868,7 +870,8 @@ public func OpenMenuFiremodeSelection(object user)
 			var call_on_click = this.DoMenuFiremodeSelection;
 			var name = GuiGetFiremodeString(firemode);
 			var index = firemode->GetIndex();
-			list->AddItem(nil, Format("%d. %s", index + 1, name), nil, this, call_on_click, {Target = user, Index = index});
+			var menu_item = list->AddItem(current_ammo_type, name, nil, this, call_on_click, {Target = user, Index = index});			
+			list->AddButtonPrompt(menu_item);
 		}
 		main_menu->AdjustHeightToEntries()
 	             ->AlignCenterV()
