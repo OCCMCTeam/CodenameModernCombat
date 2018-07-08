@@ -139,3 +139,6 @@ static const GUI_CMC_Text_Color_Highlight = 0xffffcc00; // Gold
 
 static const GUI_CMC_Text_Color_Inactive = 0xff777777; // Grey
 
+static const GUI_CMC_Text_Color_HeaderCaption = 0xff999999; // Grey
+
+

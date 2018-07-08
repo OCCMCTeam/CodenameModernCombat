@@ -28,7 +28,7 @@ static const CMC_GUI_List = new GUI_List
 				
 				Text = text,
 				Style = GUI_TextVCenter,
-			}
+			},
 		};
 		return custom_entry;
 	},
