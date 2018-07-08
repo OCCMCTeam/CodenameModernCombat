@@ -115,4 +115,32 @@ static const CMC_GUI_SelectionList = new GUI_List
 			button_hint->GetButtonIcon()->AlignCenterV();
 		}
 	},
+	
+	AddItemSeparator = func()
+	{
+		// in case of a new entry, append to array
+		this.entries = this.entries ?? [];
+		var ID = GetLength(this.entries) + 1;
+		
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+		var custom_entry = new GUI_Element
+		{
+				Left = margin_h->ToString(),
+				Right = GuiDimensionCmc(1000)->Subtract(margin_h)->ToString(),
+				Bottom = GuiDimensionCmc(nil, 3)->ToString(),
+				BackgroundColor = 0x81ffffff,
+		};
+		
+		// Always add some properties later. This is done so that real custom this.entries do not need to care about target etc.
+		custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.
+		custom_entry.Target = this; // Same as above.
+
+		// These properties can in theory be set/customized by the user without breaking functionality. But they are (probably) required anway.
+		custom_entry.Priority = ID;
+		
+		// Save entry to list and prepare call information.
+		this.entries[ID - 1] = [];
+		this[Format("_menuChild%d", ID)] = custom_entry;
+		return custom_entry;
+	},
 };

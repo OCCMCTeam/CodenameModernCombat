@@ -841,8 +841,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var current_ammo_type = firemode->GetAmmoID();
 			if (last_ammo_type && last_ammo_type != current_ammo_type)
 			{
-			// FIXME: Replace with adding a separator then
-			//	list->AddItem(nil, "", nil, this, this.DoMenuFiremodeNothing);
+				list->AddItemSeparator();
 			}
 			last_ammo_type = current_ammo_type;
 		
