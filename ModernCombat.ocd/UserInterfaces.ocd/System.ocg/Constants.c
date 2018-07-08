@@ -88,6 +88,14 @@ static const GUI_CMC_Element_Inventory_Width = 55;
  */
 static const GUI_CMC_Element_Icon_Size = 45;
 
+
+/*
+ Width/Height of button hint elements.
+ 
+ Given in pixel-scaled-em. 
+ */
+static const GUI_CMC_Element_ButtonHint_Size = 25;
+
 /*
  Width/Height of status icons in ally info.
  
@@ -107,7 +115,14 @@ static const GUI_CMC_Element_ListIcon_Size = 35;
  
  Given in pixel-scaled-em. 
  */
-static const GUI_CMC_Element_SelectionList_Width = 320;
+static const GUI_CMC_Element_SelectionList_Width = 200;
+
+/*
+ Horizontal margin of selection list menu entry elements.
+ 
+ Given in pixel-scaled-em. 
+ */
+static const GUI_CMC_Element_SelectionList_Margin_H = 70;
 
 
 /* --- Colors --- */

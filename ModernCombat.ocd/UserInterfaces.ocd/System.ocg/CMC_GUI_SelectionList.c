@@ -11,7 +11,10 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 
 	Assemble = func ()
 	{
-		SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Width));
+		SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Width         // Width for text
+		                            + GUI_CMC_Element_SelectionList_Margin_H * 2  // Outside margin left/right
+		                            + GUI_CMC_Element_ListIcon_Size               // Space for the icon, on the left
+		                            + GUI_CMC_Element_Icon_Size));                // Space for the button hint, on the right
 		
 		var header_height = GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height);
 		var header = new GUI_Element {Style = GUI_TextHCenter | GUI_TextVCenter,};
@@ -42,7 +45,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 		SetHeight(size->Scale(amount));
 		GetList()->SetHeight(size->Scale(entries))
 		         ->AlignTop(size->Scale(top))
-		         ->Update(); 
+		         ->Update();
 		
 		return this;
 	},
@@ -60,9 +63,11 @@ static const CMC_GUI_SelectionList = new GUI_List
 {
 	MakeEntryProplist = func(symbol, text)
 	{
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
 		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
-		var caption_border_right = GuiDimensionCmc(1000)->Subtract(size->Scale(3))->ToString();
-		var icon_border_right = GuiDimensionCmc(1000)->Subtract(size->Scale(2))->ToString();
+		var button_hint_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_size)->ToString();
+
 		var custom_entry = new GUI_Element
 		{
 			Bottom = size->ToString(),
@@ -75,8 +80,8 @@ static const CMC_GUI_SelectionList = new GUI_List
 			
 			icon =
 			{
-				Left = size->Scale(2)->ToString(),
-				Right = size->Scale(3)->ToString(),
+				Left = margin_h->ToString(),
+				Right = margin_h->Add(size)->ToString(),
 				Bottom = size->ToString(),
 				
 				Symbol = symbol,
@@ -84,17 +89,11 @@ static const CMC_GUI_SelectionList = new GUI_List
 			},
 			caption =
 			{
-				Left = size->Scale(3)->ToString(),
+				Left = margin_h->Add(size)->ToString(),
 				Right = caption_border_right,
 				
 				Text = text,
 				Style = GUI_TextVCenter,
-			},
-			button_prompt = 
-			{
-				Left = caption_border_right,
-				Right = icon_border_right,
-				Bottom = size->ToString(),
 			},
 		};
 		return custom_entry;
@@ -104,8 +103,16 @@ static const CMC_GUI_SelectionList = new GUI_List
 	{
 		if (1 <= custom_entry.ID && custom_entry.ID <= 10)
 		{
-			custom_entry.button_prompt.Symbol = CMC_Icon_Button;
-			custom_entry.button_prompt.GraphicsName = Format("%d", custom_entry.ID % 10);
+			var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+			var button_hint_width = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+			var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_width);
+
+			var button_hint = new CMC_GUI_ButtonHint{};
+			button_hint->Assemble(nil, Format("%d", custom_entry.ID % 10));
+			button_hint->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size));
+			button_hint->AlignLeft(caption_border_right);
+			button_hint->AddTo(custom_entry);
+			button_hint->GetButtonIcon()->AlignCenterV();
 		}
 	},
 };
