@@ -346,6 +346,7 @@ local ActMap = {
 		Wdt = 8,
 		Hgt = 20,
 		InLiquidAction = "Swim",
+		Sound = "Clonk::Movement::ProneFromWalking*",
 	}
 };
 
