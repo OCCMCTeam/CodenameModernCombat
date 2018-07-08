@@ -4,6 +4,7 @@
 
 #include Library_AmmoManager
 #include Library_CMC_Pack
+#include Library_ListSelectionMenu
 
 /* --- Engine callbacks --- */
 
@@ -76,46 +77,24 @@ func ControlUse(object user, int x, int y)
 	// User has to be ready to act
 	if (user->~HasActionProcedure())
 	{
-		user->SetComDir(COMD_Stop);
+		// No ammo and cannot refill? Destroy
+		if (RemoveEmptyAmmoBag(user))
+		{
+			return true;
+		}
 
-		OpenMenuCreateAmmoBox(user);
+		user->SetComDir(COMD_Stop);
+		OpenListSelectionMenu(user);
 	}
 	return true;
 }
 
 
-func ControlMenu(object user, int control, int x, int y, int strength, bool repeat, int status)
-{
-	if (status == CONS_Down && (control == CON_GUIClick1 || control == CON_GUIClick2))
-	{
-		CloseMenuCreateAmmoBox();
-	}
-}
-
-
 // Opens the 
-public func OpenMenuCreateAmmoBox(object user)
+public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	// Close existing menu
-	CloseMenuCreateAmmoBox();
-	
-	// If another menu is already open cancel the action.
-	if (user->~GetMenu())
-	{
-		return;
-	}
-	
-	// No ammo and cannot refill? Destroy
-	if (RemoveEmptyAmmoBag(user))
-	{
-		return;
-	}
+	main_menu->SetHeaderCaption(Format("<c %x>Munition entpacken</c>", GUI_CMC_Text_Color_HeaderCaption)); // TODO: Localize and/or remove
 
-	var main_menu = new CMC_GUI_SelectionListMenu {};
-	main_menu->Assemble()
-	         ->AlignCenterH()
-	         ->SetHeaderCaption(Format("<c %x>Munition entpacken</c>", GUI_CMC_Text_Color_HeaderCaption)); // TODO: Localize and/or remove
-	
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
 	if (GetLength(available_types) == 0)
@@ -148,25 +127,7 @@ public func OpenMenuCreateAmmoBox(object user)
 			var menu_item = ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
 			ammo_list->AddButtonPrompt(menu_item);
 		}
-		main_menu->AdjustHeightToEntries()
-	             ->AlignCenterV()
-	             ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
-		         ->Open(user->GetOwner());
-		active_menu = {};
-		active_menu.user = user;
-		active_menu.menu = main_menu;
-		active_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
 	}
-}
-
-public func CloseMenuCreateAmmoBox()
-{
-	if (active_menu)
-	{
-		active_menu.menu->Close();
-		if (active_menu.user) active_menu.user->MenuClosed();
-	}
-	active_menu = nil;
 }
 
 func CreateNothing()
@@ -177,7 +138,7 @@ func CreateNothing()
 func CreateAmmoBox(proplist parameters)
 {
 	// Close the menu first
-	CloseMenuCreateAmmoBox();
+	CloseListSelectionMenu();
 
 	AssertNotNil(parameters);
 	

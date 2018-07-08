@@ -9,6 +9,7 @@
 #include Plugin_Firearm_AmmoLogic // For having an ammo logic in general
 #include Plugin_Firearm_ReloadFromAmmoSource // For ammo transfer between weapon and Clonk
 #include Plugin_Firearm_ReloadProgressBar // Temporary include, because the weapon needs to reload and there is no proper HUD yet
+#include Library_ListSelectionMenu // Menu for weapon configuration
 
 /* --- Constants --- */
 
@@ -813,36 +814,15 @@ public func IsAutoFiring()
 
 public func ControlUseItemConfig(object user, int x, int y)
 {
-	OpenMenuFiremodeSelection(user);
+	OpenListSelectionMenu(user, "FiremodeSelection");
 	return true;
 }
 
 
-func ControlMenu(object user, int control, int x, int y, int strength, bool repeat, int status)
-{
-	if (status == CONS_Down && (control == CON_GUIClick1 || control == CON_GUIClick2))
-	{
-		CloseMenuFiremodeSelection();
-	}
-}
-
-
 // Opens the 
-public func OpenMenuFiremodeSelection(object user)
+public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	// Close existing menu
-	CloseMenuFiremodeSelection();
-	
-	// If another menu is already open cancel the action.
-	if (user->~GetMenu())
-	{
-		return;
-	}
-
-	var main_menu = new CMC_GUI_SelectionListMenu {};
-	main_menu->Assemble()
-	         ->AlignCenterH()
-	         ->SetHeaderCaption(Format("<c %x>$ConfigureFirearm$</c>", GUI_CMC_Text_Color_HeaderCaption));
+	main_menu->SetHeaderCaption(Format("<c %x>$ConfigureFirearm$</c>", GUI_CMC_Text_Color_HeaderCaption));
 	
 	// Fill with contents
 	var available_modes = GetAvailableFiremodes();
@@ -873,25 +853,7 @@ public func OpenMenuFiremodeSelection(object user)
 			var menu_item = list->AddItem(current_ammo_type, name, nil, this, call_on_click, {Target = user, Index = index});			
 			list->AddButtonPrompt(menu_item);
 		}
-		main_menu->AdjustHeightToEntries()
-	             ->AlignCenterV()
-	             ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
-		         ->Open(user->GetOwner());
-		cmc_firemode_menu = {};
-		cmc_firemode_menu.user = user;
-		cmc_firemode_menu.menu = main_menu;
-		cmc_firemode_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
 	}
-}
-
-public func CloseMenuFiremodeSelection()
-{
-	if (cmc_firemode_menu)
-	{
-		cmc_firemode_menu.menu->Close();
-		if (cmc_firemode_menu.user) cmc_firemode_menu.user->MenuClosed();
-	}
-	cmc_firemode_menu = nil;
 }
 
 public func DoMenuFiremodeNothing(){}
@@ -899,7 +861,7 @@ public func DoMenuFiremodeNothing(){}
 public func DoMenuFiremodeSelection(proplist parameters)
 {
 	// Close the menu first
-	CloseMenuFiremodeSelection();
+	CloseListSelectionMenu();
 
 	AssertNotNil(parameters);
 	
