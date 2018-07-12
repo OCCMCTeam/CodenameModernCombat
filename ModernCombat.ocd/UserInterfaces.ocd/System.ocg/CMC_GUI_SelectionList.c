@@ -59,7 +59,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 };
 
 
-static const CMC_GUI_SelectionList = new GUI_List
+static const CMC_GUI_SelectionList = new GUI_SelectionList
 {
 	MakeEntryProplist = func(symbol, text)
 	{
@@ -96,6 +96,12 @@ static const CMC_GUI_SelectionList = new GUI_List
 				Style = GUI_TextVCenter,
 			},
 		};
+		AddProperties(custom_entry,
+		{
+			SetSelected = GUI_SelectionListEntry.SetSelected,
+			IsSelected = GUI_SelectionListEntry.IsSelected,
+			IsHovered = GUI_SelectionListEntry.IsHovered,
+		});
 		return custom_entry;
 	},
 	

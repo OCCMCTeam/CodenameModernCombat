@@ -24,7 +24,7 @@ static const GUI_List = new GUI_Element
 		return this;
 	},
 
-	// can be overloaded for custom menu styles
+	// Can be overloaded for custom menu styles
 	MakeEntryProplist = func(symbol, text)
 	{
 		var custom_entry = {Bottom = "+2em", sym = {Right = "+2em", Bottom = "+2em"}, desc = {Left = "+2em"}};
@@ -36,7 +36,7 @@ static const GUI_List = new GUI_Element
 		return custom_entry;
 	},
 
-	// custom_menu_id should be passed if the menu was manually opened and not via Open()
+	// Custom_menu_id should be passed if the menu was manually opened and not via Open()
 	AddItem = func(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id)
 	{
 		custom_menu_id = custom_menu_id ?? GetRootID();
@@ -52,7 +52,7 @@ static const GUI_List = new GUI_Element
 			on_hover_stop = [on_hover_stop, GuiAction_Call(this, GetFunctionName(this.DoCallback), this.on_mouse_out_callback)];
 		}
 		
-		// in case of a new entry, append to array
+		// In case of a new entry, append to array
 		this.entries = this.entries ?? [];
 		var ID = GetLength(this.entries) + 1;
 		
@@ -84,15 +84,33 @@ static const GUI_List = new GUI_Element
 		
 		return custom_entry;
 	},
+	
+	GetItem = func (int index)
+	{
+		return this[Format("_menuChild%d", index)];
+	},
+	
+	GetItemData = func (user_ID, int custom_menu_id)
+	{
+		custom_menu_id = custom_menu_id ?? GetRootID();
+		for (var i = 0; i < GetLength(this.entries); ++i)
+		{
+			var ID = i + 1;
+			if (!this.entries[i]) continue;
+			if (this.entries[i][3] != user_ID) continue;
+			return this.entries[i];
+		}
+		return nil;
+	},
 
-	// can be used when the menu has already been opened
-	// needs to be passed the menu ID if the menu was not opened using Open()
+	// Can be used when the menu has already been opened
+	// Needs to be passed the menu ID if the menu was not opened using Open()
 	RemoveItem = func(user_ID, int custom_menu_id)
 	{
 		custom_menu_id = custom_menu_id ?? GetRootID();
 		for (var i = 0; i < GetLength(this.entries); ++i)
 		{
-			var ID = i+1;
+			var ID = i + 1;
 			if (!this.entries[i]) continue;
 			if (this.entries[i][3] != user_ID) continue;
 			GuiClose(custom_menu_id, ID, this);
@@ -106,7 +124,7 @@ static const GUI_List = new GUI_Element
 	{
 		var entry = this.entries[ID - 1];
 		target = target ?? entry[0];
-		// target removed? safety first!
+		// Target removed? safety first!
 		if (target)
 		{
 			if (target->Call(command ?? entry[1], entry[2], entry[3], player) == -1) return;
