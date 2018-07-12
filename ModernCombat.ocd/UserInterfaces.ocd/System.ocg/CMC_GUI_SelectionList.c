@@ -37,7 +37,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 	
 	AdjustHeightToEntries = func ()
 	{
-		var entries = GetLength(GetList().entries);
+		var entries = GetLength(GetList().ListEntry_Data);
 		var amount = Max(7, entries);
 		var top = (amount - entries) / 2;
 		
@@ -68,7 +68,7 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 		var button_hint_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
 		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_size)->ToString();
 
-		var custom_entry = new GUI_Element
+		var custom_entry = new GUI_SelectionListEntry
 		{
 			Bottom = size->ToString(),
 			
@@ -96,12 +96,6 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 				Style = GUI_TextVCenter,
 			},
 		};
-		AddProperties(custom_entry,
-		{
-			SetSelected = GUI_SelectionListEntry.SetSelected,
-			IsSelected = GUI_SelectionListEntry.IsSelected,
-			IsHovered = GUI_SelectionListEntry.IsHovered,
-		});
 		return custom_entry;
 	},
 	
@@ -125,8 +119,8 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 	AddItemSeparator = func()
 	{
 		// in case of a new entry, append to array
-		this.entries = this.entries ?? [];
-		var ID = GetLength(this.entries) + 1;
+		this.ListEntry_Data = this.ListEntry_Data ?? [];
+		var ID = GetLength(this.ListEntry_Data) + 1;
 		
 		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
 		var custom_entry = new GUI_Element
@@ -137,7 +131,7 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 				BackgroundColor = 0x81ffffff,
 		};
 		
-		// Always add some properties later. This is done so that real custom this.entries do not need to care about target etc.
+		// Always add some properties later. This is done so that real custom this.ListEntry_Data do not need to care about target etc.
 		custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.
 		custom_entry.Target = this; // Same as above.
 
@@ -145,7 +139,7 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 		custom_entry.Priority = ID;
 		
 		// Save entry to list and prepare call information.
-		this.entries[ID - 1] = [];
+		this.ListEntry_Data[ID - 1] = [];
 		this[Format("_menuChild%d", ID)] = custom_entry;
 		return custom_entry;
 	},

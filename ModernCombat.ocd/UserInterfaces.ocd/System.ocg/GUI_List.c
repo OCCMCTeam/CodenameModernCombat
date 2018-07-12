@@ -6,7 +6,7 @@
 
 static const GUI_List = new GUI_Element
 {
-	entries = nil, 
+	ListEntry_Data = nil, 
 	on_mouse_over_callback = nil, 
 	on_mouse_out_callback = nil,
 	
@@ -53,15 +53,15 @@ static const GUI_List = new GUI_Element
 		}
 		
 		// In case of a new entry, append to array
-		this.entries = this.entries ?? [];
-		var ID = GetLength(this.entries) + 1;
+		this.ListEntry_Data = this.ListEntry_Data ?? [];
+		var ID = GetLength(this.ListEntry_Data) + 1;
 		
 		if (!custom_entry)
 		{
 			custom_entry = this->MakeEntryProplist(symbol, text);
 		}
 		
-		// Always add some properties later. This is done so that real custom this.entries do not need to care about target etc.
+		// Always add some properties later. This is done so that real custom this.ListEntry_Data do not need to care about target etc.
 		custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.
 		custom_entry.Target = this; // Same as above.
 		
@@ -72,7 +72,7 @@ static const GUI_List = new GUI_Element
 		custom_entry.OnMouseOut = custom_entry.OnMouseOut ?? on_hover_stop;
 		
 		// Save entry to list and prepare call information.
-		this.entries[ID - 1] = [target, command, parameter, user_ID];
+		this.ListEntry_Data[ID - 1] = [target, command, parameter, user_ID];
 		this[Format("_menuChild%d", ID)] = custom_entry;
 		
 		// need to add to existing menu?
@@ -93,12 +93,12 @@ static const GUI_List = new GUI_Element
 	GetItemData = func (user_ID, int custom_menu_id)
 	{
 		custom_menu_id = custom_menu_id ?? GetRootID();
-		for (var i = 0; i < GetLength(this.entries); ++i)
+		for (var i = 0; i < GetLength(this.ListEntry_Data); ++i)
 		{
 			var ID = i + 1;
-			if (!this.entries[i]) continue;
-			if (this.entries[i][3] != user_ID) continue;
-			return this.entries[i];
+			if (!this.ListEntry_Data[i]) continue;
+			if (this.ListEntry_Data[i][3] != user_ID) continue;
+			return this.ListEntry_Data[i];
 		}
 		return nil;
 	},
@@ -108,13 +108,13 @@ static const GUI_List = new GUI_Element
 	RemoveItem = func(user_ID, int custom_menu_id)
 	{
 		custom_menu_id = custom_menu_id ?? GetRootID();
-		for (var i = 0; i < GetLength(this.entries); ++i)
+		for (var i = 0; i < GetLength(this.ListEntry_Data); ++i)
 		{
 			var ID = i + 1;
-			if (!this.entries[i]) continue;
-			if (this.entries[i][3] != user_ID) continue;
+			if (!this.ListEntry_Data[i]) continue;
+			if (this.ListEntry_Data[i][3] != user_ID) continue;
 			GuiClose(custom_menu_id, ID, this);
-			this.entries[i] = nil;
+			this.ListEntry_Data[i] = nil;
 			return true;
 		}
 		return false;
@@ -122,7 +122,7 @@ static const GUI_List = new GUI_Element
 
 	DoCall = func(int ID, command, proplist target, int player)
 	{
-		var entry = this.entries[ID - 1];
+		var entry = this.ListEntry_Data[ID - 1];
 		target = target ?? entry[0];
 		// Target removed? safety first!
 		if (target)
