@@ -45,6 +45,8 @@ static const GUI_List = new GUI_Element
 		                  If you pass {@code nil} the function issues a callback {@code MakeEntryProplist(symbol, text)}
 		                  to create the entry.
 		                  
+		                  You can use a {@code GUI_ListEntry} or a custom proplist.
+		                  
 		@par target          The object or proplist that executes callbacks.
 		@par command         This command is executed when you click the entry.
 		@par parameter       This is passed to the command.
@@ -158,5 +160,66 @@ static const GUI_List = new GUI_Element
 	DoCallback = func(data, int player, int ID, int subwindowID, object target)
 	{
 		DoCall(subwindowID, data[1], data[0], player);
+	},
+};
+
+
+/**
+	Proplist for list entries, you can use your own, though.
+ */
+static const GUI_ListEntry = new GUI_Element
+{
+	// --- Properties
+
+	ListEntry_Hovered = nil,
+	ListEntry_Callback = nil,
+	ListEntry_Index = nil,
+
+	// --- Functions
+	
+	Assemble = func (desired_width)
+	{
+		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
+		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
+		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
+
+		return this;
+	},
+	
+	SetCallbackOnClick = func (array callback)
+	{
+		this.ListEntry_Callback = callback;
+		return this;
+	},
+	
+	SetIndex = func (int index)
+	{
+		this.ListEntry_Index = index;
+		return this;
+	},
+	
+	OnMouseInCall = func ()
+	{
+		this.ListEntry_Hovered = true;
+		this->~UpdateEntry();
+	},
+	
+	OnMouseOutCall = func ()
+	{
+		this.ListEntry_Hovered = false;
+		this->~UpdateEntry();
+	},
+	
+	OnClickCall = func ()
+	{
+		if (this.ListEntry_Callback)
+		{
+			DoCallback(this.ListEntry_Callback);
+		}
+	},
+		
+	IsHovered = func ()
+	{
+		return this.ListEntry_Hovered;
 	},
 };

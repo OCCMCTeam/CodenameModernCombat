@@ -31,70 +31,13 @@ static const GUI_SelectionList = new GUI_List
 
 /* --- List menu entry --- */
 
-static const GUI_SelectionListEntry = new GUI_Element
+static const GUI_SelectionListEntry = new GUI_ListEntry
 {
 	// --- Properties
 
 	ListEntry_Selected = nil,
-	ListEntry_Hovered = nil,
-	/*
-	ListEntry_Callback = nil,
-	ListEntry_Index = nil,
-
-	// --- GUI Properties
-	
-	hover = nil, // Overlay for hover effect
-	caption = nil, // Overlay for text, should be over the hover effect
 
 	// --- Functions
-	
-	Assemble = func (desired_width)
-	{
-		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
-		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
-		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
-		
-		this.hover = { Priority = 1};
-		this.caption = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter};
-		return this;
-	},
-	
-	SetData = func (string caption, array callback, proplist style)
-	{
-		if (caption)
-		{
-			this.caption.Text = caption;
-		}
-		if (style)
-		{
-			AddProperties(this, style);
-		}
-		this.ListEntry_Callback = callback;
-		return this;
-	},
-	
-	SetIndex = func (int index)
-	{
-		this.ListEntry_Index = index;
-		return this;
-	},
-	
-	OnMouseInCall = func ()
-	{
-		this.ListEntry_Hovered = true;
-		this->~UpdateEntry();
-	},
-	
-	OnMouseOutCall = func ()
-	{
-		this.ListEntry_Hovered = false;
-		this->~UpdateEntry();
-	},
-	
-	OnClickCall = func ()
-	{
-		GetParent()->SelectTab(nil, this.ListEntry_Index);
-	},*/
 	
 	SetSelected = func (bool selected, bool skip_callback)
 	{
@@ -108,11 +51,6 @@ static const GUI_SelectionListEntry = new GUI_Element
 			DoCallback(this.ListEntry_Callback);
 		}
 		return this;
-	},
-	
-	IsHovered = func ()
-	{
-		return this.ListEntry_Hovered;
 	},
 	
 	IsSelected = func ()
