@@ -36,7 +36,26 @@ static const GUI_List = new GUI_Element
 		return custom_entry;
 	},
 
-	// Custom_menu_id should be passed if the menu was manually opened and not via Open()
+	/**
+		Adds a menu item entry. This contains various options:
+		
+		@par custom_entry You can override most of the default settings from this function by passing a proplist in this
+		                  parameter.
+		                  The proplist should contain all the GUI properties that you want the item to have.
+		                  If you pass {@code nil} the function issues a callback {@code MakeEntryProplist(symbol, text)}
+		                  to create the entry.
+		                  
+		@par target          The object or proplist that executes callbacks.
+		@par command         This command is executed when you click the entry.
+		@par parameter       This is passed to the command.
+		@par custom_menu_id  Should be passed if the menu was manually opened and not via Open()
+
+		Optional:
+		@par symbol       The icon. If {@code custom_entry} is {@code nil}, this is passed to {@code MakeEntryProplist(symbol, text)}.
+		                  Has no effect if not used in either function.
+		@par text         A caption for the menu entry. If {@code custom_entry} is {@code nil}, this is passed to {@code MakeEntryProplist(symbol, text)}.
+		                  Has no effect if not used in either function.
+	 */
 	AddItem = func(symbol, string text, user_ID, proplist target, command, parameter, custom_entry, custom_menu_id)
 	{
 		custom_menu_id = custom_menu_id ?? GetRootID();
