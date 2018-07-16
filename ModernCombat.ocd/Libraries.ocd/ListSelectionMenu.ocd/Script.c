@@ -46,14 +46,16 @@ public func OpenListSelectionMenu(object user, string type)
 
 	var main_menu = new CMC_GUI_SelectionListMenu {};
 	main_menu->Assemble()
-	         ->AlignCenterH();
+	         ->AlignCenterH()
+	         ->Open(user->GetOwner());
 	
 	this->GetListSelectionMenuEntries(user, type, main_menu);
 	
 	main_menu->AdjustHeightToEntries()
 	         ->AlignCenterV()
 	         ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
-		     ->Open(user->GetOwner());
+		     ->Update();
+
 		     
 	cmc_list_selection_menu = {};
 	cmc_list_selection_menu.user = user;

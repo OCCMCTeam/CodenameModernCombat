@@ -31,7 +31,7 @@ static const GUI_SelectionList = new GUI_List
 
 /* --- List menu entry --- */
 
-static const GUI_SelectionListEntry = new GUI_ListEntry
+static const GUI_SelectionListEntry = new GUI_List2_Entry
 {
 	// --- Properties
 

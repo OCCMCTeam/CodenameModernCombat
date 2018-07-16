@@ -124,8 +124,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			}
 			
 			var name = Format("<c %x>%s (%dx)</c>", text_color, ammo_type->GetName(), ammo_info.ammo_count);
-			var menu_item = ammo_list->AddItem(ammo_type, name, nil, this, call_on_click, {Target = user, Type = ammo_type});
-			ammo_list->AddButtonPrompt(menu_item);
+			ammo_list->AddEntry(ammo_type, name, DefineCallback(call_on_click, {Target = user, Type = ammo_type}));
 		}
 	}
 }

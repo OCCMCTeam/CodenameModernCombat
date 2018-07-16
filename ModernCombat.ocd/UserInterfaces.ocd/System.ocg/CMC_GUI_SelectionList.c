@@ -8,58 +8,77 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 {
 	Symbol = CMC_Icon_ListSelection,
 	Style = GUI_NoCrop,
+	Components = nil,
 
 	Assemble = func ()
 	{
+		this.Components = [];
 		SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Width         // Width for text
 		                            + GUI_CMC_Element_SelectionList_Margin_H * 2  // Outside margin left/right
 		                            + GUI_CMC_Element_ListIcon_Size               // Space for the icon, on the left
 		                            + GUI_CMC_Element_Icon_Size));                // Space for the button hint, on the right
 		
 		var header_height = GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height);
-		var header = new GUI_Element {Style = GUI_TextHCenter | GUI_TextVCenter,};
+		var header = new GUI_Element { Style = GUI_TextHCenter | GUI_TextVCenter,};
 		header->SetHeight(header_height);
-		header->AddTo(this, nil, "header", true);
+		header->AddTo(this);
 
-		var body = new GUI_Element { Style = GUI_VerticalLayout | GUI_FitChildren | GUI_TextHCenter | GUI_TextVCenter, };
+		var body = new GUI_Element { ID = 123, Style = GUI_VerticalLayout | GUI_NoCrop};
 		body->SetTop(header->GetBottom())
-		    ->AddTo(this, nil, "body", true);
+		    ->SetBottom(header->GetBottom())
+		    ->AddTo(this);
 		
-		var list = new CMC_GUI_SelectionList {};
-		list->AddTo(body, nil, "list", true);
+		var list = new CMC_GUI_SelectionList {ID = 456, Style = GUI_VerticalLayout | GUI_FitChildren /*| GUI_NoCrop*/ };
+		list->~Assemble();
+		list->AddTo(body);
+
+		this.Components[0] = header;
+		this.Components[1] = body;
+		this.Components[2] = list;
+		
 		return this;
+	},
+	
+	
+	GetHeader = func()
+	{
+		return this.Components[0];
 	},
 	
 	GetList = func ()
 	{
-		return this.body.list;
+		return this.Components[2];
 	},
 	
 	AdjustHeightToEntries = func ()
 	{
-		var entries = GetLength(GetList().ListEntry_Data);
+		var entries = GetLength(GetList().ListEntry_Elements);
 		var amount = Max(7, entries);
 		var top = (amount - entries) / 2;
 		
 		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
-		SetHeight(size->Scale(amount));
-		GetList()->SetHeight(size->Scale(entries))
-		         ->AlignTop(size->Scale(top))
-		         ->Update();
-		
+		// TODO: This works well, but the background looks bad: 
+		SetHeight(GetList()->GetHeight()->Add(this.Components[0]->GetHeight()));
+		// These served the purpose of enlarging the background image and then
+		// centering the entries.
+		//SetHeight(size->Scale(amount));
+		/*GetList()//->SetHeight(size->Scale(entries))
+		         ->AlignTop(GetHeader()->GetBottom())
+		         ->Update();*/
+
 		return this;
 	},
 	
 	SetHeaderCaption = func (string text)
 	{
-		this.header.Text = Format("<c %x>%s</c>", GUI_CMC_Text_Color_HeaderCaption, text);
-		this.header->Update();
+		GetHeader().Text = Format("<c %x>%s</c>", GUI_CMC_Text_Color_HeaderCaption, text);
+		GetHeader()->Update();
 		return this;
 	},
 };
 
 
-static const CMC_GUI_SelectionList = new GUI_SelectionList
+static const CMC_GUI_SelectionList = new GUI_List2
 {
 	MakeEntryProplist = func(symbol, text)
 	{
@@ -70,8 +89,6 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 
 		var custom_entry = new GUI_SelectionListEntry
 		{
-			Bottom = size->ToString(),
-			
 			Symbol =
 			{
 				Std = nil,
@@ -96,6 +113,7 @@ static const CMC_GUI_SelectionList = new GUI_SelectionList
 				Style = GUI_TextVCenter,
 			},
 		};
+		custom_entry->SetHeight(size);
 		return custom_entry;
 	},
 	
