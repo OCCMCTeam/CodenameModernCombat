@@ -57,4 +57,17 @@ static const GUI_SelectionListEntry = new GUI_List2_Entry
 	{
 		return this.ListEntry_Selected;
 	},
+	
+	UpdateEntry = func ()
+	{
+		if (IsSelected())
+		{
+			this.Symbol = CMC_Icon_ListSelectionHighlight;
+		}
+		else
+		{
+			this.Symbol = nil;
+		}
+		Update({Symbol = this.Symbol});
+	},
 };

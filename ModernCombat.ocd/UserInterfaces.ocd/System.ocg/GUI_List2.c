@@ -34,9 +34,7 @@ static const GUI_List2 = new GUI_Element
 			
 			// Add additional entry
 			entry = this->~MakeEntryProplist(identifier, caption) ?? new GUI_List2_Entry {}; // TODO <= passing identifier is too restrictive
-			entry.Priority = entry_count + 1;
-			entry.ListEntry_Index = entry_count;
-			entry->~Assemble(); // TODO <= this is not really cool because it overwrites stuff
+			entry.Priority = entry_count;
 			entry->~SetIndex(entry_count);
 			entry->AddTo(this);
 
@@ -75,7 +73,7 @@ static const GUI_List2 = new GUI_Element
 
 		if (index == -1)
 		{
-			FatalError("Tab not found");
+			FatalError("Entry not found");
 		}
 		
 		for (var i = 0; i < GetLength(this.ListEntry_Elements); ++i)
@@ -89,22 +87,15 @@ static const GUI_List2 = new GUI_Element
 
 static const GUI_List2_Entry = new GUI_Element
 {
-	Style = GUI_Multiple,
-
 	// --- Properties
 
-	ListEntry_Selected = nil,
 	ListEntry_Hovered = nil,
 	ListEntry_Callback = nil,
 	ListEntry_Index = nil,
-
-	// --- GUI Properties
-
-	BackgroundColor = GUI_CMC_Background_Color_Default,
 	
 	// --- Functions
 	
-	Assemble = func (desired_width)
+	Assemble = func ()
 	{
 		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
 		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
@@ -114,6 +105,7 @@ static const GUI_List2_Entry = new GUI_Element
 	
 	SetData = func (string caption, array callback, proplist style)
 	{
+		this.ListEntry_Callback = callback;
 		return this;
 	},
 	
@@ -123,57 +115,20 @@ static const GUI_List2_Entry = new GUI_Element
 		return this;
 	},
 	
+	OnClickCall = func ()
+	{
+		DoCallback(this.ListEntry_Callback);
+	},
+	
 	OnMouseInCall = func ()
 	{
-		Update({ hover = {BackgroundColor = GUI_CMC_Background_Color_Hover}});
+		this.ListEntry_Hovered = true;
+		this->~UpdateEntry();
 	},
 	
 	OnMouseOutCall = func ()
 	{
-		Update({ hover = {BackgroundColor = nil}});
-	},
-	
-	OnClickCall = func ()
-	{
-		GetParent()->SelectEntry(nil, this.ListEntry_Index);
-	},
-	
-	SetSelected = func (bool selected, bool skip_callback)
-	{
-		// Update the display
-		this.ListEntry_Selected = selected;
-		UpdateBackground();
-		
-		// Issue a callback?
-		if (this.ListEntry_Callback && selected && !skip_callback)
-		{
-			DoCallback(this.ListEntry_Callback);
-		}
-		return this;
-	},
-	
-	IsSelected = func ()
-	{
-		return this.ListEntry_Selected;
-	},
-	
-	UpdateBackground = func (int color)
-	{
-		if (color == nil)
-		{
-			if (this.ListEntry_Selected)
-			{
-				UpdateBackground(GUI_CMC_Background_Color_Highlight);
-			}
-			else
-			{
-				UpdateBackground(GUI_CMC_Background_Color_Default);
-			}
-		}
-		else
-		{
-			this.BackgroundColor = color;
-			Update({BackgroundColor = color});
-		}
+		this.ListEntry_Hovered = false;
+		this->~UpdateEntry();
 	},
 };

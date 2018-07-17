@@ -28,13 +28,12 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 		    ->SetBottom(header->GetBottom())
 		    ->AddTo(this);
 		
-		var list = new CMC_GUI_SelectionList {ID = 456, Style = GUI_VerticalLayout | GUI_FitChildren /*| GUI_NoCrop*/ };
+		var list = new CMC_GUI_SelectionList {ID = 456, Style = GUI_VerticalLayout | GUI_FitChildren };
 		list->~Assemble();
 		list->AddTo(body);
 
 		this.Components[0] = header;
-		this.Components[1] = body;
-		this.Components[2] = list;
+		this.Components[1] = list;
 		
 		return this;
 	},
@@ -47,7 +46,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 	
 	GetList = func ()
 	{
-		return this.Components[2];
+		return this.Components[1];
 	},
 	
 	AdjustHeightToEntries = func ()
