@@ -36,6 +36,7 @@ static const GUI_SelectionListEntry = new GUI_List2_Entry
 	// --- Properties
 
 	ListEntry_Selected = nil,
+	ListEntry_Callback_OnSelected = nil,
 
 	// --- Functions
 	
@@ -46,9 +47,9 @@ static const GUI_SelectionListEntry = new GUI_List2_Entry
 		this->~UpdateEntry();
 		
 		// Issue a callback?
-		if (this.ListEntry_Callback && selected && !skip_callback)
+		if (this.ListEntry_Callback_OnSelected && selected && !skip_callback)
 		{
-			DoCallback(this.ListEntry_Callback);
+			DoCallback(this.ListEntry_Callback_OnSelected);
 		}
 		return this;
 	},
@@ -56,5 +57,11 @@ static const GUI_SelectionListEntry = new GUI_List2_Entry
 	IsSelected = func ()
 	{
 		return this.ListEntry_Selected;
+	},
+
+	SetCallbackOnSelected = func (array callback)
+	{
+		this.ListEntry_Callback_OnSelected = callback;
+		return this;
 	},
 };

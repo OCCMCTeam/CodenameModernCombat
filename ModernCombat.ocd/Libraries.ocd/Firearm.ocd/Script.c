@@ -841,7 +841,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var current_ammo_type = firemode->GetAmmoID();
 			if (last_ammo_type && last_ammo_type != current_ammo_type)
 			{
-				list->AddItemSeparator();
+				list->~AddItemSeparator();
 			}
 			last_ammo_type = current_ammo_type;
 		
@@ -849,24 +849,24 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var call_on_click = this.DoMenuFiremodeSelection;
 			var name = GuiGetFiremodeString(firemode);
 			var index = firemode->GetIndex();
-			var menu_item = list->AddItem(current_ammo_type, name, nil, this, call_on_click, {Target = user, Index = index});			
-			list->AddButtonPrompt(menu_item);
+			
+			var entry = list->MakeEntryProplist();
+			entry->SetIcon(current_ammo_type)
+			     ->SetCaption(name)
+			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, index))
+			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name));
+			list->AddEntry(name, entry);
 		}
 	}
 }
 
 public func DoMenuFiremodeNothing(){}
 
-public func DoMenuFiremodeSelection(proplist parameters)
+public func DoMenuFiremodeSelection(object user, int index)
 {
 	// Close the menu first
 	CloseListSelectionMenu();
-
-	AssertNotNil(parameters);
 	
-	var user = parameters.Target;
-	var index = parameters.Index;
-
 	AssertNotNil(user);
 	AssertNotNil(index);
 	

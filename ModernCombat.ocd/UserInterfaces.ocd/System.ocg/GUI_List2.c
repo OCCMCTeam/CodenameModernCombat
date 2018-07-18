@@ -90,22 +90,31 @@ static const GUI_List2_Entry = new GUI_Element
 	// --- Properties
 
 	ListEntry_Hovered = nil,
-	ListEntry_Callback = nil,
+	ListEntry_Callback_OnClick = nil,
+	ListEntry_Callback_OnMouseIn = nil,
+	ListEntry_Callback_OnMouseOut = nil,
 	ListEntry_Index = nil,
 	
 	// --- Functions
-	
-	Assemble = func ()
+
+	SetCallbackOnClick = func (array callback)
 	{
+		this.ListEntry_Callback_OnClick = callback;
 		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
-		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
-		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
 		return this;
 	},
 	
-	SetOnClickCall = func (array callback)
+	SetCallbackOnMouseIn = func (array callback)
 	{
-		this.ListEntry_Callback = callback;
+		this.ListEntry_Callback_OnMouseIn = callback;
+		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
+		return this;
+	},
+	
+	SetCallbackOnMouseOut = func (array callback)
+	{
+		this.ListEntry_Callback_OnMouseOut = callback;
+		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
 		return this;
 	},
 	
@@ -117,18 +126,20 @@ static const GUI_List2_Entry = new GUI_Element
 	
 	OnClickCall = func ()
 	{
-		DoCallback(this.ListEntry_Callback);
+		DoCallback(this.ListEntry_Callback_OnClick);
 	},
 	
 	OnMouseInCall = func ()
 	{
 		this.ListEntry_Hovered = true;
 		this->~UpdateEntry();
+		DoCallback(this.ListEntry_Callback_OnMouseIn);
 	},
 	
 	OnMouseOutCall = func ()
 	{
 		this.ListEntry_Hovered = false;
 		this->~UpdateEntry();
+		DoCallback(this.ListEntry_Callback_OnMouseOut);
 	},
 };

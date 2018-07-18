@@ -124,10 +124,12 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			}
 			
 			var name = Format("<c %x>%s (%dx)</c>", text_color, ammo_type->GetName(), ammo_info.ammo_count);
-			ammo_list->AddEntry(ammo_type, ammo_list->MakeEntryProplist()
-			                    ->SetIcon(ammo_type)
-			                    ->SetCaption(name)
-			                    ->SetOnClickCall(DefineCallback(call_on_click, user, ammo_type)));
+			var entry = ammo_list->MakeEntryProplist();
+			entry->SetIcon(ammo_type)
+			     ->SetCaption(name)
+			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, ammo_type))
+			     ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, ammo_type));
+			ammo_list->AddEntry(ammo_type, entry);
 		}
 	}
 }
