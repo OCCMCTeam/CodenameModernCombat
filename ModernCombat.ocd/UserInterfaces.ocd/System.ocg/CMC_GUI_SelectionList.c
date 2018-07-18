@@ -81,39 +81,8 @@ static const CMC_GUI_SelectionList = new GUI_List2
 {
 	MakeEntryProplist = func(symbol, text)
 	{
-		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
-		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
-		var button_hint_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
-		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_size)->ToString();
-
-		var custom_entry = new GUI_SelectionListEntry
-		{
-			Symbol =
-			{
-				Std = nil,
-				OnHover = CMC_Icon_ListSelectionHighlight,
-			},
-			
-			icon =
-			{
-				Left = margin_h->ToString(),
-				Right = margin_h->Add(size)->ToString(),
-				Bottom = size->ToString(),
-				
-				Symbol = symbol,
-				Margin = [GuiDimensionCmc(nil, 2)->ToString()],
-			},
-			caption =
-			{
-				Left = margin_h->Add(size)->ToString(),
-				Right = caption_border_right,
-				
-				Text = text,
-				Style = GUI_TextVCenter,
-			},
-		};
-		custom_entry->SetHeight(size);
-		return custom_entry;
+		var custom_entry = new CMC_GUI_SelectionListEntry{};
+		return custom_entry->Assemble()->SetIcon(symbol)->SetCaption(text);
 	},
 	
 	AddButtonPrompt = func (proplist custom_entry)
@@ -159,5 +128,58 @@ static const CMC_GUI_SelectionList = new GUI_List2
 		this.ListEntry_Data[ID - 1] = [];
 		this[Format("_menuChild%d", ID)] = custom_entry;
 		return custom_entry;
+	},
+};
+
+static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
+{
+	Assemble = func ()
+	{	
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
+		var button_hint_size = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_size)->ToString();
+		this.icon =
+		{
+			Left = margin_h->ToString(),
+			Right = margin_h->Add(size)->ToString(),
+			Bottom = size->ToString(),
+			
+			Margin = [GuiDimensionCmc(nil, 2)->ToString()],
+		};
+		this.caption =
+		{
+			Left = margin_h->Add(size)->ToString(),
+			Right = caption_border_right,
+			
+			Style = GUI_TextVCenter,
+		};
+		SetHeight(size);
+		return this;
+	},
+	
+	SetIcon = func (symbol)
+	{
+		this.icon.Symbol = symbol;
+		return this;
+	},
+	
+	SetCaption = func (string text)
+	{
+		this.caption.Text = text;
+		return this;
+	},
+	
+	UpdateEntry = func ()
+	{
+		if (IsSelected())
+		{
+			this.Symbol = CMC_Icon_ListSelectionHighlight;
+		}
+		else
+		{
+			this.Symbol = nil;
+		}
+		Update({Symbol = this.Symbol});
 	},
 };
