@@ -23,12 +23,11 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 		header->SetHeight(header_height);
 		header->AddTo(this);
 
-		var body = new GUI_Element { ID = 123, Style = GUI_VerticalLayout | GUI_NoCrop};
+		var body = new GUI_Element {Style = GUI_NoCrop};
 		body->SetTop(header->GetBottom())
-		    ->SetBottom(header->GetBottom())
 		    ->AddTo(this);
 		
-		var list = new CMC_GUI_SelectionList {ID = 456, Style = GUI_VerticalLayout | GUI_FitChildren };
+		var list = new CMC_GUI_SelectionList {Style = GUI_VerticalLayout };
 		list->~Assemble();
 		list->AddTo(body);
 
