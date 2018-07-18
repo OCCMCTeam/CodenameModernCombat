@@ -15,7 +15,7 @@ static const GUI_List2 = new GUI_Element
 	ListEntry_Width = nil,
 
 
-	AddEntry = func (identifier, string caption, array callback, proplist style)
+	AddEntry = func (identifier, proplist new_entry)
 	{
 		// Establish defaults
 		this.ListEntry_Ids = this.ListEntry_Ids ?? [];
@@ -33,7 +33,7 @@ static const GUI_List2 = new GUI_Element
 			var entry_count = GetLength(this.ListEntry_Elements);
 			
 			// Add additional entry
-			entry = this->~MakeEntryProplist(identifier, caption) ?? new GUI_List2_Entry {}; // TODO <= passing identifier is too restrictive
+			entry = new_entry ?? this->~MakeEntryProplist();
 			entry.Priority = entry_count;
 			entry->~SetIndex(entry_count);
 			entry->AddTo(this);
@@ -41,7 +41,7 @@ static const GUI_List2 = new GUI_Element
 			PushBack(this.ListEntry_Ids, identifier);
 			PushBack(this.ListEntry_Elements, entry);
 		}
-		entry->SetData(caption, callback, style)->Update();
+		entry->Update();
 		
 		// Update the list height
 		var height = nil;
@@ -103,7 +103,7 @@ static const GUI_List2_Entry = new GUI_Element
 		return this;
 	},
 	
-	SetData = func (string caption, array callback, proplist style)
+	SetOnClickCall = func (array callback)
 	{
 		this.ListEntry_Callback = callback;
 		return this;

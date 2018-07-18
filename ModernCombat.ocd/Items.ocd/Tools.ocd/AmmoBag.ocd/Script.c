@@ -124,7 +124,10 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			}
 			
 			var name = Format("<c %x>%s (%dx)</c>", text_color, ammo_type->GetName(), ammo_info.ammo_count);
-			ammo_list->AddEntry(ammo_type, name, DefineCallback(call_on_click, {Target = user, Type = ammo_type}));
+			ammo_list->AddEntry(ammo_type, ammo_list->MakeEntryProplist()
+			                    ->SetIcon(ammo_type)
+			                    ->SetCaption(name)
+			                    ->SetOnClickCall(DefineCallback(call_on_click, user, ammo_type)));
 		}
 	}
 }
@@ -134,16 +137,11 @@ func CreateNothing()
 	// Dummy, because the click should not have an effect
 }
 
-func CreateAmmoBox(proplist parameters)
+func CreateAmmoBox(object user, id ammo_type)
 {
 	// Close the menu first
 	CloseListSelectionMenu();
 
-	AssertNotNil(parameters);
-	
-	var user = parameters.Target;
-	var ammo_type = parameters.Type;
-	
 	AssertNotNil(user);
 	AssertNotNil(ammo_type);
 

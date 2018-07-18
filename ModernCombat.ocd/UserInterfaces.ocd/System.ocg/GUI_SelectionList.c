@@ -8,7 +8,7 @@
  */
 
 static const GUI_SelectionList = new GUI_List
-{	
+{
 	SelectItem = func (identifier, int index)
 	{
 		if (identifier)
