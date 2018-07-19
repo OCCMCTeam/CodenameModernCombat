@@ -104,6 +104,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	else
 	{
 		var ammo_list = main_menu->GetList();
+		var hotkey = 0;
 		
 		for (var ammo_type in available_types) 
 		{
@@ -130,6 +131,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, ammo_type))
 			     ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, ammo_type));
 			ammo_list->AddEntry(ammo_type, entry);
+			SetListSelectionMenuHotkey(entry, hotkey++);
 		}
 	}
 }

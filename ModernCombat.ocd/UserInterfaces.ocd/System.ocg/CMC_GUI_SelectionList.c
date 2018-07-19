@@ -89,23 +89,6 @@ static const CMC_GUI_SelectionList = new GUI_List2
 		var separator = new CMC_GUI_SelectionListSeparator{};
 		return separator->Assemble();
 	},
-	
-	AddButtonPrompt = func (proplist custom_entry)
-	{
-		if (1 <= custom_entry.ID && custom_entry.ID <= 10)
-		{
-			var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
-			var button_hint_width = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
-			var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_width);
-
-			var button_hint = new CMC_GUI_ButtonHint{};
-			button_hint->Assemble(nil, Format("%d", custom_entry.ID % 10));
-			button_hint->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size));
-			button_hint->AlignLeft(caption_border_right);
-			button_hint->AddTo(custom_entry);
-			button_hint->GetButtonIcon()->AlignCenterV();
-		}
-	},
 };
 
 static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
@@ -144,6 +127,21 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 	SetCaption = func (string text)
 	{
 		this.caption.Text = text;
+		return this;
+	},
+	
+	SetButtonHint = func (string button)
+	{
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+		var button_hint_width = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_width);
+
+		var button_hint = new CMC_GUI_ButtonHint{};
+		button_hint->Assemble(nil, button);
+		button_hint->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size));
+		button_hint->AlignLeft(caption_border_right);
+		button_hint->AddTo(this);
+		button_hint->GetButtonIcon()->AlignCenterV();
 		return this;
 	},
 	

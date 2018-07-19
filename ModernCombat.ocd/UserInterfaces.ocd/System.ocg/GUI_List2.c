@@ -151,6 +151,11 @@ static const GUI_List2_Entry = new GUI_Element
 		return this;
 	},
 	
+	GetIndex = func ()
+	{
+		return this.ListEntry_Index;
+	},
+	
 	SetIndex = func (int index)
 	{
 		this.ListEntry_Index = index;
