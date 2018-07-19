@@ -84,6 +84,12 @@ static const CMC_GUI_SelectionList = new GUI_List2
 		return custom_entry->Assemble()->SetIcon(symbol)->SetCaption(text);
 	},
 	
+	MakeSeparatorProplist = func()
+	{
+		var separator = new CMC_GUI_SelectionListSeparator{};
+		return separator->Assemble();
+	},
+	
 	AddButtonPrompt = func (proplist custom_entry)
 	{
 		if (1 <= custom_entry.ID && custom_entry.ID <= 10)
@@ -99,34 +105,6 @@ static const CMC_GUI_SelectionList = new GUI_List2
 			button_hint->AddTo(custom_entry);
 			button_hint->GetButtonIcon()->AlignCenterV();
 		}
-	},
-	
-	AddItemSeparator = func()
-	{
-		// in case of a new entry, append to array
-		this.ListEntry_Data = this.ListEntry_Data ?? [];
-		var ID = GetLength(this.ListEntry_Data) + 1;
-		
-		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
-		var custom_entry = new GUI_Element
-		{
-				Left = margin_h->ToString(),
-				Right = GuiDimensionCmc(1000)->Subtract(margin_h)->ToString(),
-				Bottom = GuiDimensionCmc(nil, 3)->ToString(),
-				BackgroundColor = 0x81ffffff,
-		};
-		
-		// Always add some properties later. This is done so that real custom this.ListEntry_Data do not need to care about target etc.
-		custom_entry.ID = ID; // A fixed ID is obligatory for now. Might be possible to omit that, but would need to check if updating etc works.
-		custom_entry.Target = this; // Same as above.
-
-		// These properties can in theory be set/customized by the user without breaking functionality. But they are (probably) required anway.
-		custom_entry.Priority = ID;
-		
-		// Save entry to list and prepare call information.
-		this.ListEntry_Data[ID - 1] = [];
-		this[Format("_menuChild%d", ID)] = custom_entry;
-		return custom_entry;
 	},
 };
 
@@ -180,5 +158,24 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 			this.Symbol = nil;
 		}
 		Update({Symbol = this.Symbol});
+	},
+};
+
+static const CMC_GUI_SelectionListSeparator = new GUI_List2_Entry
+{
+	BackgroundColor = 0x81ffffff,
+
+	Assemble = func ()
+	{
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+		SetLeft(margin_h);
+		SetRight(GuiDimensionCmc(1000)->Subtract(margin_h));
+		SetHeight(GuiDimensionCmc(nil, 3));
+		return this;
+	},
+	
+	SetSelected = func ()
+	{
+		// Does nothing, but is required by selection list entries. Could call via ->~, too, but this seems to be more prone to errors, such as forgetting the callback.
 	},
 };
