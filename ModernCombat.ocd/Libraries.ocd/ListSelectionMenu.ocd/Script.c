@@ -25,9 +25,20 @@ local cmc_list_selection_menu;
 
 func ControlMenu(object user, int control, int x, int y, int strength, bool repeat, int status)
 {
-	if (status == CONS_Down && (control == CON_GUIClick1 || control == CON_GUIClick2))
+	if (status == CONS_Down)
 	{
-		CloseListSelectionMenu();
+		if (control == CON_GUIClick1 || control == CON_GUIClick2)
+		{
+			CloseListSelectionMenu();
+		}
+		else if (control == CON_InventoryShiftForward)
+		{
+			ScrollListSelectionMenu(false);
+		}
+		else if (control == CON_InventoryShiftBackward)
+		{
+			ScrollListSelectionMenu(true);
+		}
 	}
 }
 
@@ -71,4 +82,12 @@ public func CloseListSelectionMenu()
 		if (cmc_list_selection_menu.user) cmc_list_selection_menu.user->MenuClosed();
 	}
 	cmc_list_selection_menu = nil;
+}
+
+public func ScrollListSelectionMenu(bool backward)
+{
+	if (cmc_list_selection_menu)
+	{
+		cmc_list_selection_menu.menu->GetList()->SelectNextEntry(backward);
+	}
 }

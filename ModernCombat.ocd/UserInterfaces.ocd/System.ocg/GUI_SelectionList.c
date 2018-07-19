@@ -51,7 +51,7 @@ static const GUI_SelectionListEntry = new GUI_List2_Entry
 		{
 			DoCallback(this.ListEntry_Callback_OnSelected);
 		}
-		return this;
+		return this; // Return value of 'nil' means that the item cannot be selected/deselected
 	},
 	
 	IsSelected = func ()

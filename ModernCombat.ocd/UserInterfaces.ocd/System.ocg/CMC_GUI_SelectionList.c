@@ -177,5 +177,6 @@ static const CMC_GUI_SelectionListSeparator = new GUI_List2_Entry
 	SetSelected = func ()
 	{
 		// Does nothing, but is required by selection list entries. Could call via ->~, too, but this seems to be more prone to errors, such as forgetting the callback.
+		// Also, the return value of 'nil' tells the list to select the next entry.
 	},
 };

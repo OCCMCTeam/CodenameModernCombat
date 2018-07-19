@@ -13,6 +13,7 @@ static const GUI_List2 = new GUI_Element
 	ListEntry_Ids = nil,
 	ListEntry_Elements = nil,
 	ListEntry_Width = nil,
+	ListEntry_Index_Selected = nil,
 
 
 	AddEntry = func (identifier, proplist new_entry)
@@ -63,7 +64,7 @@ static const GUI_List2 = new GUI_Element
 		return entry;
 	},
 	
-	SelectEntry = func (identifier, int index)
+	SelectEntry = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
 		{
@@ -76,9 +77,41 @@ static const GUI_List2 = new GUI_Element
 			FatalError("Entry not found");
 		}
 		
+		this.ListEntry_Selected = index;
+		
+		var can_select = false;
 		for (var i = 0; i < GetLength(this.ListEntry_Elements); ++i)
 		{
-			this.ListEntry_Elements[i]->SetSelected(i == index);
+			var should_select = i == index;
+			var did_select = this.ListEntry_Elements[i]->SetSelected(should_select, skip_callback); // Return value of 'nil' means that the entry cannot be selected/deselected
+			if (should_select && !!did_select)
+			{
+				can_select = true;
+			}
+		}
+		return can_select;
+	},
+	
+	SelectNextEntry = func(bool backward, bool skip_callback)
+	{
+		var index = this.ListEntry_Selected ?? 0;
+		var max = GetLength(this.ListEntry_Elements);
+		if (backward)
+		{
+			index -= 1;
+		}
+		else
+		{
+			index += 1;
+		}
+		while (index < 0)
+		{
+			index += max;
+		}
+		index = index % max;
+		if (!SelectEntry(nil, index, skip_callback))
+		{
+			SelectNextEntry(backward, skip_callback);
 		}
 	},
 };
