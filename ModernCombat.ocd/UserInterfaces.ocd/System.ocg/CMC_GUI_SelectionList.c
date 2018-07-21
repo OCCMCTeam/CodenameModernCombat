@@ -145,8 +145,24 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 		return this;
 	},
 	
+	SetScrollHint = func (bool on)
+	{
+		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
+		var button_hint_width = GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size);
+		var caption_border_right = GuiDimensionCmc(1000)->Subtract(margin_h)->Subtract(button_hint_width);
+
+		var button_hint = new CMC_GUI_ButtonHint{};
+		button_hint->Assemble(nil, "MouseMiddle");
+		button_hint->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size));
+		button_hint->AlignLeft(caption_border_right->Add(button_hint_width));
+		button_hint->AddTo(this, nil, "scroll_hint", true);
+		button_hint->GetButtonIcon()->AlignCenterV();
+		return this;
+	},
+	
 	UpdateEntry = func ()
 	{
+		// The actual menu
 		if (IsSelected())
 		{
 			this.Symbol = CMC_Icon_ListSelectionHighlight;
@@ -156,6 +172,19 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 			this.Symbol = nil;
 		}
 		Update({Symbol = this.Symbol});
+		// Scroll hint
+		if (this.scroll_hint)
+		{
+			if (IsSelected())
+			{
+				this.scroll_hint.button_symbol.Symbol = CMC_Icon_Button;
+			}
+			else
+			{
+				this.scroll_hint.button_symbol.Symbol = nil;
+			}
+			Update({scroll_hint = {button_symbol = {Symbol = this.scroll_hint.button_symbol.Symbol}}});
+		}
 	},
 };
 

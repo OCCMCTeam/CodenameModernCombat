@@ -833,6 +833,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	else
 	{
 		var list = main_menu->GetList();
+		var hotkey = 0;
 		
 		var last_ammo_type = nil;
 		for (var firemode in available_modes) 
@@ -854,8 +855,10 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			entry->SetIcon(current_ammo_type)
 			     ->SetCaption(name)
 			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, index))
-			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name));
+			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))
+			     ->SetScrollHint(true);
 			list->AddEntry(name, entry);
+			SetListSelectionMenuHotkey(entry, hotkey++);
 		}
 	}
 }

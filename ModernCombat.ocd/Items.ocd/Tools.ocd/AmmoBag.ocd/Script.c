@@ -129,7 +129,8 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			entry->SetIcon(ammo_type)
 			     ->SetCaption(name)
 			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, ammo_type))
-			     ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, ammo_type));
+			     ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, ammo_type))
+			     ->SetScrollHint(true);
 			ammo_list->AddEntry(ammo_type, entry);
 			SetListSelectionMenuHotkey(entry, hotkey++);
 		}
