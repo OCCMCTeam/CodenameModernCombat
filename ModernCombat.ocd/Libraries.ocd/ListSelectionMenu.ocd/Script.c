@@ -55,12 +55,19 @@ func ControlMenu(object user, int control, int x, int y, int strength, bool repe
 	}
 }
 
+public func GetListSelectionMenu()
+{
+	if (cmc_list_selection_menu)
+	{
+		return cmc_list_selection_menu.menu;
+	}
+}
 
 // Opens the 
 public func OpenListSelectionMenu(object user, string type)
 {
 	// Close existing menu
-	CloseListSelectionMenu();
+	CloseListSelectionMenu(true);
 	
 	// If another menu is already open cancel the action.
 	if (user->~GetMenu())
@@ -93,10 +100,15 @@ public func OpenListSelectionMenu(object user, string type)
 	main_menu->GetList()->SelectEntry();
 }
 
-public func CloseListSelectionMenu()
+public func CloseListSelectionMenu(bool cancelled)
 {
 	if (cmc_list_selection_menu)
 	{
+		var selected_entry = cmc_list_selection_menu.menu->GetList()->GetSelectedEntry();
+		if (selected_entry && !cancelled)
+		{
+			selected_entry->~OnMenuClosedCall();
+		}
 		cmc_list_selection_menu.menu->Close();
 		if (cmc_list_selection_menu.user) cmc_list_selection_menu.user->MenuClosed();
 	}
@@ -116,13 +128,14 @@ public func PressListSelectionMenuHotkey(int control)
 	if (cmc_list_selection_menu)
 	{
 		var index = GetIndexOf(cmc_list_selection_menu.hotkey_controls, control);
+		var entry_index = cmc_list_selection_menu.hotkey_entries[index];
 		if (index == -1)
 		{
 			FatalError("This should be impossible!");
 		}
-		if (nil != cmc_list_selection_menu.hotkey_entries[index])
+		if (nil != entry_index)
 		{
-			cmc_list_selection_menu.menu->GetList()->SelectEntry(nil, index);
+			cmc_list_selection_menu.menu->GetList()->SelectEntry(nil, entry_index);
 		}
 	}
 }

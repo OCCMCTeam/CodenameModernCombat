@@ -64,6 +64,14 @@ static const GUI_List2 = new GUI_Element
 		return entry;
 	},
 	
+	GetSelectedEntry = func ()
+	{
+		if (this.ListEntry_Elements)
+		{
+			return this.ListEntry_Elements[this.ListEntry_Selected];
+		}
+	},
+	
 	SelectEntry = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
@@ -126,6 +134,7 @@ static const GUI_List2_Entry = new GUI_Element
 	ListEntry_Callback_OnClick = nil,
 	ListEntry_Callback_OnMouseIn = nil,
 	ListEntry_Callback_OnMouseOut = nil,
+	ListEntry_Callback_OnMenuClosed = nil,
 	ListEntry_Index = nil,
 	
 	// --- Functions
@@ -148,6 +157,12 @@ static const GUI_List2_Entry = new GUI_Element
 	{
 		this.ListEntry_Callback_OnMouseOut = callback;
 		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
+		return this;
+	},
+	
+	SetCallbackOnMenuClosed = func (array callback) // Custom callback from certain menus, does not correspond with any of the usual GUI callbacks
+	{
+		this.ListEntry_Callback_OnMenuClosed = callback;
 		return this;
 	},
 	
@@ -180,4 +195,12 @@ static const GUI_List2_Entry = new GUI_Element
 		this->~UpdateEntry();
 		DoCallback(this.ListEntry_Callback_OnMouseOut);
 	},
+	
+	OnMenuClosedCall = func ()
+	{
+		if (this.ListEntry_Callback_OnMenuClosed)
+		{
+			DoCallback(this.ListEntry_Callback_OnMenuClosed);
+		}
+	}
 };

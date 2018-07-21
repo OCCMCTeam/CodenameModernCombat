@@ -46,10 +46,6 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		var contents = this->GetHandItem(0);
 		if (contents
-		&& !contents->~RejectUse(this) // FIXME: This can be a problem, because the item could miss the "release button" thing. 
-		                               // Needs normal use call system, in my opinion; Analyzed it: Use stuff is not flexible enough
-		                               // To support this kind of thing (at least not without complex changes) :/
-		                               // Also, maybe a "RejectItemConfig" makes more sense, who knows?
 		&&  contents->~ControlUseItemConfig(this, x, y, status))
 		{
 			return true;

@@ -812,9 +812,17 @@ public func IsAutoFiring()
 
 /* --- Firemode selection --- */
 
-public func ControlUseItemConfig(object user, int x, int y)
+public func ControlUseItemConfig(object user, int x, int y, int status)
 {
-	OpenListSelectionMenu(user, "FiremodeSelection");
+	var cancel = this->~RejectUse(user);
+	if (status == CONS_Up)
+	{
+		CloseListSelectionMenu(cancel);
+	}
+	else if (!cancel)
+	{
+		OpenListSelectionMenu(user, "FiremodeSelection");
+	}
 	return true;
 }
 
@@ -833,7 +841,6 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	else
 	{
 		var list = main_menu->GetList();
-		var hotkey = 0;
 		
 		var last_ammo_type = nil;
 		for (var firemode in available_modes) 
@@ -847,32 +854,27 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			last_ammo_type = current_ammo_type;
 		
 			// Text and description
-			var call_on_click = this.DoMenuFiremodeSelection;
 			var name = GuiGetFiremodeString(firemode);
 			var index = firemode->GetIndex();
 			
 			var entry = list->MakeEntryProplist();
 			entry->SetIcon(current_ammo_type)
 			     ->SetCaption(name)
-			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, index))
-			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))
+			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
+			     ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu, false))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+			     ->SetCallbackOnMenuClosed(DefineCallback(this.DoMenuFiremodeSelection, index)) // Closing the menu selects the entry
 			     ->SetScrollHint(true);
 			list->AddEntry(name, entry);
-			SetListSelectionMenuHotkey(entry, hotkey++);
+			SetListSelectionMenuHotkey(entry, index);
 		}
 	}
 }
 
 public func DoMenuFiremodeNothing(){}
 
-public func DoMenuFiremodeSelection(object user, int index)
+public func DoMenuFiremodeSelection(int index)
 {
-	// Close the menu first
-	CloseListSelectionMenu();
-	
-	AssertNotNil(user);
 	AssertNotNil(index);
-	
 	ScheduleSetFiremode(index);
 }
 
