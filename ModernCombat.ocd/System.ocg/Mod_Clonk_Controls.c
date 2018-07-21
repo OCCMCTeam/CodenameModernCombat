@@ -42,12 +42,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// This sort of blends in with the use calls,
 	// so that it becomes clear that it cannot be
 	// done while RejectUse() returns true.
-	if (ctrl == CON_CMC_ItemConfig && status == CONS_Up)
+	if (ctrl == CON_CMC_ItemConfig)
 	{
 		var contents = this->GetHandItem(0);
 		if (contents
-		&& !contents->~RejectUse(this)
-		&&  contents->~ControlUseItemConfig(this, x, y))
+		&& !contents->~RejectUse(this) // FIXME: This can be a problem, because the item could miss the "release button" thing. 
+		                               // Needs normal use call system, in my opinion; Analyzed it: Use stuff is not flexible enough
+		                               // To support this kind of thing (at least not without complex changes) :/
+		                               // Also, maybe a "RejectItemConfig" makes more sense, who knows?
+		&&  contents->~ControlUseItemConfig(this, x, y, status))
 		{
 			return true;
 		}
