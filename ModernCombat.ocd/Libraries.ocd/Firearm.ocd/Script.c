@@ -887,6 +887,15 @@ public func DoMenuFiremodeSelection(int index)
 	ScheduleSetFiremode(index);
 }
 
+public func SetFiremode(int number, bool force)
+{
+	if (Contained())
+	{
+		Contained()->~OnInventoryChange();
+	}
+	return inherited(number, force);
+}
+
 /* --- Effects --- */
 
 func FireSound(object user, proplist firemode)
