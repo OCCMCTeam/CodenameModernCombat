@@ -63,7 +63,15 @@ public func GetListSelectionMenu()
 	}
 }
 
-// Opens the 
+/** 
+	Opens the menu.
+	
+	@par user This object uses the menu.
+	@par type This is and identifier that is used for handling multiple types of menus in the same object.
+	          Only one menu can be active at the same time, and the identifier is not saved in the menu,
+	          but the callback {@code GetListSelectionMenuEntries(object user, string type, proplist menu)}
+	          uses the identifier.
+ */
 public func OpenListSelectionMenu(object user, string type)
 {
 	// Close existing menu
@@ -95,8 +103,15 @@ public func OpenListSelectionMenu(object user, string type)
 	
 	main_menu->AdjustHeightToEntries()
 	         ->AlignCenterV()
-	         ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)) // Shift upwards by 2.5 items
-		     ->Update();
+	         ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)); // Shift upwards by 2.5 items
+	    
+	var delay = this->~DelayListSelectionMenu(user, type);
+	if (delay > 0)
+	{
+		main_menu->Hide();
+		ScheduleCall(this, this.ShowListSelectionMenu, delay);
+	}
+	main_menu->Update();
 	main_menu->GetList()->SelectEntry();
 }
 
@@ -111,8 +126,20 @@ public func CloseListSelectionMenu(bool cancelled)
 		}
 		cmc_list_selection_menu.menu->Close();
 		if (cmc_list_selection_menu.user) cmc_list_selection_menu.user->MenuClosed();
+		ClearScheduleCall(this, this.ShowListSelectionMenu);
 	}
 	cmc_list_selection_menu = nil;
+}
+
+/**
+	Shows a hidden menu, if it is open.
+ */
+public func ShowListSelectionMenu()
+{
+	if (cmc_list_selection_menu)
+	{
+		cmc_list_selection_menu.menu->Show()->Update();
+	}
 }
 
 public func ScrollListSelectionMenu(bool backward)

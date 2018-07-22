@@ -870,6 +870,15 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	}
 }
 
+private func DelayListSelectionMenu(object user, string type)
+{
+	if (type == "FiremodeSelection")
+	{
+		return 5;
+	}
+	return _inherited(user, type);
+}
+
 public func DoMenuFiremodeNothing(){}
 
 public func DoMenuFiremodeSelection(int index)
