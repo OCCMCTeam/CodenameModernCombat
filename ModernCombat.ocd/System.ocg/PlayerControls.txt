@@ -16,6 +16,7 @@
 	
 	[ControlDef]
 	Identifier=CMC_DrawGrenade
+	Hold=1
 	
 	[ControlDef]
 	Identifier=CMC_ItemConfig

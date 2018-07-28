@@ -6,7 +6,8 @@
 #include CMC_Library_GrenadeBelt
 #include CMC_Library_AffectedBySmokeGrenade
 #include CMC_Library_AffectedByStunGrenade
-#include Plugin_Firearm_DynamicSpread
+#include Plugin_Firearm_DynamicSpread 
+#include Library_ListSelectionMenu
 
 /* --- Engine callbacks --- */
 

@@ -1,1 +1,4 @@
 MsgNoGrenadesInBelt=No more grenades!
+
+ConfigureGrenades=Manage grenades
+DrawGrenade=Draw grenade
