@@ -814,12 +814,12 @@ public func IsAutoFiring()
 
 public func ControlUseItemConfig(object user, int x, int y, int status)
 {
-	var cancel = this->~RejectUse(user);
+	var ready = !(this->~RejectUse(user));
 	if (status == CONS_Up)
 	{
-		CloseListSelectionMenu(cancel);
+		CloseListSelectionMenu(ready);
 	}
-	else if (!cancel)
+	else if (ready)
 	{
 		OpenListSelectionMenu(user, "FiremodeSelection");
 	}
@@ -861,7 +861,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			entry->SetIcon(current_ammo_type)
 			     ->SetCaption(name)
 			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
-			     ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu, false))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+			     ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
 			     ->SetCallbackOnMenuClosed(DefineCallback(this.DoMenuFiremodeSelection, index)) // Closing the menu selects the entry
 			     ->SetScrollHint(true);
 			list->AddEntry(name, entry);

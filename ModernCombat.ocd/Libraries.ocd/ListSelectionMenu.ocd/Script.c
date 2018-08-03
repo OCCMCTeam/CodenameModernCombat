@@ -29,7 +29,7 @@ func ControlMenu(object user, int control, int x, int y, int strength, bool repe
 	{
 		if (control == CON_GUIClick1 || control == CON_GUIClick2)
 		{
-			CloseListSelectionMenu();
+			CloseListSelectionMenu(true);
 		}
 		else if (control == CON_InventoryShiftForward)
 		{
@@ -74,8 +74,8 @@ public func GetListSelectionMenu()
  */
 public func OpenListSelectionMenu(object user, string type)
 {
-	// Close existing menu
-	CloseListSelectionMenu(true);
+	// Close existing menu, no callback
+	CloseListSelectionMenu();
 	
 	// If another menu is already open cancel the action.
 	if (user->~GetMenu())
@@ -115,12 +115,12 @@ public func OpenListSelectionMenu(object user, string type)
 	main_menu->GetList()->SelectEntry();
 }
 
-public func CloseListSelectionMenu(bool cancelled)
+public func CloseListSelectionMenu(bool do_callback) // Do callback only if everything is OK. Is more readable and logically when coding conditions for this use case. 
 {
 	if (cmc_list_selection_menu)
 	{
 		var selected_entry = cmc_list_selection_menu.menu->GetList()->GetSelectedEntry();
-		if (selected_entry && !cancelled)
+		if (selected_entry && do_callback)
 		{
 			selected_entry->~OnMenuClosedCall();
 		}

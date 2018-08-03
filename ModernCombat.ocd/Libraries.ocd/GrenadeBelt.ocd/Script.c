@@ -207,14 +207,14 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 	if (control == CON_CMC_DrawGrenade && !this->~IsRespawning())
 	{
 		// Has to be walking, jumping, not scaling
-		var cancel = !(this->~HasActionProcedure(false));
+		var ready = this->~HasActionProcedure(false);
 
 		// Close or open menu
 		if (status == CONS_Up)
 		{
-			this->~CloseListSelectionMenu(cancel);
+			this->~CloseListSelectionMenu(ready);
 		}
-		else if (!cancel)
+		else if (ready)
 		{
 			this->~OpenListSelectionMenu(this, "GrenadeSelection");
 		}
@@ -258,7 +258,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			}
 			entry->SetCaption(default_action)
 			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, default_action))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
-			     ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, false))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+			     ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
 			     ->SetCallbackOnMenuClosed(this->DefineCallback(this.TakeGrenade, current_type)) // Closing the menu selects the entry
 			     ->SetScrollHint(true);
 			list->AddEntry(default_action, entry);
@@ -300,7 +300,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				else
 				{
 				     entry->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
-				          ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, false))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+				          ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
 				          ->SetCallbackOnMenuClosed(this->DefineCallback(this.SetCurrentGrenadeType, grenade_type)); // Closing the menu selects the entry
 				}
 				list->AddEntry(name, entry);
