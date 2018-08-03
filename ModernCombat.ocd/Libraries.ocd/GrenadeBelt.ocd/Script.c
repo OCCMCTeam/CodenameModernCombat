@@ -107,6 +107,10 @@ public func DoGrenadeCount(type, int change)
 {
 	if (GetType(type) == C4V_Def)
 	{
+		if (GetCurrentGrenadeType() == nil)
+		{
+			SetCurrentGrenadeType(type);
+		}
 		return DoGrenadeCount(Format("%v", type), change);
 	}
 	else if (GetType(type) == C4V_String)
@@ -142,7 +146,7 @@ public func GetGrenadeCount(id type)
 {
 	if (type)
 	{
-		return cmc_grenade_belt.grenades[Format("%v", type)];
+		return cmc_grenade_belt.grenades[Format("%v", type)] ?? 0;
 	}
 	else
 	{
@@ -248,6 +252,10 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			// Add entry for drawing the current grenade type
 			var entry = list->MakeEntryProplist();
 			var default_action = "$DrawGrenade$";
+			if (current_type)
+			{
+				default_action = Format("%s (<c %x>%s</c>)", default_action, GUI_CMC_Text_Color_Highlight, current_type->GetName());
+			}
 			entry->SetCaption(default_action)
 			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, default_action))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
 			     ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, false))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
@@ -261,7 +269,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			for (var grenade_type in available_types) 
 			{
 				var amount = GetGrenadeCount(grenade_type);
-				var disabled = amount == 0;
+				var disabled = (amount == 0);
 			
 				// Text and description
 				var text_color = nil;
@@ -279,7 +287,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				{
 					name = Format("<c %x>%s</c>", text_color, name);
 				}
-				
+
 				var entry = list->MakeEntryProplist();
 				entry->SetIcon(grenade_type)
 				     ->SetCaption(name)
@@ -304,6 +312,15 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	{
 		_inherited(user, type, main_menu, ...);
 	}
+}
+
+private func DelayListSelectionMenu(object user, string type)
+{
+	if (type == "GrenadeSelection")
+	{
+		return 5;
+	}
+	return _inherited(user, type);
 }
 
 // Find all grenade types
