@@ -16,6 +16,15 @@
 	@author Marky
 */
 
+/* --- Constants --- */
+
+// All menu types, for reference
+static const CMC_LIST_MENU_TYPE_FIREMODE_SELECTION = "FiremodeSelection";
+static const CMC_LIST_MENU_TYPE_GRENADE_SELECTION = "GrenadeSelection";
+
+// Delays for opening the menus, in frames
+static const CMC_LIST_MENU_DELAY_SHORT = 5;
+
 /* --- Properties --- */
 
 local cmc_list_selection_menu;

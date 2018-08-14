@@ -821,7 +821,7 @@ public func ControlUseItemConfig(object user, int x, int y, int status)
 	}
 	else if (ready)
 	{
-		OpenListSelectionMenu(user, "FiremodeSelection");
+		OpenListSelectionMenu(user, CMC_LIST_MENU_TYPE_FIREMODE_SELECTION);
 	}
 	return true;
 }
@@ -830,7 +830,7 @@ public func ControlUseItemConfig(object user, int x, int y, int status)
 // Opens the 
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	if (type == "FiremodeSelection")
+	if (type == CMC_LIST_MENU_TYPE_FIREMODE_SELECTION)
 	{
 		main_menu->SetHeaderCaption("$ConfigureFirearm$");
 		
@@ -907,9 +907,9 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 
 private func DelayListSelectionMenu(object user, string type)
 {
-	if (type == "FiremodeSelection")
+	if (type == CMC_LIST_MENU_TYPE_FIREMODE_SELECTION)
 	{
-		return 5;
+		return CMC_LIST_MENU_DELAY_SHORT;
 	}
 	return _inherited(user, type);
 }

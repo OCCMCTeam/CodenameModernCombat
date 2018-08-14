@@ -216,7 +216,7 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 		}
 		else if (ready)
 		{
-			this->~OpenListSelectionMenu(this, "GrenadeSelection");
+			this->~OpenListSelectionMenu(this, CMC_LIST_MENU_TYPE_GRENADE_SELECTION);
 		}
 		
 		// While not respawning block the option menu always!
@@ -229,7 +229,7 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 // Opens the menu
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	if (type == "GrenadeSelection")
+	if (type == CMC_LIST_MENU_TYPE_GRENADE_SELECTION)
 	{
 		main_menu->SetHeaderCaption("$ConfigureGrenades$");
 		
@@ -316,9 +316,9 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 
 private func DelayListSelectionMenu(object user, string type)
 {
-	if (type == "GrenadeSelection")
+	if (type == CMC_LIST_MENU_TYPE_GRENADE_SELECTION)
 	{
-		return 5;
+		return CMC_LIST_MENU_DELAY_SHORT;
 	}
 	return _inherited(user, type);
 }
