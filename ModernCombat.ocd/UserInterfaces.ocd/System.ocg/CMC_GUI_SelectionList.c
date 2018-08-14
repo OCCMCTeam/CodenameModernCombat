@@ -12,6 +12,10 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 
 	Assemble = func ()
 	{
+		this.Settings = {
+			ClickAfterHotkey = false,
+			ClickAfterScroll = false,
+		};
 		this.Components = [];
 		SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Width         // Width for text
 		                            + GUI_CMC_Element_SelectionList_Margin_H * 2  // Outside margin left/right

@@ -156,6 +156,11 @@ public func ScrollListSelectionMenu(bool backward)
 	if (cmc_list_selection_menu)
 	{
 		cmc_list_selection_menu.menu->GetList()->SelectNextEntry(backward);
+			
+		if (cmc_list_selection_menu.menu.Settings.ClickAfterScroll)
+		{
+			cmc_list_selection_menu.menu->GetList()->GetSelectedEntry()->~OnClickCall();
+		}
 	}
 }
 
@@ -172,6 +177,11 @@ public func PressListSelectionMenuHotkey(int control)
 		if (nil != entry_index)
 		{
 			cmc_list_selection_menu.menu->GetList()->SelectEntry(nil, entry_index);
+			
+			if (cmc_list_selection_menu.menu.Settings.ClickAfterHotkey)
+			{
+				cmc_list_selection_menu.menu->GetList()->GetSelectedEntry()->~OnClickCall();
+			}
 		}
 	}
 }

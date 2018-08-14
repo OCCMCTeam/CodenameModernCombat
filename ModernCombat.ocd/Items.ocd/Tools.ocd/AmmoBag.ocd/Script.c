@@ -116,6 +116,7 @@ public func OpenListSelectionMenu(object user, string type)
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
 	main_menu->SetHeaderCaption("$TakeAmmo$");
+	main_menu.Settings.ClickAfterHotkey = true;
 
 	// Fill with contents
 	var available_types = GetAvailableAmmoTypes();
