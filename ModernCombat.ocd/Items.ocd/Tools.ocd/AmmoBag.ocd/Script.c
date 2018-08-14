@@ -77,20 +77,42 @@ func ControlUse(object user, int x, int y)
 	// User has to be ready to act
 	if (user->~HasActionProcedure())
 	{
-		// No ammo and cannot refill? Destroy
-		if (RemoveEmptyAmmoBag(user))
-		{
-			return true;
-		}
-
-		user->SetComDir(COMD_Stop);
 		OpenListSelectionMenu(user);
 	}
 	return true;
 }
 
+/* Cannot use yet, because I have to handle the menu differently between use and hold control. Might not be that good of an option anyway?
+public func ControlUseItemConfig(object user, int x, int y, int status)
+{
+	var ready = user->~HasActionProcedure();
+	if (status == CONS_Up)
+	{
+		CloseListSelectionMenu(ready);
+	}
+	else if (ready)
+	{
+		OpenListSelectionMenu(user);
+	}
+	return true;
+}*/
 
-// Opens the 
+
+public func OpenListSelectionMenu(object user, string type)
+{
+	// No ammo and cannot refill? Destroy
+	if (RemoveEmptyAmmoBag(user))
+	{
+		return CloseListSelectionMenu();
+	}
+	else
+	{
+		user->SetComDir(COMD_Stop);
+		return _inherited(user, type, ...);
+	}
+}
+
+// Adds the menu entries to the menu 
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
 	main_menu->SetHeaderCaption("$TakeAmmo$");
