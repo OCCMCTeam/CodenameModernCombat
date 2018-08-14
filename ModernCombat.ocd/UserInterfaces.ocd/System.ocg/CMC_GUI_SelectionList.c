@@ -110,6 +110,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 			Bottom = size->ToString(),
 			
 			Margin = [GuiDimensionCmc(nil, 2)->ToString()],
+			Style = GUI_TextBottom | GUI_TextRight,
 		};
 		this.caption =
 		{
@@ -131,6 +132,19 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 	SetCaption = func (string text)
 	{
 		this.caption.Text = text;
+		return this;
+	},
+	
+	SetCount = func (int amount)
+	{
+		if (nil == amount || 0 == amount)
+		{
+			this.icon.Text = nil;
+		}
+		else
+		{
+			this.icon.Text = Format("%dx", amount);
+		}
 		return this;
 	},
 	

@@ -147,10 +147,11 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				call_on_click = this.CreateNothing;
 			}
 			
-			var name = Format("<c %x>%s (%dx)</c>", text_color, ammo_type->GetName(), ammo_info.ammo_count);
+			var name = Format("<c %x>%s</c>", text_color, ammo_type->GetName());
 			var entry = ammo_list->MakeEntryProplist();
 			entry->SetIcon(ammo_type)
 			     ->SetCaption(name)
+			     ->SetCount(ammo_info.ammo_count)
 			     ->SetCallbackOnClick(DefineCallback(call_on_click, user, ammo_type))
 			     ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, ammo_type))
 			     ->SetScrollHint(true);

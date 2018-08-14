@@ -282,7 +282,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				{
 					text_color = GUI_CMC_Text_Color_Inactive;
 				}
-				var name = Format("%s (%dx)", grenade_type->GetName(), amount); // TODO: Workaround until item count is implemented
+				var name = Format("%s", grenade_type->GetName(), amount);
 				if (text_color)
 				{
 					name = Format("<c %x>%s</c>", text_color, name);
@@ -291,6 +291,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				var entry = list->MakeEntryProplist();
 				entry->SetIcon(grenade_type)
 				     ->SetCaption(name)
+				     ->SetCount(amount)
 				     ->SetScrollHint(true);
 
 				if (disabled)
