@@ -1,1 +1,3 @@
 ConfigureFirearm=Waffe konfigurieren
+ChangeFireTechnique=Feuertechnik wechseln
+OnlyOneFireTechnique=nicht möglich

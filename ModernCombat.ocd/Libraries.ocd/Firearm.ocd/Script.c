@@ -830,44 +830,79 @@ public func ControlUseItemConfig(object user, int x, int y, int status)
 // Opens the 
 public func GetListSelectionMenuEntries(object user, string type, proplist main_menu)
 {
-	main_menu->SetHeaderCaption("$ConfigureFirearm$");
-	
-	// Fill with contents
-	var available_modes = GetAvailableFiremodes();
-	if (GetLength(available_modes) == 0)
+	if (type == "FiremodeSelection")
 	{
-		FatalError("CMC Firearm Library: No firemodes available...");
-	}
-	else
-	{
-		var list = main_menu->GetList();
+		main_menu->SetHeaderCaption("$ConfigureFirearm$");
 		
-		var last_ammo_type = nil;
-		for (var firemode in available_modes) 
+		// Fill with contents
+		var available_modes = GetAvailableFiremodes();
+		if (GetLength(available_modes) == 0)
 		{
-			// Separate ammo types by an empty line
-			var current_ammo_type = firemode->GetAmmoID();
-			if (last_ammo_type && last_ammo_type != current_ammo_type)
+			FatalError("CMC Firearm Library: No firemodes available...");
+		}
+		else
+		{
+			var list = main_menu->GetList();
+			var current_mode = GetFiremode();
+
+			// Add entry for changing the current fire technique
+			var next_index = -1;
+			for (var next_mode in available_modes)
 			{
-				list->AddEntry(nil, list->MakeSeparatorProplist());
+				if (next_mode->GetAmmoID() == current_mode->GetAmmoID()
+				&& (next_mode->GetIndex() != current_mode->GetIndex()))
+				{
+					next_index = next_mode->GetIndex();
+					break;
+				}
 			}
-			last_ammo_type = current_ammo_type;
-		
-			// Text and description
-			var name = GuiGetFiremodeString(firemode);
-			var index = firemode->GetIndex();
+			var default_entry = list->MakeEntryProplist();
+			var default_action = "$ChangeFireTechnique$";
+			if (next_index > -1)
+			{
+				default_action = Format("%s (<c %x>%s</c>)", default_action, GUI_CMC_Text_Color_Highlight, GetFiremode(next_index)->GetName());
+			    default_entry->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, default_action))             // Select the entry by hovering; the other possibilities are scrolling and hotkey
+			                 ->SetCallbackOnClick(this->DefineCallback(this.CloseListSelectionMenu, true))              // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+			                 ->SetCallbackOnMenuClosed(this->DefineCallback(this.DoMenuFiremodeSelection, next_index)); // Closing the menu selects the entry
+			}
+			else
+			{
+				default_action = Format("<c %x>%s ($OnlyOneFireTechnique$)</c>", GUI_CMC_Text_Color_Inactive, default_action);
+				default_entry.SetSelected = CMC_GUI_SelectionListSeparator.SetSelected; // Overwrite selection thing, so that the entry cannot be selected
+			}
+			default_entry->SetCaption(default_action)
+			             ->SetScrollHint(true);
+			list->AddEntry(default_action, default_entry);
+			this->~SetListSelectionMenuHotkey(default_entry, 9);
 			
-			var entry = list->MakeEntryProplist();
-			entry->SetIcon(current_ammo_type)
-			     ->SetCaption(name)
-			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
-			     ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
-			     ->SetCallbackOnMenuClosed(DefineCallback(this.DoMenuFiremodeSelection, index)) // Closing the menu selects the entry
-			     ->SetScrollHint(true);
-			list->AddEntry(name, entry);
-			SetListSelectionMenuHotkey(entry, index);
+			var last_ammo_type = nil;
+			for (var firemode in available_modes) 
+			{
+				// Separate ammo types by an empty line
+				var current_ammo_type = firemode->GetAmmoID();
+				if (last_ammo_type && last_ammo_type != current_ammo_type)
+				{
+					list->AddEntry(nil, list->MakeSeparatorProplist());
+				}
+				last_ammo_type = current_ammo_type;
+			
+				// Text and description
+				var name = GuiGetFiremodeString(firemode);
+				var index = firemode->GetIndex();
+				
+				var entry = list->MakeEntryProplist();
+				entry->SetIcon(current_ammo_type)
+				     ->SetCaption(name)
+				     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, name))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
+				     ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu, true))        // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+				     ->SetCallbackOnMenuClosed(DefineCallback(this.DoMenuFiremodeSelection, index)) // Closing the menu selects the entry
+				     ->SetScrollHint(true);
+				list->AddEntry(name, entry);
+				SetListSelectionMenuHotkey(entry, index);
+			}
 		}
 	}
+	return _inherited(user, type, main_menu, ...);
 }
 
 private func DelayListSelectionMenu(object user, string type)
