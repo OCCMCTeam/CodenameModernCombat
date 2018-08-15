@@ -12,7 +12,7 @@ public func SetCMCDefaults()
 	    ->SetHipFireAimingAnimation("AimArmsGeneric.R")
 	    ->SetIronsightTransition(WEAPON_AIM_TRANS_BLND)
 	    ->SetIronsightDelay(15)
-	    ->SetIronsightAimingAnimation("AimPistol")
+	    ->SetIronsightAimingAnimation("MusketAimArms")
 	    ->SetProneTransition(WEAPON_AIM_TRANS_BLND)
 	    ->SetProneDelay(20)
 	    ->SetProneAimingAnimation("ProneAim");

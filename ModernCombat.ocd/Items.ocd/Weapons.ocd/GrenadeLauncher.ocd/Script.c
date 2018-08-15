@@ -62,78 +62,68 @@ public func GetCarrySpecial(clonk)
 func FiremodeGrenades()
 {
 	var mode = new Library_Firearm_Firemode {};
-	
+
+	mode->SetCMCDefaults()
 	// Generic info
-	mode->SetMode(WEAPON_FM_Single);
-
+	->SetMode(WEAPON_FM_Single)
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Grenades);
-	mode.ammo_load = 8;
-	mode->SetRecoveryDelay(60);
-	mode->SetReloadDelay(210);
-	mode->SetDamage(20);
-
+	->SetAmmoID(CMC_Ammo_Grenades)
+	->SetRecoveryDelay(60)
+	->SetReloadDelay(210)
+	->SetDamage(20)
 	// Projectile
-	mode->SetProjectileSpeed(120);
-	mode->SetProjectileDistance(12);
-	mode->SetYOffset(-6);
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("MusketAimArms");
-	mode->SetForwardWalkingSpeed(95);
-	mode->SetBackwardWalkingSpeed(65);
-	
+	->SetProjectileSpeed(120)
+	->SetProjectileDistance(12)
+	->SetYOffset(-6)
 	// Spread
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(270));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(80));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(400));
-
+	->SetSpreadPerShot(ProjectileDeviationCmc(270))
+	->SetSpreadBySelection(ProjectileDeviationCmc(80))
+	->SetSpreadLimit(ProjectileDeviationCmc(400))
 	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone]);
-
+	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
+	->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
+
+	mode.ammo_load = 8;
+
 	return mode;
 }
 
 func FiremodeGrenades_Explosive()
 {
 	var mode = FiremodeGrenades();
-	
+
 	// Generic info
-	mode->SetName("$Explosive$");
-	
+	mode->SetName("$Explosive$")
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_ExplosiveShell);
+	->SetProjectileID(CMC_Projectile_ExplosiveShell);
+
 	return mode;
 }
 
 func FiremodeGrenades_Cluster()
 {
 	var mode = FiremodeGrenades();
-	
+
 	// Generic info
-	mode->SetName("$Cluster$");
-	
+	mode->SetName("$Cluster$")
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_FragmentationShell);
+	->SetProjectileID(CMC_Projectile_FragmentationShell);
+
 	return mode;
 }
 
 func FiremodeGrenades_Smoke()
 {
 	var mode = FiremodeGrenades();
-	
+
 	// Generic info
-	mode->SetName("$Smoke$");
-	
+	mode->SetName("$Smoke$")
 	// Grenade
-	mode->SetProjectileID(CMC_Projectile_SmokeShell);
+	->SetProjectileID(CMC_Projectile_SmokeShell);
+
 	return mode;
 }
-
 
 /* --- Effects --- */
 

@@ -61,56 +61,47 @@ func FiremodeBullets()
 {
 	var mode = new Library_Firearm_Firemode {};
 
+	mode->SetCMCDefaults()
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Bullets);
-	mode.ammo_load = 20;
-	mode->SetCooldownDelay(30);
-	mode->SetRecoveryDelay(1);
-	mode->SetReloadDelay(75);
-	mode->SetDamage(10);
-
+	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetCooldownDelay(30)
+	->SetRecoveryDelay(1)
+	->SetReloadDelay(75)
+	->SetDamage(10)
 	// Projectile
-	mode->SetProjectileAmount(5); // 5 per shot
-	mode->SetProjectileID(CMC_Projectile_Bullet);
-	mode->SetProjectileSpeed([250, 270]);
-	mode->SetProjectileRange(300);
-	mode->SetProjectileDistance(12);
-	mode->SetYOffset(-6);
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("MusketAimArms");
-	mode->SetForwardWalkingSpeed(95);
-	mode->SetBackwardWalkingSpeed(65);
-	
+	->SetProjectileAmount(5) // 5 per shot
+	->SetProjectileID(CMC_Projectile_Bullet)
+	->SetProjectileSpeed([250, 270])
+	->SetProjectileRange(300)
+	->SetProjectileDistance(12)
+	->SetYOffset(-6)
 	// Spread
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(150));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(320));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(570));
-	mode->SetProjectileSpread(ProjectileDeviationCmc(120));
-
+	->SetSpreadPerShot(ProjectileDeviationCmc(150))
+	->SetSpreadBySelection(ProjectileDeviationCmc(320))
+	->SetSpreadLimit(ProjectileDeviationCmc(570))
+	->SetProjectileSpread(ProjectileDeviationCmc(120))
 	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone]);
-
+	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::Shotgun::Fire?");
-
+	->SetFireSound("Items::Weapons::Shotgun::Fire?")
 	// Ammo name override, CMC custom
-	mode->SetAmmoName("$Pellets$");
+	->SetAmmoName("$Pellets$");
+
+	mode.ammo_load = 20;
+
 	return mode;
 }
 
 func FiremodeBullets_TechniqueSpreadshot()
 {
 	var mode = FiremodeBullets();
-	
+
 	// Generic info
-	mode->SetName("$SpreadShot$");
-	mode->SetMode(WEAPON_FM_Single);
+	mode->SetName("$SpreadShot$")
+	->SetMode(WEAPON_FM_Single);
+
 	return mode;
 }
-
 
 /* --- Effects --- */
 

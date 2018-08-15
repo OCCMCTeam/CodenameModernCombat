@@ -66,6 +66,8 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Generic info
 	->SetMode(WEAPON_FM_Single)
+	// Aiming
+	->SetIronsightAimingAnimation("AimPistol")
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
 	->SetRecoveryDelay(5)
@@ -89,54 +91,51 @@ func FiremodeBullets_TechniqueSingle()
 	var mode = FiremodeBullets();
 
 	// Generic info
-	mode->SetName("$Single$");
-	mode->SetProjectileID(CMC_Projectile_Bullet);
-	
+	mode->SetName("$Single$")
+	->SetProjectileID(CMC_Projectile_Bullet)
 	// Reloading
-	mode.ammo_load = 15; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode->SetReloadDelay(40);
-	mode->SetDamage(11);
-	
+	->SetReloadDelay(40)
+	->SetDamage(11)
 	// Projectile
-	mode->SetProjectileSpeed(250);
-	mode->SetProjectileRange(450);
-	
+	->SetProjectileSpeed(250)
+	->SetProjectileRange(450)
 	// Spread
-	mode->SetSpread(ProjectileDeviationCmc(20));
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(70));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(30));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(220));
-	
+	->SetSpread(ProjectileDeviationCmc(20))
+	->SetSpreadPerShot(ProjectileDeviationCmc(70))
+	->SetSpreadBySelection(ProjectileDeviationCmc(30))
+	->SetSpreadLimit(ProjectileDeviationCmc(220));
+
 	// Identification
 	mode.IsTracer = false;
+	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode.ammo_load = 15;
+
 	return mode;
 }
-
 
 func FiremodeBullets_TechniqueTracerDart()
 {
 	var mode = FiremodeBullets();
 
 	// Generic info
-	mode->SetName("$TracerDart$");
-	mode->SetProjectileID(CMC_Projectile_TracerDart);
-
+	mode->SetName("$TracerDart$")
+	->SetProjectileID(CMC_Projectile_TracerDart)
 	// Reloading
-	mode.ammo_load = 1; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode->SetReloadDelay(90);
-	mode->SetDamage(0);
-	
+	->SetReloadDelay(90)
+	->SetDamage(0)
 	// Projectile
-	mode->SetProjectileSpeed(180);
-	mode->SetProjectileRange(1000);
-	
+	->SetProjectileSpeed(180)
+	->SetProjectileRange(1000)
 	// Spread
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(60));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(10));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(200));
-	
+	->SetSpreadPerShot(ProjectileDeviationCmc(60))
+	->SetSpreadBySelection(ProjectileDeviationCmc(10))
+	->SetSpreadLimit(ProjectileDeviationCmc(200));
+
 	// Identification
 	mode.IsTracer = true;
+	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode.ammo_load = 1;
+
 	return mode;
 }
 

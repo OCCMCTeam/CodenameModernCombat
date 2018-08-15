@@ -64,60 +64,52 @@ public func GetCarrySpecial(clonk)
 func FiremodeMissiles()
 {
 	var mode = new Library_Firearm_Firemode {};
-	
+
+	mode->SetCMCDefaults()
 	// Generic info
-	mode->SetMode(WEAPON_FM_Single);
-
+	->SetMode(WEAPON_FM_Single)
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Missiles);
-	mode.ammo_load = 1;
-	mode->SetCooldownDelay(200);
-	mode->SetRecoveryDelay(1);
-	mode->SetReloadDelay(150);
-	mode->SetDamage(0);
-
+	->SetAmmoID(CMC_Ammo_Missiles)
+	->SetCooldownDelay(200)
+	->SetRecoveryDelay(1)
+	->SetReloadDelay(150)
+	->SetDamage(0)
 	// Projectile
-	mode->SetProjectileID(CMC_Projectile_Missile);
-	mode->SetProjectileSpeed(100);
-	mode->SetProjectileRange(10000);
-	mode->SetProjectileDistance(12);
-	mode->SetYOffset(-6);
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("MusketAimArms");
-	mode->SetForwardWalkingSpeed(95);
-	mode->SetBackwardWalkingSpeed(65);
-	
+	->SetProjectileID(CMC_Projectile_Missile)
+	->SetProjectileSpeed(100)
+	->SetProjectileRange(10000)
+	->SetProjectileDistance(12)
+	->SetYOffset(-6)
 	// Spread
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(300));
-
+	->SetSpreadPerShot(ProjectileDeviationCmc(300))
 	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone]);
-
+	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::RocketLauncher::Fire?");
-	mode->SetHipShootingDisabled(true);
+	->SetFireSound("Items::Weapons::RocketLauncher::Fire?")
+	->SetHipShootingDisabled(true);
+
+	mode.ammo_load = 1;
+
 	return mode;
 }
 
 func FiremodeMissiles_TechniqueOptical()
 {
 	var mode = FiremodeMissiles();
-	
+
 	// Generic info
 	mode->SetName("$Optical$");
+
 	return mode;
 }
-
 
 func FiremodeMissiles_TechniqueUnguided()
 {
 	var mode = FiremodeMissiles();
-	
+
 	// Generic info
 	mode->SetName("$Unguided$");
+
 	return mode;
 }
 
@@ -204,7 +196,7 @@ func AimOpticalReset()
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object user, int x, int y)
 {
-	if (is_in_ironsight && CanFiremodeGuide())
+	if (IsAiming() && CanFiremodeGuide())
 	{
 		AimOptical(user, x, y);
 	}
@@ -215,13 +207,7 @@ public func ControlUseAiming(object user, int x, int y)
 	return inherited(user, x, y);
 }
 
-public func CancelIronsight(object user)
-{
-	AimOpticalReset();
-	return inherited(user, ...);
-}
-
-public func StopIronsight(object user)
+public func StopAiming(object user)
 {
 	AimOpticalReset();
 	return inherited(user, ...);

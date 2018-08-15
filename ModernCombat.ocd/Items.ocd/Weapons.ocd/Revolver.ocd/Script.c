@@ -62,52 +62,45 @@ func FiremodeBullets()
 {
 	var mode = new Library_Firearm_Firemode {};
 
+	mode->SetCMCDefaults()
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Bullets);
-	mode.ammo_load = 6; //FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode->SetCooldownDelay(15);
-	mode->SetRecoveryDelay(1);
-	mode->SetReloadDelay(90);
-	mode->SetDamage(24);
-
+	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetCooldownDelay(15)
+	->SetRecoveryDelay(1)
+	->SetReloadDelay(90)
+	->SetDamage(24)
+	// Aiming
+	->SetIronsightAimingAnimation("AimPistol")
 	// Projectile
-	mode->SetProjectileID(CMC_Projectile_Bullet);
-	mode->SetProjectileSpeed(250);
-	mode->SetProjectileRange(400);
-	mode->SetProjectileDistance(8);
-	mode->SetYOffset(-6);
-
-	// Hip shooting
-	mode->SetHipFireAimingAnimation("AimArmsGeneric.R");
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("AimPistol");
-	mode->SetForwardWalkingSpeed(95);
-	mode->SetBackwardWalkingSpeed(65);
-	
+	->SetProjectileID(CMC_Projectile_Bullet)
+	->SetProjectileSpeed(250)
+	->SetProjectileRange(400)
+	->SetProjectileDistance(8)
+	->SetYOffset(-6)
 	// Spread
-	mode->SetSpread(ProjectileDeviationCmc(20));
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(110));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(30));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(220));
-	
+	->SetSpread(ProjectileDeviationCmc(20))
+	->SetSpreadPerShot(ProjectileDeviationCmc(110))
+	->SetSpreadBySelection(ProjectileDeviationCmc(30))
+	->SetSpreadLimit(ProjectileDeviationCmc(220))
 	// Crosshair, CMC Custom
-	mode->SetAimCursor(CMC_Cursor_Cone);
-
+	->SetAimCursor(CMC_Cursor_Cone)
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::Pistol::Fire?");
+	->SetFireSound("Items::Weapons::Pistol::Fire?");
+
+	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
+	mode.ammo_load = 6;
+
 	return mode;
 }
 
 func FiremodeBullets_TechniqueSingle()
 {
 	var mode = FiremodeBullets();
-	
+
 	// Generic info
-	mode->SetName("$Single$");
-	mode->SetMode(WEAPON_FM_Single);
+	mode->SetName("$Single$")
+	->SetMode(WEAPON_FM_Single);
+
 	return mode;
 }
 

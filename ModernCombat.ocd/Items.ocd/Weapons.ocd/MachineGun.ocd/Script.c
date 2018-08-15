@@ -63,69 +63,60 @@ func FiremodeBullets()
 {
 	var mode = new Library_Firearm_Firemode {};
 
+	mode->SetCMCDefaults()
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Bullets);
-	mode.ammo_load = 60;
-	mode->SetCooldownDelay(4);
-	mode->SetRecoveryDelay(4);
-	mode->SetReloadDelay(220);
-	mode->SetDamage(8);
-
+	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetCooldownDelay(4)
+	->SetRecoveryDelay(4)
+	->SetReloadDelay(220)
+	->SetDamage(8)
 	// Projectile
-	mode->SetProjectileID(CMC_Projectile_Bullet);
-	mode->SetProjectileSpeed(270);
-	mode->SetProjectileRange(750);
-	mode->SetProjectileDistance(12);
-	mode->SetYOffset(-6);
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("MusketAimArms");
-	mode->SetForwardWalkingSpeed(95);
-	mode->SetBackwardWalkingSpeed(65);
-	
+	->SetProjectileID(CMC_Projectile_Bullet)
+	->SetProjectileSpeed(270)
+	->SetProjectileRange(750)
+	->SetProjectileDistance(12)
+	->SetYOffset(-6)
 	// Spread
-	mode->SetSpread(ProjectileDeviationCmc(20));
-	mode->SetSpreadPerShot(ProjectileDeviationCmc(30));
-	mode->SetSpreadBySelection(ProjectileDeviationCmc(220));
-	mode->SetSpreadLimit(ProjectileDeviationCmc(420));
-
+	->SetSpread(ProjectileDeviationCmc(20))
+	->SetSpreadPerShot(ProjectileDeviationCmc(30))
+	->SetSpreadBySelection(ProjectileDeviationCmc(220))
+	->SetSpreadLimit(ProjectileDeviationCmc(420))
 	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone]);
-
+	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::MachineGun::Fire?");
+	->SetFireSound("Items::Weapons::MachineGun::Fire?");
+
+	mode.ammo_load = 60;
+
 	return mode;
 }
 
 func FiremodeBullets_TechniqueAuto()
 {
 	var mode = FiremodeBullets();
-	
+
 	// Generic info
-	mode->SetName("$Auto$");
-	mode->SetMode(WEAPON_FM_Auto);
+	mode->SetName("$Auto$")
+	->SetMode(WEAPON_FM_Auto);
+
 	return mode;
 }
-
 
 func FiremodeBullets_TechniqueBurst()
 {
 	var mode = FiremodeBullets();
-	
+
 	// Generic info
-	mode->SetName("$Burst$");
-	mode->SetMode(WEAPON_FM_Burst);
-	
+	mode->SetName("$Burst$")
+	->SetMode(WEAPON_FM_Burst)
 	// Burst
-	mode->SetDamage(mode->GetDamage() + 1);
-	mode->SetBurstAmount(4);
-	mode->SetCooldownDelay(mode->GetCooldownDelay() + 20);
-	mode->SetSpreadPerShot(mode->GetSpreadPerShot() + ProjectileDeviationCmc(10));
+	->SetDamage(mode->GetDamage() + 1)
+	->SetBurstAmount(4)
+	->SetCooldownDelay(mode->GetCooldownDelay() + 20)
+	->SetSpreadPerShot(mode->GetSpreadPerShot() + ProjectileDeviationCmc(10));
+
 	return mode;
 }
-
 
 /* --- Effects --- */
 
