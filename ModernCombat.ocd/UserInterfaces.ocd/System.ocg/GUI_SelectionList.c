@@ -7,28 +7,6 @@
 	@author Marky
  */
 
-static const GUI_SelectionList = new GUI_List
-{
-	SelectItem = func (identifier, int index)
-	{
-		if (identifier)
-		{
-			index = GetIndexOf(this.ListEntry_Ids, identifier);
-		}
-		index = index ?? 0;
-
-		if (index == -1)
-		{
-			FatalError("Tab not found");
-		}
-		
-		for (var i = 0; i < GetLength(this.ListEntry_Elements); ++i)
-		{
-			this.ListEntry_Elements[i]->SetSelected(i == index);
-		}
-	},
-};
-
 /* --- List menu entry --- */
 
 static const GUI_SelectionListEntry = new GUI_List2_Entry
