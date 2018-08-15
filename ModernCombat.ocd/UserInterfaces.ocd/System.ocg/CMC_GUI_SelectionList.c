@@ -206,7 +206,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 	},
 };
 
-static const CMC_GUI_SelectionListSeparator = new GUI_List2_Entry
+static const CMC_GUI_SelectionListSeparator = new GUI_List_Entry
 {
 	BackgroundColor = 0x81ffffff,
 

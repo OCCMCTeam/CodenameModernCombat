@@ -1,5 +1,5 @@
 /**
-	List menu prototype
+	List prototype
 	
 	@author Marky
  */
@@ -124,7 +124,7 @@ static const GUI_List = new GUI_Element
 	},
 };
 
-/* --- Tab button --- */
+/* --- List entry prototype --- */
 
 static const GUI_List_Entry = new GUI_Element
 {
@@ -203,4 +203,41 @@ static const GUI_List_Entry = new GUI_Element
 			DoCallback(this.ListEntry_Callback_OnMenuClosed);
 		}
 	}
+};
+
+/* --- List entry prototype, selectable --- */
+
+static const GUI_SelectionListEntry = new GUI_List_Entry
+{
+	// --- Properties
+
+	ListEntry_Selected = nil,
+	ListEntry_Callback_OnSelected = nil,
+
+	// --- Functions
+	
+	SetSelected = func (bool selected, bool skip_callback)
+	{
+		// Update the display
+		this.ListEntry_Selected = selected;
+		this->~UpdateEntry();
+		
+		// Issue a callback?
+		if (this.ListEntry_Callback_OnSelected && selected && !skip_callback)
+		{
+			DoCallback(this.ListEntry_Callback_OnSelected);
+		}
+		return this; // Return value of 'nil' means that the item cannot be selected/deselected
+	},
+	
+	IsSelected = func ()
+	{
+		return this.ListEntry_Selected;
+	},
+
+	SetCallbackOnSelected = func (array callback)
+	{
+		this.ListEntry_Callback_OnSelected = callback;
+		return this;
+	},
 };
