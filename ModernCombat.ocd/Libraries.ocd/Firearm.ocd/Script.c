@@ -50,7 +50,11 @@ func OnPressUse(object clonk, int x, int y)
 {
 	// If already aiming, just pass this button press along
 	if (IsAiming())
+	{
 		ContinueAiming(clonk, x, y, true);
+		// Call library default firing mechanic
+		DoFireCycle(clonk, x, y, false);
+	}
 	// Otherwise, start hip firing
 	else
 		StartAiming(clonk, WEAPON_AIM_TYPE_HIPFIRE, x, y);
@@ -59,14 +63,11 @@ func OnPressUse(object clonk, int x, int y)
 
 func OnHoldingUse(object clonk, int x, int y)
 {
-	return true;
-
 	// Autofiring weapons will continue to fire
 	if (IsAutoFiring())
 	{
-			DoIronsightFireCycle(clonk, x, y);
-			DoHipShootingFireCycle(clonk);
-
+		// Call library default firing mechanic
+		DoFireCycle(clonk, x, y, false);
 		// Adjust cursor
 		clonk->~UpdateCmcVirtualCursor(x, y);
 	}
@@ -283,7 +284,7 @@ func FinishAiming(object clonk, string aim_type, int x, int y)
 	current_aim_type = aim_type;
 	change_aiming = false;
 
-	Call(Format("Set%sAim", aim_type), clonk);
+	Call(Format("Set%sAim", aim_type), clonk, x, y);
 
 	ContinueAiming(clonk, x, y, true);
 }
@@ -391,10 +392,13 @@ func CheckHipFireTransition(object clonk)
 	return true;
 }
 
-func SetHipFireAim(object clonk)
+func SetHipFireAim(object clonk, int x, int y)
 {
 	ActivateAimingCursor(clonk);
 	this->CreateEffect(HipFireEffect, 1, 1, clonk);
+	// Fire away!
+	// Call library default firing mechanic
+	DoFireCycle(clonk, x, y, false);
 }
 
 func ContinueHipFireAim(object clonk, bool button_pressed)
@@ -538,40 +542,6 @@ func ActivateAimingCursor(object clonk)
 func DeactivateAimingCursor(object clonk)
 {
 	SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
-}
-
-/* --- Firing --- */
-
-func DoHipShootingFireCycle(object clonk)
-{
-	if (!IsReadyToFire())
-		return;
-
-	var x = aim_target[0] - clonk->GetX();
-	var y = aim_target[1] - clonk->GetY();
-
-	// Check if reload is necessary
-	if (!StartReload(clonk, x, y))
-		// Check if the weapon still needs charging
-		if (!StartCharge(clonk, x, y))
-			// Fire away
-			Fire(clonk, x, y);
-}
-
-func DoIronsightFireCycle(object clonk, int x, int y)
-{
-	if (!IsReadyToFire())
-		return;
-
-	var angle = GetAngle(x, y);
-	clonk->~SetAimPosition(angle);
-
-	// Check if reload is necessary
-	if (!StartReload(clonk, x, y))
-		// Check if the weapon still needs charging
-		if (!StartCharge(clonk, x, y))
-			// Fire away
-			Fire(clonk, x, y);
 }
 
 /* --- Ammo handling --- */
