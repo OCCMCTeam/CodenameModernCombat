@@ -18,31 +18,28 @@ static const WEAPON_AIM_TYPE_PRONE     = "Prone";
 static const WEAPON_AIM_TYPE_IRONSIGHT = "Ironsight";
 static const WEAPON_AIM_TYPE_HIPFIRE   = "HipFire";
 
-// Transition from carrying to ironsight
-static const WEAPON_FM_IronsightAnim =  0; // With an animtion
-static const WEAPON_FM_IronsightBlend = 1; // Animation blending
-static const WEAPON_FM_IronsightInst  = 2; // Instant ironsight
+// Different types of transition into aiming
+static const WEAPON_AIM_TRANS_INST = "Instant";   // Aiming is instant
+static const WEAPON_AIM_TRANS_ANIM = "Animation"; // Play an animation to transition into aiming
+static const WEAPON_AIM_TRANS_BLND = "Blend";     // Blend into aiming with a delay
 
 // Hip shooting stop delay when releasing the firing button
 static const WEAPON_HipFireDelay = 6 * 35;
 
 /* --- Variables --- */
 
-// Currently aiming / shooting from hips
-local hipfire = false;
+// Currently aiming
+local is_aiming = false;
+// True as long as in a transitional state between not aiming and aiming (is_aiming will be true as well)
+local aim_transition = false;
+// Saves the aiming type
+local current_aim_type;
+// True when the current aim stance changes into another (current_aim_type will be the old type)
+local change_aiming = false;
 // The shooting target position (in global coordinates)
 local aim_target;
-// The firing button is pressed during hip shooting
+// The firing button is pressed during hip shooting (special case for this aiming stance)
 local hipfire_pressed = false;
-// Ironsight is done or initiatied
-local ironsight = false;
-// Transition from carrying to ironsight is done, ready to fire
-local is_in_ironsight = false;
-// Prone aiming or initiated
-local prone_aim = false;
-// Transition from crawling to prone aim is done, ready to fire
-local is_in_prone_aim = false;
-
 // Menu for firemode selection
 local cmc_firemode_menu = nil;
 
@@ -51,23 +48,23 @@ local cmc_firemode_menu = nil;
 // Called by the shooter library in ControlUseStart
 func OnPressUse(object clonk, int x, int y)
 {
-	// Check if currently in ironsight aiming and if yes, fire a controlled shot
-	if (ironsight)
-		DoIronsightFireCycle(clonk, x, y);
+	// If already aiming, just pass this button press along
+	if (IsAiming())
+		ContinueAiming(clonk, x, y, true);
+	// Otherwise, start hip firing
 	else
-		StartHipShooting(clonk, x, y);
-
+		StartAiming(clonk, WEAPON_AIM_TYPE_HIPFIRE, x, y);
 	return true;
 }
 
 func OnHoldingUse(object clonk, int x, int y)
 {
+	return true;
+
 	// Autofiring weapons will continue to fire
 	if (IsAutoFiring())
 	{
-		if (ironsight)
 			DoIronsightFireCycle(clonk, x, y);
-		if (hipfire)
 			DoHipShootingFireCycle(clonk);
 
 		// Adjust cursor
@@ -79,8 +76,6 @@ func OnHoldingUse(object clonk, int x, int y)
 // Called by the shooter library in ControlUseStop
 func OnUseStop(object clonk, int x, int y)
 {
-	CheckHipShootingStop();
-
 	return true;
 }
 
@@ -89,10 +84,7 @@ func OnUseStop(object clonk, int x, int y)
 // but this will nonetheless be called by PauseAim() from the Aim Manager
 func OnUseCancel(object clonk, int x, int y)
 {
-	StopIronsight(clonk);
-	StopHipShooting(clonk);
-	StopProneAim(clonk);
-
+	StopAiming(clonk);
 	return true;
 }
 
@@ -107,20 +99,20 @@ public func IsIronsightToggled(int player)
 // Called by the shooter library in ControlUseAltStart
 func OnPressUseAlt(object clonk, int x, int y)
 {
-	if (ironsight)
+	if (IsAiming())
 	{
-		// If toggle setting is used, stop ironsight now
-		if (IsIronsightToggled(clonk->GetOwner()))
-			StopIronsight(clonk);
-		return true;
+		if (GetAimType() == WEAPON_AIM_TYPE_HIPFIRE)
+			ChangeAiming(clonk, WEAPON_AIM_TYPE_IRONSIGHT, x, y);
+		if (GetAimType() == WEAPON_AIM_TYPE_IRONSIGHT ||
+		    GetAimType() == WEAPON_AIM_TYPE_PRONE)
+			if (IsIronsightToggled(clonk->GetOwner()))
+				StopAiming(clonk);
+	} else {
+		if (clonk->IsProne())
+			StartAiming(clonk, WEAPON_AIM_TYPE_PRONE, x, y);
+		else
+			StartAiming(clonk, WEAPON_AIM_TYPE_IRONSIGHT, x, y);
 	}
-
-	// Check if the clonk can currently perform an action with hands
-	if (!clonk->IsWalking())
-		return true;
-
-	// Great. Go into ironsight aiming
-	StartIronSight(clonk, x, y);
 
 	return true;
 }
@@ -132,41 +124,10 @@ func OnHoldingUseAlt(object clonk, int x, int y)
 	if (IsIronsightToggled(clonk->GetOwner()))
 		return true; // Do nothing but prevent library default
 
-	// Shouldn't happen
-	if (!ironsight)
-		return true;
+	if (IsAiming())
+		ContinueAiming(clonk, x, y, true);
 
-	// Still transitioning into ironsight: wait
-	if (!is_in_ironsight)
-		return true;
-
-	// Aim!
-	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
-	angle = Normalize(angle, -180);
-	clonk->SetAimPosition(angle);
-}
-
-// Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
-public func ControlUseAiming(object clonk, int x, int y)
-{
-	if (!ironsight && !prone_aim)
-		return true;
-
-	if (!is_in_ironsight && !is_in_prone_aim)
-		return true;
-
-	if (!IsIronsightToggled())
-	{
-		// In this case, the control should never fire
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
-		return true;
-	}
-
-	// Aim!
-	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
-	angle = Normalize(angle, -180);
-	clonk->SetAimPosition(angle);
-	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
+	return true;
 }
 
 // Called by the shooter library in ControlUseAltStop
@@ -176,91 +137,281 @@ func OnUseAltStop(object clonk, int x, int y)
 	if (IsIronsightToggled(clonk->GetOwner()))
 		return true; // Do nothing but prevent library default
 
-	StopIronsight(clonk);
+	StopAiming(clonk);
 	return true;
 }
 
-/* --- Hip firing --- */
+/* --- Aiming --- */
 
-func StartHipShooting(object clonk, int x, int y)
+// Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
+public func ControlUseAiming(object clonk, int x, int y)
 {
-	if (GetFiremode()->~GetHipShootingDisabled())
-	{
-		if (hipfire)
-			StopHipShooting(clonk);
+	if (!IsAiming())
+		return true;
+
+	if (aim_transition)
+		return true;
+
+	if (change_aiming)
+		return true;
+
+	var button_pressed = false;
+	if (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0)
+		button_pressed = true;
+
+	ContinueAiming(clonk, x, y, button_pressed);
+	return true;
+}
+
+// Begin aiming
+public func StartAiming(object clonk, string aim_type, int x, int y)
+{
+	if (!clonk)
+		return FatalError("CMC Firearm Library: StartAiming was called without a valid clonk parameter.");
+	if (!aim_type)
+		return FatalError("CMC Firearm Library: StartAiming was called without a valid aim_type parameter.");
+
+	// Do not start a new aiming procedure if already aiming (this is what ChangeAiming is for)
+	if (is_aiming)
 		return;
+
+	// Check necessary requirements
+	if (!Call(Format("Can%sAim", aim_type), clonk))
+		return;
+
+	is_aiming = true;
+	aim_transition = true;
+
+	// Transition into aiming
+	var trans = GetFiremode()->Call(Format("Get%sTransition", aim_type));
+
+	if (trans == WEAPON_AIM_TRANS_INST)
+	{
+		FinishAiming(clonk, aim_type, x, y);
+		return;
+
+	} else if (trans == WEAPON_AIM_TRANS_ANIM)
+	{
+		var anim = GetFiremode()->Call(Format("Get%sAnimation", aim_type));
+		var delay = GetFiremode()->Call(Format("Get%sDelay", aim_type));
+
+		// Play animation for set amount of time
+		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
+
+	} else if (trans == WEAPON_AIM_TRANS_BLND)
+	{
+		var delay = GetFiremode()->Call(Format("Get%sDelay", aim_type));
+		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
+		var anim = GetFiremode()->Call(Format("Get%sAimingAnimation", aim_type));
+		var length = clonk->GetAnimationLength(anim);
+		var y_offset = GetFiremode()->GetYOffset();
+		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
+		// Just to be sure, end all arms animations
+		if (current_anim != nil)
+			clonk->StopAnimation(current_anim);
+
+		// Blend current animation (most likely a movement animation) into aiming animation
+		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+
 	}
 
-	if (hipfire)
-		return ContinueHipShooting(clonk, x, y);
+	this->CreateEffect(AimingHelper, 1, delay, clonk, aim_type, [x, y], number);
+}
 
-	hipfire = true;
-	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
-	// Double check whether the use button is really held
-	// This function (or ControlUseStart) will also be called by the Clonk Use Control through ReIssueCommand
-	// But no release call will follow, possibly stucking the clonk in an endless hip aiming procedure
-	// TODO: possibly have a way to circumvent this for AI clonks (if ever needed)
-	if (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0)
-		hipfire_pressed = true;
+// Change one aiming stance into another
+public func ChangeAiming(object clonk, string new_type, int x, int y)
+{
+	if (!clonk)
+		return FatalError("CMC Firearm Library: ChangeAiming was called without a valid clonk parameter.");
+	if (!new_type)
+		return FatalError("CMC Firearm Library: ChangeAiming was called without a valid new_type parameter.");
+
+	// Should have called StartAiming instead!
+	if (!is_aiming)
+		return StartAiming(clonk, new_type, x, y);
+
+	// Check necessary requirements
+	if (!Call(Format("Can%sAim", new_type), clonk))
+		return;
+
+	aim_transition = true;
+	change_aiming = true;
+	Call(Format("Unset%sAim", current_aim_type), clonk);
+
+	// Transition into new aiming
+	var trans = GetFiremode()->Call(Format("Get%sTransition", new_type));
+
+	if (trans == WEAPON_AIM_TRANS_INST)
+	{
+		FinishAiming(clonk, new_type, x, y);
+		return;
+
+	} else if (trans == WEAPON_AIM_TRANS_ANIM)
+	{
+		var anim = GetFiremode()->Call(Format("Get%sAnimation", new_type));
+		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
+
+		// Play animation for set amount of time
+		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
+
+	} else if (trans == WEAPON_AIM_TRANS_BLND)
+	{
+		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
+		var anim = GetFiremode()->Call(Format("Get%sAimingAnimation", new_type));
+		var length = clonk->GetAnimationLength(anim);
+		var y_offset = GetFiremode()->GetYOffset();
+		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
+
+		// Blend current aiming animation into new aiming animation
+		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+
+	}
+
+	this->CreateEffect(AimingHelper, 1, delay, clonk, new_type, [x, y], number);
+}
+
+// Start the actual aiming procedure
+func FinishAiming(object clonk, string aim_type, int x, int y)
+{
+	if (change_aiming)
+		clonk->ChangeAim(this, aim_type);
 	else
-		hipfire_pressed = false;
+		clonk->StartAim(this, 0, aim_type);
+	ScheduleCall(clonk, "UpdateAttach", 1);
 
+	aim_transition = false;
+	current_aim_type = aim_type;
+	change_aiming = false;
+
+	Call(Format("Set%sAim", aim_type), clonk);
+
+	ContinueAiming(clonk, x, y, true);
+}
+
+// To be called every frame (preferably) during aiming
+func ContinueAiming(object clonk, int x, int y, bool button_pressed)
+{
 	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
 	angle = Normalize(angle, -180);
-	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_HIPFIRE);
 	clonk->SetAimPosition(angle);
-	clonk->UpdateAttach();
+	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 
-	this->CreateEffect(HipShootingEffect, 1, 1, clonk);
-
-	DoHipShootingFireCycle(clonk);
-	
-	// Adjust cursor
-	clonk->~UpdateCmcVirtualCursor(x, y);
+	Call(Format("~Continue%sAim", current_aim_type), clonk, button_pressed);
 }
 
-func CheckHipShootingStop()
+func FailedAiming(object clonk, string aim_type)
 {
-	if (!hipfire)
-		return;
-
-	// Take notice that the firing button was released
-	hipfire_pressed = false;
-	// The firing process will do the rest and stop aiming after a delay
+	is_aiming = false;
+	aim_transition = false;
+	current_aim_type = nil;
 }
 
-func StopHipShooting(object clonk)
+func StopAiming(object clonk)
 {
-	if (clonk && clonk->IsAiming())
+	if (clonk->IsAiming())
 		clonk->StopAim();
 
-	hipfire = false;
-	hipfire_pressed = false;
-
-	// This effect can get stuck on the clonk, preventing scaling and hangling
-	// because usually aiming and button presses are tied together
-	// Because hip shooting disconnects these two action, just make sure the effect is gone
-	if (clonk)
-		RemoveEffect("IntControlFreeHands", clonk);
-}
-
-func ContinueHipShooting(object clonk, int x, int y)
-{
-	var effect = GetEffect("HipShootingEffect", this);
-	if (!effect) // ???
+	var aim_type = current_aim_type;
+	if (!aim_type)
 	{
-		hipfire = false;
-		return StartHipShooting(clonk, x, y);
+		if (GetEffect("AimingHelper", this))
+		{
+			var effect = GetEffect("AimingHelper", this);
+			effect->Cancel();
+			effect.end_if_not_ended = true;
+		}
 	}
+	else
+		Call(Format("Unset%sAim", current_aim_type), clonk);
 
-	effect.timeout = 0;
-	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
-	hipfire_pressed = true;
-
-	DoHipShootingFireCycle(clonk);
+	is_aiming = false;
+	aim_transition = false;
+	current_aim_type = nil;
 }
 
-local HipShootingEffect = new Effect {
+local AimingHelper = new Effect {
+	Construction = func(object clonk, string aim_type, array pos, int anim)
+	{
+		this.clonk = clonk;
+		this.type = aim_type;
+		this.x = pos[0];
+		this.y = pos[1];
+		this.anim = anim;
+	},
+	Timer = func()
+	{
+		// This effect should end now if it hasn't ended (see Reset())
+		if (this.end_if_not_ended)
+			return FX_Execute_Kill;
+		// Aiming failed because of unknown things
+		if (!this.Target->Call(Format("Check%sTransition", this.type), this.clonk))
+		{
+			this.Target->FailedAiming(this.clonk, this.type);
+			return FX_Execute_Kill;
+		}
+		this.clonk->ResetAnimationEffects();
+		this.Target->FinishAiming(this.clonk, this.type, this.x, this.y);
+		return FX_Execute_Kill;
+	},
+	Cancel = func()
+	{
+		this.clonk->StopAnimation(this.anim);
+	}
+};
+
+/* --- Aim settings --- */
+
+// --- Hip fire aiming
+
+func CanHipFireAim(object clonk)
+{
+	if (!clonk || !clonk->GetAlive())
+		return false; // ???
+
+	// Check clonk
+	if (!clonk->IsWalking() && !clonk->IsJumping())
+		return false;
+
+	// Check weapon
+	if (GetFiremode()->~GetHipShootingDisabled())
+		return false;
+
+	return true;
+}
+
+func CheckHipFireTransition(object clonk)
+{
+	if (!clonk)
+		return false;
+	if (!clonk->GetAlive())
+		return false;
+	if (!clonk->IsWalking() && !clonk->IsJumping())
+		return false;
+
+	return true;
+}
+
+func SetHipFireAim(object clonk)
+{
+	ActivateAimingCursor(clonk);
+	this->CreateEffect(HipFireEffect, 1, 1, clonk);
+}
+
+func ContinueHipFireAim(object clonk, bool button_pressed)
+{
+	// Set this to true, to stop the effect from ending
+	// The effect sets this to false every frame
+	if (button_pressed)
+		hipfire_pressed = true;
+}
+
+func UnsetHipFireAim(object clonk)
+{
+	DeactivateAimingCursor(clonk);
+	RemoveEffect("HipFireEffect", this, nil, true);
+}
+
+local HipFireEffect = new Effect {
 	Construction = func (object clonk) {
 		// Time duration in which no firing command was issued
 		this.timeout = 0;
@@ -274,24 +425,122 @@ local HipShootingEffect = new Effect {
 			this.timeout++;
 			if (this.timeout >= WEAPON_HipFireDelay)
 				return FX_Execute_Kill;
-		} else if (this.timeout > 0)
+		} else
+		{
 			this.timeout = 0;
+			this.Target.hipfire_pressed = false;
+		}
 		// Clonk cannot aim anymore
 		if (!this.clonk || (!this.clonk->IsWalking() && !this.clonk->IsJumping()))
 			return FX_Execute_Kill;
-		// Keep the clonk on target
-		var x_target = this.Target.aim_target[0] - this.clonk->GetX();
-		var y_target = this.Target.aim_target[1] - this.clonk->GetY();
-		var angle = Angle(0, 0, x_target, y_target + this.Target->GetFiremode()->GetYOffset());
-		angle = Normalize(angle, -180);
-		this.clonk->SetAimPosition(angle);
 		return FX_OK;
 	},
-	Destruction = func() {
+	Stop = func(int reason, bool temp) {
+		if (reason != FX_Call_Normal)
+			return;
 		if (this.Target)
-			this.Target->StopHipShooting(this.clonk);
+			this.Target->StopAiming(this.clonk);
 	}
 };
+
+// --- Ironsight aiming
+
+func CanIronsightAim(object clonk)
+{
+	if (!clonk || !clonk->GetAlive())
+		return false; // ???
+
+	// Check clonk
+	if (!clonk->IsWalking())
+		return false;
+
+	return true;
+}
+
+func CheckIronsightTransition(object clonk)
+{
+	if (!clonk)
+		return false;
+	if (!clonk->GetAlive())
+		return false;
+	if (!clonk->IsWalking())
+		return false;
+
+	return true;
+}
+
+func SetIronsightAim(object clonk)
+{
+	if (IsIronsightToggled(clonk->GetOwner()))
+		ActivateAimingCursor(clonk);
+
+	clonk->SetCancelOnJump(true);
+	// TODO: Test & maybe make depended on weapon shoot mode?
+	clonk->SetAimViewOffset(50);
+}
+
+func UnsetIronsightAim(object clonk)
+{
+	if (IsIronsightToggled(clonk->GetOwner()))
+		DeactivateAimingCursor(clonk);
+}
+
+// --- Prone aiming
+
+func CanProneAim(object clonk)
+{
+	if (!clonk || !clonk->GetAlive())
+		return false; // ???
+
+	// Check clonk
+	if (!clonk->IsProne())
+		return false;
+
+	return true;
+}
+
+func CheckProneTransition(object clonk)
+{
+	if (!clonk)
+		return false;
+	if (!clonk->GetAlive())
+		return false;
+	if (!clonk->IsProne())
+		return false;
+
+	return true;
+}
+
+func SetProneAim(object clonk)
+{
+	if (IsIronsightToggled(clonk->GetOwner()))
+		ActivateAimingCursor(clonk);
+
+	clonk->SetCancelOnJump(true);
+	// TODO: Test & maybe make depended on weapon shoot mode?
+	clonk->SetAimViewOffset(50);
+}
+
+func UnsetProneAim(object clonk)
+{
+	if (IsIronsightToggled(clonk->GetOwner()))
+		DeactivateAimingCursor(clonk);
+}
+
+// Deactivate the default OC aiming cursor and activate the CMC aiming cursor
+// The CMC cursor will send the cursor location continously until turned off
+func ActivateAimingCursor(object clonk)
+{
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, true);
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
+}
+
+func DeactivateAimingCursor(object clonk)
+{
+	SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
+}
+
+/* --- Firing --- */
 
 func DoHipShootingFireCycle(object clonk)
 {
@@ -309,158 +558,6 @@ func DoHipShootingFireCycle(object clonk)
 			Fire(clonk, x, y);
 }
 
-/* --- Ironsight aiming --- */
-
-public func StartIronSight(object clonk, int x, int y)
-{
-	if (ironsight)
-		return;
-
-	if (clonk->IsProne())
-		return StartProneAim(clonk, x, y);
-
-	var trans_type = GetFiremode()->GetIronsightType();
-
-	ironsight = true;
-	is_in_ironsight = false;
-	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
-
-	// Instant transition into ironsight
-	if (trans_type == WEAPON_FM_IronsightInst)
-	{
-		FinishIronsight(clonk, x, y);
-	} else if (trans_type == WEAPON_FM_IronsightAnim)
-	{
-		var anim = GetFiremode()->GetIronsightAnimation();
-		var delay = GetFiremode()->GetIronsightDelay();
-		// Play animation for set amount of time
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
-
-		this->CreateEffect(IronsightHelper, 1, delay, clonk, x, y, number);
-	} else if (trans_type == WEAPON_FM_IronsightBlend)
-	{
-		var delay = GetFiremode()->GetIronsightDelay();
-		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
-		var anim = GetFiremode()->GetIronsightAimingAnimation();
-		var delay = GetFiremode()->GetIronsightDelay();
-		var length = clonk->GetAnimationLength(anim);
-		var y_offset = GetFiremode()->GetYOffset();
-		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
-		// Just to be sure, end all arms animations
-		if (current_anim != nil)
-			clonk->StopAnimation(current_anim);
-		// Blend current animation (most likely a movement animation) into aiming animation
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
-
-		this->CreateEffect(IronsightHelper, 1, delay, clonk, x, y, number);
-	}
-}
-
-// Something happened, so that aiming is now not possible. Clean up variables
-public func FailedIronsight()
-{
-	ironsight = false;
-	is_in_ironsight = false;
-}
-
-// Transition into ironsight successful, start aiming
-public func FinishIronsight(object clonk, int x, int y)
-{
-	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
-	angle = Normalize(angle, -180);
-	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_IRONSIGHT);
-	clonk->SetAimPosition(angle);
-	clonk->SetCancelOnJump(true);
-	ScheduleCall(clonk, "UpdateAttach", 1);
-
-	is_in_ironsight = true;
-
-	// TODO: Test & maybe make depended on weapon shoot mode?
-	clonk->SetAimViewOffset(50);
-	if (IsIronsightToggled())
-	{
-		// Mouse move will adjust aim angle
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, true);
-		// Disable OC default
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
-	}
-}
-
-// Stop ironsight aiming, regardless of the current state (aiming or transitional state)
-public func StopIronsight(object clonk)
-{
-	if (!ironsight)
-		return;
-
-	if (clonk && clonk->IsAiming())
-		clonk->StopAim();
-
-	var effect = GetEffect("IronsightHelper", this);
-	if (effect)
-	{
-		effect->Cancel();
-		RemoveEffect(nil, nil, effect, true);
-	}
-
-	ironsight = false;
-	is_in_ironsight = false;
-	// Disable CMC Aiming control if necessary
-	if (IsIronsightToggled())
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
-}
-
-// Cancel ironsight aiming, regardless of the current state (aiming or transitional state)
-// Unlike StopIronsight, this will not call StopAim on the clonk
-public func CancelIronsight(object clonk)
-{
-	if (!ironsight)
-		return;
-
-	var effect = GetEffect("IronsightHelper", this);
-	if (effect)
-	{
-		effect->Cancel();
-		RemoveEffect(nil, nil, effect, true);
-	}
-
-	ironsight = false;
-	is_in_ironsight = false;
-	// Disable CMC Aiming control if necessary
-	if (IsIronsightToggled())
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
-}
-
-local IronsightHelper = new Effect {
-	Construction = func(object clonk, int x, int y, int anim)
-	{
-		this.clonk = clonk;
-		this.x = x;
-		this.y = y;
-		this.anim = anim;
-	},
-	Timer = func()
-	{
-		// This effect should end now if it hasn't ended (see Reset())
-		if (this.end_if_not_ended)
-			return FX_Execute_Kill;
-		// Ironsight failed because of unknown things
-		if (!this.clonk->IsWalking())
-		{
-			this.Target->FailedIronsight();
-			return FX_Execute_Kill;
-		}
-		this.clonk->ResetAnimationEffects();
-		this.Target->FinishIronsight(this.clonk, this.x, this.y);
-		return FX_Execute_Kill;
-	},
-	Cancel = func()
-	{
-		this.clonk->StopAnimation(this.anim);
-	}
-};
-
-/* --- Ironsight Firing --- */
-
 func DoIronsightFireCycle(object clonk, int x, int y)
 {
 	if (!IsReadyToFire())
@@ -476,125 +573,6 @@ func DoIronsightFireCycle(object clonk, int x, int y)
 			// Fire away
 			Fire(clonk, x, y);
 }
-
-/* --- Prone aiming --- */
-
-public func StartProneAim(object clonk, int x, int y)
-{
-	if (prone_aim)
-		return;
-
-	var trans_type = GetFiremode()->GetIronsightType();
-
-	prone_aim = true;
-	is_in_prone_aim = false;
-	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
-
-	// Instant transition into ironsight, works similar here
-	if (trans_type == WEAPON_FM_IronsightInst)
-	{
-		//FinishIronsight(clonk, x, y);
-	} else if (trans_type == WEAPON_FM_IronsightAnim)
-	{
-		var anim = GetFiremode()->GetProneAnimation();
-		var delay = GetFiremode()->GetIronsightDelay();
-		// Play animation for set amount of time
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
-
-		this->CreateEffect(ProneAimHelper, 1, delay, clonk, x, y, number);
-	} else if (trans_type == WEAPON_FM_IronsightBlend)
-	{
-		var delay = GetFiremode()->GetIronsightDelay();
-		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
-		var anim = GetFiremode()->GetProneAimingAnimation();
-		var delay = GetFiremode()->GetIronsightDelay();
-		var length = clonk->GetAnimationLength(anim);
-		var y_offset = GetFiremode()->GetYOffset();
-		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
-		// Just to be sure, end all arms animations
-		if (current_anim != nil)
-			clonk->StopAnimation(current_anim);
-		// Blend current animation (most likely a movement animation) into aiming animation
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
-
-		this->CreateEffect(ProneAimHelper, 1, delay, clonk, x, y, number);
-	}
-}
-
-// Transition into prone aim successful, start aiming
-public func FinishProneAim(object clonk, int x, int y)
-{
-	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
-	angle = Normalize(angle, -180);
-	clonk->StartAim(this, angle, WEAPON_AIM_TYPE_PRONE);
-	clonk->SetAimPosition(angle);
-	clonk->SetCancelOnJump(true);
-	ScheduleCall(clonk, "UpdateAttach", 1);
-
-	is_in_prone_aim = true;
-
-	// TODO: Test & maybe make depended on weapon shoot mode?
-	clonk->SetAimViewOffset(50);
-	if (IsIronsightToggled())
-	{
-		// Mouse move will adjust aim angle
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, true);
-		// Disable OC default
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_Aim, false);
-	}
-}
-
-// Stop prone aiming, regardless of the current state (aiming or transitional state)
-public func StopProneAim(object clonk)
-{
-	if (!prone_aim)
-		return;
-
-	if (clonk && clonk->IsAiming())
-		clonk->StopAim();
-
-	var effect = GetEffect("ProneAimHelper", this);
-	if (effect)
-	{
-		effect->Cancel();
-		RemoveEffect(nil, nil, effect, true);
-	}
-
-	prone_aim = false;
-	is_in_prone_aim = false;
-	// Disable CMC Aiming control if necessary
-	if (IsIronsightToggled())
-		SetPlayerControlEnabled(clonk->GetOwner(), CON_CMC_AimingCursor, false);
-}
-
-local ProneAimHelper = new Effect {
-	Construction = func(object clonk, int x, int y, int anim)
-	{
-		this.clonk = clonk;
-		this.x = x;
-		this.y = y;
-		this.anim = anim;
-	},
-	Timer = func()
-	{
-		// This effect should end now if it hasn't ended (see Reset())
-		if (this.end_if_not_ended)
-			return FX_Execute_Kill;
-		// Prone aim failed because of unknown things
-		if (!this.clonk->IsProne())
-		{
-			this.Target->FailedProneAim();
-			return FX_Execute_Kill;
-		}
-		this.clonk->ResetAnimationEffects();
-		this.Target->FinishProneAim(this.clonk, this.x, this.y);
-		return FX_Execute_Kill;
-	},
-	Cancel = func()
-	{
-		this.clonk->StopAnimation(this.anim);
-	}
-};
 
 /* --- Ammo handling --- */
 
@@ -638,8 +616,8 @@ public func Deselection(object user)
 	// Properly stop all aiming procedures
 	if (user && user->IsAiming())
 		user->CancelAiming(this);
-	if (ironsight && !is_in_ironsight)
-		CancelIronsight(user);
+	if (IsAiming())
+		StopAiming(user);
 }
 
 /* --- Reloading --- */
@@ -766,36 +744,25 @@ public func GetAnimationSet(object clonk)
 // The clonk stops aiming. Just to be sure, reset all variables (under regular circumstances, this will probably set variables two times)
 public func Reset(object clonk)
 {
-	ironsight = false;
-	is_in_ironsight = false;
+	if (current_aim_type)
+		Call(Format("Unset%sAim", current_aim_type), clonk);
 
-	hipfire = false;
-	hipfire_pressed = false;
+	is_aiming = false;
+	aim_transition = false;
+	change_aiming = false;
+	current_aim_type = nil;
 	aim_target = nil;
 
-	prone_aim = false;
-	is_in_prone_aim = false;
-
-	var effect = GetEffect("IronsightHelper", this);
-	// This will end the effect on the next Timer call.
-	// Because the effect might just be regularly removed by StopIronsight()
+	var effect = GetEffect("AimingHelper", this);
 	if (effect)
 		effect.end_if_not_ended = true;
-
-	effect = GetEffect("ProneAimHelper", this);
-	if (effect)
-		effect.end_if_not_ended = true;
-
-	effect = GetEffect("HipShootingEffect", this);
-	if (effect)
-		RemoveEffect(nil, nil, effect);
 }
 
 /* --- Status --- */
 
 public func IsAiming()
 {
-	return is_in_ironsight || hipfire;
+	return is_aiming;
 }
 
 public func GetAimTarget()
@@ -803,6 +770,11 @@ public func GetAimTarget()
 	if (!aim_target)
 		return [nil, nil];
 	return aim_target[:];
+}
+
+public func GetAimType()
+{
+	return current_aim_type;
 }
 
 public func IsAutoFiring()

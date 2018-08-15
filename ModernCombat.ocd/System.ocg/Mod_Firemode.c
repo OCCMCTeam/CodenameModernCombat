@@ -4,14 +4,84 @@
 
 #appendto Library_Firearm_Firemode
 
+/* --- CMC Defaults --- */
+
+public func SetCMCDefaults()
+{
+	this->SetHipFireTransition(WEAPON_AIM_TRANS_INST)
+	    ->SetHipFireAimingAnimation("AimArmsGeneric.R")
+	    ->SetIronsightTransition(WEAPON_AIM_TRANS_BLND)
+	    ->SetIronsightDelay(15)
+	    ->SetIronsightAimingAnimation("AimPistol")
+	    ->SetProneTransition(WEAPON_AIM_TRANS_BLND)
+	    ->SetProneDelay(20)
+	    ->SetProneAimingAnimation("ProneAim");
+	return this;
+}
+
 /* --- Getters --- */
 
+// --- Hip Fire Aiming
+
 /**
- Get the aiming animation for prone aiming
+ Get the aiming transition for hip fire aiming
+ "Instant" is recommended because hip fire aiming should be the quick way
 */
-public func GetProneAimingAnimation()
+public func GetHipFireTransition()
 {
-	return this.prone_anim_aim;
+	return this.hipfire_transition;
+}
+
+/**
+ Get the transition animation into hip fire aiming
+ Usually not used because hip fire is mostly instant
+*/
+public func GetHipFireAnimation()
+{
+	return this.hipfire_animation;
+}
+
+/**
+ Get the delay for hip fire aiming
+ Usually not used because hip fire is mostly instant
+*/
+public func GetHipFireDelay()
+{
+	return this.hipfire_delay;
+}
+
+/**
+ Get the aiming animation for hip fire aiming
+*/
+public func GetHipFireAimingAnimation()
+{
+	return this.hipfire_anim_aim;
+}
+
+// --- Ironsight Aiming
+
+/**
+ Get the aiming transition for ironsight aiming
+*/
+public func GetIronsightTransition()
+{
+	return this.ironsight_transition;
+}
+
+/**
+ Get the transition animation into ironsight aiming
+*/
+public func GetIronsightAnimation()
+{
+	return this.ironsight_animation;
+}
+
+/**
+ Get the delay for ironsight aiming
+*/
+public func GetIronsightDelay()
+{
+	return this.ironsight_delay;
 }
 
 /**
@@ -22,29 +92,38 @@ public func GetIronsightAimingAnimation()
 	return this.ironsight_anim_aim;
 }
 
+// --- Prone Aiming
+
 /**
- Get the transition type for carrying to ironsight.
- Can be one of three constants (see CMC Firearm Library).
+ Get the aiming transition for prone aiming
 */
-public func GetIronsightType()
+public func GetProneTransition()
 {
-	return this.ironsight_trans;
+	return this.prone_transition;
 }
 
 /**
- Get the transition delay for carrying to ironsight.
+ Get the transition animation into prone aiming
 */
-public func GetIronsightDelay()
+public func GetProneAnimation()
 {
-	return this.ironsight_delay;
+	return this.prone_animation;
 }
 
 /**
- Get the aiming animation for hip shooting aiming
+ Get the delay for prone aiming
 */
-public func GetHipFireAimingAnimation()
+public func GetProneDelay()
 {
-	return this.hipfire_anim_aim;
+	return this.prone_delay;
+}
+
+/**
+ Get the aiming animation for prone aiming
+*/
+public func GetProneAimingAnimation()
+{
+	return this.prone_anim_aim;
 }
 
 /**
@@ -132,36 +211,69 @@ public func GetHipShootingDisabled()
 
 /* --- Setters --- */
 
+// --- Hip Fire Aiming
+
 /**
- Set the aiming animation for prone aiming
+ Set the aiming transition for hip fire aiming
+ "Instant" is recommended because hip fire aiming should be the quick way
 */
-public func SetProneAimingAnimation(string name)
+public func SetHipFireTransition(string transition)
 {
-	this.prone_anim_aim = name;
+	this.hipfire_transition = transition;
 	return this;
 }
 
 /**
- Set the aiming animation for ironsight aiming
+ Set the transition animation into hip fire aiming
+ Usually not used because hip fire is mostly instant
 */
-public func SetIronsightAimingAnimation(string name)
+public func SetHipFireAnimation(string animation)
 {
-	this.ironsight_anim_aim = name;
+	this.hipfire_animation = animation;
 	return this;
 }
 
 /**
- Set the transition type for carrying to ironsight.
- Can be one of three constants (see CMC Firearm Library).
+ Set the delay for hip fire aiming
+ Usually not used because hip fire is mostly instant
 */
-public func SetIronsightType(int type)
+public func SetHipFireDelay(int delay)
 {
-	this.ironsight_trans = type;
+	this.hipfire_delay = delay;
 	return this;
 }
 
 /**
- Set the transition delay for carrying to ironsight.
+ Set the aiming animation for hip fire aiming
+*/
+public func SetHipFireAimingAnimation(string name)
+{
+	this.hipfire_anim_aim = name;
+	return this;
+}
+
+// --- Ironsight Aiming
+
+/**
+ Set the aiming transition for ironsight aiming
+*/
+public func SetIronsightTransition(string transition)
+{
+	this.ironsight_transition = transition;
+	return this;
+}
+
+/**
+ Set the transition animation into ironsight aiming
+*/
+public func SetIronsightAnimation(string animation)
+{
+	this.ironsight_animation = animation;
+	return this;
+}
+
+/**
+ Set the delay for ironsight aiming
 */
 public func SetIronsightDelay(int delay)
 {
@@ -170,11 +282,49 @@ public func SetIronsightDelay(int delay)
 }
 
 /**
- Set the aiming animation for hip shooting aiming
+ Set the aiming animation for hip fire aiming
 */
-public func SetHipFireAimingAnimation(string name)
+public func SetIronsightAimingAnimation(string name)
 {
-	this.hipfire_anim_aim = name;
+	this.ironsight_anim_aim = name;
+	return this;
+}
+
+// --- Prone Aiming
+
+/**
+ Set the aiming transition for prone aiming
+*/
+public func SetProneTransition(string transition)
+{
+	this.prone_transition = transition;
+	return this;
+}
+
+/**
+ Set the transition animation into prone aiming
+*/
+public func SetProneAnimation(string animation)
+{
+	this.prone_animation = animation;
+	return this;
+}
+
+/**
+ Set the delay for prone aiming
+*/
+public func SetProneDelay(int delay)
+{
+	this.prone_delay = delay;
+	return this;
+}
+
+/**
+ Set the aiming animation for hip fire aiming
+*/
+public func SetProneAimingAnimation(string name)
+{
+	this.prone_anim_aim = name;
 	return this;
 }
 

@@ -62,38 +62,25 @@ public func GetCarrySpecial(clonk)
 func FiremodeBullets()
 {
 	var mode = new Library_Firearm_Firemode {};
-	
+
+	mode->SetCMCDefaults()
 	// Generic info
-	mode->SetMode(WEAPON_FM_Single);
-
+	->SetMode(WEAPON_FM_Single)
 	// Reloading
-	mode->SetAmmoID(CMC_Ammo_Bullets);
-	mode->SetRecoveryDelay(5);
-
+	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetRecoveryDelay(5)
 	// Projectile
-	mode->SetProjectileDistance(8);
-	mode->SetYOffset(-6);
+	->SetProjectileDistance(8)
+	->SetYOffset(-6)
+	// Crosshair, CMC Custom
+	->SetAimCursor([CMC_Cursor_Cone])
+	// Effects, CMC custom
+	->SetFireSound("Items::Weapons::Pistol::Fire?");
 
-	// Prone aiming
-	mode->SetProneAimingAnimation("ProneAim");
-
-	// Hip shooting
-	mode->SetHipFireAimingAnimation("AimArmsGeneric.R");
-
-	// Ironsight aiming
-	mode->SetIronsightType(WEAPON_FM_IronsightBlend);
-	mode->SetIronsightDelay(15);
-	mode->SetIronsightAimingAnimation("AimPistol");
+	// TODO: Update shooter library and incorporate into above
 	mode->SetForwardWalkingSpeed(95);
 	mode->SetBackwardWalkingSpeed(65);
-	
 
-
-	// Crosshair, CMC Custom
-	mode->SetAimCursor([CMC_Cursor_Cone]);
-
-	// Effects, CMC custom
-	mode->SetFireSound("Items::Weapons::Pistol::Fire?");
 	return mode;
 }
 

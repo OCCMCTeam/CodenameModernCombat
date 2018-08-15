@@ -260,3 +260,28 @@ public func ResetHands()
 	aim_cancel_on_jump = nil;
 	aim_type = nil;
 }
+
+// Modify to accept a change of aiming stances
+
+public func ChangeAim(object weapon, string type)
+{
+	// New type
+	aim_type = type;
+	// New aim set
+	aim_set = weapon->~GetAnimationSet(this);
+	ApplySet(aim_set);
+	// New animation
+	StopAnimation(GetRootAnimation(CLONK_ANIM_SLOT_Arms));
+	if(aim_set["AnimationAim"] != nil)
+	{
+		if(aim_set["AimMode"] == AIM_Position)
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim"], CLONK_ANIM_SLOT_Arms, Anim_Const(GetAnimationLength(aim_set["AnimationAim"])/2), Anim_Const(1000));
+		if(aim_set["AimMode"] == AIM_Weight)
+		{
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim"],  CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim"]),  aim_set["AimTime"], ANIM_Loop), Anim_Const(1000));
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim2"], CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationAim2"]), aim_set["AimTime"], ANIM_Loop), Anim_Const(1000), aim_animation_index);
+			aim_animation_index++;
+			SetAnimationWeight(aim_animation_index, Anim_Const(500));
+		}
+	}
+}
