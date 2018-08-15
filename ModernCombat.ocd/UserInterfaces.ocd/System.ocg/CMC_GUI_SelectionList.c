@@ -80,7 +80,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 };
 
 
-static const CMC_GUI_SelectionList = new GUI_List2
+static const CMC_GUI_SelectionList = new GUI_List
 {
 	MakeEntryProplist = func(symbol, text)
 	{

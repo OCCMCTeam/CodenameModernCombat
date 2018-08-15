@@ -4,7 +4,7 @@
 	@author Marky
  */
 
-static const GUI_List2 = new GUI_Element
+static const GUI_List = new GUI_Element
 {
 	Style = GUI_VerticalLayout,
 
@@ -126,7 +126,7 @@ static const GUI_List2 = new GUI_Element
 
 /* --- Tab button --- */
 
-static const GUI_List2_Entry = new GUI_Element
+static const GUI_List_Entry = new GUI_Element
 {
 	// --- Properties
 

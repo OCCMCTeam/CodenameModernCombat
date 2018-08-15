@@ -9,7 +9,7 @@
 
 /* --- List menu entry --- */
 
-static const GUI_SelectionListEntry = new GUI_List2_Entry
+static const GUI_SelectionListEntry = new GUI_List_Entry
 {
 	// --- Properties
 
