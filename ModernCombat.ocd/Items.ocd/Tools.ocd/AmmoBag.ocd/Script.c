@@ -82,20 +82,26 @@ func ControlUse(object user, int x, int y)
 	return true;
 }
 
-/* Cannot use yet, because I have to handle the menu differently between use and hold control. Might not be that good of an option anyway?
-public func ControlUseItemConfig(object user, int x, int y, int status)
+
+func ControlUseItemConfig(object user, int x, int y, int status)
 {
 	var ready = user->~HasActionProcedure();
 	if (status == CONS_Up)
 	{
-		CloseListSelectionMenu(ready);
+		CloseListSelectionMenu(); // Never close with callback
 	}
 	else if (ready)
 	{
 		OpenListSelectionMenu(user);
 	}
 	return true;
-}*/
+}
+
+
+func DelayListSelectionMenu(object user, string type)
+{
+	return CMC_LIST_MENU_DELAY_SHORT;
+}
 
 
 public func OpenListSelectionMenu(object user, string type)
