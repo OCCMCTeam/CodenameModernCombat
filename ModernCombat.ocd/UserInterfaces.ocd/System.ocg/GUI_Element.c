@@ -514,12 +514,12 @@ static const GUI_Element = new Global
 	{
 		if (crew && crew->GetCrewEnabled() && !hide_condition)
 		{
-			Show()->Update();
+			Show()->Update({Player = this.Player});
 			return true;
 		}
 		else
 		{
-			Hide()->Update();
+			Hide()->Update({Player = this.Player});
 			return false;
 		}
 	},
