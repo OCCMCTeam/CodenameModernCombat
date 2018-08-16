@@ -129,6 +129,19 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 		var ammo_list = main_menu->GetList();
 		var hotkey = 0;
 		
+		// Add cancel option as default
+
+		var default_entry = ammo_list->MakeEntryProplist();
+		var default_action = "$Cancel$";
+		default_entry->SetIcon(Icon_Cancel)
+			         ->SetCaption(default_action)
+			         ->SetCallbackOnClick(DefineCallback(this.CloseListSelectionMenu))
+			         ->SetCallbackOnMouseIn(ammo_list->DefineCallback(ammo_list.SelectEntry, default_action))
+			         ->SetScrollHint(true);
+		ammo_list->AddEntry(default_action, default_entry);
+		this->~SetListSelectionMenuHotkey(default_entry, 9);
+		
+		// Add entries for the ammo types
 		for (var ammo_type in available_types) 
 		{
 			// Collect the current info

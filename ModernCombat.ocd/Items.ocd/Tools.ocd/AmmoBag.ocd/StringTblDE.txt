@@ -5,3 +5,5 @@ PointsRequired=Es werden <c ff0000>%d</c> Punkte zum Entpacken benötigt.
 UnpackAmmo=Es werden %d %s in eine %s entpackt.
 NoAmmoAvailable=Keine Munition verfügbar!
 NoSpace=Inventar bereits belegt.
+
+Cancel=Abbrechen

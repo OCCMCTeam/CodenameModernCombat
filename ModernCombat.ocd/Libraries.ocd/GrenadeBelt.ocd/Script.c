@@ -250,19 +250,19 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var current_type = GetCurrentGrenadeType();
 			
 			// Add entry for drawing the current grenade type
-			var entry = list->MakeEntryProplist();
+			var default_entry = list->MakeEntryProplist();
 			var default_action = "$DrawGrenade$";
 			if (current_type)
 			{
 				default_action = Format("%s (<c %x>%s</c>)", default_action, GUI_CMC_Text_Color_Highlight, current_type->GetName());
 			}
-			entry->SetCaption(default_action)
-			     ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, default_action))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
-			     ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
-			     ->SetCallbackOnMenuClosed(this->DefineCallback(this.TakeGrenade, current_type)) // Closing the menu selects the entry
-			     ->SetScrollHint(true);
-			list->AddEntry(default_action, entry);
-			this->~SetListSelectionMenuHotkey(entry, hotkey++);
+			default_entry->SetCaption(default_action)
+			             ->SetCallbackOnMouseIn(list->DefineCallback(list.SelectEntry, default_action))           // Select the entry by hovering; the other possibilities are scrolling and hotkey
+			             ->SetCallbackOnClick(this->DefineCallback(Library_ListSelectionMenu.CloseListSelectionMenu, true))       // Clicking the entry closes the menu; It is automatically selected, because you hover the entry to click it; 'false' means that the selection is not cancelled
+			             ->SetCallbackOnMenuClosed(this->DefineCallback(this.TakeGrenade, current_type)) // Closing the menu selects the entry
+			             ->SetScrollHint(true);
+			list->AddEntry(default_action, default_entry);
+			this->~SetListSelectionMenuHotkey(default_entry, 9);
 
 
 			// Add entries for the grenade types
