@@ -66,7 +66,7 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 		{
 			this.bar->SetTag(nil);
 		}
-		this.bar->Update();
+		this.bar->Update(this.bar->ComposeLayout());
 		
 		// Update the item name
 		if (item == nil)

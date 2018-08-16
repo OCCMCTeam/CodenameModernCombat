@@ -204,7 +204,7 @@ func UpdateInventory(bool selection_changed)
 				SetInventoryButtonCompact(item_index, false, 5);
 			}
 			
-			slot->Show()->Update()->SetInfo(item, item_index == selected_item_index);
+			slot->SetInfo(item, item_index == selected_item_index);
 		}
 	}
 }
@@ -258,6 +258,7 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 			var slot = gui_cmc_inventory.Slots[i - 1];
 			slot->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H));
 			slot->AlignBottom(position);
+			slot->Update(slot->ComposeLayout());
 			
 			// Update top position
 			position = slot->GetTop()->Subtract(margin_small);
@@ -310,7 +311,7 @@ local CollapseButtonEffect = new Effect
 				}
 			}
 			button.item_name.Text = text;
-			button.item_name->Update();
+			button.item_name->Update({Text = text});
 			button.bar->SetWidth(GuiDimensionCmc(nil, width))->AlignRight()->Update();
 
 			if (button.GUI_Compactness >= max)
