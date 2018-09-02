@@ -556,11 +556,11 @@ public func GetAmmoReloadContainer()
 	return Contained(); // Reload from this container
 }
 
-public func OnNoAmmo(object user, proplist firemode)
+public func OnNoAmmo(object user, proplist firemode) // FIXME: Wrong location
 {
 	_inherited(user, firemode);
 	
-	Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
+	Sound("Items::Weapons::Shared::Empty", {player = user->GetOwner()});
 }
 
 public func OnAmmoChange(id ammo_type)
@@ -592,16 +592,28 @@ public func Deselection(object user)
 
 /* --- Reloading --- */
 
-public func NeedsReload(object user, proplist firemode)
+public func NeedsReload(object user, proplist firemode, bool user_requested)
 {
-	return !HasAmmo(firemode);
+	var out_of_ammo = !HasAmmo(firemode);
+	var loaded = true;
+	if (this->~AmmoChamberCapacity(firemode->GetAmmoID()))
+	{
+		loaded = this->AmmoChamberIsLoaded(firemode->GetAmmoID());
+	}
+	return user_requested || out_of_ammo || !loaded;
 }
 
 /* --- Cooldown --- */
 
-public func NeedsRecovery(object user, proplist firemode)
+public func NeedsRecovery(object user, proplist firemode) // TODO: Make a custom callback instead in the library
 {
-	return !NeedsReload(user, firemode); // No recovery necessary when reloading, so that reload can happen instantly
+	var out_of_ammo = !HasAmmo(firemode);
+	if (out_of_ammo)
+	{
+		Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
+		this->~AmmoChamberEject(firemode->GetAmmoID());
+	}
+	return true;
 }
 
 /* --- HUD information --- */
@@ -878,4 +890,11 @@ public func SetFiremode(int number, bool force)
 func FireSound(object user, proplist firemode)
 {
 	Sound(firemode->GetCurrentFireSound(), {multiple = true});
+}
+
+/* --- Reloading --- */
+
+func IsUserReadyToReload(object user)
+{
+	return user->HasActionProcedure(false);
 }

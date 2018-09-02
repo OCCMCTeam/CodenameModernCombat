@@ -1,4 +1,7 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_ReloadStates // For various animations
+#include Plugin_Firearm_AmmoChamber
+
 
 /* --- Properties --- */
 
@@ -22,6 +25,12 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Explosive());
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
+	
+	// Reloading
+	this.Reload_MagOut_Stash = new Reload_MagOut_Stash{}->Create();
+	this.Reload_MagOut_Drop = new Reload_MagOut_Drop{}->Create();
+	this.Reload_MagIn = new Reload_MagIn{}->Create();
+	this.Reload_ManualLoad = new Reload_ManualLoad{}->Create();
 }
 
 func Definition(id weapon)
@@ -237,3 +246,183 @@ func FireEffect(object user, int angle, proplist firemode)
 		});
 	}
 }
+
+/* --- Reload animations --- */
+
+// 	Gets the default reload state that the weapon starts reloading from.
+func GetReloadStartState(proplist firemode)
+{
+	var firemode = GetFiremode();
+	var ammo_type = firemode->GetAmmoID();
+	var ammo = GetAmmo(ammo_type);
+	if (ammo >= firemode.ammo_load && !this->AmmoChamberIsLoaded(ammo_type))
+	{
+		Log("Reload: Start from manual, because no bullet chambered");
+		return Reload_ManualLoad;
+	}
+	else if (ammo > this->AmmoChamberCapacity(ammo_type))
+	{
+		Log("Reload: Stash mag");
+		return Reload_MagOut_Stash;
+	}
+	else
+	{
+		Log("Reload: Drop mag");
+		return Reload_MagOut_Drop;
+	}
+}
+
+// Take out a partially filled magazine and stash it
+local Reload_MagOut_Stash = new Firearm_ReloadState
+{
+	Setup = func ()
+	{
+		SetDelay(60);
+		this.temp_ammo = {};
+	},
+
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, stash it] - Start");
+		firearm->Sound("Items::Weapons::AssaultRifle::Reload::EjectMag");
+		// Take out ammo now, because the previous version where ammo state is changed only on finish looked strange ingame
+		SetTemporaryAmmo(firemode->GetAmmoID(), firearm->ReloadRemoveAmmo(firemode, false));
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, stash it] - Finish");
+
+		// Fill ammo belt of the user
+		//firearm->ReloadRemoveAmmo(firemode, true);
+		var ammo_type = firemode->GetAmmoID();
+		firearm->GetAmmoReloadContainer()->DoAmmo(ammo_type, GetTemporaryAmmo(ammo_type));
+		SetTemporaryAmmo(ammo_type, 0);
+
+		// Put a magazine in next
+		firearm->SetReloadState(firearm.Reload_MagIn);
+	},
+	
+	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, stash it] - Cancel");
+
+		// Lose current ammo
+		//firearm->ReloadRemoveAmmo(firemode, false);
+		
+		// Put a magazine in next
+		firearm->SetReloadState(firearm.Reload_MagIn);
+	},
+	
+	SetTemporaryAmmo = func (id ammo_type, int amount)
+	{
+		this.temp_ammo[Format("%i", ammo_type)] = amount;
+	},
+	
+	GetTemporaryAmmo = func (id ammo_type)
+	{
+		return this.temp_ammo[Format("%i", ammo_type)];
+	},
+};
+
+// Drop an empty mag to the ground
+local Reload_MagOut_Drop = new Firearm_ReloadState
+{
+	Setup = func ()
+	{
+		SetDelay(20);
+	},
+	
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, drop it] - Start");
+		firearm->Sound("Items::Weapons::AssaultRifle::Reload::EjectMag");
+		
+		// Lose current ammo
+		firearm->ReloadRemoveAmmo(firemode, false);
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, drop it] - Finish");
+		
+		// Put a magazine in next
+		firearm->SetReloadState(firearm.Reload_MagIn);
+	},
+	
+	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag out, drop it] - Cancel");
+		
+		// Put a magazine in next
+		firearm->SetReloadState(firearm.Reload_MagIn);
+	},
+};
+
+// Insert a new mag into the weapon
+local Reload_MagIn = new Firearm_ReloadState
+{
+	Setup = func ()
+	{
+		SetDelay(60);
+	},
+	
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag insert] - Start");
+		firearm->Sound("Items::Weapons::AssaultRifle::Reload::InsertMag");
+		
+		// Lose current ammo
+		firearm->SetAmmo(firemode, 0);
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag insert] - Finish");
+		firearm->ReloadRefillAmmo(firemode);
+		
+		// Load a bullet now?
+		if (firearm->AmmoChamberIsLoaded(firemode->GetAmmoID()))
+		{
+			firearm->SetReloadState(nil); // Done!
+		}
+		else
+		{
+			firearm->SetReloadState(firearm.Reload_ManualLoad);
+		}
+	},
+	
+	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Mag insert] - Cancel");
+		
+		// Stay in the same state, be fair and keep magazine ;)
+	},
+};
+
+// Manually load a new bullet to the chamber
+local Reload_ManualLoad = new Firearm_ReloadState
+{
+	Setup = func ()
+	{
+		SetDelay(10);
+	},
+	
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Manual load] - Start");
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Manual load] - Finish");
+		firearm->Sound("Items::Weapons::AssaultRifle::Reload::Bolt");
+		firearm->AmmoChamberInsert(firemode->GetAmmoID());
+		firearm->SetReloadState(nil); // Done!
+	},
+	
+	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		Log("Reload [Manual load] - Cancel");
+	},
+};
