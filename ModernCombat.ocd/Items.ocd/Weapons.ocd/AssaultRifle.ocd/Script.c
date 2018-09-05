@@ -26,14 +26,8 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
 	
-	// Reloading
-	this.Reload_GrabMag = new Reload_GrabMag{}->Create();
-	this.Reload_MagOut_StashStart = new Reload_MagOut_StashStart{}->Create();
-	this.Reload_MagOut_StashFinish = new Reload_MagOut_StashFinish{}->Create();
-	this.Reload_MagOut_Drop = new Reload_MagOut_Drop{}->Create();
-	this.Reload_MagIn = new Reload_MagIn{}->Create();
-	this.Reload_ManualLoad = new Reload_ManualLoad{}->Create();
-	this.Reload_ReadyWeapon = new Reload_ReadyWeapon{}->Create();
+	// Reloading, the state saves some custom infos
+	this.Reload_MagOut_StashStart = new Reload_MagOut_StashStart{};
 }
 
 func Definition(id weapon)
@@ -255,7 +249,6 @@ func FireEffect(object user, int angle, proplist firemode)
 // 	Gets the default reload state that the weapon starts reloading from.
 func GetReloadStartState(proplist firemode)
 {
-	var firemode = GetFiremode();
 	var ammo_type = firemode->GetAmmoID();
 	var ammo = GetAmmo(ammo_type);
 	if (ammo >= firemode.ammo_load && !this->AmmoChamberIsLoaded(ammo_type))
@@ -272,16 +265,13 @@ func GetReloadStartState(proplist firemode)
 // Grab the magazine that is currently in the weapon
 local Reload_GrabMag = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(10);
-	},
+	Delay = 10,
 
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Grab mag] - Start");
 	},
-	
+
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Grab mag] - Finish");
@@ -296,7 +286,7 @@ local Reload_GrabMag = new Firearm_ReloadState
 			firearm->SetReloadState(firearm.Reload_MagOut_Drop);
 		}
 	},
-	
+
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		// Repeat the same action
@@ -307,11 +297,7 @@ local Reload_GrabMag = new Firearm_ReloadState
 // Take out a partially filled magazine and stash it
 local Reload_MagOut_StashStart = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(20);
-		this.temp_ammo = {};
-	},
+	Delay = 20,
 
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -344,6 +330,7 @@ local Reload_MagOut_StashStart = new Firearm_ReloadState
 	
 	SetTemporaryAmmo = func (id ammo_type, int amount)
 	{
+		if (!this.temp_ammo) this.temp_ammo = {};
 		this.temp_ammo[Format("%i", ammo_type)] = amount;
 	},
 	
@@ -356,10 +343,7 @@ local Reload_MagOut_StashStart = new Firearm_ReloadState
 // Short delay and sound while stashing the magazine, merely cosmetic
 local Reload_MagOut_StashFinish = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(20);
-	},
+	Delay = 20,
 
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -387,10 +371,7 @@ local Reload_MagOut_StashFinish = new Firearm_ReloadState
 // Drop an empty mag to the ground
 local Reload_MagOut_Drop = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(20);
-	},
+	Delay = 20,
 	
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -421,10 +402,7 @@ local Reload_MagOut_Drop = new Firearm_ReloadState
 // Insert a new mag into the weapon
 local Reload_MagIn = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(30);
-	},
+	Delay = 30,
 	
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -459,10 +437,7 @@ local Reload_MagIn = new Firearm_ReloadState
 // Manually load a new bullet to the chamber
 local Reload_ManualLoad = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(10);
-	},
+	Delay = 10,
 	
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -486,10 +461,7 @@ local Reload_ManualLoad = new Firearm_ReloadState
 // Bring the weapon to ready stance
 local Reload_ReadyWeapon = new Firearm_ReloadState
 {
-	Setup = func ()
-	{
-		SetDelay(20);
-	},
+	Delay = 20,
 	
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
