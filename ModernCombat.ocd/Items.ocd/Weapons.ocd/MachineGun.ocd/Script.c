@@ -84,7 +84,7 @@ func FiremodeBullets()
 	// Crosshair, CMC Custom
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
-	->SetFireSound("Items::Weapons::MachineGun::Fire?");
+	->SetFireSound("Items::Weapons::MachineGun::Fire");
 
 	mode.ammo_load = 60;
 
