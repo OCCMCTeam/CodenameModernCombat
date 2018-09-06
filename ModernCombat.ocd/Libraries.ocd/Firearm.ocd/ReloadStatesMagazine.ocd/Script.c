@@ -61,7 +61,7 @@ local Reload_MagOut_StashStart = new Firearm_ReloadState
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Mag out, stash it] - Start");
-		firearm->Sound("Items::Weapons::AssaultRifle::Reload::EjectMag");
+		firearm->~PlaySoundEjectMagazine();
 		// Take out ammo now, because the previous version where ammo state is changed only on finish looked strange ingame
 		SetTemporaryAmmo(firemode->GetAmmoID(), firearm->ReloadRemoveAmmo(firemode, false));
 	},
@@ -105,7 +105,7 @@ local Reload_MagOut_StashFinish = new Firearm_ReloadState
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Stashing] - Start");
-		user->Sound("Clonk::Action::Grab?");
+		firearm->~PlaySoundResupplyAmmo();
 	},
 	
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
@@ -131,7 +131,7 @@ local Reload_MagOut_Drop = new Firearm_ReloadState
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Mag out, drop it] - Start");
-		firearm->Sound("Items::Weapons::AssaultRifle::Reload::EjectMag");
+		firearm->~PlaySoundEjectMagazine();
 		
 		// Lose current ammo
 		firearm->ReloadRemoveAmmo(firemode, false);
@@ -165,7 +165,7 @@ local Reload_MagIn = new Firearm_ReloadState
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Mag insert] - Finish");
-		firearm->Sound("Items::Weapons::AssaultRifle::Reload::InsertMag");
+		firearm->~PlaySoundInsertMagazine();
 		firearm->ReloadRefillAmmo(firemode);
 		
 		// Load a bullet now?
@@ -198,7 +198,7 @@ local Reload_ManualLoad = new Firearm_ReloadState
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Manual load] - Finish");
-		firearm->Sound("Items::Weapons::AssaultRifle::Reload::Bolt");
+		firearm->PlaySoundChamberBullet();
 		firearm->AmmoChamberInsert(firemode->GetAmmoID());
 		firearm->SetReloadState(firearm.Reload_ReadyWeapon);
 	},

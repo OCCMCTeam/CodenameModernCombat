@@ -251,3 +251,19 @@ func FireEffect(object user, int angle, proplist firemode)
 	}
 }
 
+/* --- Sounds --- */
+
+func PlaySoundEjectMagazine()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::EjectMag");
+}
+
+func PlaySoundInsertMagazine()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::InsertMag");
+}
+
+func PlaySoundChamberBullet()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::Bolt");
+}

@@ -892,6 +892,11 @@ func FireSound(object user, proplist firemode)
 	Sound(firemode->GetCurrentFireSound(), {multiple = true});
 }
 
+func PlaySoundResupplyAmmo()
+{
+	Sound("Items::Tools::AmmoBox::ResupplyIn?");
+}
+
 /* --- Reloading --- */
 
 func IsUserReadyToReload(object user)
