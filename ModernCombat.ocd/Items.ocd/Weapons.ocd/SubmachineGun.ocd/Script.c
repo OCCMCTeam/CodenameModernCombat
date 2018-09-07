@@ -1,4 +1,7 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_AmmoChamber
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Magazine
 
 /* --- Properties --- */
 
@@ -20,6 +23,15 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueAuto());
 	AddFiremode(FiremodeBullets_TechniqueBurst());
 	AddFiremode(FiremodeBullets_TechniqueSingle());
+
+	// Reloading times
+	this.Reload_GrabMag            = new Reload_GrabMag            { Delay = 5, };
+	this.Reload_MagOut_StashStart  = new Reload_MagOut_StashStart  { Delay = 20, };
+	this.Reload_MagOut_StashFinish = new Reload_MagOut_StashFinish { Delay = 20, };
+	this.Reload_MagOut_Drop        = new Reload_MagOut_Drop        { Delay = 20, };
+	this.Reload_MagIn              = new Reload_MagIn              { Delay = 25, };
+	this.Reload_ManualLoad         = new Reload_ManualLoad         { Delay = 10, };
+	this.Reload_ReadyWeapon        = new Reload_ReadyWeapon        { Delay = 10, };
 }
 
 func Definition(id weapon)
@@ -159,3 +171,21 @@ func FireEffect(object user, int angle, proplist firemode)
 
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
 }
+
+/* --- Sounds --- */
+
+func PlaySoundEjectMagazine()
+{
+	Sound("Items::Weapons::SubmachineGun::Reload::EjectMag");
+}
+
+func PlaySoundInsertMagazine()
+{
+	Sound("Items::Weapons::SubmachineGun::Reload::InsertMag");
+}
+
+func PlaySoundChamberBullet()
+{
+	Sound("Items::Weapons::SubmachineGun::Reload::Bolt");
+}
+

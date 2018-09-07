@@ -560,7 +560,7 @@ public func OnNoAmmo(object user, proplist firemode) // FIXME: Wrong location
 {
 	_inherited(user, firemode);
 	
-	Sound("Items::Weapons::Shared::Empty", {player = user->GetOwner()});
+	this->PlaySoundNoAmmo(user);
 }
 
 public func OnAmmoChange(id ammo_type)
@@ -610,7 +610,7 @@ public func NeedsRecovery(object user, proplist firemode) // TODO: Make a custom
 	var out_of_ammo = !HasAmmo(firemode);
 	if (out_of_ammo)
 	{
-		Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
+		this->PlaySoundLastRound(user);
 		this->~AmmoChamberEject(firemode->GetAmmoID());
 	}
 	return true;
@@ -895,6 +895,16 @@ func FireSound(object user, proplist firemode)
 func PlaySoundResupplyAmmo()
 {
 	Sound("Items::Tools::AmmoBox::ResupplyIn?");
+}
+
+func PlaySoundLastRound(object user)
+{
+	Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
+}
+
+func PlaySoundNoAmmo(object user)
+{
+	Sound("Items::Weapons::Shared::Empty", {player = user->GetOwner()});
 }
 
 /* --- Reloading --- */

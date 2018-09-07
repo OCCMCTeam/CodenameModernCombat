@@ -1,4 +1,7 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_AmmoChamber
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Magazine
 
 /* --- Properties --- */
 
@@ -19,6 +22,15 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSingle());
 	AddFiremode(FiremodeBullets_TechniqueTracerDart());
+
+	// Reloading times
+	this.Reload_GrabMag            = new Reload_GrabMag            { Delay = 1, };
+	this.Reload_MagOut_StashStart  = new Reload_MagOut_StashStart  { Delay = 10, };
+	this.Reload_MagOut_StashFinish = new Reload_MagOut_StashFinish { Delay = 20, };
+	this.Reload_MagOut_Drop        = new Reload_MagOut_Drop        { Delay = 10, };
+	this.Reload_MagIn              = new Reload_MagIn              { Delay = 20, };
+	this.Reload_ManualLoad         = new Reload_ManualLoad         { Delay = 5, };
+	this.Reload_ReadyWeapon        = new Reload_ReadyWeapon        { Delay = 4, };
 }
 
 func Definition(id def)
@@ -180,3 +192,21 @@ func Casing(object user, int angle, proplist firemode)
 
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + Sin(-angle, 5), user->GetYDir() - RandomX(15, 20));
 }
+
+/* --- Sounds --- */
+
+func PlaySoundEjectMagazine()
+{
+	Sound("Items::Weapons::Pistol::Reload::EjectMag");
+}
+
+func PlaySoundInsertMagazine()
+{
+	Sound("Items::Weapons::Pistol::Reload::InsertMag");
+}
+
+func PlaySoundChamberBullet()
+{
+	Sound("Items::Weapons::Pistol::Reload::PullSlide"); // Should just be "CloseChamber" actually? Pulling the slide is not really accurate, only on the first reload ever
+}
+
