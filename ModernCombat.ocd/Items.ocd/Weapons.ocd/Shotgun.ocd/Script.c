@@ -22,10 +22,12 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
 	
 	// Reloading times
-	this.Reload_Prepare        = new Reload_Prepare     { Delay = 10, };
-	this.Reload_InsertShell    = new Reload_InsertShell { Delay = 8, };
-	this.Reload_ManualLoad     = new Reload_ManualLoad  { Delay = 5, };
-	this.Reload_ReadyWeapon    = new Reload_ReadyWeapon { Delay = 25, };
+	this.Reload_Prepare          = new Reload_Prepare          { Delay = 10, };
+	this.Reload_InsertShellLong1 = new Reload_InsertShellLong1 { Delay = 10, };
+	this.Reload_InsertShellLong2 = new Reload_InsertShellLong2 { Delay = 10, };
+	this.Reload_InsertShell      = new Reload_InsertShell      { Delay = 10, };
+	this.Reload_ManualLoad       = new Reload_ManualLoad       { Delay = 5, };
+	this.Reload_ReadyWeapon      = new Reload_ReadyWeapon      { Delay = 25, };
 }
 
 func Definition(id weapon)
@@ -158,6 +160,18 @@ func PlaySoundChamberBullet()
 }
 
 
+func PlaySoundChamberOpen()
+{
+	Sound("Items::Weapons::Shotgun::Reload::BoltOpen", {multiple = true});
+}
+
+
+func PlaySoundChamberClose()
+{
+	Sound("Items::Weapons::Shotgun::Reload::BoltClose", {multiple = true});
+}
+
+
 /* --- Reload animations --- */
 
 // 	Gets the default reload state that the weapon starts reloading from.
@@ -176,11 +190,9 @@ func GetReloadStartState(proplist firemode)
 	}
 }
 
-// Grab the magazine that is currently in the weapon
+// Get ready to reload
 local Reload_Prepare = new Firearm_ReloadState
 {
-	Delay = 10,
-
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Prepare] - Start");
@@ -189,7 +201,14 @@ local Reload_Prepare = new Firearm_ReloadState
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Prepare] - Finish");
-		firearm->SetReloadState(firearm.Reload_InsertShell);
+		if (firearm->AmmoChamberIsLoaded(firemode->GetAmmoID()))
+		{
+			firearm->SetReloadState(firearm.Reload_InsertShell);
+		}
+		else
+		{
+			firearm->SetReloadState(firearm.Reload_InsertShellLong1);
+		}
 	},
 
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -199,7 +218,37 @@ local Reload_Prepare = new Firearm_ReloadState
 	},
 };
 
-// Take out a partially filled magazine and stash it
+// Insert a single shell into the chamber
+local Reload_InsertShellLong1 = new Firearm_ReloadState
+{
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		firearm->PlaySoundChamberOpen();
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		firearm.Reload_InsertShell.do_chamber_bullet = true;
+		firearm->SetReloadState(firearm.Reload_InsertShell);
+	},
+};
+
+// Close chamber, after inserting a single shell
+local Reload_InsertShellLong2 = new Firearm_ReloadState
+{
+	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		firearm->PlaySoundChamberClose();
+		firearm->AmmoChamberInsert(firemode->GetAmmoID());
+	},
+	
+	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
+	{
+		firearm->SetReloadState(firearm.Reload_InsertShell);
+	},
+};
+
+// Insert a single shell into the tube
 local Reload_InsertShell = new Firearm_ReloadState
 {
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
@@ -259,6 +308,11 @@ local Reload_InsertShell = new Firearm_ReloadState
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Mag insert] - Finish");
+		if (firearm.Reload_InsertShell.do_chamber_bullet)
+		{
+			firearm.Reload_InsertShell.do_chamber_bullet = false;
+			firearm->SetReloadState(firearm.Reload_InsertShellLong2);
+		}
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -269,7 +323,7 @@ local Reload_InsertShell = new Firearm_ReloadState
 	},
 };
 
-// Manually load a new bullet to the chamber
+// Manually load a new shell to the chamber
 local Reload_ManualLoad = new Firearm_ReloadState
 {
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
