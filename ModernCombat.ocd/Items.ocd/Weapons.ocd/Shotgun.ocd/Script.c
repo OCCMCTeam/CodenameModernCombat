@@ -23,9 +23,9 @@ public func Initialize()
 	
 	// Reloading times
 	this.Reload_Prepare          = new Reload_Prepare          { Delay = 10, };
-	this.Reload_InsertShellLong1 = new Reload_InsertShellLong1 { Delay = 10, };
-	this.Reload_InsertShellLong2 = new Reload_InsertShellLong2 { Delay = 10, };
-	this.Reload_InsertShell      = new Reload_InsertShell      { Delay = 10, };
+	this.Reload_InsertShellLong1 = new Reload_InsertShellLong1 { Delay = 20, };
+	this.Reload_InsertShellLong2 = new Reload_InsertShellLong2 { Delay = 20, };
+	this.Reload_InsertShell      = new Reload_InsertShell      { Delay = 15, };
 	this.Reload_ManualLoad       = new Reload_ManualLoad       { Delay = 5, };
 	this.Reload_ReadyWeapon      = new Reload_ReadyWeapon      { Delay = 25, };
 }
