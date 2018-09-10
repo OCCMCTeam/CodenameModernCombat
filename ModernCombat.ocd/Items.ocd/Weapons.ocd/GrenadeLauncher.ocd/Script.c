@@ -1,4 +1,6 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Revolver
 
 /* --- Properties --- */
 
@@ -20,6 +22,11 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Explosive());
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
+	
+	// Reloading times
+	this.Reload_Revolver_Prepare     = new Reload_Revolver_Prepare     { Delay = 25, };
+	this.Reload_Revolver_InsertShell = new Reload_Revolver_InsertShell { Delay = 26, };
+	this.Reload_Revolver_ReadyWeapon = new Reload_Revolver_ReadyWeapon { Delay = 30, };
 }
 
 func Definition(id weapon)
@@ -163,3 +170,21 @@ func FireEffect(object user, int angle, proplist firemode)
 		Size = 12,
 	});
 }
+
+/* --- Sounds --- */
+
+func PlaySoundInsertShell()
+{
+	Sound("Items::Weapons::RocketLauncher::Reload::InsertEncasement", {multiple = true});
+}
+
+func PlaySoundDrumOpen()
+{
+	Sound("Items::Weapons::Pistol::Reload::OpenChamber", {multiple = true});
+}
+
+func PlaySoundDrumClose()
+{
+	Sound("Items::Weapons::Pistol::Reload::CloseChamber", {multiple = true});
+}
+

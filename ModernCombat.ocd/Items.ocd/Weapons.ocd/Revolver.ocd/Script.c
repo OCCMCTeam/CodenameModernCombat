@@ -1,4 +1,6 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Revolver
 
 /* --- Properties --- */
 
@@ -6,6 +8,8 @@ local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
 local ForceFreeHands = true;
+
+local casing_count = 0;
 
 func SelectionTime() { return 10; }
 
@@ -18,6 +22,11 @@ public func Initialize()
 	// Fire mode list
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSingle());
+	
+	// Reloading times
+	this.Reload_Revolver_Prepare     = new Reload_Revolver_Prepare     { Delay = 10, };
+	this.Reload_Revolver_InsertShell = new Reload_Revolver_InsertShell { Delay = 15, };
+	this.Reload_Revolver_ReadyWeapon = new Reload_Revolver_ReadyWeapon { Delay = 20, };
 }
 
 func Definition(id def)
@@ -110,6 +119,7 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
 	projectile->HitScan();
+	++casing_count;
 }
 
 func FireEffect(object user, int angle, proplist firemode)
@@ -119,4 +129,40 @@ func FireEffect(object user, int angle, proplist firemode)
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
 	EffectMuzzleFlash(user, x, y, angle, RandomX(40, 45), false, true);
+}
+
+func Casing(object user, proplist firemode)
+{
+	var angle = user->GetCalcDir() * 90;
+	
+	// Casing
+	var x = +Sin(angle, firemode->GetProjectileDistance() / 2);
+	var y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
+
+	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + RandomX(-2, 2), user->GetYDir() - Random(2));
+}
+
+func EjectCasings(object user, proplist firemode)
+{
+	for (; casing_count > 0; --casing_count)
+	{
+		Casing(user, firemode);
+	}
+}
+
+/* --- Sounds --- */
+
+func PlaySoundInsertShell()
+{
+	Sound("Items::Weapons::Pistol::Reload::InsertDart", {multiple = true});
+}
+
+func PlaySoundDrumOpen()
+{
+	Sound("Items::Weapons::Pistol::Reload::OpenChamber", {multiple = true});
+}
+
+func PlaySoundDrumClose()
+{
+	Sound("Items::Weapons::Pistol::Reload::CloseChamber", {multiple = true});
 }
