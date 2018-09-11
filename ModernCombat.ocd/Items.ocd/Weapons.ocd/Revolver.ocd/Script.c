@@ -142,7 +142,7 @@ func Casing(object user, proplist firemode)
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + RandomX(-2, 2), user->GetYDir() - Random(2));
 }
 
-func EjectCasings(object user, proplist firemode)
+func Reload_Revolver_EjectCasings(object user, proplist firemode)
 {
 	for (; casing_count > 0; --casing_count)
 	{
@@ -157,12 +157,12 @@ func PlaySoundInsertShell()
 	Sound("Items::Weapons::Pistol::Reload::InsertDart", {multiple = true});
 }
 
-func PlaySoundDrumOpen()
+func PlaySoundOpenAmmoContainer()
 {
 	Sound("Items::Weapons::Pistol::Reload::OpenChamber", {multiple = true});
 }
 
-func PlaySoundDrumClose()
+func PlaySoundCloseAmmoContainer()
 {
 	Sound("Items::Weapons::Pistol::Reload::CloseChamber", {multiple = true});
 }

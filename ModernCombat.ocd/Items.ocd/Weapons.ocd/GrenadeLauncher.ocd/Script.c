@@ -178,12 +178,12 @@ func PlaySoundInsertShell()
 	Sound("Items::Weapons::RocketLauncher::Reload::InsertEncasement", {multiple = true});
 }
 
-func PlaySoundDrumOpen()
+func PlaySoundOpenAmmoContainer()
 {
 	Sound("Items::Weapons::Pistol::Reload::OpenChamber", {multiple = true});
 }
 
-func PlaySoundDrumClose()
+func PlaySoundCloseAmmoContainer()
 {
 	Sound("Items::Weapons::Pistol::Reload::CloseChamber", {multiple = true});
 }

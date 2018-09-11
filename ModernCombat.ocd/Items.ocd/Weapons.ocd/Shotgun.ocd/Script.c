@@ -1,6 +1,7 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Revolver
 
 /* --- Properties --- */
 
@@ -22,12 +23,12 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
 	
 	// Reloading times
-	this.Reload_Prepare          = new Reload_Prepare          { Delay = 10, };
-	this.Reload_InsertShellLong1 = new Reload_InsertShellLong1 { Delay = 20, };
-	this.Reload_InsertShellLong2 = new Reload_InsertShellLong2 { Delay = 20, };
-	this.Reload_InsertShell      = new Reload_InsertShell      { Delay = 15, };
-	this.Reload_ManualLoad       = new Reload_ManualLoad       { Delay = 5, };
-	this.Reload_ReadyWeapon      = new Reload_ReadyWeapon      { Delay = 25, };
+	this.Reload_Revolver_Prepare      = new Reload_Revolver_Prepare      { Delay = 10, };
+	this.Reload_Revolver_OpenChamber  = new Reload_Revolver_OpenChamber  { Delay = 20, };
+	this.Reload_Revolver_CloseChamber = new Reload_Revolver_CloseChamber { Delay = 20, };
+	this.Reload_Revolver_InsertShell  = new Reload_Revolver_InsertShell  { Delay = 15, };
+	this.Reload_Revolver_LoadChamber  = new Reload_Revolver_LoadChamber  { Delay = 5, };
+	this.Reload_Revolver_ReadyWeapon  = new Reload_Revolver_ReadyWeapon  { Delay = 25, };
 }
 
 func Definition(id weapon)
@@ -131,7 +132,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	EffectMuzzleFlash(user, x, y, angle, RandomX(40, 55), false, true);
 	
 	// Casing
-	ScheduleCall(this, this.PlaySoundChamberBullet, firemode->GetRecoveryDelay(), 1);
+	ScheduleCall(this, this.PlaySoundLoadAmmoChamber, firemode->GetRecoveryDelay(), 1);
 	ScheduleCall(this, this.EjectCasing, firemode->GetRecoveryDelay() + 5, 1, user, angle, firemode);
 }
 
@@ -154,207 +155,19 @@ func PlaySoundInsertShell()
 }
 
 
-func PlaySoundChamberBullet()
+func PlaySoundLoadAmmoChamber()
 {
 	Sound("Items::Weapons::Shotgun::Reload::BoltAction", {multiple = true});
 }
 
 
-func PlaySoundChamberOpen()
+func PlaySoundOpenAmmoChamber()
 {
 	Sound("Items::Weapons::Shotgun::Reload::BoltOpen", {multiple = true});
 }
 
 
-func PlaySoundChamberClose()
+func PlaySoundCloseAmmoChamber()
 {
 	Sound("Items::Weapons::Shotgun::Reload::BoltClose", {multiple = true});
 }
-
-
-/* --- Reload animations --- */
-
-// 	Gets the default reload state that the weapon starts reloading from.
-func GetReloadStartState(proplist firemode)
-{
-	var ammo_type = firemode->GetAmmoID();
-	var ammo = this->GetAmmo(ammo_type);
-	if (ammo >= firemode.ammo_load && !this->AmmoChamberIsLoaded(ammo_type))
-	{
-		Log("Reload: Start from manual, because no bullet chambered");
-		return Reload_ManualLoad;
-	}
-	else
-	{
-		return Reload_Prepare;
-	}
-}
-
-// Get ready to reload
-local Reload_Prepare = new Firearm_ReloadState
-{
-	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Prepare] - Start");
-	},
-
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Prepare] - Finish");
-		if (firearm->AmmoChamberIsLoaded(firemode->GetAmmoID()))
-		{
-			firearm->SetReloadState(firearm.Reload_InsertShell);
-		}
-		else
-		{
-			firearm->SetReloadState(firearm.Reload_InsertShellLong1);
-		}
-	},
-
-	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		// Repeat the same action
-		Log("Reload [Prepare] - Cancel");
-	},
-};
-
-// Insert a single shell into the chamber
-local Reload_InsertShellLong1 = new Firearm_ReloadState
-{
-	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm->PlaySoundChamberOpen();
-	},
-	
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm.Reload_InsertShell.do_chamber_bullet = true;
-		firearm->SetReloadState(firearm.Reload_InsertShell);
-	},
-};
-
-// Close chamber, after inserting a single shell
-local Reload_InsertShellLong2 = new Firearm_ReloadState
-{
-	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm->PlaySoundChamberClose();
-		firearm->AmmoChamberInsert(firemode->GetAmmoID());
-	},
-	
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm->SetReloadState(firearm.Reload_InsertShell);
-	},
-};
-
-// Insert a single shell into the tube
-local Reload_InsertShell = new Firearm_ReloadState
-{
-	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		// Do everything at the beginning here and count the next rest of the process
-		// as a delay for getting the next shell ready - if that fails, start from
-		// the beginning
-		Log("Reload [Mag insert] - Start");
-		
-		var is_done = false;
-		var source = firearm->GetAmmoReloadContainer();
-		if (source)
-		{
-			var info = firearm->ReloadGetAmmoInfo(firemode);
-			var ammo_requested = BoundBy(info.ammo_max + info.ammo_chambered - info.ammo_available, 0, firemode.ammo_usage ?? 1);
-			var ammo_received = Abs(source->DoAmmo(firemode->GetAmmoID(), -ammo_requested)); // see how much you can get
-			var ammo_spare = (info.ammo_available + ammo_received) % (firemode.ammo_usage ?? 1); // get ammo only in increments of ammo_usage
-			
-			source->DoAmmo(info.ammo_type, ammo_spare); // give back the unecessary ammo
-			if (ammo_received > 0)
-			{
-				firearm->PlaySoundInsertShell();
-				firearm->DoAmmo(info.ammo_type, ammo_received);
-			}
-			else
-			{
-				is_done = true;
-			}
-			
-			// Finish condition?
-			var is_full = firearm->GetAmmo(info.ammo_type) >= (info.ammo_max + info.ammo_chambered);
-			var no_ammo = source->GetAmmo(info.ammo_type) == 0;
-			if (is_full || no_ammo)
-			{
-				is_done = true;
-			}			
-		}
-		else
-		{
-			is_done = true;
-		}
-
-		// Finish condition?
-		if (is_done)
-		{
-			if (firearm->~AmmoChamberIsLoaded(info.ammo_type))
-			{
-				firearm->SetReloadState(firearm.Reload_ReadyWeapon);
-			}
-			else
-			{
-				firearm->SetReloadState(firearm.Reload_ManualLoad);
-			}
-		}
-	},
-	
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Mag insert] - Finish");
-		if (firearm.Reload_InsertShell.do_chamber_bullet)
-		{
-			firearm.Reload_InsertShell.do_chamber_bullet = false;
-			firearm->SetReloadState(firearm.Reload_InsertShellLong2);
-		}
-	},
-	
-	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Mag insert] - Cancel");
-		
-		// Stay in the same state, be fair and keep magazine ;)
-	},
-};
-
-// Manually load a new shell to the chamber
-local Reload_ManualLoad = new Firearm_ReloadState
-{
-	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Manual load] - Start");
-	},
-	
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Manual load] - Finish");
-		firearm->PlaySoundChamberBullet();
-		firearm->AmmoChamberInsert(firemode->GetAmmoID());
-		firearm->SetReloadState(firearm.Reload_ReadyWeapon);
-	},
-	
-	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		Log("Reload [Manual load] - Cancel");
-	},
-};
-
-// Bring the weapon to ready stance
-local Reload_ReadyWeapon = new Firearm_ReloadState
-{
-	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm->SetReloadState(nil); // Done!
-	},
-	
-	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
-	{
-		firearm->SetReloadState(nil); // Done!
-	},
-};
