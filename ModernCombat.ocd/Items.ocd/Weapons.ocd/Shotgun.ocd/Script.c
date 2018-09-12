@@ -1,7 +1,7 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
-#include CMC_Firearm_ReloadStates_Revolver
+#include CMC_Firearm_ReloadStates_Single
 
 /* --- Properties --- */
 
@@ -23,12 +23,12 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
 	
 	// Reloading times
-	this.Reload_Revolver_Prepare      = new Reload_Revolver_Prepare      { Delay = 10, };
-	this.Reload_Revolver_OpenChamber  = new Reload_Revolver_OpenChamber  { Delay = 20, };
-	this.Reload_Revolver_CloseChamber = new Reload_Revolver_CloseChamber { Delay = 20, };
-	this.Reload_Revolver_InsertShell  = new Reload_Revolver_InsertShell  { Delay = 15, };
-	this.Reload_Revolver_LoadChamber  = new Reload_Revolver_LoadChamber  { Delay = 5, };
-	this.Reload_Revolver_ReadyWeapon  = new Reload_Revolver_ReadyWeapon  { Delay = 25, };
+	this.Reload_Single_Prepare      = new Reload_Single_Prepare      { Delay = 10, };
+	this.Reload_Single_OpenChamber  = new Reload_Single_OpenChamber  { Delay = 20, };
+	this.Reload_Single_CloseChamber = new Reload_Single_CloseChamber { Delay = 20, };
+	this.Reload_Single_InsertShell  = new Reload_Single_InsertShell  { Delay = 15, };
+	this.Reload_Single_LoadChamber  = new Reload_Single_LoadChamber  { Delay = 5, };
+	this.Reload_Single_ReadyWeapon  = new Reload_Single_ReadyWeapon  { Delay = 25, };
 }
 
 func Definition(id weapon)

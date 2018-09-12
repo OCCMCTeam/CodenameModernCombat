@@ -1,6 +1,6 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_ReloadStates
-#include CMC_Firearm_ReloadStates_Revolver
+#include CMC_Firearm_ReloadStates_Single
 
 /* --- Properties --- */
 
@@ -24,9 +24,9 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSingle());
 	
 	// Reloading times
-	this.Reload_Revolver_Prepare     = new Reload_Revolver_Prepare     { Delay = 10, };
-	this.Reload_Revolver_InsertShell = new Reload_Revolver_InsertShell { Delay = 15, };
-	this.Reload_Revolver_ReadyWeapon = new Reload_Revolver_ReadyWeapon { Delay = 20, };
+	this.Reload_Single_Prepare     = new Reload_Single_Prepare     { Delay = 10, };
+	this.Reload_Single_InsertShell = new Reload_Single_InsertShell { Delay = 15, };
+	this.Reload_Single_ReadyWeapon = new Reload_Single_ReadyWeapon { Delay = 20, };
 }
 
 func Definition(id def)
@@ -142,7 +142,7 @@ func Casing(object user, proplist firemode)
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + RandomX(-2, 2), user->GetYDir() - Random(2));
 }
 
-func Reload_Revolver_EjectCasings(object user, proplist firemode)
+func Reload_Single_EjectCasings(object user, proplist firemode)
 {
 	for (; casing_count > 0; --casing_count)
 	{

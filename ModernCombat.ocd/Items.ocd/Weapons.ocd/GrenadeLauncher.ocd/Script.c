@@ -1,6 +1,6 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_ReloadStates
-#include CMC_Firearm_ReloadStates_Revolver
+#include CMC_Firearm_ReloadStates_Single
 
 /* --- Properties --- */
 
@@ -24,9 +24,9 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Smoke());
 	
 	// Reloading times
-	this.Reload_Revolver_Prepare     = new Reload_Revolver_Prepare     { Delay = 25, };
-	this.Reload_Revolver_InsertShell = new Reload_Revolver_InsertShell { Delay = 26, };
-	this.Reload_Revolver_ReadyWeapon = new Reload_Revolver_ReadyWeapon { Delay = 30, };
+	this.Reload_Single_Prepare     = new Reload_Single_Prepare     { Delay = 25, };
+	this.Reload_Single_InsertShell = new Reload_Single_InsertShell { Delay = 26, };
+	this.Reload_Single_ReadyWeapon = new Reload_Single_ReadyWeapon { Delay = 30, };
 }
 
 func Definition(id weapon)
