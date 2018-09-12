@@ -38,7 +38,7 @@ local Reload_GrabMag = new Firearm_ReloadState
 		Log("Reload [Grab mag] - Finish");
 		var ammo_type = firemode->GetAmmoID();
 		var ammo = firearm->GetAmmo(ammo_type);
-		if (ammo > firearm->AmmoChamberCapacity(ammo_type))
+		if (ammo > firearm->~AmmoChamberCapacity(ammo_type))
 		{
 			firearm->SetReloadState(firearm.Reload_MagOut_StashStart);
 		}

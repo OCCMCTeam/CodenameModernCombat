@@ -1,4 +1,7 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_AmmoChamber
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Container
 
 /* --- Properties --- */
 
@@ -19,6 +22,16 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueAuto());
 	AddFiremode(FiremodeBullets_TechniqueBurst());
+
+	// Reloading
+	Reload_Container_Prepare         = new Reload_Container_Prepare         { Delay = 20, };
+	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 40, };
+	Reload_Container_InsertAmmo      = new Reload_Container_InsertAmmo      { Delay = 90, };
+	Reload_Container_Close           = new Reload_Container_Close           { Delay = 20, };
+	Reload_Container_ReadyWeapon     = new Reload_Container_ReadyWeapon     { Delay = 30, };
+	Reload_Container_LoadAmmoChamber = new Reload_Container_LoadAmmoChamber { Delay = 20, };
+	Reload_Container_StashStart      = new Reload_Container_StashStart      { Delay = 20, };
+	Reload_Container_StashFinish     = new Reload_Container_StashFinish     { Delay = 20, };
 }
 
 func Definition(id weapon)
@@ -142,3 +155,31 @@ func FireEffect(object user, int angle, proplist firemode)
 
 	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
 }
+
+/* --- Sounds --- */
+
+func PlaySoundOpenAmmoContainer()
+{
+	// Nothing
+}
+
+func PlaySoundCloseAmmoContainer()
+{
+	Sound("Items::Weapons::MachineGun::Reload::CloseLid");
+}
+
+func PlaySoundEjectAmmo()
+{
+	Sound("Items::Weapons::MachineGun::Reload::EjectMag");
+}
+
+func PlaySoundInsertAmmo()
+{
+	Sound("Items::Weapons::MachineGun::Reload::InsertMag");
+}
+
+func PlaySoundLoadAmmoChamber()
+{
+	Sound("Items::Weapons::MachineGun::Reload::Bolt");
+}
+
