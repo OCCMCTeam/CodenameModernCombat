@@ -9,10 +9,10 @@ func GetReloadStartState(proplist firemode)
 	if (ammo >= firemode.ammo_load)
 	{
 		if (this->~AmmoChamberCapacity(ammo_type)
-	    && !this->~AmmoChamberIsLoaded(ammo_type))
+		&& !this->~AmmoChamberIsLoaded(ammo_type))
 		{
 			Log("Reload: Start from manual, because no bullet chambered");
-			return Reload_Single_LoadChamber;
+			return Reload_Single_LoadAmmoChamber;
 		}
 		else
 		{
@@ -43,7 +43,7 @@ local Reload_Single_Prepare = new Firearm_ReloadState
 		if (firearm->~AmmoChamberCapacity(firemode->GetAmmoID())
 		&& !firearm->~AmmoChamberIsLoaded(firemode->GetAmmoID()))
 		{
-			firearm->SetReloadState(firearm.Reload_Single_OpenChamber);
+			firearm->SetReloadState(firearm.Reload_Single_OpenAmmoChamber);
 		}
 		else
 		{
@@ -111,14 +111,14 @@ local Reload_Single_InsertShell = new Firearm_ReloadState
 		if (firearm.Reload_Single_InsertShell.do_chamber_bullet)
 		{
 			firearm.Reload_Single_InsertShell.do_chamber_bullet = false;
-			firearm->SetReloadState(firearm.Reload_Single_CloseChamber);
+			firearm->SetReloadState(firearm.Reload_Single_CloseAmmoChamber);
 		}
 		else if (firearm.Reload_Single_InsertShell.is_done)
 		{
 			if (firearm->~AmmoChamberCapacity(firemode->GetAmmoID())
 			&& !firearm->~AmmoChamberIsLoaded(firemode->GetAmmoID()))
 			{
-				firearm->SetReloadState(firearm.Reload_Single_LoadChamber);
+				firearm->SetReloadState(firearm.Reload_Single_LoadAmmoChamber);
 			}
 			else
 			{
@@ -157,7 +157,7 @@ local Reload_Single_ReadyWeapon = new Firearm_ReloadState
 /* --- Support for an extra ammo chamber --- */
 
 // Manually load a new shell to the chamber (open and close in one)
-local Reload_Single_LoadChamber = new Firearm_ReloadState
+local Reload_Single_LoadAmmoChamber = new Firearm_ReloadState
 {
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -180,7 +180,7 @@ local Reload_Single_LoadChamber = new Firearm_ReloadState
 
 
 // Open the chamber, for manually inserting a shell 
-local Reload_Single_OpenChamber = new Firearm_ReloadState
+local Reload_Single_OpenAmmoChamber = new Firearm_ReloadState
 {
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{
@@ -205,7 +205,7 @@ local Reload_Single_OpenChamber = new Firearm_ReloadState
 };
 
 // Close the chamber, after inserting a single shell
-local Reload_Single_CloseChamber = new Firearm_ReloadState
+local Reload_Single_CloseAmmoChamber = new Firearm_ReloadState
 {
 	OnStart = func (object firearm, object user, int x, int y, proplist firemode)
 	{

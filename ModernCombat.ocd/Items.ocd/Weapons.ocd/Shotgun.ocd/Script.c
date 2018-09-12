@@ -23,12 +23,12 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
 	
 	// Reloading times
-	this.Reload_Single_Prepare      = new Reload_Single_Prepare      { Delay = 10, };
-	this.Reload_Single_OpenChamber  = new Reload_Single_OpenChamber  { Delay = 20, };
-	this.Reload_Single_CloseChamber = new Reload_Single_CloseChamber { Delay = 20, };
-	this.Reload_Single_InsertShell  = new Reload_Single_InsertShell  { Delay = 15, };
-	this.Reload_Single_LoadChamber  = new Reload_Single_LoadChamber  { Delay = 5, };
-	this.Reload_Single_ReadyWeapon  = new Reload_Single_ReadyWeapon  { Delay = 25, };
+	this.Reload_Single_Prepare          = new Reload_Single_Prepare          { Delay = 10, };
+	this.Reload_Single_OpenAmmoChamber  = new Reload_Single_OpenAmmoChamber  { Delay = 20, };
+	this.Reload_Single_CloseAmmoChamber = new Reload_Single_CloseAmmoChamber { Delay = 20, };
+	this.Reload_Single_InsertShell      = new Reload_Single_InsertShell      { Delay = 15, };
+	this.Reload_Single_LoadAmmoChamber  = new Reload_Single_LoadAmmoChamber  { Delay =  5, };
+	this.Reload_Single_ReadyWeapon      = new Reload_Single_ReadyWeapon      { Delay = 25, };
 }
 
 func Definition(id weapon)
