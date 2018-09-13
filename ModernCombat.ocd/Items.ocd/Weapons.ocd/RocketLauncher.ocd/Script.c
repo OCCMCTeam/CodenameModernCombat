@@ -1,4 +1,6 @@
 #include CMC_Firearm_Basic
+#include Plugin_Firearm_ReloadStates
+#include CMC_Firearm_ReloadStates_Container
 
 /* --- Properties --- */
 
@@ -22,6 +24,13 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeMissiles_TechniqueOptical());
 	AddFiremode(FiremodeMissiles_TechniqueUnguided());
+
+	// Reloading
+	Reload_Container_Prepare         = new Reload_Container_Prepare         { Delay = 5, };
+	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 60, };
+	Reload_Container_InsertAmmo      = new Reload_Container_InsertAmmo      { Delay = 45, };
+	Reload_Container_Close           = new Reload_Container_Close           { Delay = 10, };
+	Reload_Container_ReadyWeapon     = new Reload_Container_ReadyWeapon     { Delay = 30, };
 }
 
 func Definition(id weapon)
@@ -265,4 +274,28 @@ func FireEffect(object user, int angle, proplist firemode)
 			B = PV_KeyFrames(0, 0, 180, 500,  70, 1000, 35),
 		}, 1);
 	}
+}
+
+
+
+/* --- Sounds --- */
+
+func PlaySoundOpenAmmoContainer()
+{
+	// Nothing
+}
+
+func PlaySoundCloseAmmoContainer()
+{
+	Sound("Items::Weapons::RocketLauncher::Reload::ReadySystem");
+}
+
+func PlaySoundEjectAmmo()
+{
+	Sound("Items::Weapons::RocketLauncher::Reload::EjectEncasement");
+}
+
+func PlaySoundInsertAmmo()
+{
+	Sound("Items::Weapons::RocketLauncher::Reload::InsertEncasement");
 }
