@@ -38,7 +38,7 @@ local Reload_Container_Prepare = new Firearm_ReloadState
 	OnFinish = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		Log("Reload [Prepare] - Finish");
-		firearm->SetReloadState(firearm.Reload_Container_EjectAmmo);
+		firearm->SetReloadState(firemode, firearm.Reload_Container_EjectAmmo);
 	},
 
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -65,11 +65,11 @@ local Reload_Container_EjectAmmo = new Firearm_ReloadState
 		
 		if (firearm->GetAmmo(ammo_type) > firearm->~AmmoChamberCapacity(ammo_type))
 		{
-			firearm->SetReloadState(firearm.Reload_Container_StashStart);
+			firearm->SetReloadState(firemode, firearm.Reload_Container_StashStart);
 		}
 		else
 		{
-			firearm->SetReloadState(firearm.Reload_Container_InsertAmmo);
+			firearm->SetReloadState(firemode, firearm.Reload_Container_InsertAmmo);
 		}
 	},
 	
@@ -94,7 +94,7 @@ local Reload_Container_InsertAmmo = new Firearm_ReloadState
 	{
 		firearm->~PlaySoundInsertAmmo();
 		firearm->ReloadRefillAmmo(firemode);
-		firearm->SetReloadState(firearm.Reload_Container_Close);
+		firearm->SetReloadState(firemode, firearm.Reload_Container_Close);
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -120,11 +120,11 @@ local Reload_Container_Close = new Firearm_ReloadState
 		if (this->~AmmoChamberCapacity(ammo_type)
 		&& !this->~AmmoChamberIsLoaded(ammo_type))
 		{
-			firearm->SetReloadState(firearm.Reload_Container_LoadAmmoChamber);
+			firearm->SetReloadState(firemode, firearm.Reload_Container_LoadAmmoChamber);
 		}
 		else
 		{
-			firearm->SetReloadState(firearm.Reload_Container_ReadyWeapon);
+			firearm->SetReloadState(firemode, firearm.Reload_Container_ReadyWeapon);
 		}
 	},
 
@@ -179,7 +179,7 @@ local Reload_Container_StashStart = new Firearm_ReloadState
 		SetTemporaryAmmo(ammo_type, 0);
 
 		// Finish with stashing sound, symbolizes that ammo is added
-		firearm->SetReloadState(firearm.Reload_Container_StashFinish);
+		firearm->SetReloadState(firemode, firearm.Reload_Container_StashFinish);
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -187,7 +187,7 @@ local Reload_Container_StashStart = new Firearm_ReloadState
 		Log("Reload [Mag out, stash it] - Cancel");
 
 		// Put a magazine in next
-		firearm->SetReloadState(firearm.Reload_Container_InsertAmmo);
+		firearm->SetReloadState(firemode, firearm.Reload_Container_InsertAmmo);
 	},
 	
 	SetTemporaryAmmo = func (id ammo_type, int amount)
@@ -216,7 +216,7 @@ local Reload_Container_StashFinish = new Firearm_ReloadState
 		Log("Reload [Stashing] - Finish");
 
 		// Put a magazine in next
-		firearm->SetReloadState(firearm.Reload_Container_InsertAmmo);
+		firearm->SetReloadState(firemode, firearm.Reload_Container_InsertAmmo);
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -224,7 +224,7 @@ local Reload_Container_StashFinish = new Firearm_ReloadState
 		Log("Reload [Stashing] - Cancel");
 
 		// Put a magazine in next
-		firearm->SetReloadState(firearm.Reload_MagIn);
+		firearm->SetReloadState(firemode, firearm.Reload_MagIn);
 	},
 };
 
@@ -243,7 +243,7 @@ local Reload_Container_LoadAmmoChamber = new Firearm_ReloadState
 		Log("Reload [Manual load] - Finish");
 		firearm->~PlaySoundLoadAmmoChamber();
 		firearm->~AmmoChamberInsert(firemode->GetAmmoID());
-		firearm->~SetReloadState(firearm.Reload_Container_ReadyWeapon);
+		firearm->~SetReloadState(firemode, firearm.Reload_Container_ReadyWeapon);
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)

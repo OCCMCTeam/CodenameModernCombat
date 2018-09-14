@@ -43,11 +43,11 @@ local Reload_Single_Prepare = new Firearm_ReloadState
 		if (firearm->~AmmoChamberCapacity(firemode->GetAmmoID())
 		&& !firearm->~AmmoChamberIsLoaded(firemode->GetAmmoID()))
 		{
-			firearm->SetReloadState(firearm.Reload_Single_OpenAmmoChamber);
+			firearm->SetReloadState(firemode, firearm.Reload_Single_OpenAmmoChamber);
 		}
 		else
 		{
-			firearm->SetReloadState(firearm.Reload_Single_InsertShell);
+			firearm->SetReloadState(firemode, firearm.Reload_Single_InsertShell);
 		}
 	},
 
@@ -111,18 +111,18 @@ local Reload_Single_InsertShell = new Firearm_ReloadState
 		if (firearm.Reload_Single_InsertShell.do_chamber_bullet)
 		{
 			firearm.Reload_Single_InsertShell.do_chamber_bullet = false;
-			firearm->SetReloadState(firearm.Reload_Single_CloseAmmoChamber);
+			firearm->SetReloadState(firemode, firearm.Reload_Single_CloseAmmoChamber);
 		}
 		else if (firearm.Reload_Single_InsertShell.is_done)
 		{
 			if (firearm->~AmmoChamberCapacity(firemode->GetAmmoID())
 			&& !firearm->~AmmoChamberIsLoaded(firemode->GetAmmoID()))
 			{
-				firearm->SetReloadState(firearm.Reload_Single_LoadAmmoChamber);
+				firearm->SetReloadState(firemode, firearm.Reload_Single_LoadAmmoChamber);
 			}
 			else
 			{
-				firearm->SetReloadState(firearm.Reload_Single_ReadyWeapon);
+				firearm->SetReloadState(firemode, firearm.Reload_Single_ReadyWeapon);
 			}
 		}
 	},
@@ -169,7 +169,7 @@ local Reload_Single_LoadAmmoChamber = new Firearm_ReloadState
 		Log("Reload [Manual load] - Finish");
 		firearm->~PlaySoundLoadAmmoChamber();
 		firearm->~AmmoChamberInsert(firemode->GetAmmoID());
-		firearm->~SetReloadState(firearm.Reload_Single_ReadyWeapon);
+		firearm->~SetReloadState(firemode, firearm.Reload_Single_ReadyWeapon);
 	},
 	
 	OnCancel = func (object firearm, object user, int x, int y, proplist firemode)
@@ -200,7 +200,7 @@ local Reload_Single_OpenAmmoChamber = new Firearm_ReloadState
 	OpenChamber = func (object firearm, object user, int x, int y, proplist firemode)
 	{
 		firearm.Reload_Single_InsertShell.do_chamber_bullet = true;
-		firearm->SetReloadState(firearm.Reload_Single_InsertShell);
+		firearm->SetReloadState(firemode, firearm.Reload_Single_InsertShell);
 	},
 };
 
@@ -235,11 +235,11 @@ local Reload_Single_CloseAmmoChamber = new Firearm_ReloadState
 		
 		if (ammo_requested > 0)
 		{
-			firearm->SetReloadState(firearm.Reload_Single_InsertShell);
+			firearm->SetReloadState(firemode, firearm.Reload_Single_InsertShell);
 		}
 		else
 		{
-			firearm->SetReloadState(firearm.Reload_Single_ReadyWeapon);
+			firearm->SetReloadState(firemode, firearm.Reload_Single_ReadyWeapon);
 		}
 	},
 };
