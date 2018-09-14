@@ -106,6 +106,7 @@ func FiremodeBullets_TechniqueSingle()
 	mode->SetName("$Single$")
 	->SetProjectileID(CMC_Projectile_Bullet)
 	// Reloading
+	->SetAmmoAmount(15)
 	->SetReloadDelay(40)
 	->SetDamage(11)
 	// Projectile
@@ -119,8 +120,6 @@ func FiremodeBullets_TechniqueSingle()
 
 	// Identification
 	mode.IsTracer = false;
-	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode.ammo_load = 15;
 
 	return mode;
 }
@@ -133,6 +132,7 @@ func FiremodeBullets_TechniqueTracerDart()
 	mode->SetName("$TracerDart$")
 	->SetProjectileID(CMC_Projectile_TracerDart)
 	// Reloading
+	->SetAmmoAmount(1)
 	->SetReloadDelay(90)
 	->SetDamage(0)
 	// Projectile
@@ -145,8 +145,6 @@ func FiremodeBullets_TechniqueTracerDart()
 
 	// Identification
 	mode.IsTracer = true;
-	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode.ammo_load = 1;
 
 	return mode;
 }

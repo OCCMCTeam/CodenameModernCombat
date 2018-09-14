@@ -14,7 +14,7 @@ func GetReloadStartState(proplist firemode)
 {
 	var ammo_type = firemode->GetAmmoID();
 	var ammo = this->GetAmmo(ammo_type);
-	if (ammo >= firemode.ammo_load && !this->AmmoChamberIsLoaded(ammo_type))
+	if (ammo >= firemode->GetAmmoAmount() && !this->AmmoChamberIsLoaded(ammo_type))
 	{
 		Log("Reload: Start from manual, because no bullet chambered");
 		return Reload_ManualLoad;

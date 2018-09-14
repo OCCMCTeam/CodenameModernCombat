@@ -74,6 +74,7 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetAmmoAmount(6)
 	->SetCooldownDelay(15)
 	->SetRecoveryDelay(1)
 	->SetReloadDelay(90)
@@ -95,9 +96,6 @@ func FiremodeBullets()
 	->SetAimCursor(CMC_Cursor_Cone)
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::Pistol::Fire?");
-
-	// FIXME: This should have a getter, too, most likely in the library (because one of the plugins uses it)
-	mode.ammo_load = 6;
 
 	return mode;
 }

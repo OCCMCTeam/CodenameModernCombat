@@ -1,5 +1,4 @@
 #include CMC_Firearm_Basic
-#include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
 #include CMC_Firearm_ReloadStates_Container
 
@@ -25,11 +24,11 @@ public func Initialize()
 
 	// Reloading
 	Reload_Container_Prepare         = new Reload_Container_Prepare         { Delay = 20, };
-	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 40, };
+	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 50, };
 	Reload_Container_InsertAmmo      = new Reload_Container_InsertAmmo      { Delay = 90, };
-	Reload_Container_Close           = new Reload_Container_Close           { Delay = 20, };
+	Reload_Container_Close           = new Reload_Container_Close           { Delay = 30, };
 	Reload_Container_ReadyWeapon     = new Reload_Container_ReadyWeapon     { Delay = 30, };
-	Reload_Container_LoadAmmoChamber = new Reload_Container_LoadAmmoChamber { Delay = 20, };
+	//Reload_Container_LoadAmmoChamber = new Reload_Container_LoadAmmoChamber { Delay = 20, };
 	Reload_Container_StashStart      = new Reload_Container_StashStart      { Delay = 20, };
 	Reload_Container_StashFinish     = new Reload_Container_StashFinish     { Delay = 20, };
 }
@@ -79,6 +78,7 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetAmmoAmount(60)
 	->SetCooldownDelay(4)
 	->SetRecoveryDelay(4)
 	->SetReloadDelay(220)
@@ -98,8 +98,6 @@ func FiremodeBullets()
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::MachineGun::Fire");
-
-	mode.ammo_load = 60;
 
 	return mode;
 }
@@ -160,7 +158,7 @@ func FireEffect(object user, int angle, proplist firemode)
 
 func PlaySoundOpenAmmoContainer()
 {
-	// Nothing
+	Sound("Items::Weapons::MachineGun::Reload::Bolt");
 }
 
 func PlaySoundCloseAmmoContainer()
@@ -176,10 +174,5 @@ func PlaySoundEjectAmmo()
 func PlaySoundInsertAmmo()
 {
 	Sound("Items::Weapons::MachineGun::Reload::InsertMag");
-}
-
-func PlaySoundLoadAmmoChamber()
-{
-	Sound("Items::Weapons::MachineGun::Reload::Bolt");
 }
 

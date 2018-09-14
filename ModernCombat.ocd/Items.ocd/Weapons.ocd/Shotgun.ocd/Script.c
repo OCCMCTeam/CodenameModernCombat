@@ -75,6 +75,7 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetAmmoAmount(20)
 	->SetRecoveryDelay(5)
 	->SetCooldownDelay(25)
 	->SetReloadDelay(75)
@@ -98,8 +99,6 @@ func FiremodeBullets()
 	->SetFireSound("Items::Weapons::Shotgun::Fire?")
 	// Ammo name override, CMC custom
 	->SetAmmoName("$Pellets$");
-
-	mode.ammo_load = 20;
 
 	return mode;
 }

@@ -75,6 +75,7 @@ func FiremodeGrenades()
 	->SetMode(WEAPON_FM_Single)
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Grenades)
+	->SetAmmoAmount(8)
 	->SetRecoveryDelay(60)
 	->SetReloadDelay(210)
 	->SetDamage(20)
@@ -90,8 +91,6 @@ func FiremodeGrenades()
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
-
-	mode.ammo_load = 8;
 
 	return mode;
 }

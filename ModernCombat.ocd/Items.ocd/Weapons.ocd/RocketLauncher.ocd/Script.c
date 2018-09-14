@@ -79,6 +79,7 @@ func FiremodeMissiles()
 	->SetMode(WEAPON_FM_Single)
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Missiles)
+	->SetAmmoAmount(1)
 	->SetCooldownDelay(200)
 	->SetRecoveryDelay(1)
 	->SetReloadDelay(150)
@@ -96,8 +97,6 @@ func FiremodeMissiles()
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::RocketLauncher::Fire?")
 	->SetHipShootingDisabled(true);
-
-	mode.ammo_load = 1;
 
 	return mode;
 }

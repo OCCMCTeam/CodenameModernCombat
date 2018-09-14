@@ -82,6 +82,7 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetAmmoAmount(30)
 	->SetCooldownDelay(13)
 	->SetRecoveryDelay(3)
 	->SetReloadDelay(90)
@@ -100,8 +101,6 @@ func FiremodeBullets()
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::AssaultRifle::Fire?");
-
-	mode.ammo_load = 30;
 
 	return mode;
 }
@@ -136,6 +135,7 @@ func FiremodeGrenades()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Grenades)
+	->SetAmmoAmount(1)
 	->SetRecoveryDelay(1)
 	->SetCooldownDelay(80)
 	->SetReloadDelay(80)
@@ -152,8 +152,6 @@ func FiremodeGrenades()
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::AssaultRifle::FireLauncher?");
-
-	mode.ammo_load = 1;
 
 	return mode;
 }

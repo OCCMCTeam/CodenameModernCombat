@@ -79,6 +79,7 @@ func FiremodeBullets()
 	mode->SetCMCDefaults()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
+	->SetAmmoAmount(30)
 	->SetCooldownDelay(3)
 	->SetRecoveryDelay(3)
 	->SetReloadDelay(70)
@@ -98,8 +99,6 @@ func FiremodeBullets()
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
 	->SetFireSound("Items::Weapons::SubmachineGun::Fire?");
-
-	mode.ammo_load = 30;
 
 	return mode;
 }
