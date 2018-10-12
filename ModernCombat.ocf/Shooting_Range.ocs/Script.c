@@ -13,4 +13,10 @@ func InitializePlayer(int plr)
 	clonk->SetPosition(35, 170);
 	clonk->CreateContents(CMC_Weapon_Pistol);
 	clonk->CreateContents(CMC_Weapon_AssaultRifle);
+	
+	StartScriptProfiler();
+	
+	ScheduleCall(clonk->Contents(), "ControlUseStart", 40, 10, clonk, 100, -10);
+	
+	ScheduleCall(nil, Global.StopScriptProfiler, 650);
 }

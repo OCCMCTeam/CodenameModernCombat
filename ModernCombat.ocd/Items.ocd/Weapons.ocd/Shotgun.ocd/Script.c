@@ -1,7 +1,7 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
-#include CMC_Firearm_ReloadStates_Single
+#include Plugin_Firearm_ReloadStates_Single
 
 /* --- Properties --- */
 

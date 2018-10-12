@@ -1,7 +1,7 @@
 #include CMC_Firearm_Basic
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
-#include CMC_Firearm_ReloadStates_Magazine
+#include Plugin_Firearm_ReloadStates_Magazine
 
 
 /* --- Properties --- */
@@ -28,13 +28,13 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Smoke());
 
 	// Reloading times
-	this.Reload_GrabMag            = new Reload_GrabMag            { Delay = 5, };
-	this.Reload_MagOut_StashStart  = new Reload_MagOut_StashStart  { Delay = 20, };
-	this.Reload_MagOut_StashFinish = new Reload_MagOut_StashFinish { Delay = 20, };
-	this.Reload_MagOut_Drop        = new Reload_MagOut_Drop        { Delay = 20, };
-	this.Reload_MagIn              = new Reload_MagIn              { Delay = 30, };
-	this.Reload_ManualLoad         = new Reload_ManualLoad         { Delay = 15, };
-	this.Reload_ReadyWeapon        = new Reload_ReadyWeapon        { Delay = 20, };
+	this.Reload_Magazine_Grab            = new Reload_Magazine_Grab            { Delay = 5, };
+	this.Reload_Magazine_StashStart      = new Reload_Magazine_StashStart      { Delay = 20, };
+	this.Reload_Magazine_StashFinish     = new Reload_Magazine_StashFinish     { Delay = 20, };
+	this.Reload_Magazine_Drop            = new Reload_Magazine_Drop            { Delay = 20, };
+	this.Reload_Magazine_Insert          = new Reload_Magazine_Insert          { Delay = 30, };
+	this.Reload_Magazine_LoadAmmoChamber = new Reload_Magazine_LoadAmmoChamber { Delay = 15, };
+	this.Reload_Magazine_ReadyWeapon     = new Reload_Magazine_ReadyWeapon     { Delay = 20, };
 }
 
 func Definition(id weapon)
