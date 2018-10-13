@@ -23,15 +23,6 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueAuto());
 	AddFiremode(FiremodeBullets_TechniqueBurst());
 	AddFiremode(FiremodeBullets_TechniqueSingle());
-
-	// Reloading times
-	this.Reload_Magazine_Grab            = new Reload_Magazine_Grab            { Delay = 5, };
-	this.Reload_Magazine_StashStart      = new Reload_Magazine_StashStart      { Delay = 20, };
-	this.Reload_Magazine_StashFinish     = new Reload_Magazine_StashFinish     { Delay = 20, };
-	this.Reload_Magazine_Drop            = new Reload_Magazine_Drop            { Delay = 20, };
-	this.Reload_Magazine_Insert          = new Reload_Magazine_Insert          { Delay = 25, };
-	this.Reload_Magazine_LoadAmmoChamber = new Reload_Magazine_LoadAmmoChamber { Delay = 10, };
-	this.Reload_Magazine_ReadyWeapon     = new Reload_Magazine_ReadyWeapon     { Delay = 10, };
 }
 
 func Definition(id weapon)
@@ -145,6 +136,24 @@ func FiremodeBullets_TechniqueSingle()
 
 	return mode;
 }
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Magazine_Prepare     = { Delay = 5, },
+	Magazine_Drop        = { Delay = 20, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_Insert      = { Delay = 25, EndCall = "PlaySoundInsertMagazine", },
+	Magazine_ReadyWeapon = { Delay = 10, },
+
+	/* --- Support adding spare ammo back to the user --- */
+	Magazine_StashStart  = { Delay = 20, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
+
+	/* --- Support for an extra ammo chamber --- */
+	Magazine_LoadAmmoChamber = { Delay = 10, EndCall = "PlaySoundChamberBullet", },
+};
 
 /* --- Effects --- */
 
