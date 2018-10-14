@@ -22,12 +22,8 @@ public func Initialize()
 	// Fire mode list
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSingle());
-	
-	// Reloading times
-	this.Reload_Single_Prepare     = new Reload_Single_Prepare     { Delay = 10, };
-	this.Reload_Single_InsertShell = new Reload_Single_InsertShell { Delay = 15, };
-	this.Reload_Single_ReadyWeapon = new Reload_Single_ReadyWeapon { Delay = 20, };
 }
+
 
 func Definition(id def)
 {
@@ -110,6 +106,16 @@ func FiremodeBullets_TechniqueSingle()
 
 	return mode;
 }
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Single_Prepare     = { Delay = 10, StartCall  = "PlaySoundOpenAmmoContainer", },
+	Single_InsertAmmo  = { Delay = 15, },
+	Single_ReadyWeapon = { Delay = 20, StartCall  = "PlaySoundCloseAmmoContainer", },
+};
 
 /* --- Effects --- */
 

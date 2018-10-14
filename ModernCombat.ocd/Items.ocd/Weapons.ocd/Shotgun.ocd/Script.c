@@ -21,14 +21,6 @@ public func Initialize()
 	// Fire mode list
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
-	
-	// Reloading times
-	this.Reload_Single_Prepare          = new Reload_Single_Prepare          { Delay = 10, UserAnimation = {Name = "MusketLoadArms", Begin =    0, End = 1000, }, };
-	this.Reload_Single_OpenAmmoChamber  = new Reload_Single_OpenAmmoChamber  { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 1000, End = 1001, }, };
-	this.Reload_Single_CloseAmmoChamber = new Reload_Single_CloseAmmoChamber { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3600, }, };
-	this.Reload_Single_InsertShell      = new Reload_Single_InsertShell      { Delay = 15, UserAnimation = {Name = "MusketLoadArms", Begin =  500, End = 4000, }, };
-	this.Reload_Single_LoadAmmoChamber  = new Reload_Single_LoadAmmoChamber  { Delay =  5, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3501, }, };
-	this.Reload_Single_ReadyWeapon      = new Reload_Single_ReadyWeapon      { Delay = 25, UserAnimation = {Name = "MusketLoadArms", Begin = 3501, End = 4500, }, };
 }
 
 func Definition(id weapon)
@@ -113,6 +105,21 @@ func FiremodeBullets_TechniqueSpreadshot()
 
 	return mode;
 }
+
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Single_Prepare     = { Delay = 10, UserAnimation = {Name = "MusketLoadArms", Begin =    0, End = 1000, }, StartCall = "PlaySoundOpenAmmoContainer", },
+	Single_InsertAmmo  = { Delay = 15, UserAnimation = {Name = "MusketLoadArms", Begin =  500, End = 4000, }, },
+	Single_ReadyWeapon = { Delay = 25, UserAnimation = {Name = "MusketLoadArms", Begin = 3501, End = 4500, }, StartCall  = "PlaySoundCloseAmmoContainer", },
+	/* --- Support for an extra ammo chamber --- */
+	Single_LoadAmmoChamber  = { Delay =  5, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3501, }, EndCall = "PlaySoundLoadAmmoChamber", },
+	Single_OpenAmmoChamber  = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 1000, End = 1001, }, StartCall = "PlaySoundOpenAmmoChamber", },
+	Single_CloseAmmoChamber = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3600, }, StartCall = "PlaySoundCloseAmmoChamber", },
+};
 
 /* --- Effects --- */
 
