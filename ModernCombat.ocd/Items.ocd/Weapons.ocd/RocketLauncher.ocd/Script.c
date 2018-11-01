@@ -24,13 +24,6 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeMissiles_TechniqueOptical());
 	AddFiremode(FiremodeMissiles_TechniqueUnguided());
-
-	// Reloading
-	Reload_Container_Prepare         = new Reload_Container_Prepare         { Delay = 5, };
-	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 60, };
-	Reload_Container_InsertAmmo      = new Reload_Container_InsertAmmo      { Delay = 45, };
-	Reload_Container_Close           = new Reload_Container_Close           { Delay = 10, };
-	Reload_Container_ReadyWeapon     = new Reload_Container_ReadyWeapon     { Delay = 30, };
 }
 
 func Definition(id weapon)
@@ -232,6 +225,18 @@ func CanFiremodeGuide(proplist firemode)
 	firemode = firemode ?? GetFiremode();
 	return firemode && firemode->GetIndex() == 0;
 }
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Container_Prepare     = { Delay =  5, StartCall  = "PlaySoundOpenAmmoContainer", },
+	Container_EjectAmmo   = { Delay = 60, EndCall    = "PlaySoundEjectAmmo", },
+	Container_InsertAmmo  = { Delay = 45, EndCall    = "PlaySoundInsertAmmo", },
+	Container_Close       = { Delay = 10, StartCall  = "PlaySoundCloseAmmoContainer", },
+	Container_ReadyWeapon = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
+};
 
 /* --- Effects --- */
 

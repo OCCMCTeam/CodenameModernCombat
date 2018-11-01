@@ -21,16 +21,6 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueAuto());
 	AddFiremode(FiremodeBullets_TechniqueBurst());
-
-	// Reloading
-	Reload_Container_Prepare         = new Reload_Container_Prepare         { Delay = 20, };
-	Reload_Container_EjectAmmo       = new Reload_Container_EjectAmmo       { Delay = 50, };
-	Reload_Container_InsertAmmo      = new Reload_Container_InsertAmmo      { Delay = 90, };
-	Reload_Container_Close           = new Reload_Container_Close           { Delay = 30, };
-	Reload_Container_ReadyWeapon     = new Reload_Container_ReadyWeapon     { Delay = 30, };
-	//Reload_Container_LoadAmmoChamber = new Reload_Container_LoadAmmoChamber { Delay = 20, };
-	Reload_Container_StashStart      = new Reload_Container_StashStart      { Delay = 20, };
-	Reload_Container_StashFinish     = new Reload_Container_StashFinish     { Delay = 20, };
 }
 
 func Definition(id weapon)
@@ -128,6 +118,22 @@ func FiremodeBullets_TechniqueBurst()
 
 	return mode;
 }
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Container_Prepare     = { Delay = 20, StartCall  = "PlaySoundOpenAmmoContainer", },
+	Container_EjectAmmo   = { Delay = 50, EndCall    = "PlaySoundEjectAmmo", },
+	Container_InsertAmmo  = { Delay = 90, EndCall    = "PlaySoundInsertAmmo", },
+	Container_Close       = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
+	Container_ReadyWeapon = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
+	
+	/* --- Support adding spare ammo back to the user --- */
+	Container_StashStart  = { Delay = 20, },
+	Container_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
+};
 
 /* --- Effects --- */
 

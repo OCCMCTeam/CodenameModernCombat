@@ -22,11 +22,6 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Explosive());
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
-	
-	// Reloading times
-	this.Reload_Single_Prepare     = new Reload_Single_Prepare     { Delay = 25, };
-	this.Reload_Single_InsertShell = new Reload_Single_InsertShell { Delay = 26, };
-	this.Reload_Single_ReadyWeapon = new Reload_Single_ReadyWeapon { Delay = 30, };
 }
 
 func Definition(id weapon)
@@ -130,6 +125,16 @@ func FiremodeGrenades_Smoke()
 
 	return mode;
 }
+
+/* --- Reload animations --- */
+
+local ReloadStateMap = 
+{
+	/* --- Default sequence --- */
+	Single_Prepare     = { Delay = 25, StartCall  = "PlaySoundOpenAmmoContainer", },
+	Single_InsertAmmo  = { Delay = 26, },
+	Single_ReadyWeapon = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
+};
 
 /* --- Effects --- */
 
