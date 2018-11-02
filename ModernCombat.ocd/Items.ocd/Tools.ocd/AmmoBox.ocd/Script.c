@@ -10,7 +10,7 @@
 
 func RejectCollect(id type, object item)
 {
-	// The barrel can only contain liquids.
+	// Must contain ammo exclusively
 	return RejectStack(item) || _inherited(type, item, ...);
 }
 
@@ -74,6 +74,31 @@ public func GetGuiItemStatusProperties(object user)
 	return status;
 }
 
+
+/* --- User Interface --- */
+
+func ControlUseItemConfig(object user, int x, int y, int status)
+{
+	if (status == CONS_Down)
+	{
+		return ControlUse(user, x, y);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+func ControlUse(object user, int x, int y)
+{
+	// User has to be ready to act
+	if (user->~HasActionProcedure())
+	{
+		UnpackAmmo(user);
+	}
+	return true;
+}
+
 /* --- Functionality --- */
 
 
@@ -92,6 +117,40 @@ func RejectStack(object item)
 func SpawnAs(id ammo_type)
 {
 	CreateContents(ammo_type);
+}
+
+// Unpack ammo and give it to user
+func UnpackAmmo(object user)
+{
+	// Sanity checks
+	AssertNotNil(user);
+	if (!Contents())
+	{
+		RemoveObject();
+		return false;
+	}
+	
+	// Transfer the ammo
+	var type = Contents()->GetID();
+	var available = Contents()->GetStackCount();
+	var transferred = user->DoAmmo(type, available);
+	
+	// Nothing transferred?
+	if (transferred == 0)
+	{
+		return false;
+	}
+	
+	// Effect
+	user->Sound("Items::Tools::AmmoBox::ResupplyIn?", {player = user->GetOwner()});
+	
+	// Cleanup
+	Contents()->DoStackCount(-transferred);
+	if (!Contents())
+	{
+		RemoveObject();
+	}
+	return true;
 }
 
 /* --- Properties --- */
