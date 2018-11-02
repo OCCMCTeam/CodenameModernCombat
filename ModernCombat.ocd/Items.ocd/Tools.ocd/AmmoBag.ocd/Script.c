@@ -166,6 +166,14 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				call_on_click = this.CreateNothing;
 			}
 			
+			// Not available if you require a special class to create it
+			if (ammo_type != CMC_Ammo_Bullets && !HasAmmoAbility(user))
+			{
+				text_color = GUI_CMC_Text_Color_Inactive;
+				description = Format("$AmmoAbilityRequired$", CMC_Ability_ImproveAmmoEquipment->GetName());
+				call_on_click = this.CreateNothing;
+			}
+			
 			var name = Format("<c %x>%s</c>", text_color, ammo_type->GetName());
 			var entry = ammo_list->MakeEntryProplist();
 			entry->SetIcon(ammo_type)
@@ -226,8 +234,7 @@ func GetAvailableAmmoTypes()
 	var ammo_types = [];
 	var ammo_type;
 
-	// Get all ammo
-	// TODO - Only support class should be able to create all ammo types, but for testing purposes this is not implemented yet
+	// Get all ammo - whether you can unpack this ammo or not is decided later on in the menu.
 	for (var i = 0; ammo_type = GetDefinition(i, C4D_StaticBack); ++i)
 	{
 		if (ammo_type->~IsAmmo())

@@ -1,7 +1,8 @@
 Name=Ammo bag
 
 TakeAmmo=Take ammunition
-PointsRequired=<c ff0000>%d</c> points needed to unpack.
+PointsRequired=<c ff0000>%d</c> points required to unpack.
+AmmoAbilityRequired=<c ff0000>%s</c> required to unpack.
 UnpackAmmo=%d %s will be unpacked to a %s.
 NoAmmoAvailable=No ammo available!
 NoSpace=Inventory is full.
