@@ -5,6 +5,8 @@
 	by means other than our own user interface.
 */
 
+#include Library_ObjectLimit
+
 
 /* --- Engine callbacks --- */
 
@@ -158,3 +160,5 @@ func UnpackAmmo(object user)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+
+local ObjectLimitPlayer = 3;
