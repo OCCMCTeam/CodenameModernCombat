@@ -1,0 +1,3 @@
+Name=Spritze
+Description=Gibt dem Nutzer einen sofort wirkenden Energieschub. Achtung: Bei Verletzungen während der Heilung wird der Wirkstoff neutralisiert.
+

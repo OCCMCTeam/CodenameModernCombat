@@ -16,6 +16,11 @@ public func Initialize(...)
 	return _inherited(...);
 }
 
+func Hit()
+{
+	Sound("Items::Tools::AmmoBox::Hit?", {multiple = true});
+}
+
 /* --- Display --- */
 
 public func GetCarryMode(object user, bool not_selected)

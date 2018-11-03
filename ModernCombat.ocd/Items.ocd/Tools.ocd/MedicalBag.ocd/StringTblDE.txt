@@ -1,0 +1,6 @@
+Name=Sanitätstasche
+Description=Enthält Medikamente zur Versorgung von verletzten Clonks. Sanitäter regenerieren den Inhalt mit der Zeit indem sie es tragen.
+
+PointsRequired=Es werden <c ff0000>%d</c> Punkte zum Entpacken benötigt.
+AbilityRequired=Es wird <c ff0000>%s</c> zum Entpacken benötigt.
+NoSpace=Inventar bereits belegt.

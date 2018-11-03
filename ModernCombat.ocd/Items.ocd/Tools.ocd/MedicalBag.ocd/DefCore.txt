@@ -1,0 +1,16 @@
+[DefCore]
+id=CMC_Tool_Medical_Bag
+Version=8,0
+Category=C4D_Object
+Width=8
+Height=7
+Offset=-4,-3
+Vertices=4
+VertexX=3,3,-3,-3
+VertexY=-2,2,-2,2
+VertexFriction=50,50,50,50
+Picture=0,0,128,128
+Value=100
+Mass=15
+Rotate=1
+Float=1

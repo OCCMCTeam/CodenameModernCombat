@@ -1,0 +1,6 @@
+Name=Medical bag
+Description=Contains medicine to heal injured clonks. Medics replenish its content over time by holding it.
+
+PointsRequired=<c ff0000>%d</c> points required to unpack.
+AbilityRequired=<c ff0000>%s</c> required to unpack.
+NoSpace=Inventory is full.

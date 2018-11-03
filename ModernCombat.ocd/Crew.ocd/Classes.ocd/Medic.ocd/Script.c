@@ -10,7 +10,7 @@ local Items = {
 	CMC_Weapon_SubmachineGun = 1,
 	CMC_Weapon_Pistol = 1,
 	CMC_Tool_Defibrillator = 1,
-	//CMC_Tool_FirstAidPack = 1,
+	CMC_Tool_Medical_Bag = 1,
 };
 
 local Grenades = {

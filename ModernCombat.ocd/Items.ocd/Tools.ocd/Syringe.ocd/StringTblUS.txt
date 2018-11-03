@@ -1,0 +1,2 @@
+Name=Syringe
+Description=The user instantly recives an energy burst. Warning: Injuries accruing while healing will neutralize the healing agent.
