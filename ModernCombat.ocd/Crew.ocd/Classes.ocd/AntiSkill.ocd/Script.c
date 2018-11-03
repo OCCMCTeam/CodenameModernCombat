@@ -10,7 +10,7 @@ local Items = {
 	CMC_Weapon_Shotgun = 1,
 	CMC_Weapon_Pistol = 1,
 	//CMC_Tool_RiotShield = 1,
-	//CMC_Tool_Dragnin = 1,
+	CMC_Tool_Syringe = 1,
 };
 
 local Grenades = {
