@@ -1,0 +1,16 @@
+[DefCore]
+id=CMC_Tool_BlowTorch
+Version=8,0
+Category=C4D_Object
+Width=15
+Height=9
+Offset=-8,-5
+Vertices=4
+VertexX=6,0,-8
+VertexY=3,-5,3
+VertexFriction=100,80,100
+Picture=0,9,64,64
+Value=10
+Mass=15
+Rotate=1
+Float=1

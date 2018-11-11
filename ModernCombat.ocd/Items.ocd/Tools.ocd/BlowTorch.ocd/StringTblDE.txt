@@ -1,0 +1,2 @@
+Name=Schweißbrenner
+Description=Kann verbündete Strukturen, Ausrüstung und Fahrzeuge reparieren und feindliche beschädigen oder entschärfen. Der Schweißbrenner lädt verbrauchtes Gas automatisch über Zeit nach.

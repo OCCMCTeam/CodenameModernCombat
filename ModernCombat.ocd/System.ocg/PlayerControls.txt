@@ -23,6 +23,7 @@
 	
 	[ControlDef]
 	Identifier=CMC_Reload
+	Hold=1
 	
 
 [ControlSets]
