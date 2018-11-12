@@ -54,14 +54,14 @@ public func ControlUseHolding(object user, int x, int y)
 public func ControlUseStop(object user, int x, int y)
 {
 	var preview = GetBoobyTrapPreview();
-	if (preview) preview->TryActivateBoobyTrap(user, x, y);
+	if (preview) preview->TryPlaceBoobyTrap(user, x, y);
 	return true;
 }
 
 public func ControlUseCancel(object user, int x, int y)
 {
 	var preview = GetBoobyTrapPreview();
-	if (preview) preview->CancelActivateBoobyTrap(user, x, y);
+	if (preview) preview->CancelPlaceBoobyTrap(user, x, y);
 	return true;
 }
 
@@ -148,7 +148,7 @@ local IntBoobyTrapPreview = new Effect
 		this.booby_trap_placement = pos.Placement;
 	},
 	
-	TryActivateBoobyTrap = func (object user, int x, int y)
+	TryPlaceBoobyTrap = func (object user, int x, int y)
 	{
 		// Place it
 		if (this.booby_trap_ok)
@@ -156,15 +156,15 @@ local IntBoobyTrapPreview = new Effect
 			var bag = Target->Contained();
 			Target->Exit();
 			Target->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
-			Target->ActivateBoobyTrap(user, bag);
+			Target->PlaceBoobyTrap(user, bag);
 			Target->SetR(this.booby_trap_r);
 		}
 		
 		// Cancel / Remove preview on positive placement
-		this->CancelActivateBoobyTrap(user, x, y);
+		this->CancelPlaceBoobyTrap(user, x, y);
 	},
 	
-	CancelActivateBoobyTrap = func (object user, int x, int y)
+	CancelPlaceBoobyTrap = func (object user, int x, int y)
 	{
 		RemoveEffect(nil, Target, this);
 	},
@@ -179,14 +179,14 @@ local IntBoobyTrapPreview = new Effect
 
 func GetWall(int angle, int max_dist, int dist_bottom)
 {
-	// initialize with defaults
+	// Initialize with defaults
 	max_dist = Min(max_dist ?? this.BoobyTrapPlacementMaxDist, this.BoobyTrapPlacementMaxDist);
 	var place_x = +Sin(angle, max_dist);
 	var place_y = -Cos(angle, max_dist);
 
 	var solid = false;
 
-	// hit a wall?
+	// Hit a wall?
 	for (var dist = this.BoobyTrapPlacementMinDist; dist <= max_dist; dist++)
 	{
 		var x = +Sin(angle, dist);
@@ -206,10 +206,10 @@ func GetWall(int angle, int max_dist, int dist_bottom)
 	
 	if (!solid)
 	{
-		if (GetMaterial(place_x, place_y) != Material("Sky") // not a wall, but not sky?
-		&& !GBackSemiSolid(place_x, place_y)) // never place in liquids!
+		if (GetMaterial(place_x, place_y) != Material("Sky") // Not a wall, but not sky?
+		&& !GBackSemiSolid(place_x, place_y)) // Never place in liquids!
 		{
-			placement = BOOBY_TRAP_PLACEMENT_Background; // must be a background wall
+			placement = BOOBY_TRAP_PLACEMENT_Background; // Must be a background wall
 		}
 	}
 	else
@@ -217,7 +217,7 @@ func GetWall(int angle, int max_dist, int dist_bottom)
 		placement = BOOBY_TRAP_PLACEMENT_Wall;
 	}
 	
-	// save everything as a proplist :)
+	// Save everything as a proplist :)
 	return {
 		X = place_x,
 		Y = place_y,
@@ -326,19 +326,22 @@ func LaserHit(object target)
 
 /* --- Functionality --- */
 
-func ActivateBoobyTrap(object user, object bag)
+func PlaceBoobyTrap(object user, object bag)
 {
+	var player = user->GetOwner();
+	SetOwner(player);
+	EvaluateObjectLimit(player);
+
 	this.booby_trap_user = user;
 	this.Collectible = false;
-	SetOwner(user->GetOwner());
+
 	SetAction("Activate");
 	SetVertex(2, VTX_Y, 6, 2);
-	
+
 	if (bag && bag->GetID() == CMC_Tool_BoobyTrap_Bag)
 	{
 		bag->PlacedBoobyTrap(this);
-	}
-	
+	}	
 	return true;
 }
 
