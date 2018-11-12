@@ -1,0 +1,2 @@
+Name=Sprengfallentasche
+Description=Die Sprengfallentasche erlaubt das Legen von Sprengfallen die dazu genutzt werden, Wege zu sichern oder Fallen aufzustellen.

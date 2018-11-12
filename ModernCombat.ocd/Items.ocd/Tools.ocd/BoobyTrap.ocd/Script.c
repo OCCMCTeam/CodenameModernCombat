@@ -38,9 +38,9 @@ public func ControlUseStart(object user, int x, int y)
 	return true;
 }
 
-public func RejectUse(object clonk)
+public func RejectUse(object user)
 {
-	return !clonk->HasHandAction(false, false, true);
+	return !user->HasHandAction(false, false, true);
 }
 
 
@@ -150,17 +150,18 @@ local IntBoobyTrapPreview = new Effect
 	
 	TryActivateBoobyTrap = func (object user, int x, int y)
 	{
+		// Place it
 		if (this.booby_trap_ok)
 		{
+			var bag = Target->Contained();
 			Target->Exit();
 			Target->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
-			Target->ActivateBoobyTrap(user);
+			Target->ActivateBoobyTrap(user, bag);
 			Target->SetR(this.booby_trap_r);
 		}
-		else // cancel
-		{
-			this->CancelActivateBoobyTrap(user, x, y);
-		}
+		
+		// Cancel / Remove preview on positive placement
+		this->CancelActivateBoobyTrap(user, x, y);
 	},
 	
 	CancelActivateBoobyTrap = func (object user, int x, int y)
@@ -325,13 +326,19 @@ func LaserHit(object target)
 
 /* --- Functionality --- */
 
-func ActivateBoobyTrap(object user)
+func ActivateBoobyTrap(object user, object bag)
 {
 	this.booby_trap_user = user;
 	this.Collectible = false;
 	SetOwner(user->GetOwner());
 	SetAction("Activate");
 	SetVertex(2, VTX_Y, 6, 2);
+	
+	if (bag && bag->GetID() == CMC_Tool_BoobyTrap_Bag)
+	{
+		bag->PlacedBoobyTrap(this);
+	}
+	
 	return true;
 }
 
