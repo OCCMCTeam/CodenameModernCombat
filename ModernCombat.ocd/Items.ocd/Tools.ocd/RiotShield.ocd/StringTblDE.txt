@@ -1,0 +1,2 @@
+Name=Einsatzschild
+Description=Der taktische Einsatzschild schützt zuverlässig vor Projektilbeschuss und stabilisiert den Träger.

@@ -1,0 +1,2 @@
+Name=Riot Shield
+Description=The tactical riot shield protects against projectile fire and stabilizes the user.

@@ -1,0 +1,16 @@
+[DefCore]
+id=CMC_Tool_RiotShield
+Version=8,0
+Category=C4D_Object
+Width=8
+Height=11
+Offset=-4,-5
+Vertices=2
+VertexX=0,0,-2,2
+VertexY=-4,5,-2,-2
+Picture=0,0,64,64
+VertexFriction=50,50
+Value=40
+Mass=15
+Rotate=1
+Float=1
