@@ -14,9 +14,9 @@ func InitializePlayer(int plr)
 	clonk->CreateContents(CMC_Weapon_Pistol);
 	clonk->CreateContents(CMC_Weapon_AssaultRifle);
 	
+	/* Debug script for checking frame rate on auto/burst fire
 	StartScriptProfiler();
-	
 	ScheduleCall(clonk->Contents(), "ControlUseStart", 40, 10, clonk, 100, -10);
-	
 	ScheduleCall(nil, Global.StopScriptProfiler, 650);
+	*/
 }
