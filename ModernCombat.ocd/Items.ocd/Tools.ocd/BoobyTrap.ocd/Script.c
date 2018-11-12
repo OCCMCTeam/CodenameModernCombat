@@ -11,6 +11,15 @@ func Hit()
 	Sound("Items::Tools::BoobyTrap::Hit?");
 }
 
+func Destruction()
+{
+	if (booby_trap_laser)
+	{
+		booby_trap_laser->RemoveObject();
+	}
+	_inherited(...);
+}
+
 /* --- Control & Placement --- */
 
 static const BOOBY_TRAP_PLACEMENT_Invalid = 0;
@@ -76,7 +85,7 @@ local IntBoobyTrapPreview = new Effect
 		this.booby_trap_r = 0;
 		this.booby_trap_placement = BOOBY_TRAP_PLACEMENT_Invalid;
 		this.booby_trap_ok = false;
-		this.booby_trap_progress = this.booby_trap_preview->CreateProgressBar(GUI_PieProgressBar, Target->BoobyTrapPlacementDelay(), 0, nil, user->GetOwner(), {x = 0, y = 0}, VIS_Owner, { size = 250, color = RGBa(150, 150, 150, 50)});
+		this.booby_trap_progress = this.booby_trap_preview->CreateProgressBar(GUI_PieProgressBar, Target.BoobyTrapPlacementDelay, 0, nil, user->GetOwner(), {x = 0, y = 0}, VIS_Owner, { size = 250, color = RGBa(150, 150, 150, 50)});
 	},
 
 	Timer = func (int time)
@@ -99,7 +108,7 @@ local IntBoobyTrapPreview = new Effect
 				if (this.booby_trap_progress) this.booby_trap_progress->Close();
 			}
 
-			this.booby_trap_ok = time >= Target->BoobyTrapPlacementDelay() && this.booby_trap_placement == BOOBY_TRAP_PLACEMENT_Wall;
+			this.booby_trap_ok = time >= Target.BoobyTrapPlacementDelay && this.booby_trap_placement == BOOBY_TRAP_PLACEMENT_Wall;
 			var color;
 			if (this.booby_trap_ok)
 			{
@@ -216,10 +225,101 @@ func GetWall(int angle, int max_dist, int dist_bottom)
 }
 
 
+/* --- Laser Beam --- */
+
+func StartLaser()
+{
+	// Create a laser effect that is used for drawing the laser line
+	booby_trap_laser = CreateObject(LaserEffect, 0, 0, NO_OWNER);
+	booby_trap_laser->SetWidth(2)->Color(RGB(255, 0, 0));
+	booby_trap_laser->Activate();
+	// Start a hit check
+	ScheduleCall(this, this.CheckLaser, 1);
+}
+
+func CheckLaser()
+{
+	if (booby_trap_triggered) return;
+	
+	var self = this;
+
+	// Create a projectile that checks whether it hits objects or the landscape
+	var beam = CreateObject(CMC_Projectile_LaserBeam, 0, 0, GetController());
+	beam->SetPosition(GetX() + GetVertex(0, 0), GetY() + GetVertex(0, 1));
+
+	beam->Shooter(booby_trap_user)
+		->Weapon(GetID())
+		->DamageAmount(0)
+ 	    ->Range(200)
+	    ->HitScan();
+
+	// Override the projectile functions, so that it calls functions in the mine
+	beam.OnHitObject = GetID().LaserOnHitObject;
+	beam.OnLandscape = GetID().LaserOnHitLandscape;
+	beam.OnHitScan = GetID().LaserOnHitScan;
+	beam.booby_trap = this;
+
+	// Launch the projectile
+	beam->Launch(GetR());
+
+	if (self && !booby_trap_triggered) // Booby trap could be removed at this point
+	{
+		// Start another hit check?
+		ScheduleCall(self, self.CheckLaser, 1);
+	}
+}
+
+// Added to the laser projectile
+func LaserOnHitObject(object target)
+{
+	if (!this.booby_trap) return RemoveObject();
+	this.booby_trap->LaserHit(target);
+}
+
+// Added to the laser projectile
+func LaserOnHitLandscape()
+{
+	// Do nothing
+}
+
+// Added to the laser projectile
+func LaserOnHitScan(int x_start, int y_start, int x_end, int y_end)
+{
+	if (this.booby_trap)
+	{
+		this.booby_trap->LaserLine(x_start, y_start, x_end, y_end);
+	}
+	RemoveObject();
+}
+
+func LaserLine(int x_start, int y_start, int x_end, int y_end)
+{
+	if (booby_trap_laser)
+	{
+		booby_trap_laser->Line(x_start, y_start, x_end, y_end)->Update();
+	}
+}
+
+func LaserHit(object target)
+{
+	// Do nothing unless activated
+	if (GetAction() != "Active") return;
+	if (booby_trap_triggered) return;
+
+	// Ignore targets that do not move
+	var xdir = target->GetXDir();
+	var ydir = target->GetYDir();
+	if (xdir == 0 && ydir == 0) return;
+
+	// ... and done!
+	Trigger();
+}
+
 /* --- Functionality --- */
 
 func ActivateBoobyTrap(object user)
 {
+	this.booby_trap_user = user;
 	this.Collectible = false;
 	SetOwner(user->GetOwner());
 	SetAction("Activate");
@@ -241,40 +341,27 @@ func Warning()
 func OnActive()
 {
 	SetClrModulation(RGBa(255, 255, 255, 55));
-}
-
-func Check()
-{
-	/*var obj;
-	for (obj in FindProjectileTargets(this.BoobyTrapExplosionRadius, this, this)) 
-	
-	{
-		// only moving objects
-		if (obj->GetXDir() || obj->GetYDir() || obj->GetAction() == "ScaleLadder")
-		{
-			// except booby_traps
-			if (!(obj->~IsBoobyTrap()))
-			{
-				DoDamage(MaxDamage()); // trigger!
-				return;
-			}
-		}
-	}*/
+	StartLaser();
 }
 
 
 func Damage(int change)
 {
 	if (GetAction() != "Idle")
+	{
 		SetClrModulation(RGBa(255, 255, 255, 55 + 200 * GetDamage() / MaxDamage()));
+	}
 	if (GetDamage() >= MaxDamage())
+	{
 		Trigger();
+	}
 }
 
 func Trigger()
 {
-	if (triggered) return;
-	triggered = true;
+	if (booby_trap_triggered) return;
+
+	booby_trap_triggered = true;
 	Sound("Weapon::BipBipBip");
 	ScheduleCall(this, this.Triggered, this.BoobyTrapExplosionDelay);
 }
@@ -298,7 +385,9 @@ local Description = "$Description$";
 local Collectible = true;
 local ObjectLimitPlayer = 2;
 
-local triggered;
+local booby_trap_triggered;
+local booby_trap_user;
+local booby_trap_laser;
 
 local BoobyTrapPlacementDelay = 30;   // hold 'use' this many frames before the booby_trap can be used
 local BoobyTrapPlacementMinDist = 5;  // booby trap must be placed at least this far from the clonk
@@ -310,7 +399,7 @@ func MaxDamage(){	return 30;}
 
 func WarningDist(){ return 3;}
 
-func IsProjectileTarget(object projectile, object shooter)
+func IsProjectileTarget(object projectile, object booby_trap_laser)
 {
 	// Get hit by tracers only
 	return projectile && projectile->~IsTracer();
@@ -340,7 +429,6 @@ Active = {
 	FacetBase = 1,
 	NextAction = "Active",
 	EndCall = "Warning",
-	PhaseCall = "Check",
 },
 
 };

@@ -1,0 +1,14 @@
+[DefCore]
+id=CMC_Projectile_LaserBeam
+Version=8,0
+Category=C4D_Vehicle
+Width=3
+Height=3
+Offset=-2,-2
+Vertices=1
+VertexFriction=0
+Rotate=1
+Float=100000
+StretchGrowth=1
+IncompleteActivity=1
+HideInCreator=true
