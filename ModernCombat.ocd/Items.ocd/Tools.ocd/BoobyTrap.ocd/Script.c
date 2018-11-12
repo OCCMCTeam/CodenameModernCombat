@@ -154,8 +154,8 @@ local IntBoobyTrapPreview = new Effect
 		{
 			Target->Exit();
 			Target->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
-			Target->SetR(this.booby_trap_r);
 			Target->ActivateBoobyTrap(user);
+			Target->SetR(this.booby_trap_r);
 		}
 		else // cancel
 		{
@@ -272,8 +272,14 @@ func CheckLaser()
 // Added to the laser projectile
 func LaserOnHitObject(object target)
 {
-	if (!this.booby_trap) return RemoveObject();
-	this.booby_trap->LaserHit(target);
+	if (this.booby_trap)
+	{
+		this.booby_trap->LaserHit(target);
+	}
+	else
+	{
+		return RemoveObject();
+	}
 }
 
 // Added to the laser projectile
@@ -303,16 +309,18 @@ func LaserLine(int x_start, int y_start, int x_end, int y_end)
 func LaserHit(object target)
 {
 	// Do nothing unless activated
-	if (GetAction() != "Active") return;
-	if (booby_trap_triggered) return;
+	if (GetAction() == "Active")
+	{
+		if (booby_trap_triggered) return;
 
-	// Ignore targets that do not move
-	var xdir = target->GetXDir();
-	var ydir = target->GetYDir();
-	if (xdir == 0 && ydir == 0) return;
-
-	// ... and done!
-	Trigger();
+		// Ignore targets that do not move
+		var xdir = target->GetXDir();
+		var ydir = target->GetYDir();
+		if (xdir == 0 && ydir == 0) return;
+	
+		// ... and done!
+		Detonate();
+	}
 }
 
 /* --- Functionality --- */
@@ -323,19 +331,14 @@ func ActivateBoobyTrap(object user)
 	this.Collectible = false;
 	SetOwner(user->GetOwner());
 	SetAction("Activate");
+	SetVertex(2, VTX_Y, 6, 2);
 	return true;
 }
 
 
 func Warning()
-{	
-	var a = 190;
-	if (GetAction() == "Active")
-		a = 95 + 120 * GetDamage() / MaxDamage();
-	else
-		Sound("Weapon::Bip");
-
-	CreateLEDEffect(RGBa(255, 64, 0, a), Sin(GetR(), WarningDist()), -Cos(GetR(), WarningDist()), 6); 
+{
+	CreateLEDEffect(GetPlayerColor(GetController()), GetVertex(0, 0), GetVertex(0, 1), 6);
 }
 
 func OnActive()
@@ -347,29 +350,53 @@ func OnActive()
 
 func Damage(int change)
 {
-	if (GetAction() != "Idle")
+	if (Contained() && OnFire())
 	{
-		SetClrModulation(RGBa(255, 255, 255, 55 + 200 * GetDamage() / MaxDamage()));
+		Extinguish();
 	}
-	if (GetDamage() >= MaxDamage())
+
+	if (GetDamage() >= 10)
 	{
-		Trigger();
+		Detonate();
+		return;
+	}
+	else if (GetDamage() >= 5)
+	{
+		SetObjectLayer(this);
+		ScheduleCall(this, this.Detonate, 20);
 	}
 }
 
-func Trigger()
+
+func Detonate()
 {
 	if (booby_trap_triggered) return;
-
 	booby_trap_triggered = true;
-	Sound("Weapon::BipBipBip");
-	ScheduleCall(this, this.Triggered, this.BoobyTrapExplosionDelay);
+	
+	if (GetAction() == "Active")
+	{
+		var spread = 15;
+		for (var amount = 12; amount > 0; --amount)
+		{
+			var shrapnel = CreateObject(Shrapnel, 0, 0, NO_OWNER);
+			shrapnel->SetVelocity(GetR() + RandomX(-spread, +spread), RandomX(100, 180));
+			shrapnel->SetRDir(RandomX(-30, +30));
+			shrapnel->Launch(GetController());
+			shrapnel.ProjectileDamage = this.ShrapnelDamage;
+			CreateObject(BulletTrail)->Set(shrapnel, 2, 30);
+		}
+		ExplosionEffect(10);
+	}
+	else
+	{
+	
+		ExplosionEffect(5);
+	}
+	RemoveObject();
 }
 
-func Triggered()
-{
-	Explode(45);
-}
+
+func ShrapnelDamage(){ return 50; }
 
 func RejectEntrance()
 {
@@ -395,12 +422,12 @@ local BoobyTrapPlacementMaxDist = 20; // booby trap must be placed at most this 
 local BoobyTrapExplosionDelay = 10;   // explode this many frames after triggered
 local BoobyTrapExplosionRadius = 30;  // look at this radius around the trap
 
-func MaxDamage(){	return 30;}
 
-func WarningDist(){ return 3;}
-
-func IsProjectileTarget(object projectile, object booby_trap_laser)
+func IsProjectileTarget(object projectile, object shooter)
 {
+	// Do not hit self
+	if (projectile && projectile.booby_trap == this) return false;
+
 	return (projectile && projectile->~IsTracer()) // Get hit by tracers always
 	    || (!Random(6));                           // other projectiles hit less often
 }
@@ -412,12 +439,11 @@ Activate = {
 	Prototype = Action,
 	Name = "Activate",
 	Procedure = DFA_NONE,
-	Length = 5,
-	Delay = 20,
+	Length = 1,
+	Delay = 72,
 	FacetBase = 1,
 	NextAction = "Active",
 	EndCall = "OnActive",
-	PhaseCall = "Warning",
 },
 
 Active = {
@@ -430,5 +456,4 @@ Active = {
 	NextAction = "Active",
 	EndCall = "Warning",
 },
-
 };
