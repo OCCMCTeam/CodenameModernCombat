@@ -1,0 +1,4 @@
+﻿Name=Sprengfalle
+Description=Überwacht einen zuvor eingestellten Winkel und schleudert bei Kontakt eine tödliche Ladung Splitter in Richtung des Opfers.
+
+Activate=Mine aktivieren
