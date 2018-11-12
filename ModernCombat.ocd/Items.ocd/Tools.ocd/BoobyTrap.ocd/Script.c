@@ -401,8 +401,8 @@ func WarningDist(){ return 3;}
 
 func IsProjectileTarget(object projectile, object booby_trap_laser)
 {
-	// Get hit by tracers only
-	return projectile && projectile->~IsTracer();
+	return (projectile && projectile->~IsTracer()) // Get hit by tracers always
+	    || (!Random(6));                           // other projectiles hit less often
 }
 
 /* --- Actions --- */
