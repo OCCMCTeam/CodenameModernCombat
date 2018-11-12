@@ -11,8 +11,11 @@
 
 public func Initialize()
 {
-	SetAmmoRefillInterval(this->~GetAmmoRefillInterval());
-	DoAmmoCount(this->MaxAmmo());
+	if (this.AllowAmmoRefill)
+	{
+		SetAmmoRefillInterval(this->~GetAmmoRefillInterval());
+	}
+	DoAmmoCount(this->~InitialAmmo() ?? this->MaxAmmo());
 	return _inherited(...);
 }
 

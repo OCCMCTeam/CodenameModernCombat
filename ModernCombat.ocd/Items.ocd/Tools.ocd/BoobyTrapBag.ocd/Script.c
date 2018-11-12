@@ -61,11 +61,7 @@ public func GetCarryPhase()
 /* --- Functionality --- */
 
 public func MaxAmmo() { return 3; }
-
-public func AllowAmmoRefill(object user)
-{
-	return false;
-}
+public func InitialAmmo() { return 1; }
 
 /* --- User Interface --- */
 
