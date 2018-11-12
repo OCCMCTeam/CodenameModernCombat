@@ -9,6 +9,8 @@ local Tracer_StartX = 0;
 local Tracer_StartY = 0;
 local Tracer_Color = 0;
 
+func IsTracer() { return true; } // For identification
+
 /* --- Launching --- */
 
 

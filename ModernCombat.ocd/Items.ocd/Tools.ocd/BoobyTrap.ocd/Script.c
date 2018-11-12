@@ -89,7 +89,7 @@ local IntBoobyTrapPreview = new Effect
 				Target->SetR(this.booby_trap_r);
 			}
 
-			if (this.booby_trap_progress && time <= Target->BoobyTrapPlacementDelay() + 10)
+			if (this.booby_trap_progress && time <= Target.BoobyTrapPlacementDelay + 10)
 			{
 				this.booby_trap_progress->SetValue(time);
 				this.booby_trap_progress->Update();
@@ -170,14 +170,14 @@ local IntBoobyTrapPreview = new Effect
 func GetWall(int angle, int max_dist, int dist_bottom)
 {
 	// initialize with defaults
-	max_dist = Min(max_dist ?? BoobyTrapPlacementMaxDist(), BoobyTrapPlacementMaxDist());
+	max_dist = Min(max_dist ?? this.BoobyTrapPlacementMaxDist, this.BoobyTrapPlacementMaxDist);
 	var place_x = +Sin(angle, max_dist);
 	var place_y = -Cos(angle, max_dist);
 
 	var solid = false;
 
 	// hit a wall?
-	for (var dist = BoobyTrapPlacementMinDist(); dist <= max_dist; dist++)
+	for (var dist = this.BoobyTrapPlacementMinDist; dist <= max_dist; dist++)
 	{
 		var x = +Sin(angle, dist);
 		var y = -Cos(angle, dist);
@@ -246,7 +246,7 @@ func OnActive()
 func Check()
 {
 	/*var obj;
-	for (obj in FindProjectileTargets(BoobyTrapExplosionRadius(), this, this)) 
+	for (obj in FindProjectileTargets(this.BoobyTrapExplosionRadius, this, this)) 
 	
 	{
 		// only moving objects
@@ -276,7 +276,7 @@ func Trigger()
 	if (triggered) return;
 	triggered = true;
 	Sound("Weapon::BipBipBip");
-	ScheduleCall(this, this.Triggered, BoobyTrapExplosionDelay());
+	ScheduleCall(this, this.Triggered, this.BoobyTrapExplosionDelay);
 }
 
 func Triggered()
@@ -300,17 +300,21 @@ local ObjectLimitPlayer = 2;
 
 local triggered;
 
-func MaxDamage(){	return 30;}
-func BoobyTrapExplosionRadius(){	return 30;}
-func BoobyTrapExplosionDelay(){	return 10;}
-func BoobyTrapPlacementDelay(){ return 30;}   // hold 'use' this many frames before the booby_trap can be used
-func BoobyTrapPlacementMinDist(){ return 5;}  // booby trap must be placed at least this far from the clonk
-func BoobyTrapPlacementMaxDist(){ return 20;} // booby trap must be placed at most this far from the clonk
-func WarningDist(){ return 3;}
-func IsProjectileTarget(){	return true;}
+local BoobyTrapPlacementDelay = 30;   // hold 'use' this many frames before the booby_trap can be used
+local BoobyTrapPlacementMinDist = 5;  // booby trap must be placed at least this far from the clonk
+local BoobyTrapPlacementMaxDist = 20; // booby trap must be placed at most this far from the clonk
+local BoobyTrapExplosionDelay = 10;   // explode this many frames after triggered
+local BoobyTrapExplosionRadius = 30;  // look at this radius around the trap
 
-func IsEquipment(){	return true;}
-func IsBoobyTrap(){	return true;}
+func MaxDamage(){	return 30;}
+
+func WarningDist(){ return 3;}
+
+func IsProjectileTarget(object projectile, object shooter)
+{
+	// Get hit by tracers only
+	return projectile && projectile->~IsTracer();
+}
 
 /* --- Actions --- */
 
