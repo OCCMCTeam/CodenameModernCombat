@@ -53,6 +53,37 @@ func Hit()
 	Sound("Items::Tools::BoobyTrap::Hit?");
 }
 
+
+func RejectEntrance(object into)
+{
+	// Prevent the stack collecting placed traps
+	if (ActIdle())
+	{
+		return _inherited(into, ...);
+	}
+	return true; 
+}
+
+
+/* --- Interaction --- */
+
+public func IsInteractable(object user)
+{
+	return !Contained() && !ActIdle();
+}
+
+public func GetInteractionMetaInfo(object clonk)
+{
+	return { Description = "$Defuse$", IconName = nil, IconID = CMC_Tool_BoobyTrap, Selected = true };
+}
+
+public func Interact(object user)
+{
+	Defuse();
+	return true;
+}
+
+
 /* --- Control & Placement --- */
 
 

@@ -1,4 +1,4 @@
 Name=Booby Trap
 Description=Monitors a selected angle and tosses a deadly load of shrapnel towards the victim.
 
-Activate=Activate mine
+Defuse=Defuse
