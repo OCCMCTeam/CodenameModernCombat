@@ -233,7 +233,7 @@ local IntBoobyTrapPreview = new Effect
 			trap->Exit();
 			trap->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
 			trap->SetR(this.booby_trap_r);
-			trap->PlaceBoobyTrap(user);
+			trap->PlaceBoobyTrap(user, this.booby_trap_angle);
 		}
 		
 		// Cancel / Remove preview on positive placement
@@ -264,8 +264,8 @@ local IntBoobyTrapPreview = new Effect
 		// Cone, simple
 		var precision = 1000;
 		var turn_around = precision * 180;
-		this.cone_preview->UpdateConeBar( 50, precision * (this.booby_trap_angle -15), turn_around, this.gfx_layer_bar_l, nil, 2);
-		this.cone_preview->UpdateConeBar( 50, precision * (this.booby_trap_angle +15), turn_around, this.gfx_layer_bar_r, nil, 2);
+		this.cone_preview->UpdateConeBar( 50, precision * (this.booby_trap_angle - Target.BoobyTrapExplosionAngle), turn_around, this.gfx_layer_bar_l, nil, 2);
+		this.cone_preview->UpdateConeBar( 50, precision * (this.booby_trap_angle + Target.BoobyTrapExplosionAngle), turn_around, this.gfx_layer_bar_r, nil, 2);
 		this.cone_preview->UpdateConeBar(70, precision * this.booby_trap_angle, turn_around, this.gfx_layer_laser, nil, 2);
 	},
 };
@@ -340,7 +340,7 @@ func CheckLaser()
 	beam.booby_trap = this;
 
 	// Launch the projectile
-	beam->Launch(GetR());
+	beam->Launch(GetR() + booby_trap_aim_angle);
 
 	if (self && !booby_trap_triggered) // Booby trap could be removed at this point
 	{
@@ -405,13 +405,14 @@ func LaserHit(object target)
 
 /* --- Functionality --- */
 
-func PlaceBoobyTrap(object user)
+func PlaceBoobyTrap(object user, int angle)
 {
 	var player = user->GetOwner();
 	SetOwner(player);
 	EvaluateObjectLimit(player);
 
-	this.booby_trap_user = user;
+	booby_trap_user = user;
+	booby_trap_aim_angle = Normalize(angle - GetR(), -180);
 
 	SetAction("Activate");
 	return true;
@@ -448,11 +449,11 @@ func Detonate()
 	
 	if (GetAction() == "Active")
 	{
-		var spread = 15;
+		var spread = BoobyTrapExplosionAngle;
 		for (var amount = 12; amount > 0; --amount)
 		{
 			var shrapnel = CreateObject(Shrapnel, 0, 0, NO_OWNER);
-			shrapnel->SetVelocity(GetR() + RandomX(-spread, +spread), RandomX(100, 180));
+			shrapnel->SetVelocity(GetR() + booby_trap_aim_angle + RandomX(-spread, +spread), RandomX(100, 180));
 			shrapnel->SetRDir(RandomX(-30, +30));
 			shrapnel->Launch(GetController());
 			shrapnel.ProjectileDamage = this.ShrapnelDamage;
@@ -505,6 +506,8 @@ local ObjectLimitPlayer = 2;
 local booby_trap_triggered;
 local booby_trap_user;
 local booby_trap_laser;
+
+local booby_trap_aim_angle;
 
 local BoobyTrapPlacementDelay = 30;   // hold 'use' this many frames before the booby_trap can be used
 local BoobyTrapPlacementMaxDist = 10; // booby trap must be placed at most this far from the clonk
