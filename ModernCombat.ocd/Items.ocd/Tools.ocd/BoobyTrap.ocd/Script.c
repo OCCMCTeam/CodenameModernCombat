@@ -342,7 +342,7 @@ func StartLaser()
 {
 	// Create a laser effect that is used for drawing the laser line
 	booby_trap_laser = CreateObject(LaserEffect, 0, 0, NO_OWNER);
-	booby_trap_laser->SetWidth(2)->Color(RGB(255, 0, 0));
+	booby_trap_laser->SetWidth(2)->Color(RGBa(255, 0, 0, 55));
 	booby_trap_laser->Activate();
 	// Start a hit check
 	ScheduleCall(this, this.CheckLaser, 1);
@@ -446,6 +446,8 @@ func PlaceBoobyTrap(object user, int angle)
 	booby_trap_aim_angle = Normalize(angle - GetR(), -180);
 
 	SetAction("Activate");
+	FadeOut(this.ActMap["Activate"].Delay, false, 55);
+	CMC_Icon_SensorBall_Tag->AddTo(this, player, GetID(), "ObjectAllied");
 	return true;
 }
 
@@ -457,18 +459,27 @@ func Defuse()
 	{
 		this.booby_trap_laser->RemoveObject();
 	}
+	var tag = CMC_Icon_SensorBall_Tag->Get(this, GetOwner(), GetID());
+	if (tag)
+	{
+		tag->Remove();
+	}
+	SetOwner(NO_OWNER);
 	SetClrModulation();
 }
 
 
 func Warning()
 {
-	CreateLEDEffect(GetPlayerColor(GetController()), GetVertex(0, 0), GetVertex(0, 1), 6);
+	var tag = CMC_Icon_SensorBall_Tag->Get(this, GetOwner(), GetID());
+	if (tag)
+	{
+		tag->CreateLEDEffect(GetPlayerColor(GetController()), GetVertex(0, 0), GetVertex(0, 1), 6, nil, true);
+	}
 }
 
 func OnActive()
 {
-	SetClrModulation(RGBa(255, 255, 255, 55));
 	StartLaser();
 }
 

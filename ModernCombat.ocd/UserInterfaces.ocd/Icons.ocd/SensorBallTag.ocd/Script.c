@@ -67,11 +67,20 @@ func Destruction()
 
 /* --- Interface --- */
 
-public func AddTo(object target, int host_player, id type, string graphics_name)
+/**
+	Adds the tag to a target.
+	
+	@par target the target.
+	@par host_player the owner of the tag
+	@par type the source type of the tag
+	@par graphics_name the name for the object graphics
+	@par lifetime how long the tag should exist; 0 or -1 for infinite lifetime
+ */
+public func AddTo(object target, int host_player, id type, string graphics_name, int lifetime)
 {
 	AssertDefinitionContext();
 	var tag = CreateObject(this, 0, 0, target->GetOwner());
-	tag->Init(target, host_player, type, graphics_name);
+	tag->Init(target, host_player, type, graphics_name, lifetime ?? this.RemoveTime); // Definition context! :)
 	return tag;
 }
 
@@ -91,7 +100,7 @@ public func Get(object to, int for_player, id type)
 
 /* --- Internals --- */
 
-func Init(object to, int host_player, id type, string graphics_name)
+func Init(object to, int host_player, id type, string graphics_name, int lifetime)
 {
 	// Initialize
 	Type = type;
@@ -121,7 +130,10 @@ func Init(object to, int host_player, id type, string graphics_name)
 	AddTimer(this.UpdateOwnerColor, 1);
 	
 	// Remove eventually
-	AddTimer(this.RemoveTimer, 1);
+	if (lifetime > 0)
+	{
+		AddTimer(this.RemoveTimer, 1);
+	}
 	
 	// Energy bar for livings
 	if (alive && graphics_name != "Target")
