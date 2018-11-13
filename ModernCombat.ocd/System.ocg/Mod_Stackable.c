@@ -12,3 +12,9 @@ public func GetGuiItemStatusProperties(object user)
 	return status->SetObjectCount(GetStackCount())
 		         ->SetTotalCount(MaxStackCount());
 }
+
+// Callback from the inventory button HUD element: What text should be shown?
+public func GetGuiInventoryButtonText()
+{
+	return Format("%dx", GetStackCount());
+}

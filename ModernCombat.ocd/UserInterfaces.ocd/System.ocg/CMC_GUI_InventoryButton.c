@@ -29,7 +29,7 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 		   ->AddTo(this, this.ID, "bar");
 		   
 		// Symbol, is attached to the bar
-		var item_symbol = new GUI_Element {};
+		var item_symbol = new GUI_Element { Style = GUI_TextRight | GUI_TextBottom };
 		item_symbol->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Inventory_Width))
 		           ->AddTo(bar, nil, "item_symbol");
 		
@@ -49,6 +49,17 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 	
 	SetInfo = func (object item, bool selected)
 	{
+		// Update the item name and display text
+		if (item == nil)
+		{
+			GUI_Item_Name = nil;
+			this.bar.item_symbol.Text = nil;
+		}
+		else
+		{
+			GUI_Item_Name = item->GetName();
+			this.bar.item_symbol.Text = item->~GetGuiInventoryButtonText();
+		}
 		// Update the inventory symbol
 		this.bar.item_symbol.Symbol = item;
 		this.bar.item_symbol->Update();
@@ -68,15 +79,6 @@ static const GUI_CMC_InventoryButton = new GUI_Element
 		}
 		this.bar->Update(this.bar->ComposeLayout());
 		
-		// Update the item name
-		if (item == nil)
-		{
-			GUI_Item_Name = nil;
-		}
-		else
-		{
-			GUI_Item_Name = item->GetName();
-		}
 		return this;
 	},
 };
