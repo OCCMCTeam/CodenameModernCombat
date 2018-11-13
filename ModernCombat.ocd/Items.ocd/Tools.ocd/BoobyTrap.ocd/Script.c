@@ -2,13 +2,16 @@
 	Booby Trap
 */
 
+#include Library_Stackable
 #include Library_ObjectLimit
 
 /* --- Engine callbacks --- */
 
-func Hit()
+func Construction(object creator)
 {
-	Sound("Items::Tools::BoobyTrap::Hit?");
+	SetOwner(NO_OWNER); // Circumvent object limit
+	
+	_inherited(creator, ...);
 }
 
 func Destruction()
@@ -18,6 +21,11 @@ func Destruction()
 		booby_trap_laser->RemoveObject();
 	}
 	_inherited(...);
+}
+
+func Hit()
+{
+	Sound("Items::Tools::BoobyTrap::Hit?");
 }
 
 /* --- Control & Placement --- */
@@ -74,6 +82,10 @@ local IntBoobyTrapPreview = new Effect
 {
 	Start = func (int temporary, object user)
 	{
+		if (temporary)
+		{
+			return;
+		}
 		this.booby_trap_preview = this.booby_trap_preview ?? CreateObject(Dummy);
 		this.booby_trap_preview.Visibility = VIS_Owner;
 		this.booby_trap_preview.Plane = 5000;
@@ -153,11 +165,11 @@ local IntBoobyTrapPreview = new Effect
 		// Place it
 		if (this.booby_trap_ok)
 		{
-			var bag = Target->Contained();
-			Target->Exit();
-			Target->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
-			Target->PlaceBoobyTrap(user, bag);
-			Target->SetR(this.booby_trap_r);
+			var trap = Target->TakeObject();
+			trap->Exit();
+			trap->SetPosition(this.booby_trap_user->GetX() + this.booby_trap_x, this.booby_trap_user->GetY() + this.booby_trap_y);
+			trap->PlaceBoobyTrap(user);
+			trap->SetR(this.booby_trap_r);
 		}
 		
 		// Cancel / Remove preview on positive placement
@@ -326,7 +338,7 @@ func LaserHit(object target)
 
 /* --- Functionality --- */
 
-func PlaceBoobyTrap(object user, object bag)
+func PlaceBoobyTrap(object user)
 {
 	var player = user->GetOwner();
 	SetOwner(player);
@@ -337,11 +349,6 @@ func PlaceBoobyTrap(object user, object bag)
 
 	SetAction("Activate");
 	SetVertex(2, VTX_Y, 6, 2);
-
-	if (bag && bag->GetID() == CMC_Tool_BoobyTrap_Bag)
-	{
-		bag->PlacedBoobyTrap(this);
-	}	
 	return true;
 }
 
@@ -408,10 +415,27 @@ func Detonate()
 
 func ShrapnelDamage(){ return 50; }
 
-func RejectEntrance()
+
+/**
+ * Takes one object from the stack, the
+ * stack count is reduced by 1.
+ * @return the object that was taken.
+ *         This object is not contained.
+ */
+public func TakeObject()
 {
-	if (GetAction() != "Idle") return true;
-	return false;
+	// Create a new object always, because item limitation removes the oldest objects first
+	var take = CreateObject(GetID(), 0, 0, NO_OWNER);
+	take->SetStackCount(1);
+	if (GetStackCount() <= 1)
+	{
+		RemoveObject();
+	}
+	else
+	{
+		DoStackCount(-1);
+	}
+	return take;
 }
 
 
@@ -432,6 +456,8 @@ local BoobyTrapPlacementMaxDist = 20; // booby trap must be placed at most this 
 local BoobyTrapExplosionDelay = 10;   // explode this many frames after triggered
 local BoobyTrapExplosionRadius = 30;  // look at this radius around the trap
 
+public func MaxStackCount() { return 3; }
+public func InitialStackCount() { return 1; }
 
 func IsProjectileTarget(object projectile, object shooter)
 {

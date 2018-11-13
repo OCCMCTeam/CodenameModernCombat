@@ -1,2 +1,0 @@
-Name=Booby Trap Bag
-Description=The booby trap bag can be used to place booby traps which secure routes or act as deadly traps for enemies.
