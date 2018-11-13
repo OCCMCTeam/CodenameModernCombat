@@ -23,6 +23,31 @@ func Destruction()
 	_inherited(...);
 }
 
+func Entrance(object into)
+{
+	Defuse();
+	_inherited(into, ...);
+}
+
+func Damage(int change)
+{
+	if (Contained() && OnFire())
+	{
+		Extinguish();
+	}
+
+	if (GetDamage() >= 10)
+	{
+		Detonate();
+		return;
+	}
+	else if (GetDamage() >= 5)
+	{
+		SetObjectLayer(this);
+		ScheduleCall(this, this.Detonate, 20);
+	}
+}
+
 func Hit()
 {
 	Sound("Items::Tools::BoobyTrap::Hit?");
@@ -252,7 +277,7 @@ func StartLaser()
 
 func CheckLaser()
 {
-	if (booby_trap_triggered) return;
+	if (booby_trap_triggered || GetAction() != "Active") return;
 	
 	var self = this;
 
@@ -345,11 +370,20 @@ func PlaceBoobyTrap(object user)
 	EvaluateObjectLimit(player);
 
 	this.booby_trap_user = user;
-	this.Collectible = false;
 
 	SetAction("Activate");
-	SetVertex(2, VTX_Y, 6, 2);
 	return true;
+}
+
+func Defuse()
+{
+	SetAction("Idle");
+	this.booby_trap_user = nil;
+	if (this.booby_trap_laser)
+	{
+		this.booby_trap_laser->RemoveObject();
+	}
+	SetClrModulation();
 }
 
 
@@ -362,26 +396,6 @@ func OnActive()
 {
 	SetClrModulation(RGBa(255, 255, 255, 55));
 	StartLaser();
-}
-
-
-func Damage(int change)
-{
-	if (Contained() && OnFire())
-	{
-		Extinguish();
-	}
-
-	if (GetDamage() >= 10)
-	{
-		Detonate();
-		return;
-	}
-	else if (GetDamage() >= 5)
-	{
-		SetObjectLayer(this);
-		ScheduleCall(this, this.Detonate, 20);
-	}
 }
 
 
