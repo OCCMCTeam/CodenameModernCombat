@@ -34,7 +34,8 @@ public func DoSetup(int round)
 	ScheduleCall(this, this.UpdateFlag, 1);
 
 	//Spielzielmechanik-Effekt
-	AddEffect("IntAddProgress", this, 1, Max(14 - GetActiveTeamCount() * 2, 5), this);
+	var interval = Max(14 - 2 * GetLength(GetActiveTeams()), 5);
+	AddEffect("IntAddProgress", this, 1, interval, this);
 
 	UpdateHUDs();
 
@@ -65,7 +66,8 @@ func /* check */ UpdateFlag()
 	if (!goal_flagpost) return;
 
 	//Einnahmegeschwindigkeit ermitteln
-	goal_flagpost->Set(GetName(goal_flagpost), goal_flagpost->GetRange(), Max(18 - GetActiveTeamCount() * 4, 4));
+	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
+	goal_flagpost->Set(GetName(goal_flagpost), goal_flagpost->GetRange(), capture_speed);
 
 	return true;
 }
@@ -108,7 +110,7 @@ func /* check */ FxIntAddProgressTimer()
 	if ((++goal_progress) >= 100)
 	{
 		//Punkt vergeben
-		DoFactionScore(GetFactionByIndex(team), 1);
+		DoFactionScore(team, 1);
 		//Fortschritt zurücksetzen
 		goal_progress = 0;
 
@@ -367,7 +369,7 @@ public func check  IsFulfilled()
 		}
 
 	//Nur ein Team vorhanden: Gewinnen lassen
-	if (GetActiveTeamCount() <= 1)
+	if (GetLength(GetActiveTeams()) <= 1)
 	{
 		var i = GetPlayerTeam(GetPlayerByIndex());
 

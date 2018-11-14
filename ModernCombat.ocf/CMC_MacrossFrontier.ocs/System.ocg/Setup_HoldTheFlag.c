@@ -4,7 +4,7 @@ local additional_objects = [];
 
 public func DoSetup(int round)
 {
-	if (GetActiveTeamCount() == 2)
+	if (GetLength(GetActiveTeams()) == 2)
 	{
 		Scenario->AddDeployLocationTeam1();
 		Scenario->AddDeployLocationTeam2();
