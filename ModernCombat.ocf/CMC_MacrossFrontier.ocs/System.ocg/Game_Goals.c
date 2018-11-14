@@ -2,5 +2,5 @@
 
 func GetAvailableGoals()
 {
-	return [CMC_Goal_TeamDeathMatch];
+	return [CMC_Goal_HoldTheFlag, CMC_Goal_TeamDeathMatch];
 }

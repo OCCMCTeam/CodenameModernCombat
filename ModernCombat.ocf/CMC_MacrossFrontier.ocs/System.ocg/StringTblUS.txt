@@ -5,3 +5,8 @@ RespawnButtonLabelReady=Deploy!
 RespawnButtonLabelBlocked=%ds until ready.
 RespawnButtonLabelWaiting=Deploy in %ds.
 RespawnButtonTooltip=Deploy at the chosen deployment point.
+
+DeployFlag=Central
+DeployBaseTeam1=Bridgehead
+DeployBaseTeam2=Eurocorps HQ
+DeployFreeForAll=Deployment
