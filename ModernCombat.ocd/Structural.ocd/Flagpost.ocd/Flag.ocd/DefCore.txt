@@ -1,0 +1,11 @@
+[DefCore]
+id=CMC_FlagPost_Flag
+Version=8,0
+Category=C4D_StaticBack
+Width=15
+Height=20
+Offset=-7,-10
+Value=100
+Mass=5
+Picture=200,0,80,67
+ColorByOwner=1

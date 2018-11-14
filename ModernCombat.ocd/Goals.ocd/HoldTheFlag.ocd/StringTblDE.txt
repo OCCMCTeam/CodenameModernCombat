@@ -1,0 +1,15 @@
+﻿# Name and description
+Name=Hold the Flag
+Description=Ziel ist das Erobern und Halten eines einzelnen Flaggenpostens, wodurch das Besitzerteam nach und nach Punkte erhält.||Das Team, welches die geforderte Punktzahl als erstes erreicht, gewinnt.
+
+# Default messages from point system / team goal
+MsgVictory=Der Sieg gebührt euch.
+MsgLost=Leider habt ihr verloren.
+MsgAhead=Ihr seid %d Punkte voraus. Euer stärkster Verfolger ist %s.
+MsgBehind=Ihr habt %d Punkte Rückstand zu %s.
+MsgEqual=Ihr liegt mit %s gleichauf.
+MsgYouAreBest=Ihr führt mit %d Punkten!
+
+# Goal specific messages
+MsgFlagLost=Flaggenposten <c ffff33>%s</c> an Team <c %x>%s</c> verloren!
+MsgCaptured=Team <c %x>%s</c> kontrolliert Flaggenposten <c ffff33>%s</c>!

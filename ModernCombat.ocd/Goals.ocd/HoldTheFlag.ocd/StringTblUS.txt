@@ -1,0 +1,15 @@
+﻿# Name and description
+Name=Hold the Flag
+Description=The goal is to secure and defend a single flag post. The team in control gains points over time.||Whichever team reaches the requested amount of points first wins the round.
+
+# Default messages from point system / team goal
+MsgVictory=Victory is ours!
+MsgLost=Unfortunately, we lost.
+MsgAhead=Your are %d points ahead. The closest follower is %s.
+MsgBehind=You are %d points behind %s.
+MsgEqual=%s scored as often as you.
+MsgYouAreBest=You are leading with %d points!
+
+# Goal specific messages
+MsgFlagLost=Lost flag post <c ffff33>%s</c> to team <c %x>%s</c>!
+MsgCaptured=Team <c %x>%s</c> controls flag post <c ffff33>%s</c>!
