@@ -7,21 +7,22 @@ static const BAR_FlagBar = 5;
 
 local deploy_location; // Deployment location next to the flag; Might be changed, so that the flag itself is a location, instead of having a helper object?
 local goal_object;     // Goal that is linked with this flag
+local flag;            // The flag helper object
+local bar;             // Status progress bar
+local captureradiusmarker;
 
 local capture_team;
 local capture_progress;
 local capture_range;
-local flag;
-local bar;
-local trend;
-local capt;
+local capture_trend;
 local attacking_team;
 local attacking_crew;
-local lastowner;
-local iconState;
-local captureradiusmarker;
-local noenemys;
-local nofriends;
+local has_no_enemies;
+local has_no_friends;
+
+local last_owner;
+local is_captured;
+local icon_state;
 
 
 local FlagPost_DefaultRange = 100;
@@ -33,9 +34,9 @@ local FlagPost_DefaultSpeed = 2;
 public func GetAttacker()		{ return attacking_team; }
 public func GetTeam()			{ return capture_team; }
 public func GetProgress()		{ return capture_progress; }
-public func GetTrend()			{ return trend; }
+public func GetTrend()			{ return capture_trend; }
 public func GetRange()			{ return capture_range; }
-public func IsFullyCaptured()	{ return capt; }
+public func IsFullyCaptured()	{ return is_captured; }
 
 
 
@@ -88,7 +89,7 @@ func Initialize()
 {
 	// Set defaults
 	attacking_crew = [];
-	lastowner = 0;
+	last_owner = 0;
 
 	SetCaptureRange();
 	SetCaptureSpeed();
@@ -125,8 +126,8 @@ func CaptureTimer()
 	var enemys, friends, opposition;
 
 	//Momentanen Zustand speichern
-	var iOld = trend;
-	trend = 0;
+	var iOld = capture_trend;
+	capture_trend = 0;
 
 	//Zuvor gespeicherte Clonks in Reichweite auf Aktualität prüfen
 	var del;
@@ -190,39 +191,39 @@ func CaptureTimer()
 
 	if (enemys)
 	{
-		if (!captureradiusmarker && noenemys)
+		if (!captureradiusmarker && has_no_enemies)
 		{
 			captureradiusmarker = ShowCaptureRadius(this);
-			noenemys = false;
+			has_no_enemies = false;
 		}
 	}
 	else
-		noenemys = true;
+		has_no_enemies = true;
 
 	if (friends)
 	{
-		if (!captureradiusmarker && nofriends && capture_progress < 100)
+		if (!captureradiusmarker && has_no_friends && capture_progress < 100)
 			captureradiusmarker = ShowCaptureRadius(this);
 
-		nofriends = false;
+		has_no_friends = false;
 	}
 	else
-		nofriends = true;
+		has_no_friends = true;
 
 	if ((!enemys) == (!friends))
 	{
 		if (!friends)
 		{
-			if (iconState != 0 && bar) // TODO: Added && bar must be checked
+			if (icon_state != 0 && bar) // TODO: Added && bar must be checked
 			{
 				bar->SetIcon(0, SM21, 0, 0, 32);
 				bar->Update(0, true, true);
-				iconState = 0;
+				icon_state = 0;
 			}
 		}
 		else
 		{
-			if (iconState != 2 && bar) // TODO: Added && bar must be checked
+			if (icon_state != 2 && bar) // TODO: Added && bar must be checked
 			{
 				var clr = GetTeamColor(capture_team), plr;
 				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(capture_team) <= 1 && (plr = GetTeamPlayer(capture_team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
@@ -231,18 +232,18 @@ func CaptureTimer()
 				bar->SetIcon(0, SM23, 0, 0, 32);
 				bar->SetBarColor(clr);
 				bar->Update(capture_progress);
-				iconState = 2;
+				icon_state = 2;
 			}
 		}
 	}
 
-	if (trend != iOld)
+	if (capture_trend != iOld)
 		ResetAttackers();
 
 	var pClonks = CreateArray();
-	if (trend < 0)
+	if (capture_trend < 0)
 		pClonks = aEnemies;
-	if (trend > 0)
+	if (capture_trend > 0)
 		pClonks = aFriends;
 
 	for (var clonk in pClonks)
@@ -276,18 +277,18 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 	capture_progress = BoundBy(capture_progress+iAmount,0,100);
 
 	if (old < capture_progress)
-		trend = +1;
+		capture_trend = +1;
 
 	if (old > capture_progress)
-		trend = -1;
+		capture_trend = -1;
 
-	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
+	if ((old == 100 && capture_trend < 0) || (old == 0 && capture_trend > 0))
 	{
 		GameCallEx("FlagAttacked", this, capture_team, attacking_crew);
 	}
 
 	//Flagge wird übernommen
-	if (capture_progress < 100 && trend != 0)
+	if (capture_progress < 100 && capture_trend != 0)
 	{
 		StartCapturing(iTeam);
 	}
@@ -301,10 +302,10 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 	//Neutrale Flagge
 	if ((capture_progress <= 0) && (old > 0))
 	{
-		if (capture_team && lastowner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, attacking_crew);
-		//lastowner = capture_team;
+		if (capture_team && last_owner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, attacking_crew);
+		//last_owner = capture_team;
 		attacking_team = 0;
-		capt = false;
+		is_captured = false;
 		capture_team = iTeam;
 	}
 
@@ -320,19 +321,19 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 		bar->SetBarColor(clr);
 		if (capture_progress >= 100)
 		{
-			if (iconState != 0)
+			if (icon_state != 0)
 			{
 				bar->SetIcon(0, SM21, 0, 0, 32);
 				bar->Update(0, true, true);
-				iconState = 0;
+				icon_state = 0;
 			}
 		}
-		else if (iconState != 1)
+		else if (icon_state != 1)
 		{
 			bar->SetIcon(0, SM22, 0, 0, 32);
-			iconState = 1;
+			icon_state = 1;
 		}
-		if (iconState != 0)
+		if (icon_state != 0)
 			bar->Update(capture_progress);
 	}
 
@@ -371,15 +372,15 @@ func /* check */ DoCapture(int iTeam, bool bSilent)
 	capture_progress = 100;
 	attacking_team = 0;
 	capture_team = iTeam;
-	capt = true;
+	is_captured = true;
 	var fRegained = false;
 	if (!bSilent)
 	{
-		if (lastowner == capture_team) fRegained = true;
+		if (last_owner == capture_team) fRegained = true;
 		GameCallEx("FlagCaptured", this, capture_team, attacking_crew, fRegained);
 	}
 	ResetAttackers();
-	lastowner = capture_team;
+	last_owner = capture_team;
 	UpdateFlag();
 }
 
@@ -389,7 +390,7 @@ func /* check */ SetNeutral()
 	capture_team = 0;
 	capture_progress = 0;
 	attacking_team = 0;
-	capt = false;
+	is_captured = false;
 	UpdateFlag();
 }
 
@@ -407,7 +408,7 @@ func UpdateFlag()
 		bar->ChangeDefOffset(GetID()->GetDefOffset(1)+5);
 		bar->SetIcon(0, SM21, 0, 0, 32);
 		bar->Update(0, true, true);
-		iconState = 0;
+		icon_state = 0;
 	}
 	*/
 
