@@ -123,73 +123,52 @@ public func SetPosition(int x, int y, bool check_bounds)
 
 func CaptureTimer()
 {
-	var enemys, friends, opposition;
+	var crew_in_range = GetCrewInRange();
+	CheckAttackingCrew(crew_in_range);
 
-	//Momentanen Zustand speichern
-	var iOld = capture_trend;
-	capture_trend = 0;
-
-	//Zuvor gespeicherte Clonks in Reichweite auf Aktualität prüfen
-	var del;
-	var clonks = FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive));
-	for (var pClonk in attacking_crew)
-	{
-		del = true;
-		for (var clonk in clonks)
-		{
-			if (clonk == pClonk)
-			{
-				if (pClonk->Contained() && !pClonk->Contained()->~IsHelicopter()) continue;
-
-				//Clonk vorhanden: Eintrag beibehalten
-				del = false;
-				break;
-			}
-		}
-		//Clonk nicht vorhanden: Eintrag entfernen
-		if (del)
-			attacking_crew[GetIndexOf(attacking_crew, pClonk)] = 0;
-	}
-
-	//Leere Einträge entfernen
-	RemoveHoles(attacking_crew);
-
-	var aFriends = CreateArray();
-	var aEnemies = CreateArray();
-
-	//Passende Clonks in Reichweite ermitteln
-	var clonks = FindObjects(Find_Distance(capture_range),Find_OCF(OCF_Alive));
+	var friends_in_range = [];
+	var enemies_in_range = [];
 
 	//Gefundene Clonks als Feinde oder Verbündete einstufen
-	for (clonk in clonks)
+	for (var crew in crew_in_range)
 	{
-		if (clonk->Contained() && !clonk->Contained()->~IsHelicopter()) continue;
-		if (clonk->GetOwner() == NO_OWNER) continue;
-		if (!GetPlayerName(clonk->GetOwner()) || !GetPlayerTeam(clonk->GetOwner())) continue;
-		if (!PathFree(this->GetX(),this->GetY()-GetID()->GetDefHeight()/2,clonk->GetX(),clonk->GetY())) continue;
-		if (GetPlayerTeam(clonk->GetOwner()) == capture_team)
+		var player = crew->GetOwner();
+		if (player == NO_OWNER) continue;
+		if (!GetPlayerName(player) || !GetPlayerTeam(player)) continue;
+		if (!PathFree(this->GetX(), this->GetY() - (GetID()->GetDefHeight()/2), crew->GetX(), crew->GetY())) continue;
+		
+		if (GetPlayerTeam(player) == capture_team)
 		{
-			friends++;
-			aFriends[GetLength(aFriends)] = clonk;
+			PushBack(friends_in_range, crew);
 		}
 		else
 		{
-			enemys++;
-			opposition = GetPlayerTeam(clonk->GetOwner());
-			aEnemies[GetLength(aEnemies)] = clonk;
+			PushBack(enemies_in_range, crew);
 		}
 	}
-	attacking_team = opposition;
+	var friends = GetLength(friends_in_range);
+	var enemies = GetLength(enemies_in_range);
+	attacking_team = GetTeamMajority(enemies_in_range);
+	
+	var has_friends = friends > 0;
+	var has_enemies = enemies > 0;
 
 	//Zustandsänderung ermitteln
 	//Nur Feinde: Flaggenneutralisierung vorrantreiben
-	if (enemys && !friends)
-		DoProgress(opposition,Min(enemys,3));
+	var max_progress = 3;
+	var previous_trend = capture_trend;
+	capture_trend = 0;
+	if (has_enemies && !has_friends)
+	{
+		DoProgress(attacking_team, Min(enemies, max_progress));
+	}
 	//Nur Verbündete: Flaggeneroberung vorrantreiben
-	if (!enemys && friends)
-		DoProgress(capture_team,Min(friends,3));
+	if (!has_enemies && has_friends)
+	{
+		DoProgress(capture_team, Min(friends, max_progress));
+	}
 
-	if (enemys)
+	if (has_enemies)
 	{
 		if (!captureradiusmarker && has_no_enemies)
 		{
@@ -198,21 +177,27 @@ func CaptureTimer()
 		}
 	}
 	else
+	{
 		has_no_enemies = true;
+	}
 
-	if (friends)
+	if (has_friends)
 	{
 		if (!captureradiusmarker && has_no_friends && capture_progress < 100)
+		{
 			captureradiusmarker = ShowCaptureRadius(this);
+		}
 
 		has_no_friends = false;
 	}
 	else
-		has_no_friends = true;
-
-	if ((!enemys) == (!friends))
 	{
-		if (!friends)
+		has_no_friends = true;
+	}
+
+	if (has_enemies == has_friends)
+	{
+		if (has_friends)
 		{
 			if (icon_state != 0 && bar) // TODO: Added && bar must be checked
 			{
@@ -237,29 +222,44 @@ func CaptureTimer()
 		}
 	}
 
-	if (capture_trend != iOld)
-		ResetAttackers();
-
-	var pClonks = CreateArray();
-	if (capture_trend < 0)
-		pClonks = aEnemies;
-	if (capture_trend > 0)
-		pClonks = aFriends;
-
-	for (var clonk in pClonks)
+	if (capture_trend != previous_trend)
 	{
-		if (!clonk) continue;
-		var new = true;
-		//Clonk auffindbar?
-		for (var pClonk in attacking_crew)
+		ResetAttackers();
+	}
+
+	var attackers = [];
+	if (capture_trend < 0)
+	{
+		attackers = enemies_in_range;
+	}
+	if (capture_trend > 0)
+	{
+		attackers = friends_in_range;
+	}
+
+	for (var crew in attackers)
+	{
+		if (!crew) continue;
+		if (!IsValueInArray(crew, attacking_crew))
 		{
-			if (pClonk == clonk) new = false;
-			if (!new) break;
+			PushBack(attacking_crew, crew);
 		}
-		//Neu: Einstellen
-		if (new) attacking_crew[GetLength(attacking_crew)] = clonk;
 	}
 }
+
+
+func CheckAttackingCrew(array crew_in_range)
+{
+	for (var i = 0; i < GetLength(attacking_crew); ++i)
+	{
+		if (!IsValueInArray(crew_in_range, attacking_crew[i]))
+		{
+			attacking_crew[i] = nil;
+		}
+	}
+	RemoveHoles(attacking_crew);
+}
+
 
 public func /* check */ DoProgress(int iTeam, int iAmount)
 {
@@ -342,11 +342,43 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 
 /* --- Status --- */
 
+
+public func GetCrewInRange()
+{
+	var crew = FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive));
+	for (var i = 0; i < GetLength(crew); ++i)
+	{
+		var member = crew[i];
+		if (member->Contained() && !member->Contained()->~IsHelicopter())
+		{
+			crew[i] = nil;
+		}
+	}
+	RemoveHoles(crew);
+	return crew;
+}
+
+
+public func GetTeamMajority(array crew)
+{
+	// Determine the team with most healthy members
+	var team_strength = [];
+	for (var member in crew)
+	{
+		var team = GetPlayerTeam(member->GetOwner());
+		if (team > 0)
+		{
+			team_strength[team] += member->GetEnergy();
+		}
+	}
+	return GetMaxValueIndices(team_strength);
+}
+
+
 public func /* check */ IsAttacked()
 {
-	for (var crew in FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive)))
+	for (var crew in GetCrewInRange())
 	{
-		if (crew->Contained() && !crew->Contained()->~IsHelicopter()) continue;
 		if (crew->GetOwner() == NO_OWNER) continue;
 		if (GetPlayerTeam(crew->GetOwner()) != capture_team)
 			return true;
