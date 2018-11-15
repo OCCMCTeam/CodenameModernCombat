@@ -9,7 +9,7 @@ local deploy_location; // Deployment location next to the flag; Might be changed
 local goal_object;     // Goal that is linked with this flag
 local flag;            // The flag helper object
 local bar;             // Status progress bar
-local captureradiusmarker;
+local range_marker;
 
 local capture_team;
 local capture_progress;
@@ -106,6 +106,10 @@ func Destruction()
 	{
 		deploy_location->RemoveObject();
 	}
+	if (range_marker)
+	{
+		range_marker->RemoveObject();
+	}
 	_inherited(...);
 }
 
@@ -169,9 +173,9 @@ func CaptureTimer()
 
 	if (has_enemies)
 	{
-		if (!captureradiusmarker && has_no_enemies)
+		if (!range_marker && has_no_enemies)
 		{
-			captureradiusmarker = ShowCaptureRadius(this);
+			ShowCaptureRadius();
 			has_no_enemies = false;
 		}
 	}
@@ -182,9 +186,9 @@ func CaptureTimer()
 
 	if (has_friends)
 	{
-		if (!captureradiusmarker && has_no_friends && capture_progress < 100)
+		if (!range_marker && has_no_friends && capture_progress < 100)
 		{
-			captureradiusmarker = ShowCaptureRadius(this);
+			ShowCaptureRadius();
 		}
 
 		has_no_friends = false;
@@ -461,21 +465,23 @@ func SetFlagPosition(int percent)
 }
 
 
-func /* check */ ShowCaptureRadius(object pTarget)
+func ShowCaptureRadius()
 {
-	//Kreis-Symbol erstellen
-	/* TODO
-	var obj = CreateObject(SM09, 0, 0, -1);
-	obj->Set(pTarget);
+	// Remove old symbol
+	if (range_marker)
+	{
+		range_marker->RemoveObject();
+	}
+	
+	// Create new one
+	range_marker = CMC_Icon_SensorBall_Circle->AddTo(this);
 
-	//Symbolgröße anpassen
-	var wdt = capture_range * 2000 / SM09->GetDefWidth();
-
-	//Symbol konfigurieren
-	obj->SetObjDrawTransform(wdt, 0, 0, 0, wdt, 0);
-	obj->SetGraphics("Big");
-
-	return obj;*/
+	// Adjust to size
+	var scale = capture_range * 2000 / CMC_Icon_SensorBall_Circle->GetDefWidth();
+	range_marker->SetObjDrawTransform(scale, 0, 0, 0, scale, 0);
+	range_marker->SetGraphics("Wide");
+	range_marker->FadeOut(200, true);
+	range_marker->SetColor(goal_object->GetFactionColor(capture_team));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
