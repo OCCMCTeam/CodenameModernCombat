@@ -9,7 +9,7 @@
 #include Plugin_Goal_TimeLimit
 #include Plugin_Goal_EliminateLosingPlayers
 
-/* --- Callbacks from other round system --- */
+/* --- Callbacks from round system --- */
 
 func OnRoundStart(int round)
 {
@@ -96,6 +96,78 @@ func FindFlag()
 	return FindObject(Find_Func("IsFlagpole"));
 }
 
+/* --- Goal Timer --- */
+
+
+/* --- Events --- */
+
+// This is currently a game call, might be changed...
+public func FlagLost(object flagpost, int old_team, int new_team, array attackers)
+{
+	if (flagpost != GetFlag()) return;
+
+	// Add points for achievement system (neutralized flag post)
+	for (var attacker in attackers)
+	{
+		if (attacker)
+		{
+			// TODO
+			// DoPlayerPoints(BonusPoints("OPNeutralization"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC13);
+		}
+	}
+
+	// Event message: Flag post lost
+	for (var i; i < GetPlayerCount(); i++)
+	{
+		if (GetPlayerTeam(GetPlayerByIndex(i)) == old_team)
+		{
+			// TODO
+			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetTeamFlagColor(new_team), GetTeamName(new_team)), IC13, 0, GetTeamFlagColor(new_team), 0, "Info_Event.ogg");
+		}
+	}
+}
+
+
+// This is currently a game call, might be changed...
+public func FlagCaptured(object flagpost, int by_team, array attackers, bool regained)
+{
+	if (flagpost != GetFlag()) return;
+
+	// First attacker gains most points, the others gain assist points
+	var first = true; //Der erste bekommt mehr Punkte, der Rest bekommt Assistpunkte
+	for (var attacker in attackers)
+	{
+		if (!attacker) continue;
+			
+		// Add points for achievement system (defended flag post)
+		if (regained)
+		{
+			// TODO
+			// DoPlayerPoints(BonusPoints("OPDefense"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC12);
+		}
+		else
+		{
+			if (first) // Add points for achievement system (captured flag post)
+			{
+				// TODO
+				// DoPlayerPoints(BonusPoints("OPConquest"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC10);
+			}
+			else // Add points for achievement system (assisted capturing flag post)
+			{
+				// TODO
+				// DoPlayerPoints(BonusPoints("OPConquestAssist"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC11);
+			}
+		}
+
+		first = false;
+	}
+
+
+	// Event message: Flag post captured
+	EventInfo4K(0, Format("$MsgCaptured$", GetTeamFlagColor(by_team), GetTeamName(by_team), GetFlag()->GetName()), IC10, 0, GetTeamFlagColor(by_team), 0, "Info_Objective.ogg");
+	UpdateScoreboard();
+}
+
 /* --- Properties --- */
 
 local Name = "$Name$";
@@ -179,58 +251,6 @@ func /* check */ FxIntAddProgressTimer()
 
 /* Flaggenverhalten */
 
-
-public func /* check */ FlagLost(object flagpost, int iOldTeam, int iNewTeam, array aAttackers)
-{
-	//Ist es die Flagge?
-	if (flagpost != GetFlag())
-		return;
-	//Punkte für die Angreifer
-	/* TODO
-	for (var clonk in aAttackers)
-	{
-		//Punkte bei Belohnungssystem (Flaggenposten neutralisiert)
-		if (clonk)
-			DoPlayerPoints(BonusPoints("OPNeutralization"), RWDS_TeamPoints, clonk->GetOwner(), clonk, IC13);
-	}
-	*/
-	for (var i; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == iOldTeam)
-			//Eventnachricht: Flaggenposten verloren
-			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetTeamFlagColor(iNewTeam), GetTeamName(iNewTeam)), IC13, 0, GetTeamFlagColor(iNewTeam), 0, "Info_Event.ogg");
-}
-
-public func /* check */ FlagCaptured(object flagpost, int iTeam, array aAttackers, bool fRegained)
-{
-	//Ist es die Flagge?
-	if (flagpost != GetFlag())
-		return;
-
-	var first = true; //Der erste bekommt mehr Punkte, der Rest bekommt Assistpunkte
-	for (var clonk in aAttackers)
-		if (clonk)
-		{
-			/* TODO
-			if (fRegained)
-				//Punkte bei Belohnungssystem (Flaggenposten verteidigt)
-				DoPlayerPoints(BonusPoints("OPDefense"), RWDS_TeamPoints, clonk->GetOwner(), clonk, IC12);
-			else
-			{
-				if (first)
-					//Punkte bei Belohnungssystem (Flaggenposten erobert)
-					DoPlayerPoints(BonusPoints("OPConquest"), RWDS_TeamPoints, clonk->GetOwner(), clonk, IC10);
-				else
-					//Punkte bei Belohnungssystem (Hilfe bei Flaggenposteneroberung)
-					DoPlayerPoints(BonusPoints("OPConquestAssist"), RWDS_TeamPoints, clonk->GetOwner(), clonk, IC11);
-			}
-			*/
-			first = false;
-		}
-
-	//Eventnachricht: Flaggenposten erobert
-	EventInfo4K(0, Format("$MsgCaptured$", GetTeamFlagColor(iTeam), GetTeamName(iTeam), GetName(GetFlag())), IC10, 0, GetTeamFlagColor(iTeam), 0, "Info_Objective.ogg");
-	UpdateScoreboard();
-}
 
 /* Scoreboard */
 
