@@ -209,12 +209,9 @@ func CaptureTimer()
 		{
 			if (icon_state != 2 && bar) // TODO: Added && bar must be checked
 			{
-				var clr = GetTeamColor(capture_team), plr;
-				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(capture_team) <= 1 && (plr = GetTeamPlayer(capture_team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
-					clr = GetPlayerColor(plr);
-
+				var color = goal_object->GetFactionColor(capture_team);
 				bar->SetIcon(0, SM23, 0, 0, 32);
-				bar->SetBarColor(clr);
+				bar->SetBarColor(color);
 				bar->Update(capture_progress);
 				icon_state = 2;
 			}
@@ -250,64 +247,61 @@ func UpdateAttackingCrew(array enemies_in_range, array friends_in_range)
 }
 
 
-public func /* check */ DoProgress(int iTeam, int iAmount)
+public func /* check */ DoProgress(int team, int amount)
 {
-	var old = capture_progress;
+	var old_progress = capture_progress;
 
 	//Eventuelle Gegnerflagge abnehmen
 	if (capture_team)
 	{
-		if (iTeam != capture_team && (capture_progress != 0))
-			iAmount = -iAmount;
+		if (team != capture_team && (capture_progress != 0))
+		{
+			amount = -amount;
+		}
 	}
 	else
-		capture_team = iTeam;
+	{
+		capture_team = team;
+	}
 
-	capture_progress = BoundBy(capture_progress+iAmount,0,100);
+	capture_progress = BoundBy(capture_progress + amount, 0, 100);
+	capture_trend = BoundBy(capture_progress - old_progress, -1, +1);
 
-	if (old < capture_progress)
-		capture_trend = +1;
-
-	if (old > capture_progress)
-		capture_trend = -1;
-
-	if ((old == 100 && capture_trend < 0) || (old == 0 && capture_trend > 0))
+	if ((old_progress == 100 && capture_trend < 0) || (old_progress == 0 && capture_trend > 0))
 	{
 		GameCallEx("FlagAttacked", this, capture_team, attacking_crew);
 	}
 
-	//Flagge wird übernommen
+	// Start capturing
 	if (capture_progress < 100 && capture_trend != 0)
 	{
-		StartCapturing(iTeam);
+		StartCapturing(team);
 	}
 
-	//Flagge ist fertig übernommen
-	if ((capture_progress >= 100) && (old < 100))
+	// Done capturing
+	if ((capture_progress >= 100) && (old_progress < 100))
 	{
-		DoCapture(iTeam);
+		DoCapture(team);
 	}
 
-	//Neutrale Flagge
-	if ((capture_progress <= 0) && (old > 0))
+	// Neutral flag
+	if ((capture_progress <= 0) && (old_progress > 0))
 	{
-		if (capture_team && last_owner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, attacking_crew);
-		//last_owner = capture_team;
+		if (capture_team && last_owner != team)
+		{
+			GameCallEx("FlagLost", this, capture_team, team, attacking_crew);
+		}
 		attacking_team = 0;
 		is_captured = false;
-		capture_team = iTeam;
+		capture_team = team;
 	}
 
 	UpdateFlag();
 
-	var clr = GetTeamColor(iTeam);
-	var plr = GetTeamPlayer(iTeam, 0);
-	if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(iTeam) <= 1 && plr > -1) || !GetTeamConfig(TEAM_TeamColors))
-		clr = GetPlayerColor(plr);
-
+	var color = goal_object->GetFactionColor(team);
 	if (bar)
 	{
-		bar->SetBarColor(clr);
+		bar->SetBarColor(color);
 		if (capture_progress >= 100)
 		{
 			if (icon_state != 0)
@@ -323,7 +317,9 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 			icon_state = 1;
 		}
 		if (icon_state != 0)
+		{
 			bar->Update(capture_progress);
+		}
 	}
 
 	return capture_progress;
@@ -377,26 +373,29 @@ public func /* check */ IsAttacked()
 }
 
 
-func /* check */ StartCapturing(int iTeam)
+func /* check */ StartCapturing(int team)
 {
-	attacking_team = iTeam;
+	attacking_team = team;
 }
 
 
-func /* check */ DoCapture(int iTeam, bool bSilent)
+func /* check */ DoCapture(int team, bool silent)
 {
 	capture_progress = 100;
 	attacking_team = 0;
-	capture_team = iTeam;
+	capture_team = team;
 	is_captured = true;
-	var fRegained = false;
-	if (!bSilent)
+	var regained = false;
+	if (!silent)
 	{
-		if (last_owner == capture_team) fRegained = true;
-		GameCallEx("FlagCaptured", this, capture_team, attacking_crew, fRegained);
+		if (last_owner == capture_team)
+		{
+			regained = true;
+		}
+		GameCallEx("FlagCaptured", this, capture_team, attacking_crew, regained);
 	}
-	ResetAttackers();
-	last_owner = capture_team;
+	attacking_crew = [];
+	last_owner = capture_team; // FIXME: This should be done BEFORE reassigning the team...
 	UpdateFlag();
 }
 
