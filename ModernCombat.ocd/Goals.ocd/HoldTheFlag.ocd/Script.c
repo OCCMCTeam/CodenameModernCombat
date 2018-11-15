@@ -264,9 +264,9 @@ func UpdateScoreboard() // TODO
 		
 	//Flaggenicon ermitteln
 	var trend = GetFlag()->GetTrend();
-	var flag_status_icon = SM21; // No activity
-	if (trend == -1) flag_status_icon = SM23; // Attack
-	if (trend == +1) flag_status_icon = SM22; // Defense
+	var flag_status_icon = CMC_Icon_FlagPost_Neutral; // No activity
+	if (trend == -1) flag_status_icon = CMC_Icon_FlagPost_Embattled; // Attack
+	if (trend == +1) flag_status_icon = CMC_Icon_FlagPost_Capturing; // Defense
 	
 	// First row with data
 	var row = 1000;
@@ -422,9 +422,6 @@ func EventInfo4K()
 
 // TODO
 static const SM02 = Rock;
-static const SM21 = Rock;
-static const SM22 = Shield;
-static const SM23 = Firestone;
 static const SM26 = Rock;
 static const SM27 = Rock;
 static const IC28 = Rock;

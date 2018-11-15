@@ -407,7 +407,7 @@ func SetIconState(int state, int team)
 
 	if (state == 0)
 	{
-		bar->SetIcon(0, SM21, 0, 0, 32);
+		bar->SetIcon(0, CMC_Icon_FlagPost_Neutral, 0, 0, 32);
 		bar->Update(0, true, true);
 	}
 	else
@@ -420,11 +420,11 @@ func SetIconState(int state, int team)
 		bar->Update(capture_progress);
 		if (state == 1)
 		{
-			bar->SetIcon(0, SM22, 0, 0, 32);
+			bar->SetIcon(0, CMC_Icon_FlagPost_Capturing, 0, 0, 32);
 		}
 		else if (state == 2)
 		{
-			bar->SetIcon(0, SM23, 0, 0, 32);
+			bar->SetIcon(0, CMC_Icon_FlagPost_Embattled, 0, 0, 32);
 		}
 	}
 }
