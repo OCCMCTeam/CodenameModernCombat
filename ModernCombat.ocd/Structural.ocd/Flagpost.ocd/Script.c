@@ -173,7 +173,7 @@ func CaptureTimer()
 
 	if (has_enemies)
 	{
-		if (!range_marker && has_no_enemies)
+		if (has_no_enemies)
 		{
 			ShowCaptureRadius();
 			has_no_enemies = false;
@@ -186,11 +186,10 @@ func CaptureTimer()
 
 	if (has_friends)
 	{
-		if (!range_marker && has_no_friends && capture_progress < 100)
+		if (has_no_friends && capture_progress < 100)
 		{
 			ShowCaptureRadius();
 		}
-
 		has_no_friends = false;
 	}
 	else
@@ -467,11 +466,7 @@ func SetFlagPosition(int percent)
 
 func ShowCaptureRadius()
 {
-	// Remove old symbol
-	if (range_marker)
-	{
-		range_marker->RemoveObject();
-	}
+	if (range_marker) return;
 	
 	// Create new one
 	range_marker = CMC_Icon_SensorBall_Circle->AddTo(this);
@@ -480,8 +475,7 @@ func ShowCaptureRadius()
 	var scale = capture_range * 2000 / CMC_Icon_SensorBall_Circle->GetDefWidth();
 	range_marker->SetObjDrawTransform(scale, 0, 0, 0, scale, 0);
 	range_marker->SetGraphics("Wide");
-	range_marker->FadeOut(200, true);
-	range_marker->SetColor(goal_object->GetFactionColor(capture_team));
+	range_marker->SetColor(RGB(255, 255, 255));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
