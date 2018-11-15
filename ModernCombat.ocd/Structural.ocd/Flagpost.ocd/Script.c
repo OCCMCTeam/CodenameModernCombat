@@ -3,6 +3,7 @@
 */
 
 /* --- Properties --- */
+static const BAR_FlagBar = 5;
 
 local deploy_location; // Deployment location next to the flag; Might be changed, so that the flag itself is a location, instead of having a helper object?
 
@@ -22,6 +23,11 @@ local captureradiusmarker;
 local noenemys;
 local nofriends;
 
+
+local FlagPost_DefaultRange = 100;
+local FlagPost_DefaultSpeed = 2;
+
+
 /* --- Interface --- */
 
 public func GetAttacker()		{ return attacker; }
@@ -31,32 +37,60 @@ public func GetTrend()			{ return trend; }
 public func GetRange()			{ return range; }
 public func IsFullyCaptured()	{ return capt; }
 
-public func StandardRange()		{ return 100; }		//Standardreichweite
-public func StandardSpeed()		{ return 2; }		//Standardeinnahmegeschwindigkeit
+
+
+
+public func GetDeployLocation()
+{
+	if (!deploy_location)
+	{
+		deploy_location = CreateObject(CMC_DeployLocation, 0, -50, NO_OWNER);
+	}
+	return deploy_location;
+}
 
 public func IsFlagpole()		{ return true; }		//Ist ein Flaggenposten
-public func IsSpawnable()		{ return true; }		//Einstiegspunkt
 
-static const BAR_FlagBar = 5;
+public func SetCaptureRange(int value)
+{
+	range = value ?? FlagPost_DefaultRange;
+	return this;
+}
+
+public func SetCaptureSpeed(int value)
+{
+	RemoveTimer(this.CaptureTimer);
+	AddTimer(this.CaptureTimer, value ?? FlagPost_DefaultSpeed);
+	return this;
+}
+
+
+public func SetHoldTheFlag() // Fixed setting for HTF: one deploy location
+{
+	var name = GetName();
+	if (name == "$Name$")
+	{
+		name = "Alpha";
+	}
+	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
+	return this;
+}
 
 
 /* --- Engine Callbacks --- */
 
 func Initialize()
 {
+	// Set defaults
 	spawnpoints = [];
 	pAttackers = [];
-
-	// Start neutral
 	lastowner = 0;
 
-	// Set defaults
-	Set();
+	SetCaptureRange();
+	SetCaptureSpeed();
 
-	// Create Flag
+	// Create flag and update HUD
 	flag = flag ?? CreateObject(CMC_FlagPost_Flag);
-
-	// Update HUD
 	UpdateFlag();
 }
 
@@ -71,16 +105,6 @@ func Destruction()
 }
 
 
-public func GetDeployLocation()
-{
-	if (!deploy_location)
-	{
-		deploy_location = CreateObject(CMC_DeployLocation, 0, -50, NO_OWNER);
-	}
-	return deploy_location;
-}
-
-
 public func SetPosition(int x, int y, bool check_bounds)
 {
 	if (deploy_location)
@@ -90,86 +114,11 @@ public func SetPosition(int x, int y, bool check_bounds)
 	return inherited(x, y, check_bounds, ...);
 }
 
+/* --- Capturing logic --- */
 
-public func SetHoldTheFlag()
+func CaptureTimer()
 {
-	var name = GetName();
-	if (name == "$Name$")
-	{
-		name = "Alpha";
-	}
-	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
-	return this;
-}
-
-
-/* Einstellungen */
-
-public func /* check */ Set(int iRange, int iSpeed, int iValue)
-{
-	//Reichweite setzen
-	if (!iRange) iRange = StandardRange();
-	range = iRange;
-
-	//Einnahmegeschwindigkeit setzen
-	if (!iSpeed) iSpeed = StandardSpeed();
-
-	//Prüfungseffekt einrichten
-	RemoveTimer(this.Timer);
-	AddTimer(this.Timer, iSpeed);
-}
-
-
-/* Flaggenzustände */
-
-public func /* check */ IsAttacked()
-{
-	for (clonk in FindObjects(Find_Distance(range),Find_OCF(OCF_Alive)))
-	{
-		if (clonk->Contained() && !clonk->Contained()->~IsHelicopter()) continue;
-		if (clonk->GetOwner() == NO_OWNER) continue;
-		if (GetPlayerTeam(clonk->GetOwner()) != team)
-			return true;
-	}
-
-	return false;
-}
-
-public func /* check */ IsCaptured(bool pBool)
-{
-	capt = pBool;
-}
-
-func /* check */ ResetAttackers()
-{
-	pAttackers = CreateArray();
-}
-
-/* Prüfungseffekt und -timer */
-
-
-/* Umkreis-Effekt */
-
-func /* check */ ShowCaptureRadius(object pTarget)
-{
-	//Kreis-Symbol erstellen
-	/* TODO
-	var obj = CreateObject(SM09, 0, 0, -1);
-	obj->Set(pTarget);
-
-	//Symbolgröße anpassen
-	var wdt = range * 2000 / SM09->GetDefWidth();
-
-	//Symbol konfigurieren
-	obj->SetObjDrawTransform(wdt, 0, 0, 0, wdt, 0);
-	obj->SetGraphics("Big");
-
-	return obj;*/
-}
-
-func /* check */ Timer()
-{
-	var enemys,friends,opposition;
+	var enemys, friends, opposition;
 
 	//Momentanen Zustand speichern
 	var iOld = trend;
@@ -305,6 +254,73 @@ func /* check */ Timer()
 		//Neu: Einstellen
 		if (new) pAttackers[GetLength(pAttackers)] = clonk;
 	}
+}
+
+/* --- Status --- */
+
+public func /* check */ IsAttacked()
+{
+	for (var crew in FindObjects(Find_Distance(range), Find_OCF(OCF_Alive)))
+	{
+		if (crew->Contained() && !crew->Contained()->~IsHelicopter()) continue;
+		if (crew->GetOwner() == NO_OWNER) continue;
+		if (GetPlayerTeam(crew->GetOwner()) != team)
+			return true;
+	}
+
+	return false;
+}
+
+
+func ResetAttackers()
+{
+	pAttackers = [];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Temporary stuff below
+
+
+/* Einstellungen */
+
+public func /* check */ Set(int iRange, int iSpeed, int iValue) // Unused / Obsolete
+{
+	SetCaptureRange(range);
+	SetCaptureSpeed(iSpeed);
+	// iValue is unused!!
+}
+
+
+/* Flaggenzustände */
+
+
+
+public func /* check */ IsCaptured(bool pBool) // Unused
+{
+	capt = pBool;
+}
+
+/* Prüfungseffekt und -timer */
+
+
+/* Umkreis-Effekt */
+
+func /* check */ ShowCaptureRadius(object pTarget)
+{
+	//Kreis-Symbol erstellen
+	/* TODO
+	var obj = CreateObject(SM09, 0, 0, -1);
+	obj->Set(pTarget);
+
+	//Symbolgröße anpassen
+	var wdt = range * 2000 / SM09->GetDefWidth();
+
+	//Symbol konfigurieren
+	obj->SetObjDrawTransform(wdt, 0, 0, 0, wdt, 0);
+	obj->SetGraphics("Big");
+
+	return obj;*/
 }
 
 public func /* check */ Capture(int iTeam, bool bSilent)
