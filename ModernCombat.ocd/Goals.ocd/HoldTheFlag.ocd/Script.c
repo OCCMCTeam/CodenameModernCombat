@@ -55,14 +55,12 @@ func DoSetup(int round)
 	         ->Set(GetFlag()->GetRange(), capture_speed);
 	         
 	// Set defaults:
-	goal_progress = 0;
-	goal_progress_warning = BoundBy(GetWinScore()* 3 / 4, Max(0, GetWinScore() - 5), Max(0, GetWinScore() - 1));
+	score_progress = 0;
+	faction_score_warning = BoundBy(GetWinScore()* 3 / 4, Max(0, GetWinScore() - 5), Max(0, GetWinScore() - 1));
 
 	// Setup the goal timer
 	var interval = Max(14 - 2 * GetLength(GetActiveTeams()), 5);
 	AddTimer(this.EvaluateProgress, interval);
-
-	UpdateHUDs();
 
 	inherited(round);
 }
@@ -115,15 +113,13 @@ func EvaluateProgress()
 	var team = GetFlag()->GetTeam();
 	if (team != NO_OWNER && GetFlag()->IsFullyCaptured())
 	{
-		goal_progress += 1;
-		if (goal_progress >= 100)
+		score_progress += 1;
+		if (score_progress >= 100)
 		{
 			// Score and reset progress
-			goal_progress = 0;
+			score_progress = 0;
 			DoFactionScore(team, 1);
 			UpdateScoreboard();
-	
-			UpdateHUDs();
 	
 			// Add points for achievement system
 			for (var i; i < GetPlayerCount(); ++i)
@@ -137,16 +133,16 @@ func EvaluateProgress()
 					Sound("Info_Event" {global = true, player = player});
 				}
 				// Event message for other teams: The team is close to winning
-				else if (GetFactionScore(team) == goal_progress_warning)
+				else if (GetFactionScore(team) == faction_score_warning)
 				{
-					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - goal_progress_warning), IC28, 0, 0, 0, "Info_Alarm.ogg");
+					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - faction_score_warning), IC28, 0, 0, 0, "Info_Alarm.ogg");
 				}
 			}
 		}
 	}
 	else
 	{
-		goal_progress = 0;
+		score_progress = 0;
 		UpdateScoreboard();
 	}
 }
@@ -227,8 +223,8 @@ local Name = "$Name$";
 local Description = "$Description$";
 
 local goal_flagpost; // The captured flag
-local goal_progress; // Progress of the owning team, towards gaining a point
-local goal_progress_warning;
+local score_progress; // Progress of the owning team, towards gaining a point
+local faction_score_warning;
 
 func GetDefaultWinScore()
 {
@@ -261,8 +257,6 @@ public func /* check */ InitScoreboard()
 	//Wird noch eingestellt
 //	if (FindObject(CHOS) || IsFulfilled()) return;
 /*
-	UpdateHUDs();
-
 	//Titelzeile
 	SetScoreboardData(SBRD_Caption, SBRD_Caption, Format("%s",GetName()), SBRD_Caption);
 
@@ -346,7 +340,7 @@ public func /* check */ UpdateScoreboard()
 			SetScoreboardData(i, GHTF_FlagColumn, Format("<c %x>%s</c>", GetTeamFlagColor(iTeam), GetTeamName(iTeam)));
 
 			if (iTeam == GetFlag()->~GetTeam())
-				SetScoreboardData(i, GHTF_ProgressColumn, Format("<c %x>%d</c>", RGB(128, 128, 128), goal_progress), goal_progress);
+				SetScoreboardData(i, GHTF_ProgressColumn, Format("<c %x>%d</c>", RGB(128, 128, 128), score_progress), score_progress);
 			else
 				SetScoreboardData(i, GHTF_ProgressColumn, Format("<c %x>%d</c>", RGB(128, 128, 128), 0), 0);
 
@@ -439,11 +433,6 @@ func check TeamGetScore(int iTeam)
 */
 
 func EventInfo4K()
-{
-	// TODO
-}
-
-func UpdateHUDs()
 {
 	// TODO
 }
