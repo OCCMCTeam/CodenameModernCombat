@@ -253,7 +253,7 @@ func UpdateScoreboard() // TODO
 	var team_color = GetTeamFlagColor(capturing_team);
 	var flag_name_color = RGB(255, 255, 255);
 	var flag_name = GetFlag()->GetName();
-	var capture_progress = GetFlag()->GetProcess();
+	var capture_progress = GetFlag()->GetProgress();
 	var capture_color = InterpolateRGBa(capture_progress, 0, RGB(255, 255, 255), 100, team_color);
 
 	//Flaggennamenfarbe ermitteln

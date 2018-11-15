@@ -9,7 +9,7 @@ local deploy_location; // Deployment location next to the flag; Might be changed
 local goal_object;     // Goal that is linked with this flag
 
 local capture_team;
-local process;
+local capture_progress;
 local range;
 local flag;
 local bar;
@@ -32,7 +32,7 @@ local FlagPost_DefaultSpeed = 2;
 
 public func GetAttacker()		{ return attacker; }
 public func GetTeam()			{ return capture_team; }
-public func GetProcess()		{ return process; }
+public func GetProgress()		{ return capture_progress; }
 public func GetTrend()			{ return trend; }
 public func GetRange()			{ return range; }
 public func IsFullyCaptured()	{ return capt; }
@@ -183,10 +183,10 @@ func CaptureTimer()
 	//Zustandsänderung ermitteln
 	//Nur Feinde: Flaggenneutralisierung vorrantreiben
 	if (enemys && !friends)
-		DoProcess(opposition,Min(enemys,3));
+		DoProgress(opposition,Min(enemys,3));
 	//Nur Verbündete: Flaggeneroberung vorrantreiben
 	if (!enemys && friends)
-		DoProcess(capture_team,Min(friends,3));
+		DoProgress(capture_team,Min(friends,3));
 
 	if (enemys)
 	{
@@ -201,7 +201,7 @@ func CaptureTimer()
 
 	if (friends)
 	{
-		if (!captureradiusmarker && nofriends && process < 100)
+		if (!captureradiusmarker && nofriends && capture_progress < 100)
 			captureradiusmarker = ShowCaptureRadius(this);
 
 		nofriends = false;
@@ -230,7 +230,7 @@ func CaptureTimer()
 
 				bar->SetIcon(0, SM23, 0, 0, 32);
 				bar->SetBarColor(clr);
-				bar->Update(process);
+				bar->Update(capture_progress);
 				iconState = 2;
 			}
 		}
@@ -260,25 +260,25 @@ func CaptureTimer()
 	}
 }
 
-public func /* check */ DoProcess(int iTeam, int iAmount)
+public func /* check */ DoProgress(int iTeam, int iAmount)
 {
-	var old = process;
+	var old = capture_progress;
 
 	//Eventuelle Gegnerflagge abnehmen
 	if (capture_team)
 	{
-		if (iTeam != capture_team && (process != 0))
+		if (iTeam != capture_team && (capture_progress != 0))
 			iAmount = -iAmount;
 	}
 	else
 		capture_team = iTeam;
 
-	process = BoundBy(process+iAmount,0,100);
+	capture_progress = BoundBy(capture_progress+iAmount,0,100);
 
-	if (old < process)
+	if (old < capture_progress)
 		trend = +1;
 
-	if (old > process)
+	if (old > capture_progress)
 		trend = -1;
 
 	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
@@ -287,19 +287,19 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	}
 
 	//Flagge wird übernommen
-	if (process < 100 && trend != 0)
+	if (capture_progress < 100 && trend != 0)
 	{
 		StartCapturing(iTeam);
 	}
 
 	//Flagge ist fertig übernommen
-	if ((process >= 100) && (old < 100))
+	if ((capture_progress >= 100) && (old < 100))
 	{
 		DoCapture(iTeam);
 	}
 
 	//Neutrale Flagge
-	if ((process <= 0) && (old > 0))
+	if ((capture_progress <= 0) && (old > 0))
 	{
 		if (capture_team && lastowner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, pAttackers);
 		//lastowner = capture_team;
@@ -318,7 +318,7 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	if (bar)
 	{
 		bar->SetBarColor(clr);
-		if (process >= 100)
+		if (capture_progress >= 100)
 		{
 			if (iconState != 0)
 			{
@@ -333,10 +333,10 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 			iconState = 1;
 		}
 		if (iconState != 0)
-			bar->Update(process);
+			bar->Update(capture_progress);
 	}
 
-	return process;
+	return capture_progress;
 }
 
 /* --- Status --- */
@@ -368,7 +368,7 @@ func /* check */ StartCapturing(int iTeam)
 
 func /* check */ DoCapture(int iTeam, bool bSilent)
 {
-	process = 100;
+	capture_progress = 100;
 	attacker = 0;
 	capture_team = iTeam;
 	capt = true;
@@ -387,7 +387,7 @@ func /* check */ DoCapture(int iTeam, bool bSilent)
 func /* check */ SetNeutral()
 {
 	capture_team = 0;
-	process = 0;
+	capture_progress = 0;
 	attacker = 0;
 	capt = false;
 	UpdateFlag();
@@ -422,7 +422,7 @@ func UpdateFlag()
 	}
 
 	// Update the position
-	SetFlagPosition(process);
+	SetFlagPosition(capture_progress);
 }
 
 
