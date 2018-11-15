@@ -17,8 +17,8 @@ public func DoSetup(int round)
 
     // Flag Post
     var flag = CreateObject(CMC_FlagPost, 995, 560, NO_OWNER);
-    flag->~SetHoldTheFlag("$DeployFlag$");
-    flag->~Set("$DeployFlag$");
+    flag->~SetName("$DeployFlag$");
+    SetFlag(flag);
 
     // TODO: Remove objects
     // RemoveAll(JPTP);

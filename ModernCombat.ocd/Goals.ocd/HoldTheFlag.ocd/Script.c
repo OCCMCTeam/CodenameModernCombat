@@ -1,6 +1,8 @@
 /**
 	Hold the Flag
- */
+	
+	Integration into a scenario works as described in {@link CMC_Goal_HoldTheFlag#DoSetup}.
+*/
 
 
 #include Library_Goal_ForTeam
@@ -18,26 +20,80 @@ func OnRoundStart(int round)
 }
 
 
+/**
+	Sets up the goal for a round.
+	
+	@note
+	The flag post should be created by this function.
+	Overload for your scenario, complying with:
+	{@code
+		func DoSetup(int round)
+		{
+			// Create flag post, etc.
+			...
+			// Call inherited function
+			inherited(round, ...);
+		}
+	}
+	The order is vital here, because the function
+	call expects the flag to exist already.
+	
+	@par round The round number.
+ */
 func DoSetup(int round)
 {
-	ScheduleCall(this, this.UpdateFlag, 1);
+	// Compatibility mode for scenarios that do not have a round manager.
+	if (RoundManager() == nil && GetFlag() == nil)
+	{
+		SetFlag(FindFlag());
+	}
+	AssertNotNil(GetFlag(), "Goal cannot work properly if there is no flag. Make sure to overload this function and call SetFlag()!");
 
-	//Spielzielmechanik-Effekt
+	// Determine how fast the flag is captured
+	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
+	GetFlag()->SetHoldTheFlag()
+	         ->Set(GetFlag()->GetRange(), capture_speed);
+
+	// Setup the goal timer
 	var interval = Max(14 - 2 * GetLength(GetActiveTeams()), 5);
 	AddEffect("IntAddProgress", this, 1, interval, this);
 
 	UpdateHUDs();
 
-	_inherited(round);
+	inherited(round);
 }
 
 
 func DoCleanup(int round)
 {
-	if (goal_flagpost)
+	if (GetFlag())
 	{
-		goal_flagpost->RemoveObject();
+		GetFlag()->RemoveObject();
 	}
+}
+
+/* --- Interface --- */
+
+public func SetFlag(object flagpost)
+{
+	AssertNotNil(flagpost);
+	if (!flagpost->~IsFlagpole())
+	{
+		FatalError(Format("Object %v is not a flag post!", flagpost));
+	}
+	goal_flagpost = flagpost;
+}
+
+
+public func GetFlag()
+{
+	return goal_flagpost;
+}
+
+
+func FindFlag()
+{
+	return FindObject(Find_Func("IsFlagpole"));
 }
 
 /* --- Properties --- */
@@ -56,24 +112,8 @@ func GetDefaultWinScore()
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-func /* check */ UpdateFlag()
-{
-	//Flaggenposten ermitteln
-	goal_flagpost = FindFlag();
-	if (!goal_flagpost) return;
-
-	//Einnahmegeschwindigkeit ermitteln
-	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
-	goal_flagpost->Set(GetName(goal_flagpost), goal_flagpost->GetRange(), capture_speed);
-
-	return true;
-}
 
 
-func FindFlag()
-{
-	return FindObject(Find_Func("IsFlagpole"));
-}
 
 
 
@@ -81,18 +121,18 @@ func FindFlag()
 
 func /* check */ FxIntAddProgressTimer()
 {
-	if (!goal_flagpost && !SetFlag(FindFlag())) return;
+	if (!GetFlag() && !SetFlag(FindFlag())) return;
 
 	UpdateScoreboard();
 
 	//Besitzer des Flaggenpostens ermitteln
-	var team = goal_flagpost->~GetTeam();
+	var team = GetFlag()->~GetTeam();
 
 	//Kein Besitzer: Nichts weiter unternehmen
 	if (team == -1) return;
 
 	//Nicht vollständig eingenommen: Fortschritt zurücksetzen
-	if (!goal_flagpost->IsFullyCaptured())
+	if (!GetFlag()->IsFullyCaptured())
 	{
 		goal_progress = 0;
 
@@ -139,22 +179,11 @@ func /* check */ FxIntAddProgressTimer()
 
 /* Flaggenverhalten */
 
-public func /* check */ SetFlag(object flagpost)
-{
-	if (!flagpost || !flagpost->~IsFlagpole()) return;
-	goal_flagpost = flagpost;
-	return !!goal_flagpost;
-}
-
-public func /* check */ GetFlag()
-{
-	return goal_flagpost;
-}
 
 public func /* check */ FlagLost(object flagpost, int iOldTeam, int iNewTeam, array aAttackers)
 {
 	//Ist es die Flagge?
-	if (flagpost != goal_flagpost)
+	if (flagpost != GetFlag())
 		return;
 	//Punkte für die Angreifer
 	/* TODO
@@ -168,13 +197,13 @@ public func /* check */ FlagLost(object flagpost, int iOldTeam, int iNewTeam, ar
 	for (var i; i < GetPlayerCount(); i++)
 		if (GetPlayerTeam(GetPlayerByIndex(i)) == iOldTeam)
 			//Eventnachricht: Flaggenposten verloren
-			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(goal_flagpost), GetTeamFlagColor(iNewTeam), GetTeamName(iNewTeam)), IC13, 0, GetTeamFlagColor(iNewTeam), 0, "Info_Event.ogg");
+			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetTeamFlagColor(iNewTeam), GetTeamName(iNewTeam)), IC13, 0, GetTeamFlagColor(iNewTeam), 0, "Info_Event.ogg");
 }
 
 public func /* check */ FlagCaptured(object flagpost, int iTeam, array aAttackers, bool fRegained)
 {
 	//Ist es die Flagge?
-	if (flagpost != goal_flagpost)
+	if (flagpost != GetFlag())
 		return;
 
 	var first = true; //Der erste bekommt mehr Punkte, der Rest bekommt Assistpunkte
@@ -199,7 +228,7 @@ public func /* check */ FlagCaptured(object flagpost, int iTeam, array aAttacker
 		}
 
 	//Eventnachricht: Flaggenposten erobert
-	EventInfo4K(0, Format("$MsgCaptured$", GetTeamFlagColor(iTeam), GetTeamName(iTeam), GetName(goal_flagpost)), IC10, 0, GetTeamFlagColor(iTeam), 0, "Info_Objective.ogg");
+	EventInfo4K(0, Format("$MsgCaptured$", GetTeamFlagColor(iTeam), GetTeamName(iTeam), GetName(GetFlag())), IC10, 0, GetTeamFlagColor(iTeam), 0, "Info_Objective.ogg");
 	UpdateScoreboard();
 }
 
@@ -233,29 +262,29 @@ public func /* check */ UpdateScoreboard()
 {
 /*
 	//Wird noch eingestellt
-	if (FindObject(CHOS) || !goal_flagpost || fulfilled) return;
+	if (FindObject(CHOS) || !GetFlag() || fulfilled) return;
 
 	//Zeileniterator
 	var i = 0;
 
 	//Teamfarbe und Flaggenzustand ermitteln
-	var teamclr = GetTeamFlagColor(goal_flagpost->GetTeam()),
-	prog = goal_flagpost->GetProcess();
+	var teamclr = GetTeamFlagColor(GetFlag()->GetTeam()),
+	prog = GetFlag()->GetProcess();
 	var percentclr = InterpolateRGBa3(RGBa(255, 255, 255), teamclr, prog, 100);
 
 	//Flaggennamenfarbe ermitteln
-	if (!goal_flagpost->~IsFullyCaptured())
+	if (!GetFlag()->~IsFullyCaptured())
 		var nameclr = RGB(255,255,255);
 	else
 		var nameclr = teamclr;
 		
 	//Flaggenicon ermitteln
-	var icon, trend = goal_flagpost->GetTrend();
+	var icon, trend = GetFlag()->GetTrend();
 	if (!trend)		icon = SM21;	//Keine Aktivität
 	if (trend == -1)	icon = SM23;	//Angriff
 	if (trend == 1)	icon = SM22;	//Verteidigung
 
-	SetScoreboardData(i, GHTF_FlagColumn, Format("<c %x>%s</c>", nameclr, GetName(goal_flagpost)));
+	SetScoreboardData(i, GHTF_FlagColumn, Format("<c %x>%s</c>", nameclr, GetName(GetFlag())));
 	SetScoreboardData(i, GHTF_ProgressColumn, Format("{{%i}}", icon), GHTF_FlagRow-i);
 	SetScoreboardData(i, GHTF_PointsColumn, Format("<c %x>%d%</c>", percentclr, prog), GHTF_FlagRow-i);
 
@@ -299,7 +328,7 @@ public func /* check */ UpdateScoreboard()
 
 			SetScoreboardData(i, GHTF_FlagColumn, Format("<c %x>%s</c>", GetTeamFlagColor(iTeam), GetTeamName(iTeam)));
 
-			if (iTeam == goal_flagpost->~GetTeam())
+			if (iTeam == GetFlag()->~GetTeam())
 				SetScoreboardData(i, GHTF_ProgressColumn, Format("<c %x>%d</c>", RGB(128, 128, 128), goal_progress), goal_progress);
 			else
 				SetScoreboardData(i, GHTF_ProgressColumn, Format("<c %x>%d</c>", RGB(128, 128, 128), 0), 0);

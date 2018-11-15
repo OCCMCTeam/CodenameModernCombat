@@ -91,19 +91,22 @@ public func SetPosition(int x, int y, bool check_bounds)
 }
 
 
-public func SetHoldTheFlag(string name)
+public func SetHoldTheFlag()
 {
-	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name ?? "Alpha");
+	var name = GetName();
+	if (name == "$Name$")
+	{
+		name = "Alpha";
+	}
+	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
+	return this;
 }
 
 
 /* Einstellungen */
 
-public func /* check */ Set(string szName, int iRange, int iSpeed, int iValue)
+public func /* check */ Set(int iRange, int iSpeed, int iValue)
 {
-	//Name setzen
-	GetDeployLocation()->SetName(szName ?? "Alpha");
-
 	//Reichweite setzen
 	if (!iRange) iRange = StandardRange();
 	range = iRange;

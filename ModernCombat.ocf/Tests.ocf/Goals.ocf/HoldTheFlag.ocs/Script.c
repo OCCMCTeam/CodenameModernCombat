@@ -96,7 +96,6 @@ global func InitTest(int win_score, int crew_count)
 	
 	// Initialize flagpole
 	flag = CreateObject(CMC_FlagPost, 380, 200, NO_OWNER);
-	flag->SetHoldTheFlag("Name");
 	goal = CreateObject(CMC_Goal_HoldTheFlag);
 	goal->SetWinScore(win_score);
 	return true;
