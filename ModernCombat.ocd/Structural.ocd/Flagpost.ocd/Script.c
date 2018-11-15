@@ -198,23 +198,11 @@ func CaptureTimer()
 	{
 		if (has_friends)
 		{
-			if (icon_state != 0 && bar) // TODO: Added && bar must be checked
-			{
-				bar->SetIcon(0, SM21, 0, 0, 32);
-				bar->Update(0, true, true);
-				icon_state = 0;
-			}
+			SetIconState(0);
 		}
 		else
 		{
-			if (icon_state != 2 && bar) // TODO: Added && bar must be checked
-			{
-				var color = goal_object->GetFactionColor(capture_team);
-				bar->SetIcon(0, SM23, 0, 0, 32);
-				bar->SetBarColor(color);
-				bar->Update(capture_progress);
-				icon_state = 2;
-			}
+			SetIconState(2, capture_team);
 		}
 	}
 	UpdateAttackingCrew(enemies_in_range, friends_in_range);
@@ -298,27 +286,15 @@ public func /* check */ DoProgress(int team, int amount)
 
 	UpdateFlag();
 
-	var color = goal_object->GetFactionColor(team);
 	if (bar)
 	{
-		bar->SetBarColor(color);
 		if (capture_progress >= 100)
 		{
-			if (icon_state != 0)
-			{
-				bar->SetIcon(0, SM21, 0, 0, 32);
-				bar->Update(0, true, true);
-				icon_state = 0;
-			}
+			SetIconState(0);
 		}
-		else if (icon_state != 1)
+		else
 		{
-			bar->SetIcon(0, SM22, 0, 0, 32);
-			icon_state = 1;
-		}
-		if (icon_state != 0)
-		{
-			bar->Update(capture_progress);
+			SetIconState(1, team);
 		}
 	}
 
@@ -356,7 +332,7 @@ public func GetTeamMajority(array crew)
 			team_strength[team] += member->GetEnergy();
 		}
 	}
-	return GetMaxValueIndices(team_strength);
+	return GetMaxValueIndices(team_strength)[0];
 }
 
 
@@ -410,6 +386,37 @@ func /* check */ SetNeutral()
 }
 
 /* --- Display --- */
+
+func SetIconState(int state, int team)
+{
+	if (state == icon_state) return; // No change, no update
+
+	icon_state = state;
+	if (!bar) return;
+
+	if (state == 0)
+	{
+		bar->SetIcon(0, SM21, 0, 0, 32);
+		bar->Update(0, true, true);
+	}
+	else
+	{
+		if (team)
+		{
+			var color = goal_object->GetFactionColor(team);
+			bar->SetBarColor(color);
+		}
+		bar->Update(capture_progress);
+		if (state == 1)
+		{
+			bar->SetIcon(0, SM22, 0, 0, 32);
+		}
+		else if (state == 2)
+		{
+			bar->SetIcon(0, SM23, 0, 0, 32);
+		}
+	}
+}
 
 func UpdateFlag()
 {
