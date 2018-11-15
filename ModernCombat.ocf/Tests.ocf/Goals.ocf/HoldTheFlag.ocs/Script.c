@@ -71,7 +71,7 @@ global func InitTest(int win_score, int crew_count)
 {
 	// Remove all objects except the player crew members and relaunch container they are in.
 	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
-		if (!((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User)))
+		if (obj && !((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User)))
 			obj->RemoveObject();
 
 	crew = [];
@@ -108,7 +108,7 @@ global func InitTest(int win_score, int crew_count)
 
 global func Test1_OnStart(int player)
 {
-	Log("Team A captures the flag point");
+	Log("Team A captures the flag");
 	InitTest(1, 10);
 	for (var clonk in crew[team_a_p1])
 	{
@@ -123,6 +123,33 @@ global func Test1_Execute()
 	{
 		doTest("Score for team A is %d, expected %d", goal->GetFactionScore(team_a), 1);
 		doTest("Score for team B is %d, expected %d", goal->GetFactionScore(team_b), 0);
+		return Evaluate();
+	}
+	else
+	{
+		return Wait(30);
+	}
+}
+
+//--------------------------------------------------------
+
+global func Test2_OnStart(int player)
+{
+	Log("Team B captures the flag");
+	InitTest(1, 10);
+	for (var clonk in crew[team_b_p2])
+	{
+		clonk->SetPosition(flag->GetX(), flag->GetY() - 10);
+	}
+	return true;
+}
+global func Test2_OnFinished(){ return; }
+global func Test2_Execute()
+{
+	if (goal->IsFulfilled())
+	{
+		doTest("Score for team A is %d, expected %d", goal->GetFactionScore(team_a), 0);
+		doTest("Score for team B is %d, expected %d", goal->GetFactionScore(team_b), 1);
 		return Evaluate();
 	}
 	else
