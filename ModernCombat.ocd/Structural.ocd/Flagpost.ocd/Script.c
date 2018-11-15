@@ -156,7 +156,6 @@ func CaptureTimer()
 	//Zustandsänderung ermitteln
 	//Nur Feinde: Flaggenneutralisierung vorrantreiben
 	var max_progress = 3;
-	var previous_trend = capture_trend;
 	capture_trend = 0;
 	if (has_enemies && !has_friends)
 	{
@@ -221,30 +220,7 @@ func CaptureTimer()
 			}
 		}
 	}
-
-	if (capture_trend != previous_trend)
-	{
-		ResetAttackers();
-	}
-
-	var attackers = [];
-	if (capture_trend < 0)
-	{
-		attackers = enemies_in_range;
-	}
-	if (capture_trend > 0)
-	{
-		attackers = friends_in_range;
-	}
-
-	for (var crew in attackers)
-	{
-		if (!crew) continue;
-		if (!IsValueInArray(crew, attacking_crew))
-		{
-			PushBack(attacking_crew, crew);
-		}
-	}
+	UpdateAttackingCrew(enemies_in_range, friends_in_range);
 }
 
 
@@ -258,6 +234,19 @@ func CheckAttackingCrew(array crew_in_range)
 		}
 	}
 	RemoveHoles(attacking_crew);
+}
+
+
+func UpdateAttackingCrew(array enemies_in_range, array friends_in_range)
+{
+	if (capture_trend < 0)
+	{
+		attacking_crew = enemies_in_range;
+	}
+	else if (capture_trend > 0)
+	{
+		attacking_crew = friends_in_range;
+	}
 }
 
 
@@ -385,11 +374,6 @@ public func /* check */ IsAttacked()
 	}
 
 	return false;
-}
-
-func ResetAttackers()
-{
-	attacking_crew = [];
 }
 
 
