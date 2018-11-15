@@ -52,7 +52,7 @@ func DoSetup(int round)
 	// Determine how fast the flag is captured
 	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
 	GetFlag()->SetHoldTheFlag()
-	         ->Set(GetFlag()->GetRange(), capture_speed);
+	         ->SetCaptureSpeed(capture_speed);
 	         
 	// Set defaults:
 	score_progress = 0;
@@ -221,9 +221,9 @@ public func FlagCaptured(object flagpost, int by_team, array attackers, bool reg
 
 /* --- Scoreboard --- */
 
-static const GHTF_Column_Name		= "Scoreboard_Flag";
+static const GHTF_Column_Name   = "Scoreboard_Flag";
 static const GHTF_Column_Status	= "Scoreboard_Progress";
-static const GHTF_Column_Score		= "Scoreboard_Points";
+static const GHTF_Column_Score  = "Scoreboard_Points";
 static const GHTF_FlagRow		= 1024;
 
 func InitScoreboard() // TODO

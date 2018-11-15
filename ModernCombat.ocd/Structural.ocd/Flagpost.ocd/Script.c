@@ -256,6 +256,85 @@ func CaptureTimer()
 	}
 }
 
+public func /* check */ DoProcess(int iTeam, int iAmount)
+{
+	var old = process;
+
+	//Eventuelle Gegnerflagge abnehmen
+	if (team)
+	{
+		if (iTeam != team && (process != 0))
+			iAmount = -iAmount;
+	}
+	else
+		team = iTeam;
+
+	process = BoundBy(process+iAmount,0,100);
+
+	if (old < process)
+		trend = +1;
+
+	if (old > process)
+		trend = -1;
+
+	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
+	{
+		GameCallEx("FlagAttacked", this, team, pAttackers);
+	}
+
+	//Flagge wird übernommen
+	if (process < 100 && trend != 0)
+	{
+		Capturing(iTeam);
+	}
+
+	//Flagge ist fertig übernommen
+	if ((process >= 100) && (old < 100))
+	{
+		Capture(iTeam);
+	}
+
+	//Neutrale Flagge
+	if ((process <= 0) && (old > 0))
+	{
+		if (team && lastowner != iTeam) GameCallEx("FlagLost", this, team, iTeam, pAttackers);
+		//lastowner = team;
+		attacker = 0;
+		capt = false;
+		team = iTeam;
+	}
+
+	UpdateFlag();
+
+	var clr = GetTeamColor(iTeam);
+	var plr = GetTeamMemberByIndex(iTeam, 0);
+	if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(iTeam) <= 1 && plr > -1) || !GetTeamConfig(TEAM_TeamColors))
+		clr = GetPlayerColor(plr);
+
+	if (bar)
+	{
+		bar->SetBarColor(clr);
+		if (process >= 100)
+		{
+			if (iconState != 0)
+			{
+				bar->SetIcon(0, SM21, 0, 0, 32);
+				bar->Update(0, true, true);
+				iconState = 0;
+			}
+		}
+		else if (iconState != 1)
+		{
+			bar->SetIcon(0, SM22, 0, 0, 32);
+			iconState = 1;
+		}
+		if (iconState != 0)
+			bar->Update(process);
+	}
+
+	return process;
+}
+
 /* --- Status --- */
 
 public func /* check */ IsAttacked()
@@ -282,24 +361,6 @@ func ResetAttackers()
 // Temporary stuff below
 
 
-/* Einstellungen */
-
-public func /* check */ Set(int iRange, int iSpeed, int iValue) // Unused / Obsolete
-{
-	SetCaptureRange(range);
-	SetCaptureSpeed(iSpeed);
-	// iValue is unused!!
-}
-
-
-/* Flaggenzustände */
-
-
-
-public func /* check */ IsCaptured(bool pBool) // Unused
-{
-	capt = pBool;
-}
 
 /* Prüfungseffekt und -timer */
 
@@ -406,85 +467,6 @@ func SetFlagPos(int percent)
 }
 
 /* Einnahme/Neutralisierung umsetzen */
-
-public func /* check */ DoProcess(int iTeam, int iAmount)
-{
-	var old = process;
-
-	//Eventuelle Gegnerflagge abnehmen
-	if (team)
-	{
-		if (iTeam != team && (process != 0))
-			iAmount = -iAmount;
-	}
-	else
-		team = iTeam;
-
-	process = BoundBy(process+iAmount,0,100);
-
-	if (old < process)
-		trend = +1;
-
-	if (old > process)
-		trend = -1;
-
-	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
-	{
-		GameCallEx("FlagAttacked", this, team, pAttackers);
-	}
-
-	//Flagge wird übernommen
-	if (process < 100 && trend != 0)
-	{
-		Capturing(iTeam);
-	}
-
-	//Flagge ist fertig übernommen
-	if ((process >= 100) && (old < 100))
-	{
-		Capture(iTeam);
-	}
-
-	//Neutrale Flagge
-	if ((process <= 0) && (old > 0))
-	{
-		if (team && lastowner != iTeam) GameCallEx("FlagLost", this, team, iTeam, pAttackers);
-		//lastowner = team;
-		attacker = 0;
-		capt = false;
-		team = iTeam;
-	}
-
-	UpdateFlag();
-
-	var clr = GetTeamColor(iTeam);
-	var plr = GetTeamMemberByIndex(iTeam, 0);
-	if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(iTeam) <= 1 && plr > -1) || !GetTeamConfig(TEAM_TeamColors))
-		clr = GetPlayerColor(plr);
-
-	if (bar)
-	{
-		bar->SetBarColor(clr);
-		if (process >= 100)
-		{
-			if (iconState != 0)
-			{
-				bar->SetIcon(0, SM21, 0, 0, 32);
-				bar->Update(0, true, true);
-				iconState = 0;
-			}
-		}
-		else if (iconState != 1)
-		{
-			bar->SetIcon(0, SM22, 0, 0, 32);
-			iconState = 1;
-		}
-		if (iconState != 0)
-			bar->Update(process);
-	}
-
-	return process;
-}
 
 /* Flaggenposten verschieben */
 
