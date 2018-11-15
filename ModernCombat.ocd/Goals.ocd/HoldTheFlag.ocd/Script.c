@@ -7,15 +7,9 @@
 #include Plugin_Goal_TimeLimit
 #include Plugin_Goal_EliminateLosingPlayers
 
-/* --- Properties --- */
+/* --- Callbacks from other round system --- */
 
-local Name = "$Name$";
-local Description = "$Description$";
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-func /* check */ OnRoundStart(int round)
+func OnRoundStart(int round)
 {
 	inherited(...);
 	
@@ -23,13 +17,8 @@ func /* check */ OnRoundStart(int round)
 	SetClock(clock);
 }
 
-func /* check */ GetDefaultWinScore()
-{
-	return 10;
-}
 
-
-public func DoSetup(int round)
+func DoSetup(int round)
 {
 	ScheduleCall(this, this.UpdateFlag, 1);
 
@@ -42,7 +31,8 @@ public func DoSetup(int round)
 	_inherited(round);
 }
 
-public func DoCleanup(int round)
+
+func DoCleanup(int round)
 {
 	if (goal_flagpost)
 	{
@@ -50,13 +40,20 @@ public func DoCleanup(int round)
 	}
 }
 
+/* --- Properties --- */
 
+local Name = "$Name$";
+local Description = "$Description$";
 
-/*-- Hold the Flag --*/
+local goal_flagpost; // The captured flag
+local goal_progress; // Progress of the owning team, towards gaining a point
 
+func GetDefaultWinScore()
+{
+	return 10;
+}
 
-local goal_flagpost;					//HTF-Flaggenposten
-local goal_progress;				//Fortschritt des Besitzerteams
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 func /* check */ UpdateFlag()
