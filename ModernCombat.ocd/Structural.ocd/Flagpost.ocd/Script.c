@@ -13,10 +13,10 @@ local capture_progress;
 local capture_range;
 local flag;
 local bar;
-local attacker;
 local trend;
 local capt;
-local pAttackers;
+local attacking_team;
+local attacking_crew;
 local lastowner;
 local iconState;
 local captureradiusmarker;
@@ -30,7 +30,7 @@ local FlagPost_DefaultSpeed = 2;
 
 /* --- Interface --- */
 
-public func GetAttacker()		{ return attacker; }
+public func GetAttacker()		{ return attacking_team; }
 public func GetTeam()			{ return capture_team; }
 public func GetProgress()		{ return capture_progress; }
 public func GetTrend()			{ return trend; }
@@ -87,7 +87,7 @@ public func RegisterGoal(object goal)
 func Initialize()
 {
 	// Set defaults
-	pAttackers = [];
+	attacking_crew = [];
 	lastowner = 0;
 
 	SetCaptureRange();
@@ -131,7 +131,7 @@ func CaptureTimer()
 	//Zuvor gespeicherte Clonks in Reichweite auf Aktualität prüfen
 	var del;
 	var clonks = FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive));
-	for (var pClonk in pAttackers)
+	for (var pClonk in attacking_crew)
 	{
 		del = true;
 		for (var clonk in clonks)
@@ -147,11 +147,11 @@ func CaptureTimer()
 		}
 		//Clonk nicht vorhanden: Eintrag entfernen
 		if (del)
-			pAttackers[GetIndexOf(pAttackers, pClonk)] = 0;
+			attacking_crew[GetIndexOf(attacking_crew, pClonk)] = 0;
 	}
 
 	//Leere Einträge entfernen
-	RemoveHoles(pAttackers);
+	RemoveHoles(attacking_crew);
 
 	var aFriends = CreateArray();
 	var aEnemies = CreateArray();
@@ -178,7 +178,7 @@ func CaptureTimer()
 			aEnemies[GetLength(aEnemies)] = clonk;
 		}
 	}
-	attacker = opposition;
+	attacking_team = opposition;
 
 	//Zustandsänderung ermitteln
 	//Nur Feinde: Flaggenneutralisierung vorrantreiben
@@ -250,13 +250,13 @@ func CaptureTimer()
 		if (!clonk) continue;
 		var new = true;
 		//Clonk auffindbar?
-		for (var pClonk in pAttackers)
+		for (var pClonk in attacking_crew)
 		{
 			if (pClonk == clonk) new = false;
 			if (!new) break;
 		}
 		//Neu: Einstellen
-		if (new) pAttackers[GetLength(pAttackers)] = clonk;
+		if (new) attacking_crew[GetLength(attacking_crew)] = clonk;
 	}
 }
 
@@ -283,7 +283,7 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 
 	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
 	{
-		GameCallEx("FlagAttacked", this, capture_team, pAttackers);
+		GameCallEx("FlagAttacked", this, capture_team, attacking_crew);
 	}
 
 	//Flagge wird übernommen
@@ -301,9 +301,9 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 	//Neutrale Flagge
 	if ((capture_progress <= 0) && (old > 0))
 	{
-		if (capture_team && lastowner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, pAttackers);
+		if (capture_team && lastowner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, attacking_crew);
 		//lastowner = capture_team;
-		attacker = 0;
+		attacking_team = 0;
 		capt = false;
 		capture_team = iTeam;
 	}
@@ -356,27 +356,27 @@ public func /* check */ IsAttacked()
 
 func ResetAttackers()
 {
-	pAttackers = [];
+	attacking_crew = [];
 }
 
 
 func /* check */ StartCapturing(int iTeam)
 {
-	attacker = iTeam;
+	attacking_team = iTeam;
 }
 
 
 func /* check */ DoCapture(int iTeam, bool bSilent)
 {
 	capture_progress = 100;
-	attacker = 0;
+	attacking_team = 0;
 	capture_team = iTeam;
 	capt = true;
 	var fRegained = false;
 	if (!bSilent)
 	{
 		if (lastowner == capture_team) fRegained = true;
-		GameCallEx("FlagCaptured", this, capture_team, pAttackers, fRegained);
+		GameCallEx("FlagCaptured", this, capture_team, attacking_crew, fRegained);
 	}
 	ResetAttackers();
 	lastowner = capture_team;
@@ -388,7 +388,7 @@ func /* check */ SetNeutral()
 {
 	capture_team = 0;
 	capture_progress = 0;
-	attacker = 0;
+	attacking_team = 0;
 	capt = false;
 	UpdateFlag();
 }
