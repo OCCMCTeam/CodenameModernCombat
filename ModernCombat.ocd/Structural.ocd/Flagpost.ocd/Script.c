@@ -13,7 +13,6 @@ local range;
 local flag;
 local bar;
 local attacker;
-local spawnpoints;
 local trend;
 local capt;
 local pAttackers;
@@ -88,7 +87,6 @@ public func RegisterGoal(object goal)
 func Initialize()
 {
 	// Set defaults
-	spawnpoints = [];
 	pAttackers = [];
 	lastowner = 0;
 
@@ -132,7 +130,7 @@ func CaptureTimer()
 
 	//Zuvor gespeicherte Clonks in Reichweite auf Aktualität prüfen
 	var del;
-	var clonks = FindObjects(Find_Distance(range),Find_OCF(OCF_Alive));
+	var clonks = FindObjects(Find_Distance(range), Find_OCF(OCF_Alive));
 	for (var pClonk in pAttackers)
 	{
 		del = true;
@@ -291,13 +289,13 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	//Flagge wird übernommen
 	if (process < 100 && trend != 0)
 	{
-		Capturing(iTeam);
+		StartCapturing(iTeam);
 	}
 
 	//Flagge ist fertig übernommen
 	if ((process >= 100) && (old < 100))
 	{
-		Capture(iTeam);
+		DoCapture(iTeam);
 	}
 
 	//Neutrale Flagge
@@ -359,6 +357,40 @@ public func /* check */ IsAttacked()
 func ResetAttackers()
 {
 	pAttackers = [];
+}
+
+
+func /* check */ StartCapturing(int iTeam)
+{
+	attacker = iTeam;
+}
+
+
+func /* check */ DoCapture(int iTeam, bool bSilent)
+{
+	process = 100;
+	attacker = 0;
+	team = iTeam;
+	capt = true;
+	var fRegained = false;
+	if (!bSilent)
+	{
+		if (lastowner == team) fRegained = true;
+		GameCallEx("FlagCaptured", this, team, pAttackers, fRegained);
+	}
+	ResetAttackers();
+	lastowner = team;
+	UpdateFlag();
+}
+
+
+func /* check */ SetNeutral()
+{
+	team = 0;
+	process = 0;
+	attacker = 0;
+	capt = false;
+	UpdateFlag();
 }
 
 /* --- Display --- */
@@ -428,49 +460,6 @@ func /* check */ ShowCaptureRadius(object pTarget)
 // Temporary stuff below
 
 
-
-/* Prüfungseffekt und -timer */
-
-
-/* Umkreis-Effekt */
-
-
-public func /* check */ Capture(int iTeam, bool bSilent)
-{
-	process = 100;
-	attacker = 0;
-	team = iTeam;
-	capt = true;
-	var fRegained = false;
-	if (!bSilent)
-	{
-		if (lastowner == team) fRegained = true;
-		GameCallEx("FlagCaptured", this, team, pAttackers, fRegained);
-	}
-	ResetAttackers();
-	lastowner = team;
-	UpdateFlag();
-}
-
-func /* check */ Capturing(int iTeam)
-{
-	attacker = iTeam;
-}
-
-public func /* check */ NoTeam()
-{
-	team = 0;
-	process = 0;
-	attacker = 0;
-	capt = false;
-	UpdateFlag();
-}
-
-/* Flaggenkonfiguration */
-
-
-/* Einnahme/Neutralisierung umsetzen */
-
 /* Flaggenposten verschieben */
 
 public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, bool fNeutral)
@@ -494,18 +483,10 @@ public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, 
 
 	//Besitzer neutralisieren
 	if (fNeutral)
-		NoTeam();
+		SetNeutral();
 
 	//Reichweite setzen
 	if (iRange) range = iRange;
-
-	//Spawnpunkte anpassen
-	var curX = GetX(), curY = GetY();
-	for (var i = 0; i < GetLength(spawnpoints); i++)
-	{
-		spawnpoints[i][0] -= iX - curX;
-		spawnpoints[i][1] -= iY - curY;
-	}
 
 	//Verschieben und einblenden
 	SetPosition(iX, iY);
@@ -513,7 +494,3 @@ public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, 
 	FadeIn();
 	flag->FadeIn();
 }
-
-static const SM21 = Rock;
-static const SM22 = Rock;
-static const SM23 = Rock;
