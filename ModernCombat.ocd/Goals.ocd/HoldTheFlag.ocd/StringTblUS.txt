@@ -13,3 +13,6 @@ MsgYouAreBest=You are leading with %d points!
 # Goal specific messages
 MsgFlagLost=Lost flag post <c ffff33>%s</c> to team <c %x>%s</c>!
 MsgCaptured=Team <c %x>%s</c> controls flag post <c ffff33>%s</c>!
+
+# Other
+WinScore=Zielpunktzahl
