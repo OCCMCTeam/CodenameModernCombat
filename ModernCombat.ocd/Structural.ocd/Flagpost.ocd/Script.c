@@ -10,7 +10,7 @@ local goal_object;     // Goal that is linked with this flag
 
 local capture_team;
 local capture_progress;
-local range;
+local capture_range;
 local flag;
 local bar;
 local attacker;
@@ -34,7 +34,7 @@ public func GetAttacker()		{ return attacker; }
 public func GetTeam()			{ return capture_team; }
 public func GetProgress()		{ return capture_progress; }
 public func GetTrend()			{ return trend; }
-public func GetRange()			{ return range; }
+public func GetRange()			{ return capture_range; }
 public func IsFullyCaptured()	{ return capt; }
 
 
@@ -53,7 +53,7 @@ public func IsFlagpole()		{ return true; }		//Ist ein Flaggenposten
 
 public func SetCaptureRange(int value)
 {
-	range = value ?? FlagPost_DefaultRange;
+	capture_range = value ?? FlagPost_DefaultRange;
 	return this;
 }
 
@@ -130,7 +130,7 @@ func CaptureTimer()
 
 	//Zuvor gespeicherte Clonks in Reichweite auf Aktualität prüfen
 	var del;
-	var clonks = FindObjects(Find_Distance(range), Find_OCF(OCF_Alive));
+	var clonks = FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive));
 	for (var pClonk in pAttackers)
 	{
 		del = true;
@@ -157,7 +157,7 @@ func CaptureTimer()
 	var aEnemies = CreateArray();
 
 	//Passende Clonks in Reichweite ermitteln
-	var clonks = FindObjects(Find_Distance(range),Find_OCF(OCF_Alive));
+	var clonks = FindObjects(Find_Distance(capture_range),Find_OCF(OCF_Alive));
 
 	//Gefundene Clonks als Feinde oder Verbündete einstufen
 	for (clonk in clonks)
@@ -343,7 +343,7 @@ public func /* check */ DoProgress(int iTeam, int iAmount)
 
 public func /* check */ IsAttacked()
 {
-	for (var crew in FindObjects(Find_Distance(range), Find_OCF(OCF_Alive)))
+	for (var crew in FindObjects(Find_Distance(capture_range), Find_OCF(OCF_Alive)))
 	{
 		if (crew->Contained() && !crew->Contained()->~IsHelicopter()) continue;
 		if (crew->GetOwner() == NO_OWNER) continue;
@@ -446,7 +446,7 @@ func /* check */ ShowCaptureRadius(object pTarget)
 	obj->Set(pTarget);
 
 	//Symbolgröße anpassen
-	var wdt = range * 2000 / SM09->GetDefWidth();
+	var wdt = capture_range * 2000 / SM09->GetDefWidth();
 
 	//Symbol konfigurieren
 	obj->SetObjDrawTransform(wdt, 0, 0, 0, wdt, 0);
@@ -486,7 +486,7 @@ public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, 
 		SetNeutral();
 
 	//Reichweite setzen
-	if (iRange) range = iRange;
+	if (iRange) capture_range = iRange;
 
 	//Verschieben und einblenden
 	SetPosition(iX, iY);
