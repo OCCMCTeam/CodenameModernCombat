@@ -53,10 +53,14 @@ func DoSetup(int round)
 	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
 	GetFlag()->SetHoldTheFlag()
 	         ->Set(GetFlag()->GetRange(), capture_speed);
+	         
+	// Set defaults:
+	goal_progress = 0;
+	goal_progress_warning = BoundBy(GetWinScore()* 3 / 4, Max(0, GetWinScore() - 5), Max(0, GetWinScore() - 1));
 
 	// Setup the goal timer
 	var interval = Max(14 - 2 * GetLength(GetActiveTeams()), 5);
-	AddEffect("IntAddProgress", this, 1, interval, this);
+	AddTimer(this.EvaluateProgress, interval);
 
 	UpdateHUDs();
 
@@ -66,10 +70,12 @@ func DoSetup(int round)
 
 func DoCleanup(int round)
 {
+	RemoveTimer(this.EvaluateProgress);
 	if (GetFlag())
 	{
 		GetFlag()->RemoveObject();
 	}
+	inherited(round, ...);
 }
 
 /* --- Interface --- */
@@ -97,6 +103,53 @@ func FindFlag()
 }
 
 /* --- Goal Timer --- */
+
+func EvaluateProgress()
+{
+	if (!GetFlag())
+	{
+		RemoveObject();
+		FatalError("Hold the Flag goal has no flag, will remove the object");
+	}
+
+	var team = GetFlag()->GetTeam();
+	if (team != NO_OWNER && GetFlag()->IsFullyCaptured())
+	{
+		goal_progress += 1;
+		if (goal_progress >= 100)
+		{
+			// Score and reset progress
+			goal_progress = 0;
+			DoFactionScore(team, 1);
+			UpdateScoreboard();
+	
+			UpdateHUDs();
+	
+			// Add points for achievement system
+			for (var i; i < GetPlayerCount(); ++i)
+			{
+				var player = GetPlayerByIndex(i);
+				// Leading team?
+				if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+				{
+					// TODO
+					// DoPlayerPoints(BonusPoints("Control"), RWDS_TeamPoints, player, GetCrew(player), IC28);
+					Sound("Info_Event" {global = true, player = player});
+				}
+				// Event message for other teams: The team is close to winning
+				else if (GetFactionScore(team) == goal_progress_warning)
+				{
+					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - goal_progress_warning), IC28, 0, 0, 0, "Info_Alarm.ogg");
+				}
+			}
+		}
+	}
+	else
+	{
+		goal_progress = 0;
+		UpdateScoreboard();
+	}
+}
 
 
 /* --- Events --- */
@@ -175,6 +228,7 @@ local Description = "$Description$";
 
 local goal_flagpost; // The captured flag
 local goal_progress; // Progress of the owning team, towards gaining a point
+local goal_progress_warning;
 
 func GetDefaultWinScore()
 {
@@ -191,63 +245,6 @@ func GetDefaultWinScore()
 
 /* Spielzielmechanik-Effekt */
 
-func /* check */ FxIntAddProgressTimer()
-{
-	if (!GetFlag() && !SetFlag(FindFlag())) return;
-
-	UpdateScoreboard();
-
-	//Besitzer des Flaggenpostens ermitteln
-	var team = GetFlag()->~GetTeam();
-
-	//Kein Besitzer: Nichts weiter unternehmen
-	if (team == -1) return;
-
-	//Nicht vollständig eingenommen: Fortschritt zurücksetzen
-	if (!GetFlag()->IsFullyCaptured())
-	{
-		goal_progress = 0;
-
-		//Update um Prozente nicht falschen Teams zuzuschreiben
-		return UpdateScoreboard();
-	}
-	
-	
-
-	var warning = BoundBy(GetWinScore()* 3 / 4, Max(0, GetWinScore() - 5), Max(0, GetWinScore() - 1));
-	//Punkt erspielt: Entsprechendem Team zuschreiben
-	if ((++goal_progress) >= 100)
-	{
-		//Punkt vergeben
-		DoFactionScore(team, 1);
-		//Fortschritt zurücksetzen
-		goal_progress = 0;
-
-		UpdateHUDs();
-
-		//Punkte bei Belohnungssystem
-		for (var i; i < GetPlayerCount(); i++)
-		{
-			/* TODO
-			if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-			{
-				//Punkte bei Belohnungssystem (Team führt)
-				DoPlayerPoints(BonusPoints("Control"), RWDS_TeamPoints, GetPlayerByIndex(i), GetCrew(GetPlayerByIndex(i)), IC28);
-				Sound("Info_Event.ogg", true, 0, 0, GetPlayerByIndex(i)+1);
-			}
-			else*/ if (GetFactionScore(GetFactionByIndex(team)) == warning)
-			{
-				//Eventnachricht: Hinweis auf Team, das dem Ziel nahe ist
-				EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore()-warning), IC28, 0, 0, 0, "Info_Alarm.ogg");
-			}
-		}
-	}
-
-	//Nach Gewinner prüfen
-	// TODO
-	//if (!EffectVar(0, Par(), Par(1)))
-	//	EffectVar(0, Par(), Par(1)) = IsFulfilled();
-}
 
 /* Flaggenverhalten */
 
