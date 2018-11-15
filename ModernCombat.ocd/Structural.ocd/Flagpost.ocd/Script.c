@@ -127,13 +127,15 @@ public func SetPosition(int x, int y, bool check_bounds)
 
 func CaptureTimer()
 {
+	// Update attackers that are not in range; The system is a little strange though
+	// the attackers should not need concatenation at all, see UpdateAttackingCrew
 	var crew_in_range = GetCrewInRange();
 	CheckAttackingCrew(crew_in_range);
 
 	var friends_in_range = [];
 	var enemies_in_range = [];
 
-	//Gefundene Clonks als Feinde oder Verbündete einstufen
+	// Sort by hostility
 	for (var crew in crew_in_range)
 	{
 		var player = crew->GetOwner();
@@ -152,25 +154,58 @@ func CaptureTimer()
 	}
 	var friends = GetLength(friends_in_range);
 	var enemies = GetLength(enemies_in_range);
-	attacking_team = GetTeamMajority(enemies_in_range);
 	
 	var has_friends = friends > 0;
 	var has_enemies = enemies > 0;
+	
+	attacking_team = GetTeamMajority(enemies_in_range);
 
-	//Zustandsänderung ermitteln
-	//Nur Feinde: Flaggenneutralisierung vorrantreiben
+	// Only enemies in range? Neutralize the flag
 	var max_progress = 3;
 	capture_trend = 0;
 	if (has_enemies && !has_friends)
 	{
 		DoProgress(attacking_team, Min(enemies, max_progress));
 	}
-	//Nur Verbündete: Flaggeneroberung vorrantreiben
+	// Only allies in range? Continue capturing
 	if (!has_enemies && has_friends)
 	{
 		DoProgress(capture_team, Min(friends, max_progress));
 	}
 
+	UpdateStatusDisplay(has_enemies, has_friends);
+	UpdateAttackingCrew(enemies_in_range, friends_in_range);
+}
+
+
+func CheckAttackingCrew(array crew_in_range)
+{
+	for (var i = 0; i < GetLength(attacking_crew); ++i)
+	{
+		if (!IsValueInArray(crew_in_range, attacking_crew[i]))
+		{
+			attacking_crew[i] = nil;
+		}
+	}
+	RemoveHoles(attacking_crew);
+}
+
+
+func UpdateAttackingCrew(array enemies_in_range, array friends_in_range)
+{
+	if (capture_trend < 0)
+	{
+		attacking_crew = enemies_in_range;
+	}
+	else if (capture_trend > 0)
+	{
+		attacking_crew = friends_in_range;
+	}
+}
+
+
+func UpdateStatusDisplay(bool has_enemies, bool has_friends)
+{
 	if (has_enemies)
 	{
 		if (has_no_enemies)
@@ -208,33 +243,6 @@ func CaptureTimer()
 			SetIconState(2, capture_team);
 		}
 	}
-	UpdateAttackingCrew(enemies_in_range, friends_in_range);
-}
-
-
-func CheckAttackingCrew(array crew_in_range)
-{
-	for (var i = 0; i < GetLength(attacking_crew); ++i)
-	{
-		if (!IsValueInArray(crew_in_range, attacking_crew[i]))
-		{
-			attacking_crew[i] = nil;
-		}
-	}
-	RemoveHoles(attacking_crew);
-}
-
-
-func UpdateAttackingCrew(array enemies_in_range, array friends_in_range)
-{
-	if (capture_trend < 0)
-	{
-		attacking_crew = enemies_in_range;
-	}
-	else if (capture_trend > 0)
-	{
-		attacking_crew = friends_in_range;
-	}
 }
 
 
@@ -242,7 +250,7 @@ public func /* check */ DoProgress(int team, int amount)
 {
 	var old_progress = capture_progress;
 
-	//Eventuelle Gegnerflagge abnehmen
+	// Neutralize a hostile flag?
 	if (capture_team)
 	{
 		if (team != capture_team && (capture_progress != 0))
@@ -270,7 +278,7 @@ public func /* check */ DoProgress(int team, int amount)
 	}
 
 	// Done capturing
-	if ((capture_progress >= 100) && (old_progress < 100))
+	if ((capture_progress == 100) && (old_progress < 100))
 	{
 		DoCapture(team);
 	}
