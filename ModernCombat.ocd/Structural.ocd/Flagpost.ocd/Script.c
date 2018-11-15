@@ -6,8 +6,9 @@
 static const BAR_FlagBar = 5;
 
 local deploy_location; // Deployment location next to the flag; Might be changed, so that the flag itself is a location, instead of having a helper object?
+local goal_object;     // Goal that is linked with this flag
 
-local team;
+local capture_team;
 local process;
 local range;
 local flag;
@@ -21,7 +22,6 @@ local iconState;
 local captureradiusmarker;
 local noenemys;
 local nofriends;
-local goal_object;
 
 
 local FlagPost_DefaultRange = 100;
@@ -31,7 +31,7 @@ local FlagPost_DefaultSpeed = 2;
 /* --- Interface --- */
 
 public func GetAttacker()		{ return attacker; }
-public func GetTeam()			{ return team; }
+public func GetTeam()			{ return capture_team; }
 public func GetProcess()		{ return process; }
 public func GetTrend()			{ return trend; }
 public func GetRange()			{ return range; }
@@ -166,7 +166,7 @@ func CaptureTimer()
 		if (clonk->GetOwner() == NO_OWNER) continue;
 		if (!GetPlayerName(clonk->GetOwner()) || !GetPlayerTeam(clonk->GetOwner())) continue;
 		if (!PathFree(this->GetX(),this->GetY()-GetID()->GetDefHeight()/2,clonk->GetX(),clonk->GetY())) continue;
-		if (GetPlayerTeam(clonk->GetOwner()) == team)
+		if (GetPlayerTeam(clonk->GetOwner()) == capture_team)
 		{
 			friends++;
 			aFriends[GetLength(aFriends)] = clonk;
@@ -186,7 +186,7 @@ func CaptureTimer()
 		DoProcess(opposition,Min(enemys,3));
 	//Nur Verbündete: Flaggeneroberung vorrantreiben
 	if (!enemys && friends)
-		DoProcess(team,Min(friends,3));
+		DoProcess(capture_team,Min(friends,3));
 
 	if (enemys)
 	{
@@ -224,8 +224,8 @@ func CaptureTimer()
 		{
 			if (iconState != 2 && bar) // TODO: Added && bar must be checked
 			{
-				var clr = GetTeamColor(team), plr;
-				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(team) <= 1 && (plr = GetTeamPlayer(team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
+				var clr = GetTeamColor(capture_team), plr;
+				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(capture_team) <= 1 && (plr = GetTeamPlayer(capture_team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
 					clr = GetPlayerColor(plr);
 
 				bar->SetIcon(0, SM23, 0, 0, 32);
@@ -265,13 +265,13 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	var old = process;
 
 	//Eventuelle Gegnerflagge abnehmen
-	if (team)
+	if (capture_team)
 	{
-		if (iTeam != team && (process != 0))
+		if (iTeam != capture_team && (process != 0))
 			iAmount = -iAmount;
 	}
 	else
-		team = iTeam;
+		capture_team = iTeam;
 
 	process = BoundBy(process+iAmount,0,100);
 
@@ -283,7 +283,7 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 
 	if ((old == 100 && trend < 0) || (old == 0 && trend > 0))
 	{
-		GameCallEx("FlagAttacked", this, team, pAttackers);
+		GameCallEx("FlagAttacked", this, capture_team, pAttackers);
 	}
 
 	//Flagge wird übernommen
@@ -301,11 +301,11 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	//Neutrale Flagge
 	if ((process <= 0) && (old > 0))
 	{
-		if (team && lastowner != iTeam) GameCallEx("FlagLost", this, team, iTeam, pAttackers);
-		//lastowner = team;
+		if (capture_team && lastowner != iTeam) GameCallEx("FlagLost", this, capture_team, iTeam, pAttackers);
+		//lastowner = capture_team;
 		attacker = 0;
 		capt = false;
-		team = iTeam;
+		capture_team = iTeam;
 	}
 
 	UpdateFlag();
@@ -347,7 +347,7 @@ public func /* check */ IsAttacked()
 	{
 		if (crew->Contained() && !crew->Contained()->~IsHelicopter()) continue;
 		if (crew->GetOwner() == NO_OWNER) continue;
-		if (GetPlayerTeam(crew->GetOwner()) != team)
+		if (GetPlayerTeam(crew->GetOwner()) != capture_team)
 			return true;
 	}
 
@@ -370,23 +370,23 @@ func /* check */ DoCapture(int iTeam, bool bSilent)
 {
 	process = 100;
 	attacker = 0;
-	team = iTeam;
+	capture_team = iTeam;
 	capt = true;
 	var fRegained = false;
 	if (!bSilent)
 	{
-		if (lastowner == team) fRegained = true;
-		GameCallEx("FlagCaptured", this, team, pAttackers, fRegained);
+		if (lastowner == capture_team) fRegained = true;
+		GameCallEx("FlagCaptured", this, capture_team, pAttackers, fRegained);
 	}
 	ResetAttackers();
-	lastowner = team;
+	lastowner = capture_team;
 	UpdateFlag();
 }
 
 
 func /* check */ SetNeutral()
 {
-	team = 0;
+	capture_team = 0;
 	process = 0;
 	attacker = 0;
 	capt = false;
@@ -412,9 +412,9 @@ func UpdateFlag()
 	*/
 
 	// Set color according to owner
-	if (team)
+	if (capture_team)
 	{
-		flag->SetColor(goal_object->GetFactionColor(team));
+		flag->SetColor(goal_object->GetFactionColor(capture_team));
 	}
 	else
 	{
