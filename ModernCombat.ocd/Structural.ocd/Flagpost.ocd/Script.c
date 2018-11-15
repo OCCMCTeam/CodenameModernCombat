@@ -22,6 +22,7 @@ local iconState;
 local captureradiusmarker;
 local noenemys;
 local nofriends;
+local goal_object;
 
 
 local FlagPost_DefaultRange = 100;
@@ -74,6 +75,11 @@ public func SetHoldTheFlag() // Fixed setting for HTF: one deploy location
 	}
 	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
 	return this;
+}
+
+public func RegisterGoal(object goal)
+{
+	goal_object = goal;
 }
 
 
@@ -221,7 +227,7 @@ func CaptureTimer()
 			if (iconState != 2 && bar) // TODO: Added && bar must be checked
 			{
 				var clr = GetTeamColor(team), plr;
-				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(team) <= 1 && (plr = GetTeamMemberByIndex(team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
+				if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(team) <= 1 && (plr = GetTeamPlayer(team, 0)) > -1) || !GetTeamConfig(TEAM_TeamColors))
 					clr = GetPlayerColor(plr);
 
 				bar->SetIcon(0, SM23, 0, 0, 32);
@@ -307,7 +313,7 @@ public func /* check */ DoProcess(int iTeam, int iAmount)
 	UpdateFlag();
 
 	var clr = GetTeamColor(iTeam);
-	var plr = GetTeamMemberByIndex(iTeam, 0);
+	var plr = GetTeamPlayer(iTeam, 0);
 	if ((GetTeamConfig(TEAM_AutoGenerateTeams) && GetTeamPlayerCount(iTeam) <= 1 && plr > -1) || !GetTeamConfig(TEAM_TeamColors))
 		clr = GetPlayerColor(plr);
 
@@ -350,22 +356,55 @@ public func /* check */ IsAttacked()
 	return false;
 }
 
-
 func ResetAttackers()
 {
 	pAttackers = [];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Temporary stuff below
+/* --- Display --- */
+
+func UpdateFlag()
+{
+	if (!flag) return;
+/* TODO
+	// No status bar?
+	if (!bar)
+	{
+		bar = CreateObject(SBAR, 0, 0, -1);
+		bar->Set(this, RGB(255, 255, 255), BAR_FlagBar, 100, 0, SM21, 0, 0, true, true);
+		bar->ChangeDefOffset(GetID()->GetDefOffset(1)+5);
+		bar->SetIcon(0, SM21, 0, 0, 32);
+		bar->Update(0, true, true);
+		iconState = 0;
+	}
+	*/
+
+	// Set color according to owner
+	if (team)
+	{
+		flag->SetColor(goal_object->GetFactionColor(team));
+	}
+	else
+	{
+		flag->SetColor(RGB(255, 255, 255));
+	}
+
+	// Update the position
+	SetFlagPosition(process);
+}
 
 
+// Lifts the flag up from the bottom, position in percent
+func SetFlagPosition(int percent)
+{
+	if (!flag) return;
 
-/* Prüfungseffekt und -timer */
+	var flag_height = flag->GetID()->GetDefHeight();
+	var maximum = GetDefHeight() - flag_height;
+	var height = (BoundBy(percent, 0, 100) * maximum / 100) + flag_height / 2;
+	flag->SetPosition(GetX(), GetY() - height);
+}
 
-
-/* Umkreis-Effekt */
 
 func /* check */ ShowCaptureRadius(object pTarget)
 {
@@ -383,6 +422,18 @@ func /* check */ ShowCaptureRadius(object pTarget)
 
 	return obj;*/
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Temporary stuff below
+
+
+
+/* Prüfungseffekt und -timer */
+
+
+/* Umkreis-Effekt */
+
 
 public func /* check */ Capture(int iTeam, bool bSilent)
 {
@@ -417,54 +468,6 @@ public func /* check */ NoTeam()
 
 /* Flaggenkonfiguration */
 
-public func /* check */ UpdateFlag()
-{
-	if (!flag) return;
-/* TODO
-	// No status bar?
-	if (!bar)
-	{
-		bar = CreateObject(SBAR, 0, 0, -1);
-		bar->Set(this, RGB(255, 255, 255), BAR_FlagBar, 100, 0, SM21, 0, 0, true, true);
-		bar->ChangeDefOffset(GetID()->GetDefOffset(1)+5);
-		bar->SetIcon(0, SM21, 0, 0, 32);
-		bar->Update(0, true, true);
-		iconState = 0;
-	}
-	*/
-
-	//Entsprechend dem Besitzer färben
-	if (team)
-	{
-		flag->SetColor(RGB(0,0,0));
-		for (var i = 0; i < GetPlayerCount(); i++)
-		{
-			if (GetPlayerTeam(GetPlayerByIndex(i)) != team) continue;
-			flag->SetOwner(GetPlayerByIndex(i));
-			break;
-		}
-	}
-	else
-	{
-		flag->SetOwner(NO_OWNER);
-		flag->SetColor(RGB(255, 255, 255));
-	}
-
-	//Flaggenposition aktualisieren
-	SetFlagPos(process);
-}
-
-
-// Lifts the flag up from the bottom, position in percent
-func SetFlagPos(int percent)
-{
-	if (!flag) return;
-
-	var flag_height = flag->GetID()->GetDefHeight();
-	var maximum = GetDefHeight() - flag_height;
-	var height = (percent * maximum / 100) + flag_height / 2;
-	flag->SetPosition(GetX(), GetY() - height);
-}
 
 /* Einnahme/Neutralisierung umsetzen */
 
@@ -509,26 +512,6 @@ public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, 
 	UpdateFlag();
 	FadeIn();
 	flag->FadeIn();
-}
-
-
-
-
-global func GetTeamMemberByIndex(int team, int index)
-{
-	var member_index;
-	for (var i = 0; i < GetPlayerCount(); ++i)
-	{
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
-		{
-			if (member_index == index)
-				return GetPlayerByIndex(i);
-			
-			++member_index;
-		}
-	}
-	
-	return -1;
 }
 
 static const SM21 = Rock;

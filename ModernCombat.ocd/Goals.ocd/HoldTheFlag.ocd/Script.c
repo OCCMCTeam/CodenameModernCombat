@@ -88,6 +88,7 @@ public func SetFlag(object flagpost)
 		FatalError(Format("Object %v is not a flag post!", flagpost));
 	}
 	goal_flagpost = flagpost;
+	goal_flagpost->RegisterGoal(this);
 }
 
 
