@@ -1,0 +1,15 @@
+Oasis
+
+Selectable goals:
+  - Occupation (5)
+  - Hold the Flag
+  - Capture the Flag
+  - Last Man Standing
+  - Deathmatch
+
+Team positions:
+  Eurocorps - left
+  Aggressors - right
+
+Border area in the desert. Back in the dark age, nobody would think of building border posts here, even knights with horses would not reach this place without being half-dead from thirst, getting rid of them would have been too easy. But now in the present day, the desert isn't an obstacle anymore; an attack from this direction is more likely than ever. The local units have to upgrade and started to build new guard posts, but it was already too late:
+An enemy combat patrol is already in front of our door and plans to take over the construction site to build their own forward post out of it. That would be an embarrassing failure; we should better make our move and give them the boot...

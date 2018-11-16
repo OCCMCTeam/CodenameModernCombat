@@ -1,0 +1,8 @@
+Team1=Außenposten Eurocorps
+Team2=Außenposten Aggressoren
+
+Flag1=Westlicher Außenposten
+Flag2=Westküste
+Flag3=Zentralbaustelle
+Flag4=Ostküste
+Flag5=Östlicher Außenposten

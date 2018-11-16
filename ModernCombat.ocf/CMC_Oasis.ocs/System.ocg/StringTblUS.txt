@@ -1,0 +1,8 @@
+Team1=Outpost Eurocorps
+Team2=Outpost Aggressors
+
+Flag1=West Outpost
+Flag2=West Shore
+Flag3=Central Construction Site
+Flag4=East Shore
+Flag5=East Outpost
