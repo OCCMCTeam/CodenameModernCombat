@@ -276,6 +276,7 @@ func UpdateMenuIcon()
 			menu->GetDeployLocations()->GetTab(ObjectNumber())->UpdateLocationStatus(color);
 		}
 	}
+	return this;
 }
 
 func SetMenuIcon(id icon, string gfx_name)
@@ -285,6 +286,7 @@ func SetMenuIcon(id icon, string gfx_name)
 
 	menu_icon->SetGraphics(gfx_name, CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
 	menu_icon->SetGraphics(Format("%sOverlay", gfx_name), CMC_DeployLocation, 2, GFXOV_MODE_IngamePicture);
+	return this;
 }
 
 /* --- Editor properties --- */
