@@ -148,6 +148,12 @@ static const GUI_CMC_Color_HealthBar_Transparent = 0x40cc0000; // Red, transpare
 static const GUI_CMC_Color_HealthBar_Opaque =      0xffcc0000; // Red, opaque
 static const GUI_CMC_Color_HealthBar_White =       0xffffffff; // White, opaque
 
+/* --- Team colors --- */
+
+static const GUI_CMC_Color_Ally  =   0xff0060f0; // Blue
+static const GUI_CMC_Color_Enemy =   0xffff0000; // Red
+static const GUI_CMC_Color_Neutral = 0xfffdfdfd; // White/grey
+
 /* --- Text colors --- */
 
 static const GUI_CMC_Text_Color_Highlight = 0xffffcc00; // Gold
