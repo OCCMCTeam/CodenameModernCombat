@@ -3,7 +3,6 @@
 */
 
 /* --- Properties --- */
-static const BAR_FlagBar = 5;
 
 local deploy_location; // Deployment location next to the flag; Might be changed, so that the flag itself is a location, instead of having a helper object?
 local goal_object;     // Goal that is linked with this flag
@@ -22,7 +21,6 @@ local has_no_friends;
 
 local last_owner;
 local is_captured;
-local icon_state;
 
 
 local FlagPost_DefaultRange = 100;
@@ -239,11 +237,11 @@ func UpdateStatusDisplay(bool has_enemies, bool has_friends)
 	{
 		if (has_friends)
 		{
-			SetIconState(0);
+			SetIconState(CMC_Icon_FlagPost_Neutral);
 		}
 		else
 		{
-			SetIconState(2, capture_team);
+			SetIconState(CMC_Icon_FlagPost_Embattled, capture_team);
 		}
 	}
 }
@@ -302,11 +300,11 @@ public func /* check */ DoProgress(int team, int amount)
 
 	if (capture_progress >= 100)
 	{
-		SetIconState(0);
+		SetIconState(CMC_Icon_FlagPost_Neutral);
 	}
 	else
 	{
-		SetIconState(1, team);
+		SetIconState(CMC_Icon_FlagPost_Capturing, team);
 	}
 
 	return capture_progress;
@@ -398,27 +396,10 @@ func /* check */ SetNeutral()
 
 /* --- Display --- */
 
-func SetIconState(int state, int team)
+func SetIconState(id state, int team)
 {
-	if (state == icon_state) return; // No change, no update
-
-	icon_state = state;
-
-	if (state == 0)
-	{
-		//bar->~SetIcon(0, CMC_Icon_FlagPost_Neutral, 0, 0, 32);
-	}
-	else
-	{
-		if (state == 1)
-		{
-			//bar->~SetIcon(0, CMC_Icon_FlagPost_Capturing, 0, 0, 32); // TODO
-		}
-		else if (state == 2)
-		{
-			//bar->~SetIcon(0, CMC_Icon_FlagPost_Embattled, 0, 0, 32); // TODO
-		}
-	}
+	SetGraphics(nil, state, 1, GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(500, 0, 0, 0, 500, 1000 * (GetID()->GetDefOffset(1) - 30), 1);
 }
 
 func UpdateFlag()
