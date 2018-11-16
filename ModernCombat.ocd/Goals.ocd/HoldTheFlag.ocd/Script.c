@@ -242,52 +242,34 @@ func UpdateScoreboard() // TODO
 {
 	var large_space = "          "; // Should be wide enough, so that the "100%" message does not change the width of the scoreboard
 
-	//Teamfarbe und Flaggenzustand ermitteln
-	var capturing_team = GetFlag()->GetTeam();
-	var team_color = GetFactionColor(capturing_team);
-	var flag_name_color = RGB(255, 255, 255);
-	var flag_name = GetFlag()->GetName();
-	var capture_progress = GetFlag()->GetProgress();
-	var capture_color = InterpolateRGBa(capture_progress, 0, RGB(255, 255, 255), 100, team_color);
-
-	//Flaggennamenfarbe ermitteln
-	if (GetFlag()->~IsFullyCaptured())
-	{
-		flag_name_color = team_color;
-	}
-		
-	//Flaggenicon ermitteln
-	var trend = GetFlag()->GetTrend();
-	var flag_status_icon = CMC_Icon_FlagPost_Neutral; // No activity
-	if (trend == -1) flag_status_icon = CMC_Icon_FlagPost_Embattled; // Attack
-	if (trend == +1) flag_status_icon = CMC_Icon_FlagPost_Capturing; // Defense
+	var info = GetFlag()->GetScoreboardInfo();
 	
 	// First row with data
 	var row = 1000;
 	var sort_top = 1000;
-	Scoreboard->SetData(row, GHTF_Column_Name,   Format("<c %x>%s</c>", flag_name_color, flag_name));
-	Scoreboard->SetData(row, GHTF_Column_Status, Format("{{%i}}", flag_status_icon), sort_top);
-	Scoreboard->SetData(row, GHTF_Column_Score,  Format("<c %x>%d%</c>", capture_color, capture_progress), sort_top);
+	Scoreboard->SetData(row, GHTF_Column_Name,   info.name);
+	Scoreboard->SetData(row, GHTF_Column_Status, info.status, sort_top);
+	Scoreboard->SetData(row, GHTF_Column_Score,  info.score, sort_top);
 
-	//Leere Zeile
+	// Empty row
 	++row;
 	Scoreboard->SetData(row, GHTF_Column_Name, large_space);
 	Scoreboard->SetData(row, GHTF_Column_Status, large_space, sort_top);
 	Scoreboard->SetData(row, GHTF_Column_Score, large_space, sort_top);
 
-	//Benötigte Punktzahl
+	// Required points to win
 	++row;
 	Scoreboard->SetData(row, GHTF_Column_Name, "$WinScore$");
 	Scoreboard->SetData(row, GHTF_Column_Status, large_space, sort_top);
 	Scoreboard->SetData(row, GHTF_Column_Score, Format("%d", GetWinScore()), sort_top);
 
-	//Leere Zeile
+	// Empty row
 	++row;
 	Scoreboard->SetData(row, GHTF_Column_Name, large_space);
 	Scoreboard->SetData(row, GHTF_Column_Status, large_space, sort_top);
 	Scoreboard->SetData(row, GHTF_Column_Score, large_space, sort_top);
 
-	//Icons
+	// Icons
 	++row;
 	Scoreboard->SetData(row, GHTF_Column_Name, "{{CMC_Icon_Team}}");
 	Scoreboard->SetData(row, GHTF_Column_Status, "{{CMC_Icon_Time}}", sort_top);
@@ -298,7 +280,7 @@ func UpdateScoreboard() // TODO
 		var team = GetFactionByIndex(j);
 		var progress = 0;
 
-		if (team == capturing_team)
+		if (team == GetFlag()->GetTeam())
 		{
 			progress = score_progress;
 		}
@@ -309,11 +291,6 @@ func UpdateScoreboard() // TODO
 		Scoreboard->SetData(row, GHTF_Column_Status, Format("<c %x>%d%</c>", RGB(128, 128, 128), progress), progress);
 		Scoreboard->SetData(row, GHTF_Column_Score, Format("<c ffbb00>%d</c>", GetFactionScore(team)), GetFactionScore(team));
 	}
-}
-
-func ScoreboardTeamID(int team)
-{
-	return team + 1000;
 }
 
 

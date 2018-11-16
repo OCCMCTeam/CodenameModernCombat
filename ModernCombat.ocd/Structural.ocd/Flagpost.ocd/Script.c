@@ -458,6 +458,28 @@ func ShowCaptureRadius()
 	range_marker->SetColor(RGB(255, 255, 255));
 }
 
+func GetScoreboardInfo()
+{
+	var team_color = goal_object->GetFactionColor(capture_team);
+	var flag_name_color = RGB(255, 255, 255);
+	var flag_name = GetName();
+	var capture_color = InterpolateRGBa(capture_progress, 0, RGBa(255, 255, 255, 255), 100, team_color);
+	if (is_captured)
+	{
+		flag_name_color = team_color;
+	}
+	
+	var flag_status_icon = CMC_Icon_FlagPost_Neutral;
+	if (capture_trend == -1) flag_status_icon = CMC_Icon_FlagPost_Embattled; // Attack
+	if (capture_trend == +1) flag_status_icon = CMC_Icon_FlagPost_Capturing; // Defense
+
+	return {
+		name = Format("<c %x>%s</c>", flag_name_color, flag_name),
+		status = Format("{{%i}}", flag_status_icon),
+		score = Format("<c %x>%d%</c>", capture_color, capture_progress),
+	};
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Temporary stuff below
