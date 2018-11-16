@@ -358,13 +358,13 @@ public func /* check */ IsAttacked()
 }
 
 
-func /* check */ StartCapturing(int team)
+func StartCapturing(int team)
 {
 	attacking_team = team;
 }
 
 
-func /* check */ DoCapture(int team, bool silent)
+func DoCapture(int team, bool silent)
 {
 	capture_progress = 100;
 	attacking_team = 0;
@@ -385,7 +385,7 @@ func /* check */ DoCapture(int team, bool silent)
 }
 
 
-func /* check */ SetNeutral()
+func SetNeutral() // Used only by MoveFlagpost, so might be removed
 {
 	capture_team = 0;
 	capture_progress = 0;
