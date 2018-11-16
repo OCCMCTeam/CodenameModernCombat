@@ -28,6 +28,9 @@ local icon_state;
 local FlagPost_DefaultRange = 100;
 local FlagPost_DefaultSpeed = 2;
 
+local FlagPost_Flag_Color_Neutral = 0xffffffff;
+local FlagPost_Bar_Color_Back = 0x80ffffff;
+
 
 /* --- Interface --- */
 
@@ -297,16 +300,13 @@ public func /* check */ DoProgress(int team, int amount)
 
 	UpdateFlag();
 
-	if (bar)
+	if (capture_progress >= 100)
 	{
-		if (capture_progress >= 100)
-		{
-			SetIconState(0);
-		}
-		else
-		{
-			SetIconState(1, team);
-		}
+		SetIconState(0);
+	}
+	else
+	{
+		SetIconState(1, team);
 	}
 
 	return capture_progress;
@@ -403,28 +403,20 @@ func SetIconState(int state, int team)
 	if (state == icon_state) return; // No change, no update
 
 	icon_state = state;
-	if (!bar) return;
 
 	if (state == 0)
 	{
-		bar->SetIcon(0, CMC_Icon_FlagPost_Neutral, 0, 0, 32);
-		bar->Update(0, true, true);
+		//bar->~SetIcon(0, CMC_Icon_FlagPost_Neutral, 0, 0, 32);
 	}
 	else
 	{
-		if (team)
-		{
-			var color = goal_object->GetFactionColor(team);
-			bar->SetBarColor(color);
-		}
-		bar->Update(capture_progress);
 		if (state == 1)
 		{
-			bar->SetIcon(0, CMC_Icon_FlagPost_Capturing, 0, 0, 32);
+			//bar->~SetIcon(0, CMC_Icon_FlagPost_Capturing, 0, 0, 32); // TODO
 		}
 		else if (state == 2)
 		{
-			bar->SetIcon(0, CMC_Icon_FlagPost_Embattled, 0, 0, 32);
+			//bar->~SetIcon(0, CMC_Icon_FlagPost_Embattled, 0, 0, 32); // TODO
 		}
 	}
 }
@@ -432,31 +424,30 @@ func SetIconState(int state, int team)
 func UpdateFlag()
 {
 	if (!flag) return;
-/* TODO
-	// No status bar?
-	if (!bar)
-	{
-		bar = CreateObject(SBAR, 0, 0, -1);
-		bar->Set(this, RGB(255, 255, 255), BAR_FlagBar, 100, 0, SM21, 0, 0, true, true);
-		bar->ChangeDefOffset(GetID()->GetDefOffset(1)+5);
-		bar->SetIcon(0, SM21, 0, 0, 32);
-		bar->Update(0, true, true);
-		icon_state = 0;
-	}
-	*/
 
 	// Set color according to owner
+	var color;
 	if (capture_team)
 	{
-		flag->SetColor(goal_object->GetFactionColor(capture_team));
+		color = SetRGBaValue(goal_object->GetFactionColor(capture_team), 255, RGBA_ALPHA);
 	}
 	else
 	{
-		flag->SetColor(RGB(255, 255, 255));
+		color = FlagPost_Flag_Color_Neutral;
 	}
 
 	// Update the position
+	flag->SetColor(color);
 	SetFlagPosition(capture_progress);
+	
+	// No status bar?
+	if (!bar)
+	{
+		bar = CreateProgressBar(GUI_ShadedSimpleProgressBar, 100, 0, 0, NO_OWNER, {x = 0, y = (GetID()->GetDefOffset(1) - 10)}, VIS_All);
+	}
+
+	bar->SetBarColor(InterpolateRGBa(capture_progress, 0, FlagPost_Flag_Color_Neutral, 100, color, FlagPost_Bar_Color_Back));
+	bar->SetValue(capture_progress);
 }
 
 
