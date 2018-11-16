@@ -120,8 +120,7 @@ public func AddCondition(proplist condition)
 public func SetTeam(int team_nr)
 {
 	team = team_nr ?? NO_OWNER;
-
-	// TODO - notify HUD
+	UpdateMenuIcon();
 	return this;
 }
 
@@ -263,11 +262,11 @@ func UpdateMenuIcon()
 	var color;
 	if (GetTeam() && GetTeam() != NO_OWNER)
 	{
-		color = GetTeamColor(GetTeam());
+		color = SetRGBaValue(GetTeamColor(GetTeam()), 255, RGBA_ALPHA);
 	}
 	else
 	{
-		color = RGB(255, 255, 255);
+		color = RGBa(255, 255, 255, 255);
 	}
 	menu_icon->SetClrModulation(color, 2);
 	for (var menu in menu_list)
