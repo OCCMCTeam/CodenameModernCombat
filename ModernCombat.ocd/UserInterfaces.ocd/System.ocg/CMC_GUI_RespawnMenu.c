@@ -299,6 +299,7 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	Tab_Hovered = nil,
 	Tab_Callback = nil,
 	Tab_Index = nil,
+	Tab_Enabled = true,
 
 	// --- GUI Properties
 
@@ -355,19 +356,40 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 	
 	OnClickCall = func ()
 	{
-		GetParent()->SelectTab(nil, this.Tab_Index);
+		if (this.Tab_Enabled)
+		{
+			GetParent()->SelectTab(nil, this.Tab_Index);
+		}
+	},
+	
+	SetEnabled = func (bool enabled)
+	{
+		this.Tab_Enabled = enabled;
+		
+		if (this.Tab_Enabled)
+		{
+			this.BackgroundColor = GUI_CMC_Background_Color_Default;
+		}
+		else
+		{
+			this.BackgroundColor = GUI_CMC_Background_Color_Invalid;
+		}
+		Update({ BackgroundColor = this.BackgroundColor});
 	},
 	
 	SetSelected = func (bool selected, bool skip_callback)
 	{
-		// Update the display
-		this.Tab_Selected = selected;
-		UpdateBackground();
-		
-		// Issue a callback?
-		if (this.Tab_Callback && selected && !skip_callback)
+		if (this.Tab_Enabled)
 		{
-			DoCallback(this.Tab_Callback);
+			// Update the display
+			this.Tab_Selected = selected;
+			UpdateBackground();
+			
+			// Issue a callback?
+			if (this.Tab_Callback && selected && !skip_callback)
+			{
+				DoCallback(this.Tab_Callback);
+			}
 		}
 		return this;
 	},
@@ -580,6 +602,8 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 
 static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabButton
 {
+	TextColor = 0xffffffff,
+
 	SetLocation = func (object location)
 	{
 		this.RespawnLocation = location->ObjectNumber();
@@ -613,6 +637,17 @@ static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabBut
 	
 	UpdateLocationStatus = func (int color)
 	{
+		// Support new color, or keep the same color if nil is passed
+		this.TextColor = color ?? this.TextColor;
+		if (this.Tab_Enabled)
+		{
+			color = this.TextColor;
+		}
+		else
+		{
+			color = SetRGBaValue(this.TextColor, 128, RGBA_ALPHA);
+		}
+		// Update the text
 		var location = Object(this.RespawnLocation);
 		this.label.Text = Format("<c %x>%s</c>", color, location->GetName());
 		Update({ label = {Text = this.label.Text}});

@@ -136,6 +136,9 @@ static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
 /* Default background for GUI elements: dark grey (38, 38, 38), 30% transparancy = 66 alpha. */
 static const GUI_CMC_Background_Color_Inactive =   0x33262626;
 
+/* Default background for GUI elements: dark red (176, 0, 0), 60% transparancy = 102 alpha. */
+static const GUI_CMC_Background_Color_Invalid =   0x66b00000;
+
 /* Background for hovered GUI elements: gold, 50% transparency = 128 alpha. */
 static const GUI_CMC_Background_Color_Hover = 0x81ffcc00;
 
