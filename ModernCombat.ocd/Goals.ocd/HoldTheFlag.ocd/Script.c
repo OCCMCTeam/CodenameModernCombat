@@ -130,14 +130,13 @@ func EvaluateProgress()
 				// Leading team?
 				if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
 				{
-					// TODO
-					// DoPlayerPoints(BonusPoints("Control"), RWDS_TeamPoints, player, GetCrew(player), IC28);
+					DoPlayerPoints(BonusPoints("Control"), RWDS_TeamPoints, player, GetCrew(player), CMC_Icon_Point_Control);
 					Sound("Info_Event", {global = true, player = player});
 				}
 				// Event message for other teams: The team is close to winning
 				else if (GetFactionScore(team) == faction_score_warning)
 				{
-					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - faction_score_warning), IC28, 0, 0, 0, "Info_Alarm.ogg");
+					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - faction_score_warning), CMC_Icon_Point_Control, 0, 0, 0, "Info_Alarm.ogg");
 				}
 			}
 		}
@@ -163,8 +162,7 @@ public func FlagLost(object flagpost, int old_team, int new_team, array attacker
 	{
 		if (attacker)
 		{
-			// TODO
-			// DoPlayerPoints(BonusPoints("OPNeutralization"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC13);
+			DoPlayerPoints(BonusPoints("OPNeutralization"), RWDS_TeamPoints, attacker->GetOwner(), attacker, CMC_Icon_Point_OPNeutralization);
 		}
 	}
 
@@ -173,8 +171,7 @@ public func FlagLost(object flagpost, int old_team, int new_team, array attacker
 	{
 		if (GetPlayerTeam(GetPlayerByIndex(i)) == old_team)
 		{
-			// TODO
-			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetTeamFlagColor(new_team), GetTeamName(new_team)), IC13, 0, GetTeamFlagColor(new_team), 0, "Info_Event.ogg");
+			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetFactionColor(new_team), GetTeamName(new_team)), CMC_Icon_Point_OPNeutralization, 0, GetFactionColor(new_team), 0, "Info_Event.ogg");
 		}
 	}
 }
@@ -194,20 +191,17 @@ public func FlagCaptured(object flagpost, int by_team, array attackers, bool reg
 		// Add points for achievement system (defended flag post)
 		if (regained)
 		{
-			// TODO
-			// DoPlayerPoints(BonusPoints("OPDefense"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC12);
+			DoPlayerPoints(BonusPoints("OPDefense"), RWDS_TeamPoints, attacker->GetOwner(), attacker, CMC_Icon_Point_OPDefense);
 		}
 		else
 		{
 			if (first) // Add points for achievement system (captured flag post)
 			{
-				// TODO
-				// DoPlayerPoints(BonusPoints("OPConquest"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC10);
+				DoPlayerPoints(BonusPoints("OPConquest"), RWDS_TeamPoints, attacker->GetOwner(), attacker, CMC_Icon_Point_OPConquest);
 			}
 			else // Add points for achievement system (assisted capturing flag post)
 			{
-				// TODO
-				// DoPlayerPoints(BonusPoints("OPConquestAssist"), RWDS_TeamPoints, attacker->GetOwner(), attacker, IC11);
+				DoPlayerPoints(BonusPoints("OPConquestAssist"), RWDS_TeamPoints, attacker->GetOwner(), attacker, CMC_Icon_Point_OPConquestAssist);
 			}
 		}
 
@@ -216,7 +210,7 @@ public func FlagCaptured(object flagpost, int by_team, array attackers, bool reg
 
 
 	// Event message: Flag post captured
-	EventInfo4K(0, Format("$MsgCaptured$", GetTeamFlagColor(by_team), GetTeamName(by_team), GetFlag()->GetName()), IC10, 0, GetTeamFlagColor(by_team), 0, "Info_Objective.ogg");
+	EventInfo4K(0, Format("$MsgCaptured$", GetFactionColor(by_team), GetTeamName(by_team), GetFlag()->GetName()), CMC_Icon_Point_OPConquest, 0, GetFactionColor(by_team), 0, "Info_Objective.ogg");
 	UpdateScoreboard();
 }
 
@@ -231,9 +225,9 @@ func InitScoreboard() // TODO
 {
 	Scoreboard->SetTitle(GetName());
 	Scoreboard->Init([
-		{key = GHTF_Column_Name,   title = IC12, sorted = true, desc = true, default = 0, priority = 85},
+		{key = GHTF_Column_Name,   title = CMC_Icon_Point_OPDefense, sorted = true, desc = true, default = 0, priority = 85},
 		{key = GHTF_Column_Status, title = " ",  sorted = true, desc = true, default = 0, priority = 80},
-		{key = GHTF_Column_Score,  title = SM02, sorted = true, desc = true, default = 0, priority = 75}
+		{key = GHTF_Column_Score,  title = CMC_Icon_Affiliation, sorted = true, desc = true, default = 0, priority = 75}
 	]);
 	Scoreboard->NewEntry(1000, "");
 	Scoreboard->NewEntry(1001, ""); // Emptry row
@@ -250,7 +244,7 @@ func UpdateScoreboard() // TODO
 
 	//Teamfarbe und Flaggenzustand ermitteln
 	var capturing_team = GetFlag()->GetTeam();
-	var team_color = GetTeamFlagColor(capturing_team);
+	var team_color = GetFactionColor(capturing_team);
 	var flag_name_color = RGB(255, 255, 255);
 	var flag_name = GetFlag()->GetName();
 	var capture_progress = GetFlag()->GetProgress();
@@ -295,9 +289,9 @@ func UpdateScoreboard() // TODO
 
 	//Icons
 	++row;
-	Scoreboard->SetData(row, GHTF_Column_Name, "{{SM26}}");
-	Scoreboard->SetData(row, GHTF_Column_Status, "{{SM27}}", sort_top);
-	Scoreboard->SetData(row, GHTF_Column_Score, "{{IC28}}", sort_top);
+	Scoreboard->SetData(row, GHTF_Column_Name, "{{CMC_Icon_Team}}");
+	Scoreboard->SetData(row, GHTF_Column_Status, "{{CMC_Icon_Time}}", sort_top);
+	Scoreboard->SetData(row, GHTF_Column_Score, "{{CMC_Icon_Point_Control}}", sort_top);
 
 	for (var j = 0; j < GetFactionCount(); ++j)
 	{
@@ -311,7 +305,7 @@ func UpdateScoreboard() // TODO
 
 		++row;
 		Scoreboard->NewEntry(row, "");
-		Scoreboard->SetData(row, GHTF_Column_Name, Format("<c %x>%s</c>", GetTeamFlagColor(team), GetTeamName(team)));
+		Scoreboard->SetData(row, GHTF_Column_Name, Format("<c %x>%s</c>", GetFactionColor(team), GetTeamName(team)));
 		Scoreboard->SetData(row, GHTF_Column_Status, Format("<c %x>%d%</c>", RGB(128, 128, 128), progress), progress);
 		Scoreboard->SetData(row, GHTF_Column_Score, Format("<c ffbb00>%d</c>", GetFactionScore(team)), GetFactionScore(team));
 	}
@@ -341,18 +335,6 @@ func GetDefaultWinScore()
 //
 // Temporary stuff below
 
-func GetTeamFlagColor(int team)
-{
-	if (GetTeamPlayerCount(team) == 1)
-	{
-		var player = GetTeamPlayer(team);
-		return GetPlayerColor(player);
-	}
-	else
-	{
-		return GetTeamColor(team);
-	}
-}
 
 /* Rundenauswertung */
 /*
@@ -385,7 +367,7 @@ public func check  IsFulfilled()
 			RewardEvaluation();
 
 			//Nachricht über Gewinner
-			Message("@$TeamHasWon$", 0, GetTeamFlagColor(i), GetTeamName(i));
+			Message("@$TeamHasWon$", 0, GetFactionColor(i), GetTeamName(i));
 
 			//Sound
 			Sound("Cheer.ogg", true);
@@ -405,7 +387,7 @@ public func check  IsFulfilled()
 		RewardEvaluation();
 
 		//Nachricht über Gewinner
-		Message("@$TeamHasWon$", 0, GetTeamFlagColor(i), GetTeamName(i));
+		Message("@$TeamHasWon$", 0, GetFactionColor(i), GetTeamName(i));
 
 		//Sound
 		Sound("Cheer.ogg", true);
@@ -415,16 +397,19 @@ public func check  IsFulfilled()
 }
 */
 
+static const RWDS_TeamPoints = 0;
+
 func EventInfo4K()
 {
 	// TODO
 }
 
-// TODO
-static const SM02 = Rock;
-static const SM26 = Rock;
-static const SM27 = Rock;
-static const IC28 = Rock;
-static const IC10 = Rock;
-static const IC12 = Rock;
-static const IC13 = Rock;
+func DoPlayerPoints()
+{
+	// TODO
+}
+
+func BonusPoints()
+{
+	// TODO
+}

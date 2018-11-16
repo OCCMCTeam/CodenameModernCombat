@@ -493,7 +493,7 @@ func ShowCaptureRadius()
 
 /* Flaggenposten verschieben */
 
-public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, bool fNeutral)
+public func /* check */ MoveFlagpost(int x, int y, string name, int range, bool set_neutral)
 {
 	//Effekte
 	/* TODO
@@ -508,19 +508,21 @@ public func /* check */ MoveFlagpost(int iX, int iY, string szName, int iRange, 
 	Sound("StructureHit*.ogg");
 	Sound("StructureDebris*.ogg");
 
-	//Namen ändern
-	if (szName)
-		SetName(szName);
+	if (name)
+	{
+		SetName(name);
+	}
 
-	//Besitzer neutralisieren
-	if (fNeutral)
+	if (set_neutral)
+	{
 		SetNeutral();
+	}
 
 	//Reichweite setzen
-	if (iRange) capture_range = iRange;
+	if (range) capture_range = range;
 
 	//Verschieben und einblenden
-	SetPosition(iX, iY);
+	SetPosition(x, y);
 	UpdateFlag();
 	FadeIn();
 	flag->FadeIn();
