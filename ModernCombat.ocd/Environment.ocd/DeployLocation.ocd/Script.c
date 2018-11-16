@@ -24,6 +24,22 @@ local team = NO_OWNER;
 local menu_list;
 local menu_icon;
 
+
+local ActMap =
+{
+	Symbol = 
+	{
+		Prototype = Action,
+		Name = "Symbol",
+		Procedure = DFA_NONE,
+		NextAction = "Hold",
+		Length = 1,
+		Delay = 0,
+		X = 0, Y = 0, Wdt = 100, Hgt = 100,
+	}
+};
+
+
 /* --- Engine callbacks --- */
 
 public func Initialize()
@@ -57,12 +73,11 @@ public func Initialize()
 	menu_icon.Visibility = [VIS_Select];
 	menu_icon->SetCategory(C4D_StaticBack | C4D_MouseSelect | C4D_IgnoreFoW);
 	menu_icon->SetShape(-50, -50, 100, 100);
-	menu_icon->SetGraphics("Neutral", CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
 	menu_icon.Plane = 10000;
 	menu_icon.location = this;
 	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
 	
-	UpdateMenuIcon();
+	SetMenuIcon();
 }
 
 /* --- Settings --- */
@@ -247,7 +262,16 @@ func UpdateMenuIcon()
 	{
 		color = RGB(255, 255, 255);
 	}
-	menu_icon->SetClrModulation(color, 1);
+	menu_icon->SetClrModulation(color, 2);
+}
+
+func SetMenuIcon(id icon, string gfx_name)
+{
+	icon = icon ?? CMC_DeployLocation;
+	gfx_name = gfx_name ?? "Neutral";
+
+	menu_icon->SetGraphics(gfx_name, CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
+	menu_icon->SetGraphics(Format("%sOverlay", gfx_name), CMC_DeployLocation, 2, GFXOV_MODE_IngamePicture);
 }
 
 /* --- Editor properties --- */
