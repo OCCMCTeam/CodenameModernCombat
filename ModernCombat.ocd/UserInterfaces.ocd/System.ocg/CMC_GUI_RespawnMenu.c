@@ -517,6 +517,21 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 		return tab;
 	},
 	
+	GetTab = func (identifier, int index)
+	{
+		if (identifier)
+		{
+			index = GetIndexOf(this.Tab_Ids, identifier);
+		}
+		index = index ?? 0;
+
+		if (index == -1)
+		{
+			FatalError("Tab not found");
+		}
+		return this.Tab_Elements[index];
+	},
+	
 	SelectTab = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
@@ -594,6 +609,14 @@ static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabBut
 			return Object(this.RespawnLocation);
 		}
 		return nil;		
+	},
+	
+	UpdateLocationStatus = func (int color)
+	{
+		var location = Object(this.RespawnLocation);
+		this.label.Text = Format("<c %x>%s</c>", color, location->GetName());
+		Update({ label = {Text = this.label.Text}});
+		return this;
 	},
 };
 

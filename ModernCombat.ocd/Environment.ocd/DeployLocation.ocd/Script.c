@@ -144,7 +144,14 @@ public func GetPriority()
 
 public func IsDisplayed(int player)
 {
-	return team == NO_OWNER || team == GetPlayerTeam(player);
+	if (this->~IsTemporary())
+	{
+		return team == NO_OWNER || team == GetPlayerTeam(player);
+	}
+	else
+	{
+		return true;
+	}
 }
 
 public func IsAvailable(int player)
@@ -263,6 +270,13 @@ func UpdateMenuIcon()
 		color = RGB(255, 255, 255);
 	}
 	menu_icon->SetClrModulation(color, 2);
+	for (var menu in menu_list)
+	{
+		if (menu)
+		{
+			menu->GetDeployLocations()->GetTab(ObjectNumber())->UpdateLocationStatus(color);
+		}
+	}
 }
 
 func SetMenuIcon(id icon, string gfx_name)
