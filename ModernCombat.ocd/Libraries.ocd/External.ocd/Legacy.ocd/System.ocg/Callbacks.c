@@ -32,11 +32,13 @@ global func DefineCallback(command, par0, par1, par2, par3, par4, par5, par6, pa
 }
 
 // Executes a callback that was defined with DefineCallback()
+// Supports function parameters if the definition via
+// DefineCallback() does not provide them.
 global func DoCallback(array callback)
 {
 	var call_from = callback[0];
 	var command = callback[1];
 	var par = callback[2];
 	
-	return call_from->Call(command, par[0], par[1], par[2], par[3], par[4], par[5], par[6], par[7], par[8]);
+	return call_from->Call(command, par[0] ?? Par(1), par[1] ?? Par(2), par[2] ?? Par(3), par[3] ?? Par(4), par[4] ?? Par(5), par[5] ?? Par(6), par[6] ?? Par(7), par[7] ?? Par(8), par[8] ?? Par(9));
 }

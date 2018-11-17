@@ -5,3 +5,8 @@ RespawnButtonLabelReady=Einstieg!
 RespawnButtonLabelBlocked=Einstieg bereit in %ds.
 RespawnButtonLabelWaiting=Einstieg in %ds.
 RespawnButtonTooltip=Einstieg am gewählten Einstiegspunkt
+
+DeployFlag=Zentrale
+DeployBaseTeam1=Brückenkopf
+DeployBaseTeam2=Eurocorps HQ
+DeployFreeForAll=Einstieg

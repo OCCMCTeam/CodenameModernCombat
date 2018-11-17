@@ -1,0 +1,2 @@
+Name=Flag Post
+Description=Flag posts represent military dominance over the surrounding area and secure access points for reinforcements.

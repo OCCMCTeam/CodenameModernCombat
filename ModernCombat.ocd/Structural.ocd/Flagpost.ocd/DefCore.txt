@@ -1,0 +1,11 @@
+[DefCore]
+id=CMC_FlagPost
+Version=8,0
+Category=C4D_StaticBack
+Width=50
+Height=80
+Offset=-25,-80
+Mass=100
+Picture=0,0,50,80
+Vertices=1
+StretchGrowth=1

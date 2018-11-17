@@ -24,6 +24,22 @@ local team = NO_OWNER;
 local menu_list;
 local menu_icon;
 
+
+local ActMap =
+{
+	Symbol = 
+	{
+		Prototype = Action,
+		Name = "Symbol",
+		Procedure = DFA_NONE,
+		NextAction = "Hold",
+		Length = 1,
+		Delay = 0,
+		X = 0, Y = 0, Wdt = 100, Hgt = 100,
+	}
+};
+
+
 /* --- Engine callbacks --- */
 
 public func Initialize()
@@ -57,12 +73,12 @@ public func Initialize()
 	menu_icon.Visibility = [VIS_Select];
 	menu_icon->SetCategory(C4D_StaticBack | C4D_MouseSelect | C4D_IgnoreFoW);
 	menu_icon->SetShape(-50, -50, 100, 100);
-	menu_icon->SetGraphics("Neutral", CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
 	menu_icon.Plane = 10000;
 	menu_icon.location = this;
 	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
+	menu_icon->SetLightRange(800, 150);
 	
-	UpdateMenuIcon();
+	SetMenuIcon();
 }
 
 /* --- Settings --- */
@@ -95,18 +111,23 @@ public func AddRelaunchLocation(int x, int y, bool skip_update)
 	return this;
 }
 
-public func AddCondition(proplist condition)
+public func AddCondition(array condition)
 {
 	conditions = conditions ?? [];
 	PushBack(conditions, condition);
 	return this;
 }
 
+public func ClearConditions()
+{
+	conditions = [];
+	return this;
+}
+
 public func SetTeam(int team_nr)
 {
 	team = team_nr ?? NO_OWNER;
-
-	// TODO - notify HUD
+	UpdateMenuIcon();
 	return this;
 }
 
@@ -129,19 +150,33 @@ public func GetPriority()
 
 public func IsDisplayed(int player)
 {
+	if (this->~IsTemporary())
+	{
+		return IsNeutralOrAllied(player);
+	}
+	else
+	{
+		return true;
+	}
+}
+
+public func IsNeutralOrAllied(int player)
+{
 	return team == NO_OWNER || team == GetPlayerTeam(player);
 }
 
 public func IsAvailable(int player)
 {
-	return IsDisplayed(player) && IsFulfilled(conditions);
+	return IsDisplayed(player)
+	    && IsNeutralOrAllied(player)
+	    && IsFulfilled(conditions, player);
 }
 
-public func IsFulfilled(array conditions)
+public func IsFulfilled(array to_be_fulfilled, int player)
 {
-	for (var condition in conditions ?? [])
+	for (var condition in to_be_fulfilled ?? [])
 	{
-		var fulfilled = DoCallback(condition);
+		var fulfilled = DoCallback(condition, player);
 		if (!fulfilled)
 			return false;
 	}
@@ -241,13 +276,31 @@ func UpdateMenuIcon()
 	var color;
 	if (GetTeam() && GetTeam() != NO_OWNER)
 	{
-		color = GetTeamColor(GetTeam());
+		color = SetRGBaValue(GetTeamColor(GetTeam()), 255, RGBA_ALPHA);
 	}
 	else
 	{
-		color = RGB(255, 255, 255);
+		color = RGBa(255, 255, 255, 255);
 	}
-	menu_icon->SetClrModulation(color, 1);
+	menu_icon->SetClrModulation(color, 2);
+	for (var menu in menu_list)
+	{
+		if (menu)
+		{
+			menu->GetDeployLocations()->GetTab(ObjectNumber())->UpdateLocationStatus(color);
+		}
+	}
+	return this;
+}
+
+func SetMenuIcon(id icon, string gfx_name)
+{
+	icon = icon ?? CMC_DeployLocation;
+	gfx_name = gfx_name ?? "Neutral";
+
+	menu_icon->SetGraphics(gfx_name, CMC_DeployLocation, 1, GFXOV_MODE_IngamePicture);
+	menu_icon->SetGraphics(Format("%sOverlay", gfx_name), CMC_DeployLocation, 2, GFXOV_MODE_IngamePicture);
+	return this;
 }
 
 /* --- Editor properties --- */

@@ -136,6 +136,9 @@ static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
 /* Default background for GUI elements: dark grey (38, 38, 38), 30% transparancy = 66 alpha. */
 static const GUI_CMC_Background_Color_Inactive =   0x33262626;
 
+/* Default background for GUI elements: dark red (176, 0, 0), 60% transparancy = 102 alpha. */
+static const GUI_CMC_Background_Color_Invalid =   0x66b00000;
+
 /* Background for hovered GUI elements: gold, 50% transparency = 128 alpha. */
 static const GUI_CMC_Background_Color_Hover = 0x81ffcc00;
 
@@ -147,6 +150,12 @@ static const GUI_CMC_Color_BreathBar_Opaque =      0xff00ccff; // Light blue, op
 static const GUI_CMC_Color_HealthBar_Transparent = 0x40cc0000; // Red, transparency 25%
 static const GUI_CMC_Color_HealthBar_Opaque =      0xffcc0000; // Red, opaque
 static const GUI_CMC_Color_HealthBar_White =       0xffffffff; // White, opaque
+
+/* --- Team colors --- */
+
+static const GUI_CMC_Color_Ally  =   0xff0060f0; // Blue
+static const GUI_CMC_Color_Enemy =   0xffff0000; // Red
+static const GUI_CMC_Color_Neutral = 0xfffdfdfd; // White/grey
 
 /* --- Text colors --- */
 

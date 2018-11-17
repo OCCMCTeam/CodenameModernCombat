@@ -1,0 +1,17 @@
+[Head]
+Title=Hold the Flag
+
+[Definitions]
+Definition2=CodenameModernCombat/ModernCombat.ocd
+
+[Player1]
+Crew=Peacemaker=1
+
+[Player2]
+Crew=Peacemaker=1
+
+[Player3]
+Crew=Peacemaker=1
+
+[Player4]
+Crew=Peacemaker=1

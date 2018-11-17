@@ -1,0 +1,15 @@
+Oasis
+
+Wählbare Ziele:
+  - Besitznahme (5)
+  - Hold the Flag
+  - Capture the Flag
+  - Last Man Standing
+  - Deathmatch
+
+Teamverteilung:
+  Eurocorps - links
+  Aggressoren - rechts
+
+Der Grenzverlauf an der Wüste. Im frühen Mittelalter hatten Clonks keinen Grund hier Grenzposten aufzustellen, selbst mit Pferden ausgerüstete Ritter würden das Gebiet erst halbverdurstet erreichen und sie auszuschalten wäre ein leichtes Spiel. Jetzt, in der Zeit der Moderne, ist die Wüste kein Hindernis mehr, ein Angriff aus dieser Richtung viel wahrscheinlicher. Die lokalen Einheiten müssen daher nachrüsten und errichten dazu neue Wachgebäude, doch das sollte zu spät sein:
+Ein feindlicher Stoßtrupp ist bereits vor der Tür und will unsere Baustelle einnehmen um sie selbst zu einem Vorposten auszubauen. Das wäre ein peinlicher Reinfall, also sollten wir uns schnell zusammenraufen und sie zurück in die Wüste schicken...

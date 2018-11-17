@@ -1,0 +1,2 @@
+Name=Flag
+Description=Patriotic symbol of a team.
