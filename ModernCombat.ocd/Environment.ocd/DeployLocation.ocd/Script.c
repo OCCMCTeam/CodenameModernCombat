@@ -76,6 +76,7 @@ public func Initialize()
 	menu_icon.Plane = 10000;
 	menu_icon.location = this;
 	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
+	menu_icon->SetLightRange(800, 150);
 	
 	SetMenuIcon();
 }
