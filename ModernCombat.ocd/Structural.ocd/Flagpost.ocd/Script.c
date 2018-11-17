@@ -434,7 +434,14 @@ func UpdateFlag()
 	
 	if (GetDeployLocation())
 	{
-		GetDeployLocation()->UpdateMenuIcon();
+		if (capture_team)
+		{
+			GetDeployLocation()->SetTeam(capture_team); // Also calls UpdateMenuIcon
+		}
+		else
+		{
+			GetDeployLocation()->UpdateMenuIcon();
+		}
 	}
 }
 
