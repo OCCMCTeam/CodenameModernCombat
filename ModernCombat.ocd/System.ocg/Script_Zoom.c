@@ -15,7 +15,8 @@ global func SetPlayerZoomDefault(int player)
 	}
 	else
 	{
-		SetPlayerZoomByViewRange(player, 700, nil, PLRZOOM_Set | PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+		SetPlayerZoomByViewRange(player, 700, nil, PLRZOOM_Set);
+		SetPlayerZoomByViewRange(player, nil, nil, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
 	}
 }
 
