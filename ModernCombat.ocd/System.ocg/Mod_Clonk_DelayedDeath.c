@@ -28,7 +28,9 @@ func Recruitment(int player)
 func OnIncapacitated(int health_change, int cause, int by_player)
 {
 	SetAction("Incapacitated");
+	SetCrewEnabled(false);
 	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
+	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
 }
 
 func OnReanimated(int by_player)
@@ -41,6 +43,8 @@ func OnReanimated(int by_player)
 	}
 	// Get up!
 	this->~DoKneel();
+	SetCrewEnabled(true);
+	PlayerMessage(GetOwner(), "");
 }
 
 /* --- Better death animation --- */
