@@ -24,6 +24,8 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeMissiles_TechniqueOptical());
 	AddFiremode(FiremodeMissiles_TechniqueUnguided());
+
+	StartLoaded();
 }
 
 func Definition(id weapon)

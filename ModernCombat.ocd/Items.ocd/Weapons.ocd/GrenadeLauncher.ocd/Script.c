@@ -22,6 +22,8 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Explosive());
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
+
+	StartLoaded();
 }
 
 func Definition(id weapon)

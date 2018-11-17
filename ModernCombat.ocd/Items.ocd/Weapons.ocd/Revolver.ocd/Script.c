@@ -22,6 +22,8 @@ public func Initialize()
 	// Fire mode list
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSingle());
+
+	StartLoaded();
 }
 
 

@@ -21,6 +21,8 @@ public func Initialize()
 	// Fire mode list
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
+
+	StartLoaded();
 }
 
 func Definition(id weapon)

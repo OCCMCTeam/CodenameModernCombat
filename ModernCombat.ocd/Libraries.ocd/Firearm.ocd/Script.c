@@ -913,3 +913,22 @@ func IsUserReadyToReload(object user)
 {
 	return user->HasActionProcedure(false);
 }
+
+func StartLoaded()
+{
+	var ammo_types = [];
+	for (var firemode in GetFiremodes())
+	{
+		// Do it only once per ammo type
+		var type = firemode->GetAmmoID();
+		var amount = firemode->GetAmmoAmount();
+		if (!IsValueInArray(ammo_types, type))
+		{
+			// Loaded
+			SetAmmo(type, amount);
+			// Bullet is chambered (library call already checks whether it is necessary, etc.)
+			this->~AmmoChamberInsert(type);
+			PushBack(ammo_types, type);
+		}
+	}
+}

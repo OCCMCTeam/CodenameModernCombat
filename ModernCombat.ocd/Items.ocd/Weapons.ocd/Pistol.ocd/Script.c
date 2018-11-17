@@ -22,6 +22,8 @@ public func Initialize()
 	ClearFiremodes();
 	AddFiremode(FiremodeBullets_TechniqueSingle());
 	AddFiremode(FiremodeBullets_TechniqueTracerDart());
+
+	StartLoaded();
 }
 
 func Definition(id def)

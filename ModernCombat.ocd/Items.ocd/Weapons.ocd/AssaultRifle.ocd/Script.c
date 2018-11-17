@@ -27,6 +27,7 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Cluster());
 	AddFiremode(FiremodeGrenades_Smoke());
 
+	StartLoaded();
 }
 
 func Definition(id weapon)
@@ -202,6 +203,19 @@ local ReloadStateMap =
 	/* --- Support for an extra ammo chamber --- */
 	Magazine_LoadAmmoChamber = { Delay = 15, EndCall = "PlaySoundChamberBullet", },
 };
+
+
+public func AmmoChamberCapacity(id ammo)
+{
+	if (ammo == CMC_Ammo_Bullets)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
 
 /* --- Effects --- */
 

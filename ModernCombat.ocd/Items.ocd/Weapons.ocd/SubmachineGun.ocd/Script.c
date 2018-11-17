@@ -23,6 +23,8 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueAuto());
 	AddFiremode(FiremodeBullets_TechniqueBurst());
 	AddFiremode(FiremodeBullets_TechniqueSingle());
+
+	StartLoaded();
 }
 
 func Definition(id weapon)
