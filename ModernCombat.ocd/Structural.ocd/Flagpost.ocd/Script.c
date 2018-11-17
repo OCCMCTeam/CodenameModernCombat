@@ -104,7 +104,8 @@ func Initialize()
 
 	// Create flag and update HUD
 	flag = flag ?? CreateObject(CMC_FlagPost_Flag);
-	UpdateFlag();
+	flag->SetColor(FlagPost_Flag_Color_Neutral);
+	SetFlagPosition(0);
 }
 
 
