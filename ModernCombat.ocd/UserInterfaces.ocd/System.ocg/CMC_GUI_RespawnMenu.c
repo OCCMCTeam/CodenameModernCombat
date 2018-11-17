@@ -375,6 +375,11 @@ static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
 			this.BackgroundColor = GUI_CMC_Background_Color_Invalid;
 		}
 		Update({ BackgroundColor = this.BackgroundColor});
+		
+		if (IsSelected())
+		{
+			SetSelected(false, true);
+		}
 	},
 	
 	SetSelected = func (bool selected, bool skip_callback)

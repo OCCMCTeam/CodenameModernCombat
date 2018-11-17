@@ -431,6 +431,11 @@ func UpdateFlag()
 
 	bar->SetBarColor(InterpolateRGBa(capture_progress, 0, FlagPost_Flag_Color_Neutral, 100, color, FlagPost_Bar_Color_Back));
 	bar->SetValue(capture_progress);
+	
+	if (GetDeployLocation())
+	{
+		GetDeployLocation()->UpdateMenuIcon();
+	}
 }
 
 
