@@ -38,17 +38,23 @@ public func AddDeployLocationFreeForAllHTF()
 	            ->AddRelaunchLocation(1410, 340)
 	            ->AddRelaunchLocation(1410, 460)
 	            ->AddRelaunchLocation(1410, 550);
+
+	var location = CMC_Game_Session_Configurator->ContainCrewAt();
+	base_htf_ffa->SetPosition(location->GetX(), location->GetY());
 }
 
 public func AddDeployLocationFreeForAll()
 {
 	var deployment = CreateObject(CMC_DeployLocation);
 
-	deployment->SetName("DeployFreeForAll");
+	deployment->SetName("$DeployFreeForAll$");
 	deployment->AddRelaunchLocation(540, 540)
 	          ->AddRelaunchLocation(550, 630)
 	          ->AddRelaunchLocation(730, 610)
 	          ->AddRelaunchLocation(1220, 530)
 	          ->AddRelaunchLocation(1420, 460)
 	          ->AddRelaunchLocation(1400, 550);
+	          
+	var location = CMC_Game_Session_Configurator->ContainCrewAt();
+	deployment->SetPosition(location->GetX(), location->GetY());
 }
