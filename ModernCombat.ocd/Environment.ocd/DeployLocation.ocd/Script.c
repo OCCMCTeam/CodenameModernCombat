@@ -110,10 +110,16 @@ public func AddRelaunchLocation(int x, int y, bool skip_update)
 	return this;
 }
 
-public func AddCondition(proplist condition)
+public func AddCondition(array condition)
 {
 	conditions = conditions ?? [];
 	PushBack(conditions, condition);
+	return this;
+}
+
+public func ClearConditions()
+{
+	conditions = [];
 	return this;
 }
 
@@ -145,7 +151,7 @@ public func IsDisplayed(int player)
 {
 	if (this->~IsTemporary())
 	{
-		return team == NO_OWNER || team == GetPlayerTeam(player);
+		return IsNeutralOrAllied(player);
 	}
 	else
 	{
@@ -153,16 +159,23 @@ public func IsDisplayed(int player)
 	}
 }
 
-public func IsAvailable(int player)
+public func IsNeutralOrAllied(int player)
 {
-	return IsDisplayed(player) && IsFulfilled(conditions);
+	return team == NO_OWNER || team == GetPlayerTeam(player);
 }
 
-public func IsFulfilled(array conditions)
+public func IsAvailable(int player)
 {
-	for (var condition in conditions ?? [])
+	return IsDisplayed(player)
+	    && IsNeutralOrAllied(player)
+	    && IsFulfilled(conditions, player);
+}
+
+public func IsFulfilled(array to_be_fulfilled, int player)
+{
+	for (var condition in to_be_fulfilled ?? [])
 	{
-		var fulfilled = DoCallback(condition);
+		var fulfilled = DoCallback(condition, player);
 		if (!fulfilled)
 			return false;
 	}

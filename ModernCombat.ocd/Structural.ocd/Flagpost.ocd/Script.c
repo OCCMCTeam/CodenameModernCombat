@@ -39,7 +39,7 @@ public func GetTrend()			{ return capture_trend; }
 public func GetRange()			{ return capture_range; }
 public func IsFullyCaptured()	{ return is_captured; }
 
-
+public func IsFlagpole()		{ return true; }
 
 
 public func GetDeployLocation()
@@ -47,17 +47,18 @@ public func GetDeployLocation()
 	if (!deploy_location)
 	{
 		deploy_location = CreateObject(CMC_DeployLocation, 0, -50, NO_OWNER);
+		deploy_location->AddCondition(DefineCallback(this.IsAvailableForDeployment));
 	}
 	return deploy_location;
 }
 
-public func IsFlagpole()		{ return true; }		//Ist ein Flaggenposten
 
 public func SetCaptureRange(int value)
 {
 	capture_range = value ?? FlagPost_DefaultRange;
 	return this;
 }
+
 
 public func SetCaptureSpeed(int value)
 {
@@ -77,6 +78,7 @@ public func SetHoldTheFlag() // Fixed setting for HTF: one deploy location
 	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
 	return this;
 }
+
 
 public func RegisterGoal(object goal)
 {
@@ -478,6 +480,12 @@ func GetScoreboardInfo()
 		status = Format("{{%i}}", flag_status_icon),
 		score = Format("<c %x>%d%</c>", capture_color, capture_progress),
 	};
+}
+
+
+func IsAvailableForDeployment(int player)
+{
+	return capture_team == GetPlayerTeam(player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
