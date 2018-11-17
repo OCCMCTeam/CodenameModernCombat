@@ -278,6 +278,10 @@ func UpdateScoreboard() // TODO
 	for (var j = 0; j < GetFactionCount(); ++j)
 	{
 		var team = GetFactionByIndex(j);
+		if (team == NO_OWNER)
+		{
+			continue;
+		}
 		var progress = 0;
 
 		if (team == GetFlag()->GetTeam())
