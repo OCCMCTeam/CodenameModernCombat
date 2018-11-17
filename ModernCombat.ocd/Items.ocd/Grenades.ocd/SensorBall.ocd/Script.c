@@ -1,4 +1,5 @@
 #include CMC_Library_GrenadeItem
+#include Library_ObjectLimit
 
 
 /* --- Properties --- */
@@ -20,10 +21,11 @@ local Sensor_Distance = 190;
 local sensor_active = false;
 local sensor_defuse_progress = 0;
 
+local ObjectLimitPlayer = 2;
+
 public func IsDetectable()	{return false;} // TODO: Cannot be found by other sensors
 
 public func IsDefusable()	{return IsActive();} // TODO: No idea who can defuse something at the moment
-public func LimitationCount()	{return 2;} // TODO: Limitation is not active yet
 
 /* --- Sounds --- */
 
@@ -96,9 +98,6 @@ func OnDetonation()
 		Attach = ATTACH_Front | ATTACH_MoveRelative,
 	};
 	CreateParticle("Flash", 0, 0, 0, 0, 15, flash);
-	
-
-	// TODO: CheckLimitation();
 
 	ScheduleCall(this, this.DestroySensor, 40 * 38); // 1200 + 320 = 1520; 
 
