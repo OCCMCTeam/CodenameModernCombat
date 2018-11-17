@@ -18,6 +18,7 @@ local attacking_team;
 local attacking_crew;
 local has_no_enemies;
 local has_no_friends;
+local has_deployment;
 
 local last_owner;
 local is_captured;
@@ -44,7 +45,7 @@ public func IsFlagpole()		{ return true; }
 
 public func GetDeployLocation()
 {
-	if (!deploy_location)
+	if (has_deployment && !deploy_location)
 	{
 		deploy_location = CreateObject(CMC_DeployLocation, 0, -50, NO_OWNER);
 		deploy_location->AddCondition(DefineCallback(this.IsAvailableForDeployment));
@@ -70,12 +71,15 @@ public func SetCaptureSpeed(int value)
 
 public func SetHoldTheFlag() // Fixed setting for HTF: one deploy location
 {
+/*
 	var name = GetName();
 	if (name == "$Name$")
 	{
 		name = "Alpha";
 	}
 	GetDeployLocation()->AddRelaunchLocation(GetX(), GetY() - 30)->SetName(name);
+*/
+	has_deployment = false;
 	return this;
 }
 
@@ -93,6 +97,7 @@ func Initialize()
 	// Set defaults
 	attacking_crew = [];
 	last_owner = 0;
+	has_deployment = true;
 
 	SetCaptureRange();
 	SetCaptureSpeed();
