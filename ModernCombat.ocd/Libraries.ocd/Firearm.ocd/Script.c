@@ -801,15 +801,21 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 
 			// Add entry for changing the current fire technique
 			var next_index = -1;
-			for (var next_mode in available_modes)
+			var toggle_modes = [];
+			for (var mode in available_modes)
 			{
-				if (next_mode->GetAmmoID() == current_mode->GetAmmoID()
-				&& (next_mode->GetIndex() != current_mode->GetIndex()))
+				if (mode->GetAmmoID() == current_mode->GetAmmoID())
 				{
-					next_index = next_mode->GetIndex();
-					break;
+					PushBack(toggle_modes, mode->GetIndex());
 				}
 			}
+			if (GetLength(toggle_modes) > 0)
+			{
+				var current_index = GetIndexOf(toggle_modes, current_mode->GetIndex());
+				var next = (current_index + 1) % GetLength(toggle_modes);
+				next_index = toggle_modes[next];
+			}
+
 			var default_entry = list->MakeEntryProplist();
 			var default_action = "$ChangeFireTechnique$";
 			if (next_index > -1)
