@@ -1,2 +1,5 @@
 Name=Syringe
 Description=The user instantly recives an energy burst. Warning: Injuries accruing while healing will neutralize the healing agent.
+
+AlreadyHealing=Clonk already in treatment.
+NotWounded=Clonk not wounded.
