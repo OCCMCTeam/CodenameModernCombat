@@ -15,7 +15,7 @@ func Definition()
 
 // Equipment
 local Ammo;     // proplist: { definition = amount }
-local Items;    // proplist: { definition = amount }
+local Items;    // proplist: { somename = { Type = definition, Amount = amount}} - different logic necessary, because the properties are sorted alphabetically. Common scheme is, for example: Item1, Item2, etc.
 local Grenades; // proplist: { definition = amount }
 
 // Abilities

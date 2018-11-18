@@ -8,10 +8,10 @@ local Ammo = {
 };
 
 local Items = {
-	CMC_Weapon_AssaultRifle = 1,
-	CMC_Weapon_Pistol = 1,
-	//CMC_Tool_C4Detonator = 3,
-	CMC_Tool_Syringe = 1,
+	Item1 = { Type = CMC_Weapon_AssaultRifle, Amount = 1,},
+	Item2 = { Type = CMC_Weapon_Pistol      , Amount = 1,},
+	//Item3 = { Type = CMC_Tool_C4Detonator   , Amount = 3,},
+	Item4 = { Type = CMC_Tool_Syringe       , Amount = 1,},
 };
 
 local Grenades = 

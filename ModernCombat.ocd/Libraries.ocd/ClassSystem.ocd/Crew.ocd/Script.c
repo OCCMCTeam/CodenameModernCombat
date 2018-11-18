@@ -44,12 +44,12 @@ public func OnCrewRelaunchFinish()
 		this->SetAmmo(ammo, amount);
 	}
 	
-	// Create contents
+	// Create contents - different logic necessary, because the properties are sorted alphabetically
 	var item_types = GetProperties(GetCrewClass().Items);
 	for (var item_type in item_types)
 	{
-		var item = GetDefinition(item_type);
-		var amount = GetCrewClass().Items[item_type];
+		var item = GetCrewClass().Items[item_type].Type;
+		var amount = GetCrewClass().Items[item_type].Amount;
 		CreateContents(item, amount);
 	}
 	
@@ -187,8 +187,8 @@ public func OnSelectClassTab(proplist menu, id class)
 		var index = 0;
 		for (var item_type in item_types)
 		{
-			var item = GetDefinition(item_type);
-			item_info.list[item_type] = AssembleClassTabInventoryIcon(index++, item, class.Items[item_type], icon_size);
+			var item = class.Items[item_type].Type;
+			item_info.list[item_type] = AssembleClassTabInventoryIcon(index++, item, class.Items[item_type].Amount, icon_size);
 		}
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());

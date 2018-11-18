@@ -8,10 +8,10 @@ local Ammo = {
 };
 
 local Items = {
-	CMC_Weapon_MachineGun = 1,
-	CMC_Weapon_RocketLauncher = 1,
-	CMC_Tool_BlowTorch = 1,
-	CMC_Tool_Ammo_Bag = 1, // FIXME - Has to be denied if the rule "no ammo" is active
+	Item1 = { Type = CMC_Weapon_MachineGun    , Amount = 1,},
+	Item2 = { Type = CMC_Weapon_RocketLauncher, Amount = 1,},
+	Item3 = { Type = CMC_Tool_BlowTorch       , Amount = 1,},
+	Item4 = { Type = CMC_Tool_Ammo_Bag        , Amount = 1,}, // FIXME - Has to be denied if the rule "no ammo" is active
 };
 
 local Grenades = {
