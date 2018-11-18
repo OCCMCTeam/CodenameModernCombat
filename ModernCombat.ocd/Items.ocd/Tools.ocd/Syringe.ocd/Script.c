@@ -56,7 +56,7 @@ func ControlUse(object user, int x, int y)
 	// User has to be ready to act
 	if (user->~HasActionProcedure())
 	{
-		Sting(user);
+		Sting(user, x, y);
 	}
 	return true;
 }
@@ -73,9 +73,41 @@ func ControlUseAlt(object user, int x, int y)
 
 /* --- Functionality --- */
 
-func Sting(object user)
+func Sting(object user, int x, int y)
 {
-	// Not implemented yet
+	// Find targets, heal most hurt preferrably
+	var sting_point = GetStingPoint(x, y);
+	var targets = FindObjects(Find_Distance(sting_point.radius, sting_point.x, sting_point.y), Find_Exclude(user), Find_Allied(user->GetOwner()), Find_NoContainer(), Find_Func("GetAlive"), Sort_Func("GetEnergy"));
+	
+	// Heal the target?
+	var rejected;
+	for (var target in targets)
+	{
+		rejected = RejectHealing(target);
+		if (rejected)
+		{
+			continue;
+		}
+
+		return UseOn(user, target);
+	}
+	
+	// No effect? The message only shows the reason for the last clonk that was rejected
+	PlaySoundIneffective();
+	if (rejected)
+	{
+		user->PlayerMessage(user->GetOwner(), rejected);
+	}
+}
+
+func GetStingPoint(int x, int y)
+{
+	var radius = 9;
+	var precision = 100;
+	var angle = Angle(0, 0, x, y, precision);
+	var point_x = +Sin(angle, radius, precision);
+	var point_y = -Cos(angle, radius, precision);
+	return {x = point_x, y = point_y, radius = radius, angle = angle};
 }
 
 func RejectHealing(object target)
@@ -96,11 +128,11 @@ func UseOn(object user, object target)
 	var reject = RejectHealing(target);
 	if (reject)
 	{
-		PlayerMessage(user->GetOwner(), reject);
+		user->PlayerMessage(user->GetOwner(), reject);
 	}
 	else if (target->Heal(this.HealAmount, this.HealInterval, true, true, GetID()->DefineCallback(this.HealEffect)))
 	{
-		PlaySoundInject();
+		PlaySoundInject(target);
 		target->CreateEffect(FxFlashScreenRGBa, 200, 1, this.HealEffectLayer, this.HealEffectColor, 180, 35);
   
 	    if ((user != target)
@@ -144,9 +176,14 @@ func PlaySoundDeploy()
 	Sound("Items::Tools::Syringe::Deploy");
 }
 
-func PlaySoundInject()
+func PlaySoundInject(object target)
 {
-	Sound("Items::Tools::Syringe::Inject");
+	target->Sound("Items::Tools::Syringe::Inject");
+}
+
+func PlaySoundIneffective()
+{
+	Sound("Items::Grenades::Shared::Throw?");
 }
 
 /* --- Properties --- */
