@@ -111,6 +111,30 @@ func PlaySoundMovementRustleLand()
 	Sound("Clonk::Movement::Land?", {multiple = true, volume = 25});
 }
 
+func PlaySoundHurt()
+{
+	// None, because we have custom sounds!
+}
+
+func PlaySoundDamageImpact(string type)
+{
+	Sound(Format("Clonk::HitIndicator%s?", type), {player = GetOwner()});
+}
+
+func PlaySoundDamageHurt(string type)
+{
+	// Separate the sound types
+	var for_owner = Format("Clonk::Hurt%sIndicator?", type);
+	var for_others = Format("Clonk::Hurt%s?", type);
+	// Certain sounds to not have an indicator sound
+	if (type == "Poison")
+	{
+		for_owner = for_others;
+	}
+	// Play
+	Sound({self = for_owner, others = for_others}, {player = GetOwner()});
+}
+
 func Footstep()
 {
 	if(GBackLiquid(0, 6))

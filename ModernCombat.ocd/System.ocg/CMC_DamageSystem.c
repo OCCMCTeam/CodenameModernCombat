@@ -13,6 +13,7 @@ static const FxCmcDamageSystem = new Effect
 		if (Target->GetAlive() && health_change < 0)
 		{
 			AddScreenEffect(Abs(health_change));
+			AddSoundEffect(Abs(health_change), cause, by_player);
 		}
 		
 		return health_change;
@@ -27,6 +28,44 @@ static const FxCmcDamageSystem = new Effect
 		if (flash)
 		{
 			flash.AlphaMax = intensity_max;
+		}
+	},
+	
+	AddSoundEffect = func (int damage, int cause, int by_player)
+	{
+		// Round down to normal values
+		damage /= 1000;
+		
+		// Impact sound
+		var hit = nil;
+		if (cause == FX_Call_EngScript)
+		{
+			hit = "Bullet";
+		}
+		if (damage > 40)
+		{
+			hit = "Critical";
+		}
+		if (hit) // Play only if there is a sound
+		{
+			Target->~PlaySoundDamageImpact(hit);
+		}
+		
+		// Hurt sound
+		var hurt = "";
+		if (FX_Call_EngCorrosion == cause
+		||  FX_Call_EngAsphyxiation == cause)
+		{
+			hurt = "Poison";
+		}
+		else if (FX_Call_EngFire == cause)
+		{
+			hurt = "Fire";
+		}
+		// Play always
+		if (Random(damage))
+		{
+			Target->~PlaySoundDamageHurt(hurt);
 		}
 	},
 };
