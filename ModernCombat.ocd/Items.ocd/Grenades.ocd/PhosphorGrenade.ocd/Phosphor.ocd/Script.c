@@ -58,6 +58,7 @@ func Timer()
 	}
 
 	BurnObjects();
+	FireParticles();
 
 	if (!Random(20))
 	{
@@ -99,12 +100,12 @@ func BurnObject(object target)
 {
 	if (!target) return;
 
-	if (target->GetAlive())
+	if (target->GetAlive() && !GetEffect(FxPreventAttach.Name, this))
 	{
 		target->CreateEffect(PhosphorBurn, 50, 20, this);
 	}
 	
-	target->DoEnergy(-3, false, FX_Call_DmgFire, GetController());
+	target->DoEnergy(-1, false, FX_Call_DmgFire, GetController());
 	
 	//DoDmg(3, DMG_Fire, pObj, 1);
 	//AddFireEffect(pObj,50,FIRE_Red,1);
@@ -136,9 +137,16 @@ func Hit()
 
 local PhosphorBurn = new Effect
 {
+	Name = "PhosphorBurn",
+	
 	Start = func (int temp, object glob)
 	{
-		if (temp || ObjectCount(Find_ID(CMC_Grenade_PhosphorHelper), Find_ActionTarget(this.Target)) > 3)
+		if (temp)
+		{
+			return -1;
+		}
+		var globs =  FindObjects(Find_ID(CMC_Grenade_PhosphorHelper), Find_ActionTarget(this.Target));
+		if (GetLength(globs) > 3 || IsValueInArray(globs, glob))
 		{
 			return -1;
 		}
@@ -148,9 +156,14 @@ local PhosphorBurn = new Effect
 	
 	Timer = func (int time)
 	{
+		if (!this.Glob)
+		{
+			return FX_Execute_Kill;
+		}
 		if (!this.Target->GetAlive() || this.Target->Contained() || time > 40)
 		{
 			this.Glob->AttachTargetLost();
+			return FX_Execute_Kill;
 		}
 		
 		if (time > 60)
@@ -161,10 +174,43 @@ local PhosphorBurn = new Effect
 	},
 };
 
+local FxPreventAttach = new Effect
+{
+	Name = "FxPreventAttach",
+	
+	Timer = func ()
+	{
+		return FX_Execute_Kill;
+	}
+};
+
 
 func AttachTargetLost()
 {
+	CreateEffect(FxPreventAttach, 1, 35);
 	SetAction("Idle");
 	SetXDir(RandomX(-20, 20));
 	SetYDir(RandomX(+10,-30));
+}
+
+func FireParticles()
+{
+	var light = RandomX(50, 150);
+	var fire = 
+	{
+		R = light,
+		B = light,
+		G = light,
+		Alpha = PV_Linear(100, 0),
+		Size = PV_Random(2, 6),
+		Stretch = 1000,
+		Phase = 0,
+		Rotation = PV_Random(0, 359),
+		BlitMode = GFX_BLIT_Additive,
+		CollisionVertex = 0,
+		OnCollision = PC_Die(),
+		Attach = nil
+	};
+	CreateParticle("BlueFire", PV_Random(-2, +2), PV_Random(0, -2), PV_Random(-3, 3), PV_Random(-5, -15), PV_Random(5, 20), fire, 3);
+	CreateParticle("BlueFire", PV_Random(-2, +2), PV_Random(0, -2), PV_Random(-5, 5), PV_Random(-1, -10), PV_Random(5, 10), fire, 3);
 }
