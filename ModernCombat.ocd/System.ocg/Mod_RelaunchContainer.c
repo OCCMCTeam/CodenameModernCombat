@@ -14,7 +14,7 @@ func Initialize()
 	inherited(...);
 
 	// Relaunch time is 15 seconds
-	SetRelaunchTime(CMC_RELAUNCH_TIME, true, 6);
+	SetRelaunchTime(0, true, 6); //TODO: was CMC_RELAUNCH_TIME
 }
 
 /* --- Functions --- */
