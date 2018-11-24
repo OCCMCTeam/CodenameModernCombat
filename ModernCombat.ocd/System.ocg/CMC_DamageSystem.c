@@ -7,11 +7,14 @@
 
 static const FxCmcDamageSystem = new Effect
 {
+	Name = "FxCmcDamageSystem",
+
 	Damage = func (int health_change, int cause, int by_player)
 	{
 		// Color the screen red
 		if (Target->GetAlive() && health_change < 0)
 		{
+			this.last_cause = cause;
 			AddScreenEffect(Abs(health_change));
 			AddSoundEffect(Abs(health_change), cause, by_player);
 		}

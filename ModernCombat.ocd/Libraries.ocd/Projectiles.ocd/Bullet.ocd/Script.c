@@ -32,11 +32,6 @@ func OnLaunched()
  */
 public func OnHitObject(object target, proplist hitcheck_effect)
 {
-	// No sound yet :'(
-	
-	// No blood yet, but we have sparks!
-	// Blood should be created by the victim anyway
-	CreateImpactEffect(3);
 	SoundAt("Projectiles::Cartridge::HitObject?");
 }
 
