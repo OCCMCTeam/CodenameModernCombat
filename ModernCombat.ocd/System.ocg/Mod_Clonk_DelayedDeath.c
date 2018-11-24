@@ -31,6 +31,7 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	SetCrewEnabled(false);
 	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
 	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
+	this->~PlaySoundDamageIncapacitated();
 }
 
 func OnReanimated(int by_player)

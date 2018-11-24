@@ -135,6 +135,11 @@ func PlaySoundDamageHurt(string type)
 	Sound({self = for_owner, others = for_others}, {player = GetOwner()});
 }
 
+func PlaySoundDamageIncapacitated()
+{
+	Sound({self = "Clonk::DieIndicator?", others = "Clonk::Die?"}, {player = GetOwner()});
+}
+
 func Footstep()
 {
 	if(GBackLiquid(0, 6))

@@ -63,7 +63,7 @@ public func SetDelayedDeath(bool enable, object crew)
 
 public func GetDelayedDeathEffect(object target)
 {
-	return GetEffect("RuleMortalWoundsCheck", target);
+	return GetEffect(RuleMortalWoundsCheck.Name, target);
 }
 
 /* --- Functionality --- */
