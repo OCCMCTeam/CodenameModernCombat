@@ -481,6 +481,8 @@ func SetIronsightAim(object clonk)
 	clonk->SetCancelOnJump(true);
 	// TODO: Test & maybe make depended on weapon shoot mode?
 	clonk->SetAimViewOffset(50);
+	
+	PlaySoundAim(clonk);
 }
 
 func UnsetIronsightAim(object clonk)
@@ -577,6 +579,10 @@ public func Selection(object user)
 	if (firemode)
 	{
 		user->~RaiseFirearmSpread(firemode->~GetSpreadBySelection());
+	}
+	if (user && user->~IsClonk())
+	{
+		PlaySoundDeploy(user);
 	}
 	_inherited(user, ...);
 }
@@ -896,6 +902,16 @@ public func SetFiremode(int number, bool force)
 func FireSound(object user, proplist firemode)
 {
 	Sound(firemode->GetCurrentFireSound(), {multiple = true});
+}
+
+func PlaySoundDeploy(object user)
+{
+	Sound("Items::Weapons::Shared::Deploy?", {player = user->GetOwner()});
+}
+
+func PlaySoundAim(object user)
+{
+	Sound("Items::Weapons::Shared::Aim?", {player = user->GetOwner()});
 }
 
 func PlaySoundResupplyAmmo()
