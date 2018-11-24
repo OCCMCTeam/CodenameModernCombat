@@ -893,6 +893,7 @@ public func SetFiremode(int number, bool force)
 	if (Contained())
 	{
 		Contained()->~OnInventoryChange();
+		PlaySoundSwitchFiremode(Contained());
 	}
 	return inherited(number, force);
 }
@@ -917,6 +918,11 @@ func PlaySoundAim(object user)
 func PlaySoundResupplyAmmo()
 {
 	Sound("Items::Tools::AmmoBox::ResupplyIn?");
+}
+
+func PlaySoundSwitchFiremode(object user)
+{
+	Sound("Items::Weapons::Shared::Switch?");
 }
 
 func PlaySoundLastRound(object user)
