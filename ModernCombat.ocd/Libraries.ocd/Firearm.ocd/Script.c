@@ -57,7 +57,9 @@ func OnPressUse(object clonk, int x, int y)
 	}
 	// Otherwise, start hip firing
 	else
+	{
 		StartAiming(clonk, WEAPON_AIM_TYPE_HIPFIRE, x, y);
+	}
 	return true;
 }
 
@@ -103,16 +105,26 @@ func OnPressUseAlt(object clonk, int x, int y)
 	if (IsAiming())
 	{
 		if (GetAimType() == WEAPON_AIM_TYPE_HIPFIRE)
+		{
 			ChangeAiming(clonk, WEAPON_AIM_TYPE_IRONSIGHT, x, y);
+		}
 		if (GetAimType() == WEAPON_AIM_TYPE_IRONSIGHT ||
 		    GetAimType() == WEAPON_AIM_TYPE_PRONE)
+		{
 			if (IsIronsightToggled(clonk->GetOwner()))
 				StopAiming(clonk);
-	} else {
+		}
+	}
+	else
+	{
 		if (clonk->IsProne())
+		{
 			StartAiming(clonk, WEAPON_AIM_TYPE_PRONE, x, y);
+		}
 		else
+		{
 			StartAiming(clonk, WEAPON_AIM_TYPE_IRONSIGHT, x, y);
+		}
 	}
 
 	return true;
@@ -156,10 +168,7 @@ public func ControlUseAiming(object clonk, int x, int y)
 	if (change_aiming)
 		return true;
 
-	var button_pressed = false;
-	if (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0)
-		button_pressed = true;
-
+	var button_pressed = (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0);
 	ContinueAiming(clonk, x, y, button_pressed);
 	return true;
 }
@@ -167,10 +176,8 @@ public func ControlUseAiming(object clonk, int x, int y)
 // Begin aiming
 public func StartAiming(object clonk, string aim_type, int x, int y)
 {
-	if (!clonk)
-		return FatalError("CMC Firearm Library: StartAiming was called without a valid clonk parameter.");
-	if (!aim_type)
-		return FatalError("CMC Firearm Library: StartAiming was called without a valid aim_type parameter.");
+	AssertNotNil(clonk, "CMC Firearm Library: StartAiming was called without a valid clonk parameter.");
+	AssertNotNil(aim_type, "CMC Firearm Library: StartAiming was called without a valid aim_type parameter.");
 
 	// Do not start a new aiming procedure if already aiming (this is what ChangeAiming is for)
 	if (is_aiming)
@@ -190,16 +197,16 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 	{
 		FinishAiming(clonk, aim_type, x, y);
 		return;
-
-	} else if (trans == WEAPON_AIM_TRANS_ANIM)
+	}
+	else if (trans == WEAPON_AIM_TRANS_ANIM)
 	{
 		var anim = GetFiremode()->Call(Format("Get%sAnimation", aim_type));
 		var delay = GetFiremode()->Call(Format("Get%sDelay", aim_type));
 
 		// Play animation for set amount of time
 		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
-
-	} else if (trans == WEAPON_AIM_TRANS_BLND)
+	}
+	else if (trans == WEAPON_AIM_TRANS_BLND)
 	{
 		var delay = GetFiremode()->Call(Format("Get%sDelay", aim_type));
 		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
@@ -213,7 +220,6 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 
 		// Blend current animation (most likely a movement animation) into aiming animation
 		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
-
 	}
 
 	this->CreateEffect(AimingHelper, 1, delay, clonk, aim_type, [x, y], number);
@@ -222,10 +228,8 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 // Change one aiming stance into another
 public func ChangeAiming(object clonk, string new_type, int x, int y)
 {
-	if (!clonk)
-		return FatalError("CMC Firearm Library: ChangeAiming was called without a valid clonk parameter.");
-	if (!new_type)
-		return FatalError("CMC Firearm Library: ChangeAiming was called without a valid new_type parameter.");
+	AssertNotNil(clonk, "CMC Firearm Library: ChangeAiming was called without a valid clonk parameter.");
+	AssertNotNil(new_type, "CMC Firearm Library: ChangeAiming was called without a valid new_type parameter.");
 
 	// Should have called StartAiming instead!
 	if (!is_aiming)
@@ -246,16 +250,16 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 	{
 		FinishAiming(clonk, new_type, x, y);
 		return;
-
-	} else if (trans == WEAPON_AIM_TRANS_ANIM)
+	}
+	else if (trans == WEAPON_AIM_TRANS_ANIM)
 	{
 		var anim = GetFiremode()->Call(Format("Get%sAnimation", new_type));
 		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
 
 		// Play animation for set amount of time
 		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
-
-	} else if (trans == WEAPON_AIM_TRANS_BLND)
+	}
+	else if (trans == WEAPON_AIM_TRANS_BLND)
 	{
 		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
 		var anim = GetFiremode()->Call(Format("Get%sAimingAnimation", new_type));
@@ -265,7 +269,6 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 
 		// Blend current aiming animation into new aiming animation
 		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
-
 	}
 
 	this->CreateEffect(AimingHelper, 1, delay, clonk, new_type, [x, y], number);
@@ -275,9 +278,13 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 func FinishAiming(object clonk, string aim_type, int x, int y)
 {
 	if (change_aiming)
+	{
 		clonk->ChangeAim(this, aim_type);
+	}
 	else
+	{
 		clonk->StartAim(this, 0, aim_type);
+	}
 	ScheduleCall(clonk, "UpdateAttach", 1);
 
 	aim_transition = false;
@@ -310,10 +317,16 @@ func FailedAiming(object clonk, string aim_type)
 func StopAiming(object clonk)
 {
 	if (clonk->IsAiming())
+	{
 		clonk->StopAim();
+	}
 
 	var aim_type = current_aim_type;
-	if (!aim_type)
+	if (aim_type)
+	{
+		Call(Format("Unset%sAim", current_aim_type), clonk);
+	}
+	else
 	{
 		if (GetEffect("AimingHelper", this))
 		{
@@ -322,15 +335,14 @@ func StopAiming(object clonk)
 			effect.end_if_not_ended = true;
 		}
 	}
-	else
-		Call(Format("Unset%sAim", current_aim_type), clonk);
 
 	is_aiming = false;
 	aim_transition = false;
 	current_aim_type = nil;
 }
 
-local AimingHelper = new Effect {
+local AimingHelper = new Effect 
+{
 	Construction = func(object clonk, string aim_type, array pos, int anim)
 	{
 		this.clonk = clonk;
@@ -339,11 +351,14 @@ local AimingHelper = new Effect {
 		this.y = pos[1];
 		this.anim = anim;
 	},
+	
 	Timer = func()
 	{
 		// This effect should end now if it hasn't ended (see Reset())
 		if (this.end_if_not_ended)
+		{
 			return FX_Execute_Kill;
+		}
 		// Aiming failed because of unknown things
 		if (!this.Target->Call(Format("Check%sTransition", this.type), this.clonk))
 		{
@@ -354,6 +369,7 @@ local AimingHelper = new Effect {
 		this.Target->FinishAiming(this.clonk, this.type, this.x, this.y);
 		return FX_Execute_Kill;
 	},
+	
 	Cancel = func()
 	{
 		this.clonk->StopAnimation(this.anim);
@@ -415,14 +431,18 @@ func UnsetHipFireAim(object clonk)
 	RemoveEffect("HipFireEffect", this, nil, true);
 }
 
-local HipFireEffect = new Effect {
-	Construction = func (object clonk) {
+local HipFireEffect = new Effect
+{
+	Construction = func (object clonk)
+	{
 		// Time duration in which no firing command was issued
 		this.timeout = 0;
 
 		this.clonk = clonk;
 	},
-	Timer = func() {
+	
+	Timer = func()
+	{
 		// If no firing button is pressed: schedule stop
 		if (!this.Target.hipfire_pressed)
 		{
@@ -439,7 +459,9 @@ local HipFireEffect = new Effect {
 			return FX_Execute_Kill;
 		return FX_OK;
 	},
-	Stop = func(int reason, bool temp) {
+	
+	Stop = func(int reason, bool temp)
+	{
 		if (reason != FX_Call_Normal)
 			return;
 		if (this.Target)
