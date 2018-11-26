@@ -258,9 +258,17 @@ func UpdateFirearmSpread()
 
 func AddCmcVirtualCursor(int player)
 {
-	if (GetPlayerType(player) == C4PT_User && CMC_Virtual_Cursor->Get(this) == nil)
+	var cursor = CMC_Virtual_Cursor->Get(this);
+	if (GetPlayerType(player) == C4PT_User)
 	{
-		CMC_Virtual_Cursor->AddTo(this);
+		if (cursor)
+		{
+			cursor->SetOwner(player);
+		}
+		else
+		{
+			CMC_Virtual_Cursor->AddTo(this, player);
+		}
 	}
 }
 

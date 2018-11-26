@@ -36,10 +36,10 @@ func SaveScenarioObject() { return false; }
 
 /* --- Interface --- */
 
-public func AddTo(object target)
+public func AddTo(object target, int player)
 {
 	AssertDefinitionContext();
-	var cursor = CreateObject(this, 0, 0, target->GetOwner());
+	var cursor = CreateObject(this, 0, 0, player ?? target->GetOwner());
 	cursor->Init(target);
 	return cursor;
 }
@@ -119,7 +119,7 @@ func UpdateAimPosition(int x, int y)
 	SetVertex(0, VTX_Y, y);
 	for (var cursor in CursorObjects)
 	{
-		if (cursor) cursor->~UpdateAimPosition(x, y);
+		if (cursor)cursor->~UpdateAimPosition(x, y);
 	}
 }
 
@@ -136,9 +136,13 @@ func UpdateAimSpread(array spread)
 func Show()
 {
 	this.Visibility = VIS_Owner;
-		for (var cursor in CursorObjects)
+	for (var cursor in CursorObjects)
 	{
-		if (cursor) cursor.Visibility = VIS_Owner;
+		if (cursor)
+		{
+			cursor.Visibility = VIS_Owner;
+			cursor->SetOwner(GetOwner());
+		}
 	}
 }
 
