@@ -7,7 +7,9 @@ local Description = "$Description$";
 
 local Grenade_SmokeColor = CMC_Grenade_Field.Grenade_SmokeColor;
 
-func OnDetonation()
+/* --- Get functionality from field grenade --- */
+
+func Definition(id type)
 {
-	Call(CMC_Grenade_Field.OnDetonation);
+	this.OnDetonation = CMC_Grenade_Field.OnDetonation;
 }
