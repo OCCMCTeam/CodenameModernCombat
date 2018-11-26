@@ -192,7 +192,7 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 
 	// Transition into aiming
 	var trans = GetFiremode()->Call(Format("Get%sTransition", aim_type));
-
+	var number;
 	if (trans == WEAPON_AIM_TRANS_INST)
 	{
 		FinishAiming(clonk, aim_type, x, y);
@@ -204,7 +204,7 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 		var delay = GetFiremode()->Call(Format("Get%sDelay", aim_type));
 
 		// Play animation for set amount of time
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
+		number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
 	}
 	else if (trans == WEAPON_AIM_TRANS_BLND)
 	{
@@ -219,7 +219,11 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 			clonk->StopAnimation(current_anim);
 
 		// Blend current animation (most likely a movement animation) into aiming animation
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+		number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Movement, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+	}
+	else
+	{
+		FatalError(Format("Invalid transition type: %s", trans));
 	}
 
 	this->CreateEffect(AimingHelper, 1, delay, clonk, aim_type, [x, y], number);
@@ -245,7 +249,7 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 
 	// Transition into new aiming
 	var trans = GetFiremode()->Call(Format("Get%sTransition", new_type));
-
+	var number;
 	if (trans == WEAPON_AIM_TRANS_INST)
 	{
 		FinishAiming(clonk, new_type, x, y);
@@ -257,7 +261,7 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
 
 		// Play animation for set amount of time
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
+		number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Linear(0, 0, clonk->GetAnimationLength(anim), delay, ANIM_Hold), Anim_Const(1000));
 	}
 	else if (trans == WEAPON_AIM_TRANS_BLND)
 	{
@@ -268,7 +272,11 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
 
 		// Blend current aiming animation into new aiming animation
-		var number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+		number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
+	}
+	else
+	{
+		FatalError(Format("Invalid transition type: %s", trans));
 	}
 
 	this->CreateEffect(AimingHelper, 1, delay, clonk, new_type, [x, y], number);
@@ -328,9 +336,9 @@ func StopAiming(object clonk)
 	}
 	else
 	{
-		if (GetEffect("AimingHelper", this))
+		if (GetEffect(AimingHelper.Name, this))
 		{
-			var effect = GetEffect("AimingHelper", this);
+			var effect = GetEffect(AimingHelper.Name, this);
 			effect->Cancel();
 			effect.end_if_not_ended = true;
 		}
@@ -343,6 +351,8 @@ func StopAiming(object clonk)
 
 local AimingHelper = new Effect 
 {
+	Name = "AimingHelper", 
+
 	Construction = func(object clonk, string aim_type, array pos, int anim)
 	{
 		this.clonk = clonk;
@@ -428,11 +438,13 @@ func ContinueHipFireAim(object clonk, bool button_pressed)
 func UnsetHipFireAim(object clonk)
 {
 	DeactivateAimingCursor(clonk);
-	RemoveEffect("HipFireEffect", this, nil, true);
+	RemoveEffect(HipFireEffect.Name, this, nil, true);
 }
 
 local HipFireEffect = new Effect
 {
+	Name = "HipFireEffect",
+	
 	Construction = func (object clonk)
 	{
 		// Time duration in which no firing command was issued
@@ -763,7 +775,7 @@ public func Reset(object clonk)
 	current_aim_type = nil;
 	aim_target = nil;
 
-	var effect = GetEffect("AimingHelper", this);
+	var effect = GetEffect(AimingHelper.Name, this);
 	if (effect)
 		effect.end_if_not_ended = true;
 }
