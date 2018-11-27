@@ -140,6 +140,11 @@ func PlaySoundDamageIncapacitated()
 	Sound({self = "Clonk::DieIndicator?", others = "Clonk::Die?"}, {player = GetOwner()});
 }
 
+func PlaySoundDamageReanimated()
+{
+	Sound("Clonk::Reanimation?", {player = GetOwner()});
+}
+
 func Footstep()
 {
 	if(GBackLiquid(0, 6))

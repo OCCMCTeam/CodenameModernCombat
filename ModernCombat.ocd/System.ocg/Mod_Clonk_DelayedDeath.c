@@ -27,10 +27,17 @@ func Recruitment(int player)
 
 func OnIncapacitated(int health_change, int cause, int by_player)
 {
+	// Add animation
 	SetAction("Incapacitated");
-	SetCrewEnabled(false);
 	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
+	// Add symbol
 	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
+	// Flash screen
+	var flash = CreateEffect(FxFlashScreenRGBa, 200, 1, "IncapacitatedFlash", RGB(255, 0, 0), 120, 40);
+	// Permanent red color
+	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
+	overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
+	// Sound
 	this->~PlaySoundDamageIncapacitated();
 }
 
@@ -42,10 +49,15 @@ func OnReanimated(int by_player)
 	{
 		StopAnimation(anim);
 	}
+	// Remove screen effect
+	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
+	overlay->Update({BackgroundColor = nil});
+	// Remove symbol
+	PlayerMessage(GetOwner(), "");
 	// Get up!
 	this->~DoKneel();
-	SetCrewEnabled(true);
-	PlayerMessage(GetOwner(), "");
+	// Sound
+	this->~PlaySoundReanimated();
 }
 
 /* --- Better death animation --- */
