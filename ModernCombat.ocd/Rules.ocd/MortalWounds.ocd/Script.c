@@ -63,7 +63,7 @@ public func SetDelayedDeath(bool enable, object crew)
 
 public func GetDelayedDeathEffect(object target)
 {
-	return GetEffect(RuleMortalWoundsCheck.Name, target);
+	return GetEffect("RuleMortalWoundsCheck", target);
 }
 
 /* --- Functionality --- */
@@ -71,6 +71,7 @@ public func GetDelayedDeathEffect(object target)
 local RuleMortalWoundsCheck = new Effect
 {
 	Name = "RuleMortalWoundsCheck",
+	FramesPerSecond = 35,
 	TimerMax = 15 * 35,
 	TimerMin = 5 * 35,
 	
@@ -92,6 +93,7 @@ local RuleMortalWoundsCheck = new Effect
 	Timer = func ()
 	{
 		var change = +1;
+		var overlay = GetScreenOverlay();
 		// Already wounded?
 		if (IsIncapacitated())
 		{
@@ -101,6 +103,24 @@ local RuleMortalWoundsCheck = new Effect
 				return FX_Execute_Kill;
 			}
 			change = -1;
+			
+			// Some effects
+			if (this.death_timer % this.FramesPerSecond == 0)
+			{
+				this.Target->~PlaySoundHeartbeat();
+			}
+			if (overlay)
+			{
+				var alpha = InterpolateLinear(this.death_timer, 0, 230, this.TimerMax, 0);
+				overlay->Update({BackgroundColor = RGBa(1, 1, 1, alpha)});
+			}
+		}
+		else
+		{
+			if (overlay)
+			{
+				overlay->Update({BackgroundColor = nil});
+			}
 		}
 		
 		this.death_timer = BoundBy(this.death_timer + change, 0, this.TimerMax);
@@ -145,6 +165,12 @@ local RuleMortalWoundsCheck = new Effect
 			return true;
 		}
 		return false;
+	},
+	
+	// Effects
+	GetScreenOverlay = func ()
+	{
+		return this.Target->GetHUDController()->GetColorLayer(this.Target, Format("%v", CMC_Rule_MortalWounds));
 	},
 	
 };
