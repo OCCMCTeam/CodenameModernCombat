@@ -625,9 +625,14 @@ public func Deselection(object user)
 {
 	// Properly stop all aiming procedures
 	if (user && user->IsAiming())
+	{
 		user->CancelAiming(this);
+	}
 	if (IsAiming())
+	{
 		StopAiming(user);
+	}
+	_inherited(user, ...);
 }
 
 /* --- Reloading --- */
@@ -973,7 +978,8 @@ func PlaySoundNoAmmo(object user)
 
 func IsUserReadyToReload(object user)
 {
-	return user->HasActionProcedure(false);
+	return user->HasActionProcedure(false) // Can act
+	    && user->GetHandItem(0) == this;   // Item is selected
 }
 
 func StartLoaded()
