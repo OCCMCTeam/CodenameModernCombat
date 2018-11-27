@@ -145,6 +145,21 @@ func PlaySoundDamageReanimated()
 	Sound("Clonk::Reanimation?", {player = GetOwner()});
 }
 
+func PlaySoundHeartbeat()
+{
+	Sound("Clonk::IncapacitatedHeartbeat", {player = GetOwner()});
+}
+
+func StartSoundLoopIncapacitated()
+{
+	Sound("Clonk::IncapacitatedLoopIndicator", {player = GetOwner(), loop_count = +1});
+}
+
+func StopSoundLoopIncapacitated()
+{
+	Sound("Clonk::IncapacitatedLoopIndicator", {player = GetOwner(), loop_count = -1});
+}
+
 func Footstep()
 {
 	if(GBackLiquid(0, 6))

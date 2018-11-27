@@ -23,6 +23,13 @@ func Recruitment(int player)
 	return _inherited(player, ...);
 }
 
+func Death(int killed_by)
+{
+	// This must be done first, before any goals do funny stuff with the clonk
+	_inherited(killed_by,...);
+	this->~StopSoundLoopIncapacitated();
+}
+
 /* --- Incapacitation --- */
 
 func OnIncapacitated(int health_change, int cause, int by_player)
@@ -39,6 +46,7 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
 	// Sound
 	this->~PlaySoundDamageIncapacitated();
+	this->~StartSoundLoopIncapacitated();
 }
 
 func OnReanimated(int by_player)
@@ -57,6 +65,7 @@ func OnReanimated(int by_player)
 	// Get up!
 	this->~DoKneel();
 	// Sound
+	this->~StopSoundLoopIncapacitated();
 	this->~PlaySoundReanimated();
 }
 
