@@ -28,6 +28,7 @@ func Death(int killed_by)
 	// This must be done first, before any goals do funny stuff with the clonk
 	_inherited(killed_by,...);
 	this->~StopSoundLoopIncapacitated();
+	CloseIncapacitatedMenu();
 }
 
 /* --- Incapacitation --- */
@@ -162,6 +163,10 @@ func OpenIncapacitatedMenu()
 	
 	// Save menu in the container for future reference
 	SetIncapacitatedMenu(menu);
+	
+	// Enable custom controls for the menu
+	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, true);
+	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_ToggleReanimation, true);
 }
 
 
@@ -171,5 +176,8 @@ func CloseIncapacitatedMenu()
 	{
 		GetIncapacitatedMenu()->Close();
 	}
+	// Disable the custom controls
+	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, false);
+	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_ToggleReanimation, false);
 }
 

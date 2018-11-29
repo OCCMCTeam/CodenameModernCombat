@@ -28,6 +28,34 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (!this)
 		return false;
 
+	// Prevent controls while the clonk is down
+	if (this->~IsIncapacitated())
+	{
+		if (ctrl == CON_CMC_Incapacitated_RequestHelp)
+		{
+			DebugLog("%s requested help", GetName()); // TODO
+			return true;
+		}
+		else if (ctrl == CON_CMC_Incapacitated_ToggleReanimation)
+		{
+			DebugLog("%s toggles reanimation allowed/not allowed", GetName()); // TODO
+			return true;
+		}
+	
+		// Prevent interactions with the world
+		// Menu controls should be allowed, so should crew controls for changing the crew member
+		if (IsMovementControl(ctrl)
+		 || IsDropControl(ctrl)
+         || IsInteractionControl(ctrl)
+         || IsThrowControl(ctrl)
+         || IsUseControl(ctrl)
+         || CON_CMC_Reload == ctrl
+         || CON_CMC_ItemConfig == ctrl)
+		{
+			return true;
+		}
+	}
+
 	// Handle reloading?
 	if (ctrl == CON_CMC_Reload)
 	{

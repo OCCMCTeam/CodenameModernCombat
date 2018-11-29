@@ -204,7 +204,7 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 		return false;
 
 	// Somewhat redundant, spawn menu blocks the option menu anyway
-	if (control == CON_CMC_DrawGrenade && !this->~IsRespawning())
+	if (control == CON_CMC_DrawGrenade && !this->~IsRespawning() && !this->~IsIncapacitated())
 	{
 		// Has to be walking, jumping, not scaling
 		var ready = this->~HasActionProcedure(false);

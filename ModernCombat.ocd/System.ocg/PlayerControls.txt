@@ -19,6 +19,17 @@
 	Hold=1
 	
 	[ControlDef]
+	Identifier=CMC_GameSettings
+	
+	[ControlDef]
+	Identifier=CMC_Incapacitated_RequestHelp
+	DefaultDisabled=1
+	
+	[ControlDef]
+	Identifier=CMC_Incapacitated_ToggleReanimation
+	DefaultDisabled=1
+	
+	[ControlDef]
 	Identifier=CMC_ItemConfig
 	
 	[ControlDef]
@@ -35,6 +46,21 @@
 		Key=F
 		Priority=999
 		Control=CMC_DrawGrenade
+
+		[Assignment]
+		Key=F
+		Priority=990
+		Control=CMC_GameSettings
+		
+		[Assignment]
+		Key=Space
+		Priority=100
+		Control=CMC_Incapacitated_RequestHelp
+		
+		[Assignment]
+		Key=E
+		Priority=100
+		Control=CMC_Incapacitated_ToggleReanimation
 		
 		[Assignment]
 		Key=R
