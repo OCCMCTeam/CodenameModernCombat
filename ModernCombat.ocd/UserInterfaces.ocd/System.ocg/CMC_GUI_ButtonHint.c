@@ -1,7 +1,11 @@
+/**
+	Button hint element that can be added to other GUI elements.
+	
+	@author Marky
+ */
 
 static const CMC_GUI_ButtonHint = new GUI_Element
 {
-	
 	Assemble = func (id icon, string graphics_name)
 	{
 		SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));

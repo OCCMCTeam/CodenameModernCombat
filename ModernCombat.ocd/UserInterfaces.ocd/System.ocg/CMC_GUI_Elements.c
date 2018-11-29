@@ -18,3 +18,5 @@ static const CMC_GUI_Element_StatusBox = new GUI_Element
 		return this;
 	},
 };
+
+/* --- Functionality-Buttons  --- */

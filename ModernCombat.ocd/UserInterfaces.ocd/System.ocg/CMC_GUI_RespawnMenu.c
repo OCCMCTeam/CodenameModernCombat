@@ -239,7 +239,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 			
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = tab_count, Tab_Index = tab_count };
-			tab->Assemble()->SetIndex(tab_count)->AddTo(this);
+			tab->Assemble()->WithDefaultDimensions()->SetIndex(tab_count)->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
@@ -292,138 +292,14 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 
 /* --- Tab button --- */
 
-static const CMC_GUI_RespawnMenu_TabButton = new GUI_Element
+static const CMC_GUI_RespawnMenu_TabButton = new CMC_GUI_Button
 {
-	// --- Properties
-
-	Tab_Selected = nil,
-	Tab_Hovered = nil,
-	Tab_Callback = nil,
-	Tab_Index = nil,
-	Tab_Enabled = true,
-
-	// --- GUI Properties
-
-	BackgroundColor = GUI_CMC_Background_Color_Default,
-	
-	hover = nil, // Overlay for hover effect
-	label = nil, // Overlay for text, should be over the hover effect
-	
-	// --- Functions
-	
-	Assemble = func (desired_width)
+	WithDefaultDimensions = func (desired_width)
 	{
-		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
-		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
-		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
-		
-		this.hover = { Priority = 1};
-		this.label = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter};
-		
 		SetWidth(desired_width ?? 100);
 		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
 		return this;
-	},
-	
-	SetData = func (string caption, array callback, proplist style)
-	{
-		if (caption)
-		{
-			this.label.Text = caption;
-		}
-		if (style)
-		{
-			AddProperties(this, style);
-		}
-		this.Tab_Callback = callback;
-		return this;
-	},
-	
-	SetIndex = func (int index)
-	{
-		this.Tab_Index = index;
-		return this;
-	},
-	
-	OnMouseInCall = func ()
-	{
-		Update({ hover = {BackgroundColor = GUI_CMC_Background_Color_Hover}});
-	},
-	
-	OnMouseOutCall = func ()
-	{
-		Update({ hover = {BackgroundColor = nil}});
-	},
-	
-	OnClickCall = func ()
-	{
-		if (this.Tab_Enabled)
-		{
-			GetParent()->SelectTab(nil, this.Tab_Index);
-		}
-	},
-	
-	SetEnabled = func (bool enabled)
-	{
-		this.Tab_Enabled = enabled;
-		
-		if (this.Tab_Enabled)
-		{
-			this.BackgroundColor = GUI_CMC_Background_Color_Default;
-		}
-		else
-		{
-			this.BackgroundColor = GUI_CMC_Background_Color_Invalid;
-		}
-		Update({ BackgroundColor = this.BackgroundColor});
-		
-		if (IsSelected())
-		{
-			SetSelected(false, true);
-		}
-	},
-	
-	SetSelected = func (bool selected, bool skip_callback)
-	{
-		if (this.Tab_Enabled)
-		{
-			// Update the display
-			this.Tab_Selected = selected;
-			UpdateBackground();
-			
-			// Issue a callback?
-			if (this.Tab_Callback && selected && !skip_callback)
-			{
-				DoCallback(this.Tab_Callback);
-			}
-		}
-		return this;
-	},
-	
-	IsSelected = func ()
-	{
-		return this.Tab_Selected;
-	},
-	
-	UpdateBackground = func (int color)
-	{
-		if (color == nil)
-		{
-			if (this.Tab_Selected)
-			{
-				UpdateBackground(GUI_CMC_Background_Color_Highlight);
-			}
-			else
-			{
-				UpdateBackground(GUI_CMC_Background_Color_Default);
-			}
-		}
-		else
-		{
-			this.BackgroundColor = color;
-			Update({BackgroundColor = color});
-		}
-	},
+	}
 };
 
 static const CMC_GUI_RespawnMenu_OverviewButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
@@ -534,7 +410,7 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 		
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_LocationButton { Priority = location->GetPriority(), Tab_Index = tab_count };
-			tab->Assemble(1000)->AddTo(this);
+			tab->Assemble()->WithDefaultDimensions(1000)->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
