@@ -234,7 +234,7 @@ func UpdateCrewBars(bool update_health, bool update_breath)
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_crew.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
+	if (gui_cmc_crew.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		if (update_health)
 		{

@@ -144,6 +144,10 @@ local RuleMortalWoundsCheck = new Effect
 			this.is_incapacitated = true;
 			this.death_timer = Max(this.TimerMin, this.death_timer);
 			this.Target->~OnIncapacitated(health_change, cause, by_player);
+			if (this.Target->~GetHUDController()) // Update the HUD; Used OnCrewDisabled callback, because defining a new one is not worth the effort
+			{
+				this.Target->GetHUDController()->OnCrewDisabled(this.Target);
+			}
 			return stay_at_one_health;
 		}
 		return health_change;
@@ -162,6 +166,10 @@ local RuleMortalWoundsCheck = new Effect
 		{	
 			this.is_incapacitated = false;
 			this.Target->~OnReanimated(by_player);
+			if (this.Target->~GetHUDController()) // Update the HUD; Used OnCrewEnabled callback, because defining a new one is not worth the effort
+			{
+				this.Target->GetHUDController()->OnCrewEnabled(this.Target);
+			}
 			return true;
 		}
 		return false;

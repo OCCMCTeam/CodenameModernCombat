@@ -186,7 +186,7 @@ func UpdateInventory(bool selection_changed)
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_inventory.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
+	if (gui_cmc_inventory.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		UpdateInventoryButtonAmount(cursor.MaxContentsCount);
 

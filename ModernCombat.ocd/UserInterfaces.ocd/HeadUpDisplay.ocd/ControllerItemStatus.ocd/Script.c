@@ -370,7 +370,7 @@ func UpdateItemStatus()
 {
 	var cursor = GetCursor(GetOwner());
 	
-	if (gui_cmc_item_status.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
+	if (gui_cmc_item_status.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		// --- Grenades
 		
