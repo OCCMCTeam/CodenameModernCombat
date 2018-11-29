@@ -15,6 +15,15 @@ static const GUI_CMC_Margin_Screen_H = 10;
    Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Screen_V = 10;
 
+
+/* Margin for left and right sides of the screen.
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Screen_Large_H = 20;
+
+/* Margin for top and bottom sides of the screen.
+   Given in pixel-scaled-em. */
+static const GUI_CMC_Margin_Screen_Large_V = 20;
+
 /* Vertical margin between elements.
    Given in pixel-scaled-em. */
 static const GUI_CMC_Margin_Element_V = 10;
@@ -124,6 +133,15 @@ static const GUI_CMC_Element_SelectionList_Width = 250;
  */
 static const GUI_CMC_Element_SelectionList_Margin_H = 70;
 
+
+/*
+ Height for info elements:
+ - Respawn menu class selection
+ - Incapacitated menu
+ 
+ Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_PlayerStatus_Height = 95;
 
 /* --- Colors --- */
 

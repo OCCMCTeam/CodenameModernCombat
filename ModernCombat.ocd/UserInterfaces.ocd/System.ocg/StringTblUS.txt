@@ -1,3 +1,4 @@
+# Respawn menu
 OverviewButtonLabel=Overview
 OverviewButtonTooltip=Zooms the map, so that the entire battlefield is visible.
 
@@ -5,3 +6,7 @@ RespawnButtonLabelReady=Deploy!
 RespawnButtonLabelBlocked=%ds until ready.
 RespawnButtonLabelWaiting=Deploy in %ds.
 RespawnButtonTooltip=Deploy at the chosen deployment point.
+
+# Incapacitated menu
+RespawnWaitingIncapacitated=seconds until|respawn
+RespawnImminentIncapacitated=second until|respawn

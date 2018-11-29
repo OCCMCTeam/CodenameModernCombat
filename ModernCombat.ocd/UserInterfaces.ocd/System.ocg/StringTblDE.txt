@@ -1,7 +1,12 @@
-﻿OverviewButtonLabel=Übersicht
+﻿# Respawn menu
+OverviewButtonLabel=Übersicht
 OverviewButtonTooltip=Verkleinert die Kartenansicht, sodass das gesamte Schlachtfeld sichtbar ist.
 
 RespawnButtonLabelReady=Einstieg!
 RespawnButtonLabelBlocked=Einstieg bereit in %ds.
 RespawnButtonLabelWaiting=Einstieg in %ds.
 RespawnButtonTooltip=Einstieg am gewählten Einstiegspunkt
+
+# Incapacitated menu
+RespawnWaitingIncapacitated=Sekunden bis zum|Einstieg
+RespawnImminentIncapacitated=Sekunde bis zum|Einstieg

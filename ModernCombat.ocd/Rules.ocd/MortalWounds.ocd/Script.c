@@ -114,6 +114,12 @@ local RuleMortalWoundsCheck = new Effect
 				var alpha = InterpolateLinear(this.death_timer, 0, 230, this.TimerMax, 0);
 				overlay->Update({BackgroundColor = RGBa(1, 1, 1, alpha)});
 			}
+			
+			// Update the menu
+			if (this.Target->~GetIncapacitatedMenu())
+			{
+				this.Target->GetIncapacitatedMenu()->OnTimeRemaining(this.death_timer);
+			}
 		}
 		else
 		{

@@ -871,6 +871,7 @@ static const GUI_Element = new Global
 		{
 			GUI_Element_Position = [new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}, new GUI_Dimension{}];
 		}
+		return this;
 	},
 	
 	Self = func ()

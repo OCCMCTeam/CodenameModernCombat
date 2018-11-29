@@ -47,6 +47,8 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	// Sound
 	this->~PlaySoundDamageIncapacitated();
 	this->~StartSoundLoopIncapacitated();
+	// Open menu
+	OpenIncapacitatedMenu();
 }
 
 func OnReanimated(int by_player)
@@ -67,6 +69,8 @@ func OnReanimated(int by_player)
 	// Sound
 	this->~StopSoundLoopIncapacitated();
 	this->~PlaySoundReanimated();
+	// Close menu
+	GetIncapacitatedMenu();
 }
 
 /* --- Better death animation --- */
@@ -122,3 +126,50 @@ func OverlayDeathAnimation(int slot, string animation)
 	animation = animation ?? "Dead";
 	return PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
 }
+
+/* --- Menu --- */
+
+local incapacitated_menu;
+
+
+func GetIncapacitatedMenu()
+{
+	return incapacitated_menu;
+}
+
+
+func SetIncapacitatedMenu(proplist menu)
+{
+	if (incapacitated_menu)
+	{
+		FatalError("Already has a incapacitated menu!");
+	}
+	incapacitated_menu = menu;
+}
+
+
+func OpenIncapacitatedMenu()
+{
+	// Open menu
+	var menu = new CMC_GUI_IncapacitatedMenu {};
+	menu->Assemble(this)
+	    ->Show()
+	    ->Open(GetOwner());
+	SetMenu(menu->GetRootID());
+	
+	// Save menu in the container for future reference
+	SetIncapacitatedMenu(menu);
+
+	// Callback that allows for filling the tabs
+	//this->~OnOpenRespawnMenu(menu);
+}
+
+
+func CloseIncapacitatedMenu()
+{
+	if (GetIncapacitatedMenu())
+	{
+		GetIncapacitatedMenu()->Close();
+	}
+}
+
