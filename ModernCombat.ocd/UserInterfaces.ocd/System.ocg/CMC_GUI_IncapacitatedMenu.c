@@ -10,6 +10,7 @@ static const CMC_GUI_IncapacitatedMenu = new GUI_Element
 {
 	Player = NO_OWNER, // will be shown once a gui update occurs
 	Style = GUI_Multiple | GUI_NoCrop,
+	Priority = GUI_CMC_Priority_HUD,
 	
 	GUI_Components = nil,
 	
