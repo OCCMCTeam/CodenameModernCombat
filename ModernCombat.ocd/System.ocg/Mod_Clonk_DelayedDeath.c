@@ -34,13 +34,16 @@ func Death(int killed_by)
 
 func OnIncapacitated(int health_change, int cause, int by_player)
 {
+	// Cancel commands and such
+	SetCommand("None");
+	SetComDir(COMD_Stop);
 	// Add animation
 	SetAction("Incapacitated");
 	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
 	// Add symbol
 	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
 	// Flash screen
-	var flash = CreateEffect(FxFlashScreenRGBa, 200, 1, "IncapacitatedFlash", RGB(255, 0, 0), 120, 40);
+	CreateEffect(FxFlashScreenRGBa, 200, 1, "IncapacitatedFlash", RGB(255, 0, 0), 120, 40);
 	// Permanent red color
 	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
 	overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
@@ -159,9 +162,6 @@ func OpenIncapacitatedMenu()
 	
 	// Save menu in the container for future reference
 	SetIncapacitatedMenu(menu);
-
-	// Callback that allows for filling the tabs
-	//this->~OnOpenRespawnMenu(menu);
 }
 
 
