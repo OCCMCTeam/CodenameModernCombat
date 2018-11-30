@@ -25,21 +25,40 @@ static const CMC_GUI_IncapacitatedMenu = new GUI_Element
 			this.Target = target;
 			
 			GUI_Components = [];
-			AssembleStatusBox();
+			
+			AssembleStatusBox(target);
 		}
 		return this;
 	},
 	
 	/* --- Creation functions --- */
 	
-	AssembleStatusBox = func ()
+	AssembleStatusBox = func (object target)
 	{
+		// Button for settings
+		var button_settings = new CMC_GUI_TextButton {};
+		button_settings->Assemble()
+		               ->AssignPlayerControl(target->GetOwner(), CON_CMC_GameSettings)
+		               ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_H))
+		               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
+		               ->SetData("$ButtonLabelSettings$")
+		               ->AddTo(this);
+		               
+		// Button for scoreboard
+		var button_settings = new CMC_GUI_TextButton {};
+		button_settings->Assemble()
+		               ->AssignButtonHint(target->GetOwner(), "Tab")
+		               ->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_H))
+		               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
+		               ->SetData("$ButtonLabelScoreboard$")
+		               ->AddTo(this);
+
 		// The actual box
 		var statusbox = new CMC_GUI_Element_StatusBox {};
 		GUI_Components[ComponentIndex_Status] = statusbox;
 
 		statusbox->Assemble()
-		         ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
+		         ->AlignBottom(button_settings->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(this);
 
 		// Separator

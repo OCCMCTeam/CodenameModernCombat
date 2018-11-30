@@ -92,6 +92,7 @@ static const CMC_GUI_Button = new GUI_Element
 		{
 			SetSelected(false, true);
 		}
+		return this;
 	},
 	
 	SetSelected = func (bool selected, bool skip_callback)

@@ -84,11 +84,18 @@ static const GUI_CMC_Element_ProgressBar_Height = 10;
 static const GUI_CMC_Element_Player_Width = 300;
 
 /*
- Width for player info.
+ Width for inventory info.
  
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Inventory_Width = 55;
+
+/*
+ Width for text buttons.
+ 
+ Given in pixel-scaled-em.
+ */
+static const GUI_CMC_Element_TextButton_Width = 120;
 
 /*
  Width/Height of icons

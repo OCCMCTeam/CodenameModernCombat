@@ -10,3 +10,7 @@ RespawnButtonTooltip=Einstieg am gewählten Einstiegspunkt
 # Incapacitated menu
 RespawnWaitingIncapacitated=Sekunden bis zum|Einstieg
 RespawnImminentIncapacitated=Sekunde bis zum|Einstieg
+
+# Shared
+ButtonLabelSettings=Einstellungen
+ButtonLabelScoreboard=Scoreboard

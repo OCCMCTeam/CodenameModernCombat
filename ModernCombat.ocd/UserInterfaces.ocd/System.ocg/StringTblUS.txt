@@ -10,3 +10,7 @@ RespawnButtonTooltip=Deploy at the chosen deployment point.
 # Incapacitated menu
 RespawnWaitingIncapacitated=seconds until|respawn
 RespawnImminentIncapacitated=second until|respawn
+
+# Shared
+ButtonLabelSettings=Settings
+ButtonLabelScoreboard=Scoreboard
