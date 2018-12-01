@@ -152,8 +152,8 @@ static const GUI_CMC_Element_PlayerStatus_Height = 95;
 
 /* --- Colors --- */
 
-/* Default background for GUI elements: dark grey (38, 38, 38), 60% transparancy = 102 alpha. */
-static const GUI_CMC_Background_Color_Default =   0x66262626;
+/* Default background for GUI elements: current: dark grey (51, 51, 51), 30% transparency / was: 0x66262626 dark grey (38, 38, 38), 60% transparancy = 102 alpha. */
+static const GUI_CMC_Background_Color_Default =   0x4d333333;
 
 /* Background for highlighted/selected GUI elements: white, 25% transparency = 64 alpha. */
 static const GUI_CMC_Background_Color_Highlight = 0x40ffffff;
