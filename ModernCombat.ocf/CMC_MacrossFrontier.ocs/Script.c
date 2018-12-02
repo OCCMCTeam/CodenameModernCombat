@@ -44,6 +44,16 @@ func CreateInterior()
 
 	DrawMaterialQuad("Wall-wall_concrete2", 1300, 470, 1330, 460, 1330, 470, 1315, 470, DMQ_Bridge);
 	DrawMaterialQuad("Wall-wall_concrete2", 1391, 470, 1361, 460, 1361, 470, 1376, 470, DMQ_Bridge);
+
+	// Hatches
+	CreateObject(Hatch, 520, 432, NO_OWNER);
+	CreateObject(Hatch, 680, 432, NO_OWNER);
+	CreateObject(Hatch, 860, 372, NO_OWNER);
+	CreateObject(Hatch, 930, 642, NO_OWNER);
+	CreateObject(Hatch, 990, 642, NO_OWNER);
+	CreateObject(Hatch, 1090, 292, NO_OWNER);
+	CreateObject(Hatch, 1270, 352, NO_OWNER);
+	CreateObject(Hatch, 1430, 352, NO_OWNER);
 }
 
 
