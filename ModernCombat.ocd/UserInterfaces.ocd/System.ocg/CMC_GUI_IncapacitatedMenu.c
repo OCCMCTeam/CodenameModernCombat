@@ -6,68 +6,22 @@
 
 /* --- The main menu --- */
 
-static const CMC_GUI_IncapacitatedMenu = new GUI_Element
+static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 {
-	Player = NO_OWNER, // will be shown once a gui update occurs
-	Style = GUI_Multiple | GUI_NoCrop,
-	Priority = GUI_CMC_Priority_HUD,
-	
-	GUI_Components = nil,
-	
-	ComponentIndex_Status = 0,
 	ComponentIndex_Digits = 1,
 	ComponentIndex_Text = 2,
 
-	Assemble = func (object target)
-	{
-		if (target)
-		{
-			this.Target = target;
-			
-			GUI_Components = [];
-			
-			AssembleStatusBox(target);
-		}
-		return this;
-	},
-	
 	/* --- Creation functions --- */
-	
-	AssembleStatusBox = func (object target)
+
+	AssembleInfoBox = func (proplist infobox)
 	{
-		// Button for settings
-		var button_settings = new CMC_GUI_TextButton {};
-		button_settings->Assemble()
-		               ->AssignPlayerControl(target->GetOwner(), CON_CMC_GameSettings)
-		               ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_H))
-		               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
-		               ->SetData("$ButtonLabelSettings$")
-		               ->AddTo(this);
-		               
-		// Button for scoreboard
-		var button_settings = new CMC_GUI_TextButton {};
-		button_settings->Assemble()
-		               ->AssignButtonHint(target->GetOwner(), "Tab")
-		               ->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_H))
-		               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
-		               ->SetData("$ButtonLabelScoreboard$")
-		               ->AddTo(this);
-
-		// The actual box
-		var statusbox = new CMC_GUI_Element_StatusBox {};
-		GUI_Components[ComponentIndex_Status] = statusbox;
-
-		statusbox->Assemble()
-		         ->AlignBottom(button_settings->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-		         ->AddTo(this);
-
 		// Separator
 		var separator = new GUI_Element { Symbol = CMC_Icon_Number, GraphicsName = "Dash", };
 		separator->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size))
 		         ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size))
 		         ->AlignCenterH()
 		         ->AlignCenterV()
-		         ->AddTo(statusbox);
+		         ->AddTo(infobox);
 
 		// Large digits for remaining seconds
 		var countdown_digits = new GUI_Counter {};
@@ -80,25 +34,20 @@ static const CMC_GUI_IncapacitatedMenu = new GUI_Element
 		                ->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_V))
 		                ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
 		                ->AlignRight(separator->GetLeft())
-		                ->AddTo(statusbox);
-		                
+		                ->AddTo(infobox);
+
 		// Text
 		var countdown_text = new GUI_Element {Style = GUI_TextLeft | GUI_TextVCenter, };
 		GUI_Components[ComponentIndex_Text] = countdown_text;
-		
+
 		countdown_text->SetWidth(GuiDimensionCmc(400))
 		              ->AlignLeft(separator->GetRight())
-		              ->AddTo(statusbox);
+		              ->AddTo(infobox);
 
-		return statusbox;
+		return infobox;
 	},
 	
 	/* --- Access functions --- */
-	
-	GetStatusBox = func ()
-	{
-		return GUI_Components[ComponentIndex_Status]; 
-	},
 	
 	GetCountdownDigits = func ()
 	{
@@ -117,7 +66,8 @@ static const CMC_GUI_IncapacitatedMenu = new GUI_Element
 		frames = Max(frames, 0);
 
 		var caption = "$RespawnWaitingIncapacitated$";
-		var seconds = frames / RELAUNCH_Factor_Second;
+		var roundup = RELAUNCH_Factor_Second - frames % RELAUNCH_Factor_Second;
+		var seconds = (frames + roundup) / RELAUNCH_Factor_Second; // Round up, so that 1 second is displayed when 35 frames are hit
 		if (seconds == 1)
 		{
 			caption = "$RespawnImminentIncapacitated$";
