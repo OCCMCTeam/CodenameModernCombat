@@ -10,6 +10,9 @@ RespawnButtonTooltip=Einstieg am gewählten Einstiegspunkt
 # Incapacitated menu
 RespawnWaitingIncapacitated=Sekunden bis zum|Einstieg
 RespawnImminentIncapacitated=Sekunde bis zum|Einstieg
+IncapacitatedRequestHelp=Hilfe anfordern
+IncapacitatedReanimAllowed=Wiederbelebung erlaubt
+IncapacitatedReanimDenied=Wiederbelebung verweigert
 
 # Shared
 ButtonLabelSettings=Einstellungen

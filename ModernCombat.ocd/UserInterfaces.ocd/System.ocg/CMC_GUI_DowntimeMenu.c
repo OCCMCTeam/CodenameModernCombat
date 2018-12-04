@@ -15,6 +15,7 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 	GUI_Components = nil,
 	
 	ComponentIndex_Info = 0,
+	ComponentIndex_Tabs = 1,
 
 	Assemble = func (object target)
 	{
@@ -49,7 +50,16 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 			infobox->Assemble()
 			       ->AlignBottom(button_settings->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 			       ->AddTo(this);
-			         
+			
+			// Tabs
+			var tabs = new CMC_GUI_Element_TabContainer {};
+			GUI_Components[ComponentIndex_Tabs] = tabs;
+
+			tabs->ComposeLayout();
+			tabs->AlignBottom(infobox->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+			    ->AddTo(this);
+
+			// Callbacks
 			this->~AssembleInfoBox(infobox);
 		}
 		return this;
@@ -61,5 +71,10 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 	GetInfoBox = func ()
 	{
 		return GUI_Components[ComponentIndex_Info]; 
+	},
+	
+	GetTabs = func ()
+	{
+		return GUI_Components[ComponentIndex_Tabs]; 
 	},
 };

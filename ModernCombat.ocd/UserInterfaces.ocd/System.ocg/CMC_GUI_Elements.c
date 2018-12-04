@@ -57,3 +57,110 @@ static const CMC_GUI_TextButton = new CMC_GUI_Button
 		return this;
 	},
 };
+
+/* --- Tab container, can hold various CMC_GUI_Buttons in a grid or list --- */
+
+static const CMC_GUI_Element_TabContainer = new GUI_Element
+{
+	Style = GUI_GridLayout,
+
+	// Elements for pseudo-proplist
+	// Adding a real proplist would add the elements as a submenu ()
+	Tab_Ids = nil,
+	Tab_Elements = nil,
+
+	GetTab = func (identifier)
+	{
+		// Establish defaults
+		this.Tab_Ids = this.Tab_Ids ?? [];
+		this.Tab_Elements = this.Tab_Elements ?? [];
+		
+		var index;
+		if (identifier)
+		{
+			index = GetIndexOf(this.Tab_Ids, identifier);
+		}
+		index = index ?? 0;
+
+		if (index == -1)
+		{
+			FatalError("Tab not found");
+		}
+		return this.Tab_Elements[index];
+	},
+	
+	GetTabCount = func ()
+	{
+		return GetLength(this.Tab_Ids ?? []);
+	},
+
+	AddTab = func (identifier, proplist tab, bool overwrite)
+	{
+		// Establish defaults
+		this.Tab_Ids = this.Tab_Ids ?? [];
+		this.Tab_Elements = this.Tab_Elements ?? [];
+
+		var index = GetIndexOf(this.Tab_Ids, identifier);
+		if (index >= 0)
+		{
+			if (overwrite)
+			{
+				this.Tab_Elements[index] = tab;
+			}
+			tab = this.Tab_Elements[index];
+		}
+		else
+		{
+			PushBack(this.Tab_Ids, identifier);
+			PushBack(this.Tab_Elements, tab);
+		}
+		
+		// Done
+		return tab;
+	},
+	
+	SelectTab = func (identifier, int index)
+	{
+		if (identifier)
+		{
+			index = GetIndexOf(this.Tab_Ids, identifier);
+		}
+		index = index ?? 0;
+
+		if (index == -1)
+		{
+			FatalError("Tab not found");
+		}
+		
+		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
+		{
+			this.Tab_Elements[i]->SetSelected(i == index);
+		}
+	},
+	
+	SelectBestTab = func (bool skip_callback)
+	{
+		var best_index = 0;
+		for (var i = 1; i < GetLength(this.Tab_Elements); ++i)
+		{
+			if (this.Tab_Elements[i].Priority < this.Tab_Elements[best_index].Priority)
+			{
+				best_index = i;
+			}
+		}
+		
+		SelectTab(nil, best_index, skip_callback);
+	},
+	
+	GetSelectedTab = func ()
+	{
+		for (var tab in this.Tab_Elements)
+		{
+			if (tab->IsSelected())
+			{
+				return tab;
+			}
+		}
+		return nil;
+	},
+};
