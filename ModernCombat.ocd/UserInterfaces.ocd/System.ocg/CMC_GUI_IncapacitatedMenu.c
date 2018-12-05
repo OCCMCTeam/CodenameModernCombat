@@ -51,32 +51,35 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 	
 	AssembleTabs = func (proplist tabs)
 	{
-			// Request help
 			var button_help = new CMC_GUI_TextButton {};
 			button_help->Assemble()
 			           ->AssignPlayerControl(tabs.GUI_Owner, CON_CMC_Incapacitated_RequestHelp)
 			           ->SetData("$IncapacitatedRequestHelp$")
-			           ->SetIndex(0)
-			           ->AddTo(tabs);
+			           ->ComposeLayout();
 
-			// Button for toggle
 			var button_toggle = new CMC_GUI_TextButton {};
 			button_toggle->Assemble()
 			             ->AssignPlayerControl(tabs.GUI_Owner, CON_CMC_Incapacitated_ToggleReanimation)
 			             ->SetData("$IncapacitatedReanimAllowed$")
-			             ->SetIndex(1)
-			             ->AddTo(tabs);
+			             ->ComposeLayout();
 
-			button_help->ComposeLayout();
-			button_toggle->ComposeLayout();
-			tabs->ComposeLayout();
+			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
+			var shift = button_help->GetWidth()->Add(margin)->Shrink(2);
+			var bottom = this->GetInfoBox()->GetTop()->Subtract(margin);
 
-			tabs->SetHeight(button_help->GetHeight())
-			    ->ShiftTop(button_help->GetHeight());
-			tabs->SetWidth(button_help->GetWidth()->Scale(2)->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))->AlignCenterH();
-			tabs->AddTab(0, button_help);
-			tabs->AddTab(1, button_toggle);
-			tabs->Update();
+			// Request help
+			button_help->SetIndex(0)
+			           ->AlignBottom(bottom)
+			           ->AlignCenterH()
+			           ->ShiftLeft(shift)
+			           ->AddTo(this);
+
+			// Button for toggle
+			button_toggle->SetIndex(1)
+			             ->AlignBottom(bottom)
+			             ->AlignCenterH()
+			             ->ShiftRight(shift)
+			             ->AddTo(this);
 	},
 	
 	/* --- Access functions --- */
