@@ -146,9 +146,9 @@ func GetIncapacitatedMenu()
 
 func SetIncapacitatedMenu(proplist menu)
 {
-	if (incapacitated_menu)
+	if (incapacitated_menu && menu)
 	{
-		FatalError("Already has a incapacitated menu!");
+		FatalError("Already has an incapacitated menu!");
 	}
 	incapacitated_menu = menu;
 }
