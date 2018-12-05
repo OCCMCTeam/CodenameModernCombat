@@ -3,6 +3,14 @@
 
 	@author Marky
  */
+ 
+/* --- Constants --- */
+ 
+static const CMC_ViewRange_GlobalMin = 200;
+
+static const CMC_ViewRange_Default_Player = 600;
+
+/* --- Functions --- */
 
 global func SetPlayerZoomDefault(int player)
 {
@@ -15,8 +23,8 @@ global func SetPlayerZoomDefault(int player)
 	}
 	else
 	{
-		SetPlayerZoomByViewRange(player, 700, nil, PLRZOOM_Set);
-		SetPlayerZoomByViewRange(player, nil, nil, PLRZOOM_LimitMin | PLRZOOM_LimitMax);
+		SetPlayerZoomByViewRange(player, CMC_ViewRange_Default_Player, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+		SetPlayerZoomByViewRange(player, CMC_ViewRange_GlobalMin, nil, PLRZOOM_LimitMin);
 	}
 }
 
@@ -35,5 +43,6 @@ global func SetPlayerZoomLandscape(int player)
 	else
 	{
 		SetPlayerZoomByViewRange(player, range, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+		SetPlayerZoomByViewRange(player, CMC_ViewRange_GlobalMin, nil, PLRZOOM_LimitMin);
 	}
 }

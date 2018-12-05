@@ -44,7 +44,7 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	// Add symbol
 	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
 	// Flash screen
-	CreateEffect(FxFlashScreenRGBa, 200, 1, "IncapacitatedFlash", RGB(255, 0, 0), 120, 40);
+	CreateEffect(FxFlashScreenRGBa, 200, 1, "FlashIncapacitated", RGB(255, 0, 0), 120, 40);
 	// Permanent red color
 	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
 	overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
@@ -66,6 +66,8 @@ func OnReanimated(int by_player)
 	// Remove screen effect
 	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
 	overlay->Update({BackgroundColor = nil});
+	// Add a whiteish flash
+	CreateEffect(FxFlashScreenRGBa, 200, 1, "FlashReanimated", RGB(255, 255, 255), 200, 40);
 	// Remove symbol
 	PlayerMessage(GetOwner(), "");
 	// Get up!
@@ -74,7 +76,7 @@ func OnReanimated(int by_player)
 	this->~StopSoundLoopIncapacitated();
 	this->~PlaySoundReanimated();
 	// Close menu
-	GetIncapacitatedMenu();
+	CloseIncapacitatedMenu();
 }
 
 /* --- Better death animation --- */

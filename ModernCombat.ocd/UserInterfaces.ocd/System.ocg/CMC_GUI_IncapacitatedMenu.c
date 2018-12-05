@@ -95,7 +95,8 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 	OnTimeRemaining = func (int frames)
 	{
 		frames = Max(frames, 0);
-
+		
+		// Update the countdown text
 		var caption = "$RespawnWaitingIncapacitated$";
 		var roundup = RELAUNCH_Factor_Second - frames % RELAUNCH_Factor_Second;
 		var seconds = (frames + roundup) / RELAUNCH_Factor_Second; // Round up, so that 1 second is displayed when 35 frames are hit
@@ -106,6 +107,17 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 
 		GetCountdownDigits()->SetValue(seconds)->Update();
 		GetCountdownText()->Update({Text = caption});
+
+		// Claustrophobic zoom effect from 10 seconds to 1 second
+		var max_time = RELAUNCH_Factor_Second * 15;
+		var view_range = InterpolateLinear(Min(frames, max_time), 0, CMC_ViewRange_GlobalMin, max_time, CMC_ViewRange_Default_Player);
+		SetPlayerZoomByViewRange(this.GUI_Owner, view_range, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
+	},
+
+	OnClose = func ()
+	{
+		// Reset zoom
+		SetPlayerZoomDefault(this.GUI_Owner);
 	},
 };
 

@@ -418,6 +418,9 @@ static const GUI_Element = new Global
 	{
 		if (this.GUI_ID || this.ID)
 		{
+			// Callback
+			this->~OnClose();
+		
 			// Close the GUI
 			var root_id = GetRootID();
 			var child_id;
