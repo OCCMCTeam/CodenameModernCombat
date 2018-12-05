@@ -45,7 +45,7 @@ static const CMC_GUI_TextButton = new CMC_GUI_Button
 		this.label = new GUI_Element { Priority = 2, Style = GUI_TextLeft | GUI_TextVCenter | GUI_NoCrop};
 		this.label->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_TextButton_Width))
 		     ->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size))
-		     ->AddTo(this, nil, "label");
+		     ->AddTo(this, nil, "label", true);
 
 		// Button hint
 		var button_hint = new CMC_GUI_ButtonHint{};

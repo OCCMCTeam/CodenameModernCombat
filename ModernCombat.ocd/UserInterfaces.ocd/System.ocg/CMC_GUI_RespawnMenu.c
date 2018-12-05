@@ -115,17 +115,19 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 		GUI_Components[ComponentIndex_Locations] = deploy_location_list;
 		
 		// Respawn button
+		var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
 		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
 		{
-			Priority = 3,
 			Tooltip = "$RespawnButtonTooltip$",
 		};
 		button_respawn->Assemble()
-		              ->SetWidth(1000)
-		              ->SetHeight(icon_size)
+		              ->AssignPlayerControl(this.GUI_Owner, CON_MenuOK)
 		              ->SetData(Format("$RespawnButtonLabelWaiting$", CMC_RELAUNCH_TIME))
-		              ->AddTo(box_right);
+		              ->AlignBottom(this->GetInfoBox()->GetTop()->Subtract(margin))
+		              ->AlignCenterH()
+		              ->AddTo(this);
 		GUI_Components[ComponentIndex_RespawnButton] = button_respawn;
+		           
 	},
 	
 	/* --- Access functions --- */
@@ -314,7 +316,7 @@ static const CMC_GUI_RespawnMenu_OverviewButton = new CMC_GUI_RespawnMenu_TabBut
 	},
 };
 
-static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_RespawnMenu_TabButton // this is actually misuse, no? A separate list would be better
+static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_TextButton
 {
 	user_ready = false,   // bool - Did the player click the button, i.e. is he done with configuration?
 	time_remaining = nil, // int remaining time
