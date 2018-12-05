@@ -6,23 +6,24 @@
 
 /* --- The main menu --- */
 
-static const CMC_GUI_RespawnMenu = new GUI_Element
+static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 {
-	Player = NO_OWNER, // will be shown once a gui update occurs
-	Style = GUI_Multiple | GUI_NoCrop,
-	Priority = GUI_CMC_Priority_HUD,
-	
-	GUI_Respawn_Components = nil,
+	ComponentIndex_Header = 1,
+	ComponentIndex_Tabs = 2,
+	ComponentIndex_Content = 3,
+	ComponentIndex_RespawnBox = 4,
+	ComponentIndex_RespawnButton = 5,
+	ComponentIndex_Locations = 6,
 
-	Assemble = func (object target)
+	/* --- Creation functions --- */
+
+	AssembleInfoBox = func (object target)
 	{
 		if (target)
 		{
 			this.Target = target;
 			
 			// Basic layout
-			GUI_Respawn_Components = [];
-	
 			var header = new GUI_Element {};
 			var tabs = new CMC_GUI_RespawnMenu_TabRow {ID = 1};
 			tabs->Assemble();
@@ -33,8 +34,8 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 			      ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
 			      ->AddTo(this);
 			tabs->AddTo(header);
-			GUI_Respawn_Components[0] = header;
-			GUI_Respawn_Components[1] = tabs;
+			GUI_Components[ComponentIndex_Header] = header;
+			GUI_Components[ComponentIndex_Tabs] = tabs;
 	
 			AssembleContentBox();
 			AssembleRespawnBox();
@@ -46,7 +47,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 	
 	AssembleContentBox = func ()
 	{
-		var child_id = 2;
+		var child_id = ComponentIndex_Content;
 		var box_left = new GUI_Element
 		{
 			ID = child_id, 
@@ -58,13 +59,13 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		        ->SetRight(250)
 		        ->AddTo(this);
 		        
-		GUI_Respawn_Components[child_id] = box_left;
+		GUI_Components[child_id] = box_left;
 		return box_left;
 	},
 	
 	AssembleRespawnBox = func ()
 	{
-		var child_id = 3;
+		var child_id = ComponentIndex_RespawnBox;
 		var box_right = new GUI_Element
 		{
 			ID = child_id,
@@ -76,7 +77,7 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
 		         ->AddTo(this);
 
-		GUI_Respawn_Components[child_id] = box_right;
+		GUI_Components[child_id] = box_right;
 		
 		// Fill directly, because this has less different contents
 		
@@ -104,14 +105,14 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		              
 		var deploy_location_list = new CMC_GUI_RespawnMenu_DeployList
 		{
-			ID = 4,
+			ID = ComponentIndex_Locations,
 			//BackgroundColor = GUI_CMC_Background_Color_Default,
 			Style = GUI_VerticalLayout,
 		};
 		deploy_location_list->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V))
 		                    ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V))
 		                    ->AddTo(list_container);
-		GUI_Respawn_Components[4] = deploy_location_list;
+		GUI_Components[ComponentIndex_Locations] = deploy_location_list;
 		
 		// Respawn button
 		var button_respawn = new CMC_GUI_RespawnMenu_RespawnButton
@@ -124,39 +125,39 @@ static const CMC_GUI_RespawnMenu = new GUI_Element
 		              ->SetHeight(icon_size)
 		              ->SetData(Format("$RespawnButtonLabelWaiting$", CMC_RELAUNCH_TIME))
 		              ->AddTo(box_right);
-		GUI_Respawn_Components[5] = button_respawn;
+		GUI_Components[ComponentIndex_RespawnButton] = button_respawn;
 	},
 	
 	/* --- Access functions --- */
 	
 	GetHeader = func ()
 	{
-		return GUI_Respawn_Components[0]; 
+		return GUI_Components[ComponentIndex_Header]; 
 	},
 	
 	GetTabs = func ()
 	{
-		return GUI_Respawn_Components[1]; 
+		return GUI_Components[ComponentIndex_Tabs]; 
 	},
 	
 	GetContentBox = func ()
 	{
-		return GUI_Respawn_Components[2]; 
+		return GUI_Components[ComponentIndex_Content]; 
 	},
 	
 	GetRespawnBox = func ()
 	{
-		return GUI_Respawn_Components[3]; 
+		return GUI_Components[ComponentIndex_RespawnBox]; 
 	},
 	
 	GetDeployLocations = func ()
 	{
-		return GUI_Respawn_Components[4]; 
+		return GUI_Components[ComponentIndex_Locations]; 
 	},
 	
 	GetRespawnButton = func ()
 	{
-		return GUI_Respawn_Components[5]; 
+		return GUI_Components[ComponentIndex_RespawnButton]; 
 	},
 	
 	/* --- Status functions --- */
