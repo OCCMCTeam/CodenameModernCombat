@@ -13,7 +13,7 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 
 	/* --- Creation functions --- */
 
-	AssembleInfoBox = func (proplist infobox)
+	AssembleInfoBox = func (object target, proplist infobox)
 	{
 		// Separator
 		var separator = new GUI_Element { Symbol = CMC_Icon_Number, GraphicsName = "Dash", };
@@ -44,42 +44,38 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 		              ->AlignLeft(separator->GetRight())
 		              ->AddTo(infobox);
 
-		// Callback in the wrong place, lets see
-		AssembleTabs(this->GetTabs());
+		// Additional buttons
+		var button_help = new CMC_GUI_TextButton {};
+		button_help->Assemble()
+		           ->AssignPlayerControl(target->GetOwner(), CON_CMC_Incapacitated_RequestHelp)
+		           ->SetData("$IncapacitatedRequestHelp$")
+		           ->ComposeLayout();
+
+		var button_toggle = new CMC_GUI_TextButton {};
+		button_toggle->Assemble()
+		             ->AssignPlayerControl(target->GetOwner(), CON_CMC_Incapacitated_ToggleReanimation)
+		             ->SetData("$IncapacitatedReanimAllowed$")
+		             ->ComposeLayout();
+
+		var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
+		var shift = button_help->GetWidth()->Add(margin)->Shrink(2);
+		var bottom = this->GetInfoBox()->GetTop()->Subtract(margin);
+
+		// Request help
+		button_help->SetIndex(0)
+		           ->AlignBottom(bottom)
+		           ->AlignCenterH()
+		           ->ShiftLeft(shift)
+		           ->AddTo(this);
+
+		// Button for toggle
+		button_toggle->SetIndex(1)
+		             ->AlignBottom(bottom)
+		             ->AlignCenterH()
+		             ->ShiftRight(shift)
+		             ->AddTo(this);
+
 		return infobox;
-	},
-	
-	AssembleTabs = func (proplist tabs)
-	{
-			var button_help = new CMC_GUI_TextButton {};
-			button_help->Assemble()
-			           ->AssignPlayerControl(tabs.GUI_Owner, CON_CMC_Incapacitated_RequestHelp)
-			           ->SetData("$IncapacitatedRequestHelp$")
-			           ->ComposeLayout();
-
-			var button_toggle = new CMC_GUI_TextButton {};
-			button_toggle->Assemble()
-			             ->AssignPlayerControl(tabs.GUI_Owner, CON_CMC_Incapacitated_ToggleReanimation)
-			             ->SetData("$IncapacitatedReanimAllowed$")
-			             ->ComposeLayout();
-
-			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
-			var shift = button_help->GetWidth()->Add(margin)->Shrink(2);
-			var bottom = this->GetInfoBox()->GetTop()->Subtract(margin);
-
-			// Request help
-			button_help->SetIndex(0)
-			           ->AlignBottom(bottom)
-			           ->AlignCenterH()
-			           ->ShiftLeft(shift)
-			           ->AddTo(this);
-
-			// Button for toggle
-			button_toggle->SetIndex(1)
-			             ->AlignBottom(bottom)
-			             ->AlignCenterH()
-			             ->ShiftRight(shift)
-			             ->AddTo(this);
 	},
 	
 	/* --- Access functions --- */
