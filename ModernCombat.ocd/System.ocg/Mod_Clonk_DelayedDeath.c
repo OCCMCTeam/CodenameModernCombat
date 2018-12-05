@@ -177,6 +177,7 @@ func CloseIncapacitatedMenu()
 	if (GetIncapacitatedMenu())
 	{
 		GetIncapacitatedMenu()->Close();
+		SetIncapacitatedMenu(nil);
 	}
 	// Disable the custom controls
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, false);
