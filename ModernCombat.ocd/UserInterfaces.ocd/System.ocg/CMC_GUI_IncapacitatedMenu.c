@@ -50,12 +50,14 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 		           ->AssignPlayerControl(target->GetOwner(), CON_CMC_Incapacitated_RequestHelp)
 		           ->SetData("$IncapacitatedRequestHelp$")
 		           ->ComposeLayout();
+		button_help->SetRight(button_help->GetRight()->Add(GuiDimensionCmc(nil, 20)));
 
 		var button_toggle = new CMC_GUI_TextButton {};
 		button_toggle->Assemble()
 		             ->AssignPlayerControl(target->GetOwner(), CON_CMC_Incapacitated_ToggleReanimation)
 		             ->SetData("$IncapacitatedReanimAllowed$")
 		             ->ComposeLayout();
+		button_toggle->SetRight(button_help->GetRight());
 
 		var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
 		var shift = button_help->GetWidth()->Add(margin)->Shrink(2);
@@ -108,7 +110,7 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 		GetCountdownDigits()->SetValue(seconds)->Update();
 		GetCountdownText()->Update({Text = caption});
 
-		// Claustrophobic zoom effect from 10 seconds to 1 second
+		// Claustrophobic zoom effect
 		var max_time = RELAUNCH_Factor_Second * 15;
 		var view_range = InterpolateLinear(Min(frames, max_time), 0, CMC_ViewRange_GlobalMin, max_time, CMC_ViewRange_Default_Player);
 		SetPlayerZoomByViewRange(this.GUI_Owner, view_range, nil, PLRZOOM_Set | PLRZOOM_LimitMax);
