@@ -13,8 +13,8 @@ static const CMC_GUI_Element_StatusBox = new GUI_Element
 	Assemble = func (object target)
 	{
 		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_PlayerStatus_Height));
-		SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_H));
-		SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_H));
+		SetLeft(nil);
+		SetRight(1000);
 		return this;
 	},
 };

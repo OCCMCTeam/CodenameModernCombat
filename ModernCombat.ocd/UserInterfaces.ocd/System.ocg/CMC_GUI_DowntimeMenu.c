@@ -14,7 +14,8 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 	
 	GUI_Components = nil,
 	
-	ComponentIndex_Info = 0,
+	ComponentIndex_Main = 0,
+	ComponentIndex_Info = 1,
 
 	Assemble = func (object target)
 	{
@@ -24,23 +25,33 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 			
 			GUI_Components = [];
 			
+			// Main canvas
+			var main = new GUI_Element {};
+			
+			main->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_V))
+			    ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_H))
+			    ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_H))
+			    ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
+			    ->AddTo(this);
+			GUI_Components[ComponentIndex_Main] = main;
+			
 			// Button for settings
 			var button_settings = new CMC_GUI_TextButton {};
 			button_settings->Assemble()
 			               ->AssignPlayerControl(target->GetOwner(), CON_CMC_GameSettings)
-			               ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_H))
-			               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
+			               ->AlignRight(1000)
+			               ->AlignBottom(1000)
 			               ->SetData("$ButtonLabelSettings$")
-			               ->AddTo(this);
+			               ->AddTo(main);
 			               
 			// Button for scoreboard
 			var button_settings = new CMC_GUI_TextButton {};
 			button_settings->Assemble()
 			               ->AssignButtonHint(target->GetOwner(), "Tab")
-			               ->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_Large_H))
-			               ->AlignBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_Large_V))
+			               ->AlignLeft()
+			               ->AlignBottom(1000)
 			               ->SetData("$ButtonLabelScoreboard$")
-			               ->AddTo(this);
+			               ->AddTo(main);
 	
 			// The actual box
 			var infobox = new CMC_GUI_Element_StatusBox {};
@@ -48,7 +59,7 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 	
 			infobox->Assemble()
 			       ->AlignBottom(button_settings->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-			       ->AddTo(this);
+			       ->AddTo(main);
 
 			// Callbacks
 			this->~AssembleInfoBox(target, infobox);
@@ -58,6 +69,11 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 
 	
 	/* --- Access functions --- */
+	
+	GetMainWindow = func ()
+	{
+		return GUI_Components[ComponentIndex_Main]; 
+	},
 	
 	GetInfoBox = func ()
 	{

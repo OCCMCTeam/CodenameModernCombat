@@ -8,7 +8,6 @@
 
 static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 {
-	ComponentIndex_Header = 1,
 	ComponentIndex_Tabs = 2,
 	ComponentIndex_Content = 3,
 	ComponentIndex_RespawnBox = 4,
@@ -24,17 +23,9 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 			this.Target = target;
 			
 			// Basic layout
-			var header = new GUI_Element {};
 			var tabs = new CMC_GUI_RespawnMenu_TabRow {ID = 1};
 			tabs->Assemble();
-			
-			header->SetTop(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V))
-			      ->SetHeight(tabs->GetHeight())
-			      ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
-			      ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
-			      ->AddTo(this);
-			tabs->AddTo(header);
-			GUI_Components[ComponentIndex_Header] = header;
+			tabs->AddTo(GetMainWindow());
 			GUI_Components[ComponentIndex_Tabs] = tabs;
 	
 			AssembleContentBox();
@@ -53,7 +44,7 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 			ID = child_id, 
 			Style = GUI_VerticalLayout,
 		};
-		box_left->SetTop(GetHeader()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		box_left->SetTop(GetTabs()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		        ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
 		        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
 		        ->SetRight(250)
@@ -71,7 +62,7 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 			ID = child_id,
 			Style = GUI_VerticalLayout,
 		};
-		box_right->SetTop(GetHeader()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
+		box_right->SetTop(GetTabs()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
 		         ->SetLeft(750)
 		         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
@@ -125,17 +116,12 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 		              ->SetData(Format("$RespawnButtonLabelWaiting$", CMC_RELAUNCH_TIME))
 		              ->AlignBottom(this->GetInfoBox()->GetTop()->Subtract(margin))
 		              ->AlignCenterH()
-		              ->AddTo(this);
+		              ->AddTo(GetMainWindow());
 		GUI_Components[ComponentIndex_RespawnButton] = button_respawn;
 		           
 	},
 	
 	/* --- Access functions --- */
-	
-	GetHeader = func ()
-	{
-		return GUI_Components[ComponentIndex_Header]; 
-	},
 	
 	GetTabs = func ()
 	{
