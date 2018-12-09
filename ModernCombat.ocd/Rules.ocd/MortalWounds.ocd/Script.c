@@ -184,7 +184,7 @@ local RuleMortalWoundsCheck = new Effect
 	// Effects
 	GetScreenOverlay = func ()
 	{
-		return this.Target->GetHUDController()->GetColorLayer(this.Target, Format("%v", CMC_Rule_MortalWounds));
+		return this.Target->GetHUDController()->~GetColorLayer(this.Target, Format("%v", CMC_Rule_MortalWounds));
 	},
 	
 };
