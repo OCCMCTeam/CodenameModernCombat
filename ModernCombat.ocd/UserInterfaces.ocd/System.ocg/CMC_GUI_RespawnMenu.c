@@ -44,11 +44,9 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 			ID = child_id, 
 			Style = GUI_VerticalLayout,
 		};
-		box_left->SetTop(GetTabs()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-		        ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
-		        ->SetLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H))
+		box_left->SetBottom(GetInfoBox()->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_V)))
 		        ->SetRight(250)
-		        ->AddTo(this);
+		        ->AddTo(GetMainWindow());
 		        
 		GUI_Components[child_id] = box_left;
 		return box_left;
@@ -62,11 +60,9 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 			ID = child_id,
 			Style = GUI_VerticalLayout,
 		};
-		box_right->SetTop(GetTabs()->GetBottom()->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
-		         ->SetBottom(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_V))
+		box_right->SetBottom(GetInfoBox()->GetTop()->Subtract(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_V)))
 		         ->SetLeft(750)
-		         ->SetRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H))
-		         ->AddTo(this);
+		         ->AddTo(GetMainWindow());
 
 		GUI_Components[child_id] = box_right;
 		
@@ -206,6 +202,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 	Assemble = func ()
 	{
 		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
+		AlignBottom(1000);
 		return this;
 	},
 
@@ -225,36 +222,28 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		else
 		{
 			var tab_count = GetLength(this.Tab_Elements);
-			
+
 			// Add additional tab
-			tab = new CMC_GUI_RespawnMenu_TabButton { Priority = tab_count, Tab_Index = tab_count };
-			tab->Assemble()->WithDefaultDimensions()->SetIndex(tab_count)->AddTo(this);
+			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H)->Shrink(2);
+			tab = new CMC_GUI_TextButton { Priority = tab_count, Tab_Index = tab_count, Margin = [margin->ToString(), "0em"] };
+			tab->Assemble()
+			   ->SetWidth(tab->GetWidth()->Add(margin->Scale(2)))
+			   ->AssignPlayerControl(this.GUI_Owner, CON_Hotkey1)
+			   ->SetIndex(tab_count)->AddTo(this);
 
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
 	
 			// Update tab width
+			//this.Controller->AddTab(identifier, tab);
 			this.Tab_Width = this.Tab_Width->Add(tab->GetWidth());
-			var percent = this.Tab_Width->GetPercent() * 10 / (this.Tab_Width->GetPercentFactor() ?? 10);
-			if (percent >= 1000)
-			{
-				this.Tab_Width->SetPercent(1000)->SetPercentFactor(10);
-				this.Tab_Width->SetEm(0);
-			}
 		}
 		tab->SetData(caption, callback, style)->Update();
-		
-		// Update the individual tabs for uniform width
-		var tab_width = GuiDimensionCmc(1000)->Shrink(GetLength(this.Tab_Elements));
-		for (var element in this.Tab_Elements)
-		{
-			element->SetWidth(tab_width)->Update();
-		}
 
 		SetWidth(this.Tab_Width);
 		AlignCenterH();
 		Update(ComposeLayout());
-		
+
 		// Done
 		return tab;
 	},

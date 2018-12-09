@@ -63,13 +63,16 @@ static const CMC_GUI_TextButton = new CMC_GUI_Button
 static const CMC_GUI_Element_TabContainer = new GUI_Element
 {
 	Style = GUI_GridLayout,
+};
 
+static const CMC_GUI_Controller_Tab = new Global
+{
 	// Elements for pseudo-proplist
 	// Adding a real proplist would add the elements as a submenu ()
 	Tab_Ids = nil,
 	Tab_Elements = nil,
 
-	GetTab = func (identifier)
+	GetTab = func (identifier, bool strict)
 	{
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
@@ -84,7 +87,11 @@ static const CMC_GUI_Element_TabContainer = new GUI_Element
 
 		if (index == -1)
 		{
-			FatalError("Tab not found");
+			if (strict)
+			{
+				FatalError("Tab not found");
+			}
+			return nil;
 		}
 		return this.Tab_Elements[index];
 	},
