@@ -195,8 +195,7 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 
 	// Elements for pseudo-proplist
 	// Adding a real proplist would add the elements as a submenu ()
-	Tab_Ids = nil,
-	Tab_Elements = nil,
+	Tab_Controller = [new CMC_GUI_Controller_Tab {}],
 	Tab_Width = nil,
 
 	Assemble = func ()
@@ -209,19 +208,12 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 	AddTab = func (identifier, string caption, array callback, proplist style)
 	{
 		// Establish defaults
-		this.Tab_Ids = this.Tab_Ids ?? [];
-		this.Tab_Elements = this.Tab_Elements ?? [];
-		this.Tab_Width = this.Tab_Width ?? GuiDimensionCmc();
+        this.Tab_Width = this.Tab_Width ?? GuiDimensionCmc();
 		
-		var tab;
-		var index = GetIndexOf(this.Tab_Ids, identifier);
-		if (index >= 0)
+		var tab = GetTabController()->GetTab(identifier);
+		if (!tab)
 		{
-			tab = this.Tab_Elements[index];
-		}
-		else
-		{
-			var tab_count = GetLength(this.Tab_Elements);
+			var tab_count = GetTabController()->GetTabCount();
 
 			// Add additional tab
 			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H)->Shrink(2);
@@ -231,11 +223,8 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 			   ->AssignPlayerControl(this.GUI_Owner, CON_Hotkey1)
 			   ->SetIndex(tab_count)->AddTo(this);
 
-			PushBack(this.Tab_Ids, identifier);
-			PushBack(this.Tab_Elements, tab);
-	
 			// Update tab width
-			//this.Controller->AddTab(identifier, tab);
+			GetTabController()->AddTab(identifier, tab);
 			this.Tab_Width = this.Tab_Width->Add(tab->GetWidth());
 		}
 		tab->SetData(caption, callback, style)->Update();
@@ -250,21 +239,12 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 	
 	SelectTab = func (identifier, int index)
 	{
-		if (identifier)
-		{
-			index = GetIndexOf(this.Tab_Ids, identifier);
-		}
-		index = index ?? 0;
-
-		if (index == -1)
-		{
-			FatalError("Tab not found");
-		}
-		
-		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
-		{
-			this.Tab_Elements[i]->SetSelected(i == index);
-		}
+		GetTabController()->SelectTab(identifier, index);
+	},
+	
+	GetTabController = func ()
+	{
+		return this.Tab_Controller[0];
 	},
 };
 
