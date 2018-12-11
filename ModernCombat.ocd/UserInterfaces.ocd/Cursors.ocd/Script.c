@@ -48,7 +48,19 @@ public func Get(object to)
 {
 	AssertDefinitionContext();
 
-	return FindObject(Find_ID(this), Find_ActionTarget(to));
+	// Works only the second time the player aims, which is really weird... 
+	// the cursor object exists, and can be found via Find_ActionTarget()
+	// but Find_ID ignores it
+	//
+	// return FindObject(Find_ID(this), Find_ActionTarget(to));
+	for (var attached in FindObjects(Find_ActionTarget(to)))
+	{
+		if (attached->GetID() == this)
+		{
+			return attached;
+		}
+	}
+	return nil;
 }
 
 public func SetCursorType(type, int index)
@@ -119,7 +131,7 @@ func UpdateAimPosition(int x, int y)
 	SetVertex(0, VTX_Y, y);
 	for (var cursor in CursorObjects)
 	{
-		if (cursor)cursor->~UpdateAimPosition(x, y);
+		if (cursor) cursor->~UpdateAimPosition(x, y);
 	}
 }
 

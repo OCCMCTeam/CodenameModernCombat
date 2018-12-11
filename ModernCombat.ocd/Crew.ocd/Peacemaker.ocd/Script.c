@@ -310,6 +310,13 @@ public func StartAim(object weapon, int angle, string type)
 	return inherited(weapon, angle, type, ...);
 }
 
+public func ChangeAim(object weapon, string type)
+{
+	Log("Change aim %s", type);
+	AddCmcVirtualCursor(GetOwner());
+	return inherited(weapon, type, ...);
+}
+
 /* --- Going prone --- */
 
 public func GoProne()
