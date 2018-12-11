@@ -195,11 +195,12 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 
 	// Elements for pseudo-proplist
 	// Adding a real proplist would add the elements as a submenu ()
-	Tab_Controller = [new CMC_GUI_Controller_Tab {}],
+	Tab_Controller = nil,
 	Tab_Width = nil,
 
 	Assemble = func ()
 	{
+		this.Tab_Controller = [new CMC_GUI_Controller_Tab {}];
 		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size));
 		AlignBottom(1000);
 		return this;
@@ -219,7 +220,6 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 				FatalError("Respawn menu supports at most 10 classes");
 			}
 			var hotkey = GUI_CON_Hotkey_ByIndex()[tab_count];
-			DebugLog("Adding tab %d, hotkey %d %v: %v", tab_count, hotkey, GetPlayerControlAssignment(this.GUI_Owner, hotkey, true, true), GUI_CON_Hotkey_ByIndex);
 
 			// Add additional tab
 			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H)->Shrink(2);
