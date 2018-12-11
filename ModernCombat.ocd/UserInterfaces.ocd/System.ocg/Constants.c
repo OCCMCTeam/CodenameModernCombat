@@ -190,4 +190,16 @@ static const GUI_CMC_Text_Color_Inactive = 0xff777777; // Grey
 
 static const GUI_CMC_Text_Color_HeaderCaption = 0xff999999; // Grey
 
+/* --- Controls --- */
 
+// Those were constants before, but there seems to be an issue with the initialization: Usually, these were all nil, but the array had the correct size.
+
+global func GUI_CON_Hotkey_ByIndex()
+{
+	return [CON_Hotkey1, CON_Hotkey2, CON_Hotkey3, CON_Hotkey4, CON_Hotkey5, CON_Hotkey6, CON_Hotkey7, CON_Hotkey8, CON_Hotkey9, CON_Hotkey0];
+}
+
+global func GUI_CON_Hotkey_ByOrder()
+{
+	return [CON_Hotkey0, CON_Hotkey1, CON_Hotkey2, CON_Hotkey3, CON_Hotkey4, CON_Hotkey5, CON_Hotkey6, CON_Hotkey7, CON_Hotkey8, CON_Hotkey9];
+}

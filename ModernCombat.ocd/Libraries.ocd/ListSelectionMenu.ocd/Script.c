@@ -103,7 +103,7 @@ public func OpenListSelectionMenu(object user, string type)
 	cmc_list_selection_menu.user = user;
 	cmc_list_selection_menu.menu = main_menu;
 	cmc_list_selection_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
-	cmc_list_selection_menu.hotkey_controls = [CON_Hotkey1, CON_Hotkey2, CON_Hotkey3, CON_Hotkey4, CON_Hotkey5, CON_Hotkey6, CON_Hotkey7, CON_Hotkey8, CON_Hotkey9, CON_Hotkey0];
+	cmc_list_selection_menu.hotkey_controls = GUI_CON_Hotkey_ByIndex();
 	cmc_list_selection_menu.hotkey_entries =  [];
 	
 	// Add entries and update appearance

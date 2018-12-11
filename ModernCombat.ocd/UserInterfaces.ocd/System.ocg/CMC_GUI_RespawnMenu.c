@@ -214,13 +214,19 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		if (!tab)
 		{
 			var tab_count = GetTabController()->GetTabCount();
+			if (tab_count >= 10)
+			{
+				FatalError("Respawn menu supports at most 10 classes");
+			}
+			var hotkey = GUI_CON_Hotkey_ByIndex()[tab_count];
+			DebugLog("Adding tab %d, hotkey %d %v: %v", tab_count, hotkey, GetPlayerControlAssignment(this.GUI_Owner, hotkey, true, true), GUI_CON_Hotkey_ByIndex);
 
 			// Add additional tab
 			var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H)->Shrink(2);
 			tab = new CMC_GUI_TextButton { Priority = tab_count, Tab_Index = tab_count, Margin = [margin->ToString(), "0em"] };
 			tab->Assemble()
 			   ->SetWidth(tab->GetWidth()->Add(margin->Scale(2)))
-			   ->AssignPlayerControl(this.GUI_Owner, CON_Hotkey1)
+			   ->AssignPlayerControl(this.GUI_Owner, hotkey)
 			   ->SetIndex(tab_count)->AddTo(this);
 
 			// Update tab width
