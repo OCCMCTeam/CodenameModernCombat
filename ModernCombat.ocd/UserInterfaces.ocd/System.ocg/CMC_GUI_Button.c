@@ -70,7 +70,15 @@ static const CMC_GUI_Button = new GUI_Element
 	{
 		if (this.Tab_Enabled)
 		{
-			GetParent()->~SelectTab(nil, this.Tab_Index);
+			if (IsTabButton())
+			{
+				GetParent()->~SelectTab(nil, this.Tab_Index);
+			}
+			else
+			{
+				GuiPlaySoundConfirm(this.GUI_Owner);
+				DoCallback(this.Tab_Callback);
+			}
 		}
 	},
 	
@@ -104,8 +112,9 @@ static const CMC_GUI_Button = new GUI_Element
 			UpdateBackground();
 			
 			// Issue a callback?
-			if (this.Tab_Callback && selected && !skip_callback)
+			if (IsTabButton() && this.Tab_Callback && selected && !skip_callback)
 			{
+				GuiPlaySoundSelect(this.GUI_Owner);
 				DoCallback(this.Tab_Callback);
 			}
 		}
@@ -115,6 +124,11 @@ static const CMC_GUI_Button = new GUI_Element
 	IsSelected = func ()
 	{
 		return this.Tab_Selected;
+	},
+	
+	IsTabButton = func ()
+	{
+		return nil != this.Tab_Index;
 	},
 	
 	UpdateBackground = func (int color)

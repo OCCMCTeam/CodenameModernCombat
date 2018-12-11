@@ -17,3 +17,15 @@ global func GuiDimensionCmc(int percent, int px)
 {
 	return GUI_Dimension->Dimension(percent, 48 * px, nil, 1000);
 }
+
+
+global func GuiPlaySoundConfirm(int player)
+{
+	Sound("Interface::Confirm?", {global = true, player = player});
+}
+
+
+global func GuiPlaySoundSelect(int player)
+{
+	Sound("Interface::Select?", {global = true, player = player});
+}

@@ -41,19 +41,17 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 			               ->AssignPlayerControl(target->GetOwner(), CON_CMC_GameSettings)
 			               ->AlignRight(1000)
 			               ->AlignBottom(1000)
-			               ->SetData("$ButtonLabelSettings$")
+			               ->SetData("$ButtonLabelSettings$", DefineCallback(this.ShowSettings))
 			               ->AddTo(main);
-			button_settings.OnClickCall = this.ShowSettings;
-			               
+
 			// Button for scoreboard
 			var button_scoreboard = new CMC_GUI_TextButton {};
 			button_scoreboard->Assemble()
 			                 ->AssignButtonHint(target->GetOwner(), "Tab")
 			                 ->AlignLeft()
 			                 ->AlignBottom(1000)
-			                 ->SetData("$ButtonLabelScoreboard$")
+			                 ->SetData("$ButtonLabelScoreboard$", DefineCallback(this.ShowScoreboard))
 			                 ->AddTo(main);
-			button_scoreboard.OnClickCall = this.ShowScoreboard;
 	
 			// The actual box
 			var infobox = new CMC_GUI_Element_StatusBox {};

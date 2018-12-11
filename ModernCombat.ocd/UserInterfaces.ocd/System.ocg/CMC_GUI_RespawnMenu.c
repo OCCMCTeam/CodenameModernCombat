@@ -295,6 +295,7 @@ static const CMC_GUI_RespawnMenu_RespawnButton = new CMC_GUI_TextButton
 		this.user_ready = !this.user_ready;
 		UpdateBackground();
 		OnTimeRemaining(this.time_remaining);
+		GuiPlaySoundConfirm(this.GUI_Owner);
 	},
 	
 	OnTimeRemaining = func (int frames)
