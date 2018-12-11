@@ -19,5 +19,6 @@ func Death(int killed_by)
 	{
 		if (item) item->RemoveObject();
 	}
+	FadeOut(100, true);
 	return true;
 }
