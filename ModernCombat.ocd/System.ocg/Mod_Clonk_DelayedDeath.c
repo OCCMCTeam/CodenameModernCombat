@@ -169,6 +169,12 @@ func OpenIncapacitatedMenu()
 	// Enable custom controls for the menu
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, true);
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_ToggleReanimation, true);
+	
+	// Follow
+	if (GetCursor(GetOwner()) == this)
+	{
+		SetPlrView(GetOwner(), this);
+	}
 }
 
 

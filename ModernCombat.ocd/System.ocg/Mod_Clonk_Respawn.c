@@ -45,4 +45,7 @@ public func OnOpenRespawnMenu(proplist menu)
 
 	// Select the first location by default
 	menu->GetDeployLocations()->SelectBestTab(true);
+	
+	// Zoom out
+	menu->GetOverviewButton()->OnClickCall();
 }

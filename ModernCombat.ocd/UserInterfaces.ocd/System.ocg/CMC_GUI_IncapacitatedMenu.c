@@ -68,14 +68,14 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 		           ->AlignBottom(bottom)
 		           ->AlignCenterH()
 		           ->ShiftLeft(shift)
-		           ->AddTo(this);
+		           ->AddTo(GetMainWindow());
 
 		// Button for toggle
 		button_toggle->SetIndex(1)
 		             ->AlignBottom(bottom)
 		             ->AlignCenterH()
 		             ->ShiftRight(shift)
-		             ->AddTo(this);
+		             ->AddTo(GetMainWindow());
 
 		return infobox;
 	},

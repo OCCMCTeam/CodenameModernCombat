@@ -12,7 +12,8 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 	ComponentIndex_Content = 3,
 	ComponentIndex_RespawnBox = 4,
 	ComponentIndex_RespawnButton = 5,
-	ComponentIndex_Locations = 6,
+	ComponentIndex_OverviewButton = 6,
+	ComponentIndex_Locations = 7,
 
 	/* --- Creation functions --- */
 
@@ -81,6 +82,7 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 		               ->SetHeight(icon_size)
 		               ->SetData("$OverviewButtonLabel$", DefineCallback(Global.SetPlayerZoomLandscape, this.Target->GetOwner()))
 		               ->AddTo(box_right);
+		GUI_Components[ComponentIndex_OverviewButton] = button_overview;
 
 		// Deploy location list
 		var list_container = new GUI_Element
@@ -137,6 +139,11 @@ static const CMC_GUI_RespawnMenu = new CMC_GUI_DowntimeMenu
 	GetDeployLocations = func ()
 	{
 		return GUI_Components[ComponentIndex_Locations]; 
+	},
+	
+	GetOverviewButton = func ()
+	{
+		return GUI_Components[ComponentIndex_OverviewButton];
 	},
 	
 	GetRespawnButton = func ()
