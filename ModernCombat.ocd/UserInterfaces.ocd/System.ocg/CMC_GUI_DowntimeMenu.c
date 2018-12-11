@@ -43,15 +43,17 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 			               ->AlignBottom(1000)
 			               ->SetData("$ButtonLabelSettings$")
 			               ->AddTo(main);
+			button_settings.OnClickCall = this.ShowSettings;
 			               
 			// Button for scoreboard
-			var button_settings = new CMC_GUI_TextButton {};
-			button_settings->Assemble()
-			               ->AssignButtonHint(target->GetOwner(), "Tab")
-			               ->AlignLeft()
-			               ->AlignBottom(1000)
-			               ->SetData("$ButtonLabelScoreboard$")
-			               ->AddTo(main);
+			var button_scoreboard = new CMC_GUI_TextButton {};
+			button_scoreboard->Assemble()
+			                 ->AssignButtonHint(target->GetOwner(), "Tab")
+			                 ->AlignLeft()
+			                 ->AlignBottom(1000)
+			                 ->SetData("$ButtonLabelScoreboard$")
+			                 ->AddTo(main);
+			button_scoreboard.OnClickCall = this.ShowScoreboard;
 	
 			// The actual box
 			var infobox = new CMC_GUI_Element_StatusBox {};
@@ -78,5 +80,20 @@ static const CMC_GUI_DowntimeMenu = new GUI_Element
 	GetInfoBox = func ()
 	{
 		return GUI_Components[ComponentIndex_Info]; 
+	},
+
+	/* --- Button click functions --- */
+	
+	ShowScoreboard = func () // Shows the scoreboard for 5 seconds, if it is not already displayed; Toggle is hard to implement properly
+	{
+		var player = this.GUI_Owner + 1;
+		Schedule(nil, Format("DoScoreboardShow(+1, %d)", player), 1);
+		Schedule(nil, Format("DoScoreboardShow(-1, %d)", player), RELAUNCH_Factor_Second * 5);
+	},
+	
+	ShowSettings = func () // Does not work yet...
+	{
+		PlayerControl(this.GUI_Owner, CON_PlayerMenu, nil, nil, nil, false, CONS_Down);
+		PlayerControl(this.GUI_Owner, CON_PlayerMenu, nil, nil, nil, false, CONS_Up);
 	},
 };

@@ -70,7 +70,7 @@ static const CMC_GUI_Button = new GUI_Element
 	{
 		if (this.Tab_Enabled)
 		{
-			GetParent()->SelectTab(nil, this.Tab_Index);
+			GetParent()->~SelectTab(nil, this.Tab_Index);
 		}
 	},
 	
