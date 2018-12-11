@@ -170,8 +170,6 @@ func ReleaseShock(object user, int x, int y)
 	var ammo_cost = 10;
 	if (ShockAlly(user, find_target) || ShockEnemy(user, find_target))
 	{
-		PlaySoundShockTarget();
-
 		// Use 10 ammo if not charged, so that a short click costs more ammo
 		// while a fully charged shock uses ammo most effectively;
 		// added 5 points, so that charging for a few frames still costs 20 ammo total
@@ -200,6 +198,7 @@ func ShockAlly(object user, array find_target)
 	for (var ally in allies)
 	{
 		if (!ally) continue;
+		PlaySoundShockAlly();
 		
 		// Reanimate with min energy, add healing effect
 		ally->DoReanimate();
@@ -222,6 +221,7 @@ func ShockEnemy(object user, array find_target)
 	for (var enemy in enemies)
 	{
 		if (!enemy) continue;
+		PlaySoundShockEnemy();
 		
 		var strength = 10 + PowerUpUse;
 		
@@ -318,9 +318,14 @@ func PlaySoundBeep()
 	Sound("Items::Tools::Defibrillator::Ready", {multiple = true});
 }
 
-func PlaySoundShockTarget()
+func PlaySoundShockAlly()
 {
-	Sound("Items::Tools::Defibrillator::ShockTarget", {multiple = true});
+	Sound("Items::Tools::Defibrillator::ShockPatient", {multiple = true});
+}
+
+func PlaySoundShockEnemy()
+{
+	Sound("Items::Tools::Defibrillator::ShockEnemy", {multiple = true});
 }
 
 func PlaySoundShockFail()

@@ -19,13 +19,13 @@ global func GuiDimensionCmc(int percent, int px)
 }
 
 
-global func GuiPlaySoundConfirm(int player)
+global func GuiPlaySoundConfirm(int for_player)
 {
-	Sound("Interface::Confirm?", {global = true, player = player});
+	Sound("Interface::Confirm?", {global = true, player = for_player});
 }
 
 
-global func GuiPlaySoundSelect(int player)
+global func GuiPlaySoundSelect(int for_player)
 {
-	Sound("Interface::Select?", {global = true, player = player});
+	Sound("Interface::Select?", {global = true, player = for_player});
 }
