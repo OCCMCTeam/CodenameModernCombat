@@ -53,7 +53,7 @@ func OnLaunch()
 
 func PlaySoundDetonation()
 {
-	Sound("Items::Grenades::Shared::Explosion?");
+	Sound("Items::Grenades::FieldGrenade::Explosion?");
 }
 
 func PlaySoundMalfunction()

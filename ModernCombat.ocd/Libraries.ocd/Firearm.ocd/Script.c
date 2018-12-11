@@ -966,7 +966,7 @@ func PlaySoundSwitchFiremode(object user)
 
 func PlaySoundLastRound(object user)
 {
-	Sound("Items::Weapons::Shared::LastRound?", {player = user->GetOwner()});
+	Sound("Items::Weapons::Shared::LastRoundIndicator?", {player = user->GetOwner()});
 }
 
 func PlaySoundNoAmmo(object user)
