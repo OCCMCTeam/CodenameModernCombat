@@ -497,7 +497,7 @@ static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabBut
 			// Update availability
 			var target = GetRoot().Target;
 			var player = target->GetOwner();
-			SetEnabled(location->IsAvailable());
+			SetEnabled(location->IsAvailable(player));
 
 			// Support new color, or keep the same color if nil is passed
 			this.TextColor = color ?? this.TextColor;
