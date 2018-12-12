@@ -86,19 +86,14 @@ static const CMC_GUI_Button = new GUI_Element
 	{
 		this.Tab_Enabled = enabled;
 		
-		if (this.Tab_Enabled)
+		// Deselect disabled buttons
+		if (!enabled && IsSelected())
 		{
-			this.BackgroundColor = GUI_CMC_Background_Color_Default;
+			SetSelected(false, true); // Also updates the background color
 		}
 		else
 		{
-			this.BackgroundColor = GUI_CMC_Background_Color_Invalid;
-		}
-		Update({ BackgroundColor = this.BackgroundColor});
-		
-		if (IsSelected())
-		{
-			SetSelected(false, true);
+			UpdateBackground();
 		}
 		return this;
 	},
@@ -126,6 +121,11 @@ static const CMC_GUI_Button = new GUI_Element
 		return this.Tab_Selected;
 	},
 	
+	IsEnabled = func ()
+	{
+		return this.Tab_Enabled;
+	},
+	
 	IsTabButton = func ()
 	{
 		return nil != this.Tab_Index;
@@ -135,7 +135,11 @@ static const CMC_GUI_Button = new GUI_Element
 	{
 		if (color == nil)
 		{
-			if (this.Tab_Selected)
+			if (!IsEnabled())
+			{
+				UpdateBackground(GUI_CMC_Background_Color_Invalid);
+			}
+			else if (IsSelected())
 			{
 				UpdateBackground(GUI_CMC_Background_Color_Highlight);
 			}

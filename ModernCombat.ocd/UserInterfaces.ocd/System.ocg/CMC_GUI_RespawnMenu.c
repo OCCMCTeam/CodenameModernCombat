@@ -250,9 +250,9 @@ static const CMC_GUI_RespawnMenu_TabRow = new GUI_Element
 		return tab;
 	},
 	
-	SelectTab = func (identifier, int index)
+	SelectTab = func (identifier, int index, bool skip_callback)
 	{
-		GetTabController()->SelectTab(identifier, index);
+		GetTabController()->SelectTab(identifier, index, skip_callback);
 	},
 	
 	GetTabController = func ()

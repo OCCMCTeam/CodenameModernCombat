@@ -137,7 +137,6 @@ static const CMC_GUI_Controller_Tab = new Global
 		{
 			FatalError("Tab not found");
 		}
-		
 		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
 		{
 			this.Tab_Elements[i]->SetSelected(i == index, skip_callback);
@@ -146,16 +145,34 @@ static const CMC_GUI_Controller_Tab = new Global
 	
 	SelectBestTab = func (bool skip_callback)
 	{
-		var best_index = 0;
-		for (var i = 1; i < GetLength(this.Tab_Elements); ++i)
+		var best_index = -1;
+		var best_tab = nil;
+		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
 		{
-			if (this.Tab_Elements[i].Priority < this.Tab_Elements[best_index].Priority)
+			// Skip disabled tabs, if they can be disabled
+			var tab = this.Tab_Elements[i];
+			if (tab.IsEnabled && !tab->IsEnabled())
+			{
+				continue;
+			}
+
+			// Select the tabs
+			if (best_index == -1 || (tab.Priority < best_tab.Priority))
 			{
 				best_index = i;
+				best_tab = this.Tab_Elements[best_index];
 			}
 		}
 		
-		SelectTab(nil, best_index, skip_callback);
+		if (best_index == -1)
+		{
+			return false;
+		}
+		else
+		{
+			SelectTab(nil, best_index, skip_callback);
+			return true;
+		}
 	},
 	
 	GetSelectedTab = func ()
