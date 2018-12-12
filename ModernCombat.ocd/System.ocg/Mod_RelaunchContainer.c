@@ -49,6 +49,9 @@ public func OnInitializeCrew(object crew)
 		contents->RemoveObject();
 	}
 	
+	// Silence player messages
+	CreateEffect(FxSilencePlayerMessages, 1, 1);
+	
 	// Open the respawn menu
 	crew->~OpenRespawnMenu();
 
@@ -147,4 +150,16 @@ public func OnTimeRemaining(int frames)
 		GetRespawnMenu()->GetRespawnButton()->OnTimeRemaining(frames);
 	}
 }
+
+
+local FxSilencePlayerMessages = new Effect
+{
+	Timer = func ()
+	{
+		if (this.Target->GetRelaunchCrew())
+		{
+			this.Target->GetRelaunchCrew()->Message(""); // Disable player messages
+		}
+	}
+};
 
