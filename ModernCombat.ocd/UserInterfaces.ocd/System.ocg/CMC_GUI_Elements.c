@@ -72,13 +72,12 @@ static const CMC_GUI_Controller_Tab = new Global
 	Tab_Ids = nil,
 	Tab_Elements = nil,
 
-	GetTab = func (identifier, bool strict)
+	GetTab = func (identifier, int index, bool strict)
 	{
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
 		this.Tab_Elements = this.Tab_Elements ?? [];
 		
-		var index;
 		if (identifier)
 		{
 			index = GetIndexOf(this.Tab_Ids, identifier);
@@ -126,7 +125,7 @@ static const CMC_GUI_Controller_Tab = new Global
 		return tab;
 	},
 	
-	SelectTab = func (identifier, int index)
+	SelectTab = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
 		{
@@ -141,7 +140,7 @@ static const CMC_GUI_Controller_Tab = new Global
 		
 		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
 		{
-			this.Tab_Elements[i]->SetSelected(i == index);
+			this.Tab_Elements[i]->SetSelected(i == index, skip_callback);
 		}
 	},
 	

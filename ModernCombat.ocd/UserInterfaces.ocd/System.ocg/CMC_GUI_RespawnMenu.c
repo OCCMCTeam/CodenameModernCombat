@@ -356,36 +356,24 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 	Style = GUI_GridLayout,
 
 	// Elements for pseudo-proplist
-	// Adding a real proplist would add the elements as a submenu ()
-	Tab_Ids = nil,
-	Tab_Elements = nil,
-	Tab_Width = nil,
+	// Adding a real proplist would add the elements as a submenu
+	Tab_Controller = nil,
 
 	AddTab = func (object location)
 	{
 		// Establish defaults
-		this.Tab_Ids = this.Tab_Ids ?? [];
-		this.Tab_Elements = this.Tab_Elements ?? [];
-		this.Tab_Width = this.Tab_Width ?? GuiDimensionCmc();
-		
 		var identifier = location->ObjectNumber();
 		
-		var tab;
-		var index = GetIndexOf(this.Tab_Ids, identifier);
-		if (index >= 0)
+		var tab = GetTabController()->GetTab(identifier);
+		if (!tab)
 		{
-			tab = this.Tab_Elements[index];
-		}
-		else
-		{
-			var tab_count = GetLength(this.Tab_Elements);
+			var tab_count = GetTabController()->GetTabCount();
 		
 			// Add additional tab
 			tab = new CMC_GUI_RespawnMenu_LocationButton { Priority = location->GetPriority(), Tab_Index = tab_count };
 			tab->Assemble()->WithDefaultDimensions(1000)->AddTo(this);
 
-			PushBack(this.Tab_Ids, identifier);
-			PushBack(this.Tab_Elements, tab);
+			GetTabController()->AddTab(identifier, tab);
 		}
 		tab->SetLocation(location)->Update();
 		
@@ -395,62 +383,36 @@ static const CMC_GUI_RespawnMenu_DeployList = new GUI_Element
 	
 	GetTab = func (identifier, int index)
 	{
-		if (identifier)
-		{
-			index = GetIndexOf(this.Tab_Ids, identifier);
-		}
-		index = index ?? 0;
-
-		if (index == -1)
-		{
-			FatalError("Tab not found");
-		}
-		return this.Tab_Elements[index];
+		return GetTabController()->GetTab(identifier, index, ...);
 	},
 	
 	SelectTab = func (identifier, int index, bool skip_callback)
 	{
-		if (identifier)
-		{
-			index = GetIndexOf(this.Tab_Ids, identifier);
-		}
-		index = index ?? 0;
-
-		if (index == -1)
-		{
-			FatalError("Tab not found");
-		}
-		
-		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
-		{
-			this.Tab_Elements[i]->SetSelected(i == index, skip_callback);
-		}
+		return GetTabController()->SelectTab(identifier, index, skip_callback, ...);
 	},
 	
 	SelectBestTab = func (bool skip_callback)
 	{
-		var best_index = 0;
-		for (var i = 1; i < GetLength(this.Tab_Elements); ++i)
-		{
-			if (this.Tab_Elements[i].Priority < this.Tab_Elements[best_index].Priority)
-			{
-				best_index = i;
-			}
-		}
-		
-		SelectTab(nil, best_index, skip_callback);
+		return GetTabController()->SelectBestTab(skip_callback, ...);
 	},
 	
 	GetSelectedTab = func ()
 	{
-		for (var tab in this.Tab_Elements)
+		return GetTabController()->GetSelectedTab();
+	},
+	
+	GetTabController = func ()
+	{
+		if (this.Tab_Controller)
 		{
-			if (tab->IsSelected())
-			{
-				return tab;
-			}
+			return this.Tab_Controller[0];
 		}
-		return nil;
+		else
+		{
+			var controller = new CMC_GUI_Controller_Tab {};
+			this.Tab_Controller = [controller]; // Adding a real proplist would add the elements as a submenu
+			return controller;
+		}
 	},
 };
 
