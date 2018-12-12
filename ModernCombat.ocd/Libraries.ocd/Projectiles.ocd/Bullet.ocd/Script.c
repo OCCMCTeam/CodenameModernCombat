@@ -184,41 +184,76 @@ func DrawBubbles(int x_start, int y_start, int x_end, int y_end)
 func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 {
 	var particle_size = 64;
-	var particle_offset = 32;
+	var position_margin = 20;
 
 	// Determine distance, and cancel if it is too near
-	var distance = Distance(x_start, y_start, x_end, y_end) - particle_offset;
-	if (distance < particle_size) return;
+	var distance = Distance(x_start, y_start, x_end, y_end);
+	if (distance <= 2 * position_margin) return;
 
 	// Determine starting position of the effect
-	var position = 20 + Random(distance - 70); // 20 + [0; actual distance - 32 - 70]; [52; actual distance - 82] 
-	var speed = Max(60, RandomX(-20, 20) + velocity / 2);
-	var dx = x_end - x_start;
-	var dy = y_end - y_start;
-	var x = position * dx / distance;
-	var y = position * dy / distance;
-	var angle = Angle(x_start, y_start, x_end, y_end);
-	var time = Min(7, 10 * (distance - position) / speed);
-	var color_start = SplitRGBaValue(this->TrailColor(CalcLifetime(position)));
-	var color_end = SplitRGBaValue(this->TrailColor(CalcLifetime(distance)));
+	var position_end = distance - position_margin;
+	var position_start = Max(position_margin, RandomX(position_margin, distance * 2 / 3));
+	
+	// Determine position for full particle size
+	var speed = Max(60, RandomX(-20, 20) + velocity);
+	var trace_length = RandomX(40, 80);
+	var position_growth = Min(trace_length, position_end);
+	var position_shrink = Max(position_start, position_end - trace_length);
+	if (position_shrink < position_growth)
+	{
+		position_shrink = (position_shrink + position_growth) / 2;
+		position_growth = position_shrink;
+		trace_length = position_shrink - position_start;
+	}
 
-	CreateParticle("BulletTrace", x_start + x - x_end, y_start + y - y_end, +Sin(angle, speed), -Cos(angle, speed), time,
+	// Determine times
+	var time_start = CalcLifetime(position_start, speed);
+	var time_growth = CalcLifetime(position_growth, speed);
+	var time_shrink = CalcLifetime(position_shrink, speed);
+	var time_end = CalcLifetime(position_end, speed);
+
+	var time_interval = Max(1, time_end - time_start);
+	var keyframe_end = 1000;
+	var keyframe_growth = Max(0, (time_growth - time_start) * keyframe_end / time_interval);
+	var keyframe_shrink = Max(0, (time_shrink - time_start) * keyframe_end / time_interval);
+	var stretch_min = position_margin * 1000 / particle_size;
+	var stretch_max = trace_length * 1000 / particle_size;
+
+	// Determine creation offset
+	var x = (distance - position_start) * (x_start - x_end) / distance;
+	var y = (distance - position_start) * (y_start - y_end) / distance;
+	var angle = Angle(x_start, y_start, x_end, y_end);
+	var color_start = SplitRGBaValue(this->TrailColor(time_start));
+	var color_end = SplitRGBaValue(this->TrailColor(time_end));
+	
+	var pv_stretch;
+	if (position_growth <= position_start)
+	{
+		pv_stretch = PV_KeyFrames(0, 0, stretch_max, keyframe_shrink, stretch_max, keyframe_end, stretch_min);
+	}
+	else
+	{
+		pv_stretch = PV_KeyFrames(0, 0, stretch_min, keyframe_growth, stretch_max, keyframe_shrink, stretch_max, keyframe_end, stretch_min);
+	}
+
+	CreateParticle("BulletTrace", x, y, +Sin(angle, speed), -Cos(angle, speed), time_interval,
 	{
 		R = PV_Linear(color_start.R, color_end.R), G = PV_Linear(color_start.G, color_end.G), B = PV_Linear(color_start.B, color_end.B),
-		Alpha = PV_Linear(255, 0),
 		Size = particle_size,
+		Alpha = PV_KeyFrames(0, 0, 110, keyframe_growth, 220, keyframe_shrink, 220, keyframe_end, 0),
+		Stretch = pv_stretch,
 		Rotation = angle,
 		BlitMode = GFX_BLIT_Additive,
 		CollisionDensity = 25, // Collide with liquids
-		OnCollision = PC_Stop, // Original particle died
+		OnCollision = PC_Stop, // Original particle died, but stopping is better
 	},
 	1);
 }
 
-func CalcLifetime(int distance)
+func CalcLifetime(int distance, int speed)
 {
 	var precision_velocity = 10;
-	return (precision_velocity * distance) / Max(1, velocity); 
+	return (precision_velocity * distance) / Max(1, speed ?? velocity); 
 }
 
 /* --- Properties --- */
