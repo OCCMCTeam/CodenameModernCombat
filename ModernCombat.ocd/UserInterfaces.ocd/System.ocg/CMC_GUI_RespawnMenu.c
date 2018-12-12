@@ -478,5 +478,17 @@ static const CMC_GUI_RespawnMenu_LocationButton = new CMC_GUI_RespawnMenu_TabBut
 		}
 		return this;
 	},
+	
+	GetSelectionPriority = func ()
+	{
+		var location = GetLocation();
+		if (location)
+		{
+			var target = GetRoot().Target;
+			var player = target->GetOwner();
+			return location->GetSelectionPriority(player);
+		}
+		return nil;
+	},
 };
 

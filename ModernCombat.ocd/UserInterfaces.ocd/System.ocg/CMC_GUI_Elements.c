@@ -146,7 +146,7 @@ static const CMC_GUI_Controller_Tab = new Global
 	SelectBestTab = func (bool skip_callback)
 	{
 		var best_index = -1;
-		var best_tab = nil;
+		var best_priority = nil;
 		for (var i = 0; i < GetLength(this.Tab_Elements); ++i)
 		{
 			// Skip disabled tabs, if they can be disabled
@@ -155,12 +155,13 @@ static const CMC_GUI_Controller_Tab = new Global
 			{
 				continue;
 			}
+			var priority = GetTabSelectionPriority(tab);
 
 			// Select the tabs
-			if (best_index == -1 || (tab.Priority < best_tab.Priority))
+			if (best_index == -1 || (priority < best_priority))
 			{
 				best_index = i;
-				best_tab = this.Tab_Elements[best_index];
+				best_priority = priority;
 			}
 		}
 		
@@ -185,5 +186,11 @@ static const CMC_GUI_Controller_Tab = new Global
 			}
 		}
 		return nil;
+	},
+	
+	GetTabSelectionPriority = func (proplist tab)
+	{
+		return tab->~GetSelectionPriority() // Use a custom priority?
+		    ?? tab.Priority;                // Otherwise get its priority from the menu sorting
 	},
 };

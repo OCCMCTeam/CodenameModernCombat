@@ -140,12 +140,20 @@ public func GetTeam()
 
 public func GetPriority()
 {
-	// Priority, for sorting
+	// Priority, for sorting the entry into the locations menu
 	var prio = 0;
 	if (GetTeam() < 0) prio += 1;
 	if (this->~IsTemporary()) prio += 1;
 	if (conditions) prio += GetLength(conditions);
 	return prio;
+}
+
+public func GetSelectionPriority(int player)
+{
+	// Priority, for selecting a default location in the locations menu
+	var location = RecommendRelaunchLocation(player);
+	var rating = GetRelaunchLocationRating(player, location);
+	return rating * (-1); // Lowest priority wins!
 }
 
 public func IsDisplayed(int player)
@@ -208,7 +216,7 @@ public func RecommendRelaunchLocation(int player)
 	}
 
 	var location = best_locations[Random(GetLength(best_locations))];
-	location->SetTeam(GetTeam());
+	location->SetTeam(GetTeam()); // No idea what this is for...
 	return location;
 }
 
