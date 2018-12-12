@@ -12,7 +12,13 @@ global func GetMaterialProperties(int x, int y)
 	props.material = material;
 	props.texture = texture;
 	props.in_liquid = GBackLiquid(x, y);
-	props.color = SplitRGBaValue(GetAverageTextureColor(texture));
+	
+	var color = RGB2HSL(GetAverageTextureColor(texture));
+	var lightness = GetRGBaValue(color, RGBA_BLUE);
+	var change = Min(RGBA_MAX, lightness + 20) - lightness;
+	color = HSL2RGB(DoRGBaValue(color, change, RGBA_BLUE));
+	
+	props.color = SplitRGBaValue(color);
 
 	var is_solid = GBackSolid(x, y);
 	var is_soft = GetMaterialVal("DigFree" , "Material", material)
@@ -34,13 +40,13 @@ global func GetMaterialProperties(int x, int y)
 		else if (is_soft)
 		{
 			props.sound_category = "Soft";
-			props.dust_factor = 2;
+			props.dust_factor = 3;
 			props.spark_factor = 0;
 		}
 		else
 		{
 			props.sound_category = "Hard";
-			props.dust_factor = 1;
+			props.dust_factor = 2;
 			props.spark_factor = 1;
 		}
 
