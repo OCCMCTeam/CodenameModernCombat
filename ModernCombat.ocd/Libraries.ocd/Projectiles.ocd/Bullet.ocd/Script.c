@@ -136,6 +136,7 @@ public func OnHitScan(int x_start, int y_start, int x_end, int y_end)
 	var y = Sign(GetYDir());
 	MaterialProperties = GetMaterialProperties(x + x_end - GetX(), y + y_end - GetY());
 	DrawBubbles(x_start, y_start, x_end, y_end);
+	DrawTrace(x_start, y_start, x_end, y_end);
 }
 
 /* --- Display --- */
@@ -178,6 +179,46 @@ func DrawBubbles(int x_start, int y_start, int x_end, int y_end)
 			CreateObject(Fx_Bubble, x, y, NO_OWNER)->SetSpeed(GetXDir() / 30 + RandomX(-5, 5), GetYDir() / 30 + RandomX(-5, 5));
 		}
 	}
+}
+
+func DrawTrace(int x_start, int y_start, int x_end, int y_end)
+{
+	var particle_size = 64;
+	var particle_offset = 32;
+
+	// Determine distance, and cancel if it is too near
+	var distance = Distance(x_start, y_start, x_end, y_end) - particle_offset;
+	if (distance < particle_size) return;
+
+	// Determine starting position of the effect
+	var position = 20 + Random(distance - 70); // 20 + [0; actual distance - 32 - 70]; [52; actual distance - 82] 
+	var speed = Max(60, RandomX(-20, 20) + velocity / 2);
+	var dx = x_end - x_start;
+	var dy = y_end - y_start;
+	var x = position * dx / distance;
+	var y = position * dy / distance;
+	var angle = Angle(x_start, y_start, x_end, y_end);
+	var time = Min(7, 10 * (distance - position) / speed);
+	var color_start = SplitRGBaValue(this->TrailColor(CalcLifetime(position)));
+	var color_end = SplitRGBaValue(this->TrailColor(CalcLifetime(distance)));
+
+	CreateParticle("BulletTrace", x_start + x - x_end, y_start + y - y_end, +Sin(angle, speed), -Cos(angle, speed), time,
+	{
+		R = PV_Linear(color_start.R, color_end.R), G = PV_Linear(color_start.G, color_end.G), B = PV_Linear(color_start.B, color_end.B),
+		Alpha = PV_Linear(255, 0),
+		Size = particle_size,
+		Rotation = angle,
+		BlitMode = GFX_BLIT_Additive,
+		CollisionDensity = 25, // Collide with liquids
+		OnCollision = PC_Stop, // Original particle died
+	},
+	1);
+}
+
+func CalcLifetime(int distance)
+{
+	var precision_velocity = 10;
+	return (precision_velocity * distance) / Max(1, velocity); 
 }
 
 /* --- Properties --- */
