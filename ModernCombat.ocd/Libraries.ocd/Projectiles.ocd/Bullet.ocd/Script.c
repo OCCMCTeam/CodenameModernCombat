@@ -137,6 +137,7 @@ public func OnHitScan(int x_start, int y_start, int x_end, int y_end)
 	MaterialProperties = GetMaterialProperties(x + x_end - GetX(), y + y_end - GetY());
 	DrawBubbles(x_start, y_start, x_end, y_end);
 	DrawTrace(x_start, y_start, x_end, y_end);
+	DrawSpark();
 }
 
 /* --- Display --- */
@@ -248,6 +249,19 @@ func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 		OnCollision = PC_Stop, // Original particle died, but stopping is better
 	},
 	1);
+}
+
+func DrawSpark()
+{
+	CreateParticle("StarFlash", 0, 0, 0, 0, PV_Random(7, 11), {
+	    R = 255,
+	    G = PV_Linear(196, 64),
+	    B = PV_Random(0, 128, 2),
+		Alpha = PV_Linear(160, 0),
+		Rotation = PV_Random(0, 360),
+		BlitMode = GFX_BLIT_Additive,
+		Size = PV_Linear(BoundBy(GetDamageAmount() / 2, 2, 5), 1),
+	});
 }
 
 func CalcLifetime(int distance, int speed)
