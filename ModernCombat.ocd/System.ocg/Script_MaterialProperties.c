@@ -13,10 +13,7 @@ global func GetMaterialProperties(int x, int y)
 	props.texture = texture;
 	props.in_liquid = GBackLiquid(x, y);
 	
-	var color = RGB2HSL(GetAverageTextureColor(texture));
-	var lightness = GetRGBaValue(color, RGBA_BLUE);
-	var change = Min(RGBA_MAX, lightness + 20) - lightness;
-	color = HSL2RGB(DoRGBaValue(color, change, RGBA_BLUE));
+	var color = RGBaDoLightness(GetAverageTextureColor(texture), 20);
 	
 	props.color = SplitRGBaValue(color);
 

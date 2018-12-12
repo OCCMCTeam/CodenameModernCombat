@@ -58,7 +58,7 @@ public func OnHitLandscape()
 	if (MaterialProperties.dust_factor)
 	{
 		// Dust
-		var dust_size = 4 * MaterialProperties.dust_factor;
+		var dust_size = 3 * MaterialProperties.dust_factor;
 		var dust_xdir = +Sin(hit_angle, -1, precision);
 		var dust_ydir = -Cos(hit_angle, -1, precision);
 		CreateParticle("Dust", PV_Random(-1, 1), PV_Random(-1, 1), PV_Random(dust_xdir - 1, dust_xdir + 1), PV_Random(dust_ydir - 1, dust_ydir + 1), PV_Random(20, 40),
@@ -173,12 +173,42 @@ func DrawBubbles(int x_start, int y_start, int x_end, int y_end)
 		{
 			if (MaterialProperties && !MaterialProperties.hit_water)
 			{
-				MaterialProperties.hit_water = true;
+				MaterialProperties.hit_water = { X = x, Y = y, Color = RGBaDoLightness(GetAverageTextureColor(GetTexture(x, y)), 30)};
 				SoundAt("Projectiles::Shared::HitWater?", x, y);
 			}
-			if (Random(5)) continue;
+			if (Random(3)) continue;
 			CreateObject(Fx_Bubble, x, y, NO_OWNER)->SetSpeed(GetXDir() / 30 + RandomX(-5, 5), GetYDir() / 30 + RandomX(-5, 5));
 		}
+	}
+	
+	if (MaterialProperties.hit_water)
+	{
+		// Detect exact water level
+		var impact_x = MaterialProperties.hit_water.X;
+		var impact_y = MaterialProperties.hit_water.Y;
+		for (var tries = 15; tries > 0 && GBackLiquid(impact_x, impact_y); --tries)
+		{
+			impact_y -= 1;
+		}
+		impact_y += 1;
+
+		// The splash
+		CreateParticle("RaindropSplash", impact_x, impact_y, 0, 0, PV_Random(7, 12), Particles_Splash(MaterialProperties.hit_water.Color), 0);
+
+		var particles = {Prototype = Particles_RainSmall(MaterialProperties.hit_water.Color), OnCollision = PC_Stop(), Stretch = PV_Speed(1500), Alpha = PV_Linear(150, 0)};
+		// Some drops
+		var precision = 10;
+		var hit_angle = Angle(0, 0, GetXDir(), GetYDir(), precision);
+		var amount = RandomX(3, 5);
+		for (var i = 0; i < amount; ++i)
+		{
+			var angle = RandomX(hit_angle - 10, hit_angle + 10);
+			var speed = -velocity/15;
+			var xdir = +Sin(angle, speed, precision);
+			var ydir = -Cos(angle, speed, precision);
+			CreateParticle("Air", impact_x, impact_y - 2, xdir, ydir, PV_Random(20, 60), particles, 1);
+		}
+		CreateParticle("Air", impact_x, impact_y - 2, PV_Random(-5, 5), PV_Random(-10, -20), PV_Random(20, 60), particles, RandomX(3, 7));
 	}
 }
 
@@ -246,7 +276,7 @@ func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 		Rotation = angle,
 		BlitMode = GFX_BLIT_Additive,
 		CollisionDensity = 25, // Collide with liquids
-		OnCollision = PC_Stop, // Original particle died, but stopping is better
+		OnCollision = PC_Stop(), // Original particle died, but stopping is better
 	},
 	1);
 }

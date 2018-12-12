@@ -97,3 +97,18 @@ global func SetRGBaByV(int rgba, int v)
 	var max = Max([color.R, color.G, color.B]);
 	return RGBa(color.R * v / max, color.G * v / max, color.B * v / max, color.A);
 }
+
+
+// Sets the 'lightness' value of the color. 
+// @par rgba The color
+// @par change The change in the 'lightness' value. 
+global func RGBaDoLightness(int rgba, int change)
+{
+	var alpha = GetRGBaValue(rgba, RGBA_ALPHA);
+	var color = RGB2HSL(rgba);
+	var lightness = GetRGBaValue(color, RGBA_BLUE);
+	change = BoundBy(change, -lightness, RGBA_MAX - lightness);
+	color = SplitRGBaValue(HSL2RGB(DoRGBaValue(color, change, RGBA_BLUE)));
+	return RGBa(color.R, color.G, color.B, alpha);
+}
+
