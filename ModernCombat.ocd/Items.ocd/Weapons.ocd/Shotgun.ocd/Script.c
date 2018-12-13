@@ -114,12 +114,12 @@ func FiremodeBullets_TechniqueSpreadshot()
 local ReloadStateMap = 
 {
 	/* --- Default sequence --- */
-	Single_Prepare     = { Delay = 10, UserAnimation = {Name = "MusketLoadArms", Begin =    0, End = 1000, }, },
-	Single_InsertAmmo  = { Delay = 15, UserAnimation = {Name = "MusketLoadArms", Begin =  500, End = 4000, }, },
+	Single_Prepare     = { Delay = 10, UserAnimation = {Name = "MusketLoadArms", Begin =    0, End = 1000, }, RaiseSpread = true, },
+	Single_InsertAmmo  = { Delay = 15, UserAnimation = {Name = "MusketLoadArms", Begin =  500, End = 4000, }, RaiseSpread = true, },
 	Single_ReadyWeapon = { Delay = 25, UserAnimation = {Name = "MusketLoadArms", Begin = 3501, End = 4500, }, },
 	/* --- Support for an extra ammo chamber --- */
-	Single_LoadAmmoChamber  = { Delay =  5, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3501, }, EndCall = "PlaySoundLoadAmmoChamber", },
-	Single_OpenAmmoChamber  = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 1000, End = 1001, }, StartCall = "PlaySoundOpenAmmoChamber", },
+	Single_LoadAmmoChamber  = { Delay =  5, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3501, }, EndCall = "PlaySoundLoadAmmoChamber", RaiseSpread = true, },
+	Single_OpenAmmoChamber  = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 1000, End = 1001, }, StartCall = "PlaySoundOpenAmmoChamber", RaiseSpread = true, },
 	Single_CloseAmmoChamber = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3600, }, StartCall = "PlaySoundCloseAmmoChamber", },
 };
 

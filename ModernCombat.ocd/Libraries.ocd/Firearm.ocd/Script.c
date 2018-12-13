@@ -648,6 +648,15 @@ public func NeedsReload(object user, proplist firemode, bool user_requested)
 	return user_requested || out_of_ammo || !loaded;
 }
 
+func OnReloading(object user, int x, int y, proplist firemode, proplist reload_state)
+{
+	if (reload_state && reload_state.RaiseSpread)
+	{
+		user->~RaiseFirearmSpread(firemode->~GetSpreadLimit());
+	}
+	_inherited(user, x, y, firemode, reload_state, ...);
+}
+
 /* --- Cooldown --- */
 
 public func NeedsRecovery(object user, proplist firemode) // TODO: Make a custom callback instead in the library

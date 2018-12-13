@@ -144,14 +144,14 @@ func FiremodeBullets_TechniqueSingle()
 local ReloadStateMap = 
 {
 	/* --- Default sequence --- */
-	Magazine_Prepare     = { Delay = 5, },
-	Magazine_Drop        = { Delay = 20, StartCall = "PlaySoundEjectMagazine", },
-	Magazine_Insert      = { Delay = 25, EndCall = "PlaySoundInsertMagazine", },
+	Magazine_Prepare     = { Delay = 5,  RaiseSpread = true, },
+	Magazine_Drop        = { Delay = 20, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_Insert      = { Delay = 25, RaiseSpread = true, EndCall = "PlaySoundInsertMagazine", },
 	Magazine_ReadyWeapon = { Delay = 10, },
 
 	/* --- Support adding spare ammo back to the user --- */
-	Magazine_StashStart  = { Delay = 20, StartCall = "PlaySoundEjectMagazine", },
-	Magazine_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
+	Magazine_StashStart  = { Delay = 20, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_StashFinish = { Delay = 20, RaiseSpread = true, StartCall = "PlaySoundResupplyAmmo", },
 
 	/* --- Support for an extra ammo chamber --- */
 	Magazine_LoadAmmoChamber = { Delay = 10, EndCall = "PlaySoundChamberBullet", },

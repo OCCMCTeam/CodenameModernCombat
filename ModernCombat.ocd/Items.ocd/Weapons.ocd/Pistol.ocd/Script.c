@@ -147,14 +147,14 @@ func FiremodeBullets_TechniqueTracerDart()
 local ReloadStateMap = 
 {
 	/* --- Default sequence --- */
-	Magazine_Prepare     = { Delay = 1, },
-	Magazine_Drop        = { Delay = 10, StartCall = "PlaySoundEjectMagazine", },
-	Magazine_Insert      = { Delay = 20, EndCall = "PlaySoundInsertMagazine", },
+	Magazine_Prepare     = { Delay = 1,  RaiseSpread = true, },
+	Magazine_Drop        = { Delay = 10, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_Insert      = { Delay = 20, RaiseSpread = true, EndCall = "PlaySoundInsertMagazine", },
 	Magazine_ReadyWeapon = { Delay = 4, },
 
 	/* --- Support adding spare ammo back to the user --- */
-	Magazine_StashStart  = { Delay = 10, StartCall = "PlaySoundEjectMagazine", },
-	Magazine_StashFinish = { Delay = 10, StartCall = "PlaySoundResupplyAmmo", },
+	Magazine_StashStart  = { Delay = 10, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
+	Magazine_StashFinish = { Delay = 10, RaiseSpread = true, StartCall = "PlaySoundResupplyAmmo", },
 
 	/* --- Support for an extra ammo chamber --- */
 	Magazine_LoadAmmoChamber = { Delay = 5, EndCall = "PlaySoundChamberBullet", },
