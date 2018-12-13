@@ -111,6 +111,9 @@ public func OnRelaunchCrew(object crew)
 
 	// Restore light
 	crew->SetLightRange(300);
+
+	// Set team color
+	crew->SetColor(Arena_FactionManager->GetInstance()->GetFactionByPlayer(crew->GetOwner())->GetColor());
 }
 
 /* --- Overloaded functions --- */

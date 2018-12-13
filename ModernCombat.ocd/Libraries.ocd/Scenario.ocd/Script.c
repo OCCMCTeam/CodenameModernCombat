@@ -11,6 +11,9 @@
 public func Initialize()
 {
 	_inherited(...);
+	
+	// All goals are team goals
+	Arena_FactionManager->SetType(Arena_Faction_Team);
 
 	// Create the round manager - this organizes the game in rounds
 	CreateObject(Environment_RoundManager);

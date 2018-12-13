@@ -88,7 +88,6 @@ public func SetFlag(object flagpost)
 		FatalError(Format("Object %v is not a flag post!", flagpost));
 	}
 	goal_flagpost = flagpost;
-	goal_flagpost->RegisterGoal(this);
 }
 
 
@@ -113,30 +112,30 @@ func EvaluateProgress()
 		FatalError("Hold the Flag goal has no flag, will remove the object");
 	}
 
-	var team = GetFlag()->GetTeam();
-	if (team != NO_OWNER && GetFlag()->IsFullyCaptured())
+	var faction = GetFlag()->GetTeam();
+	if (faction != nil && GetFlag()->IsFullyCaptured())
 	{
 		score_progress += 1;
 		if (score_progress >= 100)
 		{
 			// Score and reset progress
 			score_progress = 0;
-			DoFactionScore(team, 1);
+			DoFactionScore(faction, 1);
 
 			// Add points for achievement system
 			for (var i; i < GetPlayerCount(); ++i)
 			{
 				var player = GetPlayerByIndex(i);
 				// Leading team?
-				if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
+				if (GetFactionByPlayer(GetPlayerByIndex(i)) == faction)
 				{
 					DoPlayerPoints(BonusPoints("Control"), RWDS_TeamPoints, player, GetCrew(player), CMC_Icon_Point_Control);
 					Sound("Info_Event", {global = true, player = player});
 				}
 				// Event message for other teams: The team is close to winning
-				else if (GetFactionScore(team) == faction_score_warning)
+				else if (GetFactionScore(faction) == faction_score_warning)
 				{
-					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(team), GetWinScore() - faction_score_warning), CMC_Icon_Point_Control, 0, 0, 0, "Info_Alarm.ogg");
+					EventInfo4K(GetPlayerByIndex(i)+1, Format("$TeamReachingGoal$", GetTaggedTeamName(faction->GetID()), GetWinScore() - faction_score_warning), CMC_Icon_Point_Control, 0, 0, 0, "Info_Alarm.ogg");
 				}
 			}
 		}
@@ -153,7 +152,7 @@ func EvaluateProgress()
 /* --- Events --- */
 
 // This is currently a game call, might be changed...
-public func FlagLost(object flagpost, int old_team, int new_team, array attackers)
+public func FlagLost(object flagpost, proplist old_team, proplist new_team, array attackers)
 {
 	if (flagpost != GetFlag()) return;
 
@@ -167,18 +166,18 @@ public func FlagLost(object flagpost, int old_team, int new_team, array attacker
 	}
 
 	// Event message: Flag post lost
-	for (var i; i < GetPlayerCount(); i++)
+	for (var i = 0; i < GetPlayerCount(); ++i)
 	{
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == old_team)
+		if (GetFactionByPlayer(GetPlayerByIndex(i)) == old_team)
 		{
-			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetName(GetFlag()), GetFactionColor(new_team), GetTeamName(new_team)), CMC_Icon_Point_OPNeutralization, 0, GetFactionColor(new_team), 0, "Info_Event.ogg");
+			EventInfo4K(GetPlayerByIndex(i)+1, Format("$MsgFlagLost$", GetFlag()->GetName(), new_team->GetColor(), new_team->GetName()), CMC_Icon_Point_OPNeutralization, 0, new_team->GetColor(), 0, "Info_Event.ogg");
 		}
 	}
 }
 
 
 // This is currently a game call, might be changed...
-public func FlagCaptured(object flagpost, int by_team, array attackers, bool regained)
+public func FlagCaptured(object flagpost, proplist by_team, array attackers, bool regained)
 {
 	if (flagpost != GetFlag()) return;
 
@@ -210,7 +209,7 @@ public func FlagCaptured(object flagpost, int by_team, array attackers, bool reg
 
 
 	// Event message: Flag post captured
-	EventInfo4K(0, Format("$MsgCaptured$", GetFactionColor(by_team), GetTeamName(by_team), GetFlag()->GetName()), CMC_Icon_Point_OPConquest, 0, GetFactionColor(by_team), 0, "Info_Objective.ogg");
+	EventInfo4K(0, Format("$MsgCaptured$", by_team->GetColor(), by_team->GetName(), GetFlag()->GetName()), CMC_Icon_Point_OPConquest, 0, by_team->GetColor(), 0, "Info_Objective.ogg");
 	UpdateScoreboard();
 }
 
@@ -291,7 +290,7 @@ func UpdateScoreboard() // TODO
 
 		++row;
 		Scoreboard->NewEntry(row, "");
-		Scoreboard->SetData(row, GHTF_Column_Name, Format("<c %x>%s</c>", GetFactionColor(team), GetTeamName(team)));
+		Scoreboard->SetData(row, GHTF_Column_Name, Format("<c %x>%s</c>", team->GetColor(), team->GetName()));
 		Scoreboard->SetData(row, GHTF_Column_Status, Format("<c %x>%d%</c>", RGB(128, 128, 128), progress), progress);
 		Scoreboard->SetData(row, GHTF_Column_Score, Format("<c ffbb00>%d</c>", GetFactionScore(team)), GetFactionScore(team));
 	}

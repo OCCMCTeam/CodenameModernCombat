@@ -2,18 +2,23 @@
 	Unit test for the mortal wounds mechanic
  */
 
-static const team_a = 1;
-static const team_b = 2;
+static team_a;
+static team_b;
 static team_a_p1, team_a_p2, team_b_p1, team_b_p2, flag, goal, crew;
 
 
 func Initialize()
 {
+	Arena_FactionManager->SetType(Arena_Faction_Team);
+
+	team_a = Arena_FactionManager->GetInstance()->GetFaction(1);
+	team_b = Arena_FactionManager->GetInstance()->GetFaction(2);
+
 	// Create script players for these tests.
-	CreateScriptPlayer("Team A P1", RGB(0, 0, 255), team_a, CSPF_NoEliminationCheck);
-	CreateScriptPlayer("Team A P2", RGB(0, 0, 255), team_a, CSPF_NoEliminationCheck);
-	CreateScriptPlayer("Team B P1", RGB(255, 0, 0), team_b, CSPF_NoEliminationCheck);
-	CreateScriptPlayer("Team B P2", RGB(255, 0, 0), team_b, CSPF_NoEliminationCheck);
+	CreateScriptPlayer("Team A P1", RGB(0, 0, 255), team_a->GetID(), CSPF_NoEliminationCheck);
+	CreateScriptPlayer("Team A P2", RGB(0, 0, 255), team_a->GetID(), CSPF_NoEliminationCheck);
+	CreateScriptPlayer("Team B P1", RGB(255, 0, 0), team_b->GetID(), CSPF_NoEliminationCheck);
+	CreateScriptPlayer("Team B P2", RGB(255, 0, 0), team_b->GetID(), CSPF_NoEliminationCheck);
 }
 
 
@@ -70,7 +75,7 @@ global func GetPlayerName(int player)
 global func InitTest(int win_score, int crew_count)
 {
 	// Remove all objects except the player crew members and relaunch container they are in.
-	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
+	for (var obj in FindObjects(Find_Not(Find_Or(Find_ID(Arena_FactionManager), Find_ID(RelaunchContainer), Find_Category(C4D_Rule)))))
 		if (obj && !((obj->GetOCF() & OCF_CrewMember) && (GetPlayerType(obj->GetOwner()) == C4PT_User)))
 			obj->RemoveObject();
 

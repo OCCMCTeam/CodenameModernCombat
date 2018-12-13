@@ -5,16 +5,15 @@
 /* --- Properties --- */
 
 local deploy_location; // Deployment location next to the flag; Might be changed, so that the flag itself is a location, instead of having a helper object?
-local goal_object;     // Goal that is linked with this flag
 local flag;            // The flag helper object
 local bar;             // Status progress bar
 local range_marker;
 
-local capture_team;
+local capture_faction;
 local capture_progress;
 local capture_range;
 local capture_trend;
-local attacking_team;
+local attacking_faction;
 local attacking_crew;
 local has_no_enemies;
 local has_no_friends;
@@ -33,8 +32,8 @@ local FlagPost_Bar_Color_Back = 0x80ffffff;
 
 /* --- Interface --- */
 
-public func GetAttacker()		{ return attacking_team; }
-public func GetTeam()			{ return capture_team; }
+public func GetAttacker()		{ return attacking_faction; }
+public func GetTeam()			{ return capture_faction; }
 public func GetProgress()		{ return capture_progress; }
 public func GetTrend()			{ return capture_trend; }
 public func GetRange()			{ return capture_range; }
@@ -84,19 +83,13 @@ public func SetHoldTheFlag() // Fixed setting for HTF: one deploy location
 }
 
 
-public func RegisterGoal(object goal)
-{
-	goal_object = goal;
-}
-
-
 /* --- Engine Callbacks --- */
 
 func Initialize()
 {
 	// Set defaults
 	attacking_crew = [];
-	last_owner = 0;
+	last_owner = nil;
 	has_deployment = true;
 
 	SetCaptureRange();
@@ -149,10 +142,10 @@ func CaptureTimer()
 	{
 		var player = crew->GetOwner();
 		if (player == NO_OWNER) continue;
-		if (!GetPlayerName(player) || !GetPlayerTeam(player)) continue;
+		if (!GetPlayerName(player) || !GetFactionByPlayer(player)) continue;
 		if (!PathFree(this->GetX(), this->GetY() - (GetID()->GetDefHeight()/2), crew->GetX(), crew->GetY())) continue;
 
-		if (GetPlayerTeam(player) == capture_team)
+		if (GetFactionByPlayer(player) == capture_faction)
 		{
 			PushBack(friends_in_range, crew);
 		}
@@ -167,19 +160,19 @@ func CaptureTimer()
 	var has_friends = friends > 0;
 	var has_enemies = enemies > 0;
 
-	attacking_team = GetTeamMajority(enemies_in_range);
+	attacking_faction = GetTeamMajority(enemies_in_range);
 
 	// Only enemies in range? Neutralize the flag
 	var max_progress = 3;
 	capture_trend = 0;
 	if (has_enemies && !has_friends)
 	{
-		DoProgress(attacking_team, Min(enemies, max_progress));
+		DoProgress(attacking_faction, Min(enemies, max_progress));
 	}
 	// Only allies in range? Continue capturing
 	if (!has_enemies && has_friends)
 	{
-		DoProgress(capture_team, Min(friends, max_progress));
+		DoProgress(capture_faction, Min(friends, max_progress));
 	}
 
 	UpdateStatusDisplay(has_enemies, has_friends);
@@ -249,27 +242,27 @@ func UpdateStatusDisplay(bool has_enemies, bool has_friends)
 		}
 		else
 		{
-			SetIconState(CMC_Icon_FlagPost_Embattled, capture_team);
+			SetIconState(CMC_Icon_FlagPost_Embattled, capture_faction);
 		}
 	}
 }
 
 
-public func /* check */ DoProgress(int team, int amount)
+public func /* check */ DoProgress(proplist faction, int amount)
 {
 	var old_progress = capture_progress;
 
 	// Neutralize a hostile flag?
-	if (capture_team)
+	if (capture_faction)
 	{
-		if (team != capture_team && (capture_progress != 0))
+		if (faction != capture_faction && (capture_progress != 0))
 		{
 			amount = -amount;
 		}
 	}
 	else
 	{
-		capture_team = team;
+		capture_faction = faction;
 	}
 
 	capture_progress = BoundBy(capture_progress + amount, 0, 100);
@@ -277,31 +270,31 @@ public func /* check */ DoProgress(int team, int amount)
 
 	if ((old_progress == 100 && capture_trend < 0) || (old_progress == 0 && capture_trend > 0))
 	{
-		GameCallEx("FlagAttacked", this, capture_team, attacking_crew);
+		GameCallEx("FlagAttacked", this, capture_faction, attacking_crew);
 	}
 
 	// Start capturing
 	if (capture_progress < 100 && capture_trend != 0)
 	{
-		StartCapturing(team);
+		StartCapturing(faction);
 	}
 
 	// Done capturing
 	if ((capture_progress == 100) && (old_progress < 100))
 	{
-		DoCapture(team);
+		DoCapture(faction);
 	}
 
 	// Neutral flag
 	if ((capture_progress <= 0) && (old_progress > 0))
 	{
-		if (capture_team && last_owner != team)
+		if (capture_faction && last_owner != faction)
 		{
-			GameCallEx("FlagLost", this, capture_team, team, attacking_crew);
+			GameCallEx("FlagLost", this, capture_faction, faction, attacking_crew);
 		}
-		attacking_team = 0;
+		attacking_faction = nil;
 		is_captured = false;
-		capture_team = team;
+		capture_faction = faction;
 	}
 
 	UpdateFlag();
@@ -312,7 +305,7 @@ public func /* check */ DoProgress(int team, int amount)
 	}
 	else
 	{
-		SetIconState(CMC_Icon_FlagPost_Capturing, team);
+		SetIconState(CMC_Icon_FlagPost_Capturing, faction);
 	}
 
 	return capture_progress;
@@ -340,16 +333,13 @@ public func GetCrewInRange()
 public func GetTeamMajority(array crew)
 {
 	// Determine the team with most healthy members
-	var team_strength = [];
+	var faction_strength = [];
 	for (var member in crew)
 	{
-		var team = GetPlayerTeam(member->GetOwner());
-		if (team > 0)
-		{
-			team_strength[team] += member->GetEnergy();
-		}
+		var faction = GetFactionByPlayer(member->GetOwner());
+		faction_strength[faction->GetID()] += member->GetEnergy();
 	}
-	return GetMaxValueIndices(team_strength)[0];
+	return Arena_FactionManager->GetInstance()->GetFaction(GetMaxValueIndices(faction_strength)[0]);
 }
 
 
@@ -358,7 +348,7 @@ public func /* check */ IsAttacked()
 	for (var crew in GetCrewInRange())
 	{
 		if (crew->GetOwner() == NO_OWNER) continue;
-		if (GetPlayerTeam(crew->GetOwner()) != capture_team)
+		if (GetFactionByPlayer(crew->GetOwner()) != capture_faction)
 			return true;
 	}
 
@@ -366,45 +356,45 @@ public func /* check */ IsAttacked()
 }
 
 
-func StartCapturing(int team)
+func StartCapturing(proplist faction)
 {
-	attacking_team = team;
+	attacking_faction = faction;
 }
 
 
-func DoCapture(int team, bool silent)
+func DoCapture(proplist faction, bool silent)
 {
 	capture_progress = 100;
-	attacking_team = 0;
-	capture_team = team;
+	attacking_faction = 0;
+	capture_faction = faction;
 	is_captured = true;
 	var regained = false;
 	if (!silent)
 	{
-		if (last_owner == capture_team)
+		if (last_owner == capture_faction)
 		{
 			regained = true;
 		}
-		GameCallEx("FlagCaptured", this, capture_team, attacking_crew, regained);
+		GameCallEx("FlagCaptured", this, capture_faction, attacking_crew, regained);
 	}
 	attacking_crew = [];
-	last_owner = capture_team; // FIXME: This should be done BEFORE reassigning the team...
+	last_owner = capture_faction; // FIXME: This should be done BEFORE reassigning the team...
 	UpdateFlag();
 }
 
 
 func SetNeutral() // Used only by MoveFlagpost, so might be removed
 {
-	capture_team = 0;
+	capture_faction = nil;
 	capture_progress = 0;
-	attacking_team = 0;
+	attacking_faction = nil;
 	is_captured = false;
 	UpdateFlag();
 }
 
 /* --- Display --- */
 
-func SetIconState(id state, int team)
+func SetIconState(id state, proplist faction)
 {
 	SetGraphics(nil, state, 1, GFXOV_MODE_IngamePicture);
 	SetObjDrawTransform(500, 0, 0, 0, 500, 1000 * (GetID()->GetDefOffset(1) - 30), 1);
@@ -416,9 +406,9 @@ func UpdateFlag()
 
 	// Set color according to owner
 	var color;
-	if (capture_team)
+	if (capture_faction)
 	{
-		color = SetRGBaValue(goal_object->GetFactionColor(capture_team), 255, RGBA_ALPHA);
+		color = SetRGBaValue(capture_faction->GetColor(), 255, RGBA_ALPHA);
 	}
 	else
 	{
@@ -440,9 +430,9 @@ func UpdateFlag()
 
 	if (GetDeployLocation())
 	{
-		if (capture_team)
+		if (capture_faction)
 		{
-			GetDeployLocation()->SetTeam(capture_team); // Also calls UpdateMenuIcon
+			GetDeployLocation()->SetTeam(capture_faction); // Also calls UpdateMenuIcon
 		}
 		else
 		{
@@ -480,9 +470,17 @@ func ShowCaptureRadius()
 
 func GetScoreboardInfo()
 {
-	var team_color = goal_object->GetFactionColor(capture_team);
 	var flag_name_color = RGB(255, 255, 255);
 	var flag_name = GetName();
+	var team_color;
+	if (capture_faction == nil)
+	{
+		team_color = flag_name_color;
+	}
+	else
+	{
+		team_color = capture_faction->GetColor();
+	}
 	var capture_color = InterpolateRGBa(capture_progress, 0, RGBa(255, 255, 255, 255), 100, team_color);
 	if (is_captured)
 	{
@@ -503,7 +501,12 @@ func GetScoreboardInfo()
 
 func IsAvailableForDeployment(int player)
 {
-	return capture_team == GetPlayerTeam(player);
+	return capture_faction == GetFactionByPlayer(player);
+}
+
+func GetFactionByPlayer(int player)
+{
+	return Arena_FactionManager->GetInstance()->GetFactionByPlayer(player);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
