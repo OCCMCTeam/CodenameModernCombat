@@ -2,6 +2,7 @@
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
 #include Plugin_Firearm_ReloadStates_Magazine
+#include Plugin_Firearm_ReloadStates_Container
 
 /* --- Properties --- */
 
@@ -146,6 +147,8 @@ func FiremodeBullets_TechniqueTracerDart()
 
 local ReloadStateMap = 
 {
+	// Bullets
+
 	/* --- Default sequence --- */
 	Magazine_Prepare     = { Delay = 1,  RaiseSpread = true, },
 	Magazine_Drop        = { Delay = 10, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
@@ -158,7 +161,46 @@ local ReloadStateMap =
 
 	/* --- Support for an extra ammo chamber --- */
 	Magazine_LoadAmmoChamber = { Delay = 5, EndCall = "PlaySoundChamberBullet", },
+
+	// Tracer
+
+	/* --- Default sequence --- */
+	Container_Prepare     = { Delay = 10, StartCall = "PlaySoundOpenChamber", },
+	Container_EjectAmmo   = { Delay = 35, StartCall = "PlaySoundEjectDart", },
+	Container_InsertAmmo  = { Delay = 20, StartCall = "PlaySoundInsertDart", },
+	Container_Close       = { Delay = 10, StartCall = "PlaySoundCloseChamber", },
+	Container_ReadyWeapon = { Delay =  5, },
+
+	/* --- Support adding spare ammo back to the user --- */
+	Container_StashStart  = { Delay = 20, },
+	Container_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
 };
+
+
+func GetReloadStartState(proplist firemode)
+{
+	if (firemode.IsTracer)
+	{
+		return GetReloadStartStateContainer(firemode);
+	}
+	else
+	{
+		return GetReloadStartStateMagazine(firemode);
+	}
+}
+
+
+public func AmmoChamberCapacity(id ammo)
+{
+	if (GetFiremode().IsTracer) // FIXME: Should have access to the desired firemode via parameter
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
 
 /* --- Effects --- */
 
@@ -218,4 +260,25 @@ func PlaySoundChamberBullet()
 {
 	Sound("Items::Weapons::Pistol::Reload::PullSlide"); // Should just be "CloseChamber" actually? Pulling the slide is not really accurate, only on the first reload ever
 }
+
+func PlaySoundOpenChamber()
+{
+	Sound("Items::Weapons::Pistol::Reload::OpenChamber");
+}
+
+func PlaySoundCloseChamber()
+{
+	Sound("Items::Weapons::Pistol::Reload::CloseChamber");
+}
+
+func PlaySoundEjectDart()
+{
+	Sound("Items::Weapons::Pistol::Reload::EjectDart");
+}
+
+func PlaySoundInsertDart()
+{
+	Sound("Items::Weapons::Pistol::Reload::InsertDart");
+}
+
 

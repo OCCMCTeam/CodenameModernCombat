@@ -2,6 +2,7 @@
 #include Plugin_Firearm_AmmoChamber
 #include Plugin_Firearm_ReloadStates
 #include Plugin_Firearm_ReloadStates_Magazine
+#include Plugin_Firearm_ReloadStates_Container
 
 
 /* --- Properties --- */
@@ -190,10 +191,12 @@ func FiremodeGrenades_Smoke()
 
 local ReloadStateMap = 
 {
+	// Bullets
+
 	/* --- Default sequence --- */
 	Magazine_Prepare     = { Delay = 5,  RaiseSpread = true, },
 	Magazine_Drop        = { Delay = 20, RaiseSpread = true, StartCall = "PlaySoundEjectMagazine", },
-	Magazine_Insert      = { Delay = 30, RaiseSpread = true, EndCall = "PlaySoundInsertMagazine", },
+	Magazine_Insert      = { Delay = 30, RaiseSpread = true, StartCall = "PlaySoundInsertMagazine", },
 	Magazine_ReadyWeapon = { Delay = 20, },
 
 	/* --- Support adding spare ammo back to the user --- */
@@ -202,7 +205,33 @@ local ReloadStateMap =
 
 	/* --- Support for an extra ammo chamber --- */
 	Magazine_LoadAmmoChamber = { Delay = 15, EndCall = "PlaySoundChamberBullet", },
+
+	// Rifle grenades
+
+	/* --- Default sequence --- */
+	Container_Prepare     = { Delay = 10, StartCall = "PlaySoundOpenLauncher", },
+	Container_EjectAmmo   = { Delay = 35, StartCall = "PlaySoundEjectGrenade", },
+	Container_InsertAmmo  = { Delay = 20, StartCall = "PlaySoundInsertGrenade", },
+	Container_Close       = { Delay = 10, StartCall = "PlaySoundCloseLauncher", },
+	Container_ReadyWeapon = { Delay =  5, },
+
+	/* --- Support adding spare ammo back to the user --- */
+	Container_StashStart  = { Delay = 20, },
+	Container_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
 };
+
+
+func GetReloadStartState(proplist firemode)
+{
+	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
+	{
+		return GetReloadStartStateMagazine(firemode);
+	}
+	else
+	{
+		return GetReloadStartStateContainer(firemode);
+	}
+}
 
 
 public func AmmoChamberCapacity(id ammo)
@@ -289,3 +318,24 @@ func PlaySoundChamberBullet()
 {
 	Sound("Items::Weapons::AssaultRifle::Reload::Bolt");
 }
+
+func PlaySoundOpenLauncher()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::OpenLauncher");
+}
+
+func PlaySoundCloseLauncher()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::CloseLauncher");
+}
+
+func PlaySoundEjectGrenade()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::EjectGrenade");
+}
+
+func PlaySoundInsertGrenade()
+{
+	Sound("Items::Weapons::AssaultRifle::Reload::InsertGrenade");
+}
+
