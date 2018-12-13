@@ -39,15 +39,17 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 	SetCommand("None");
 	SetComDir(COMD_Stop);
 	// Add animation
-	SetAction("Incapacitated");
-	StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
+	CreateEffect(FxFakeDeathAnimation, 300, 1);
 	// Add symbol
 	PlayerMessage(GetOwner(), "@{{Icon_Skull}}");
 	// Flash screen
 	CreateEffect(FxFlashScreenRGBa, 200, 1, "FlashIncapacitated", RGB(255, 0, 0), 120, 40);
 	// Permanent red color
-	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
-	overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
+	if (this->GetHUDController())
+	{
+		var overlay = this->GetHUDController()->~GetColorLayer(this, "IncapacitatedAmbience");
+		if (overlay) overlay->Update({BackgroundColor = RGBa(255, 0, 0, 40)});
+	}
 	// Sound
 	this->~PlaySoundDamageIncapacitated();
 	this->~StartSoundLoopIncapacitated();
@@ -58,14 +60,13 @@ func OnIncapacitated(int health_change, int cause, int by_player)
 func OnReanimated(int by_player)
 {
 	// Remove animations
-	var fx = CMC_Rule_MortalWounds->GetDelayedDeathEffect(this);
-	if (fx) for (var anim in fx.animations)
-	{
-		StopAnimation(anim);
-	}
+	RemoveEffect(FxFakeDeathAnimation.Name, this);
 	// Remove screen effect
-	var overlay = this->GetHUDController()->GetColorLayer(this, "IncapacitatedAmbience");
-	overlay->Update({BackgroundColor = nil});
+	if (this->GetHUDController())
+	{
+		var overlay = this->GetHUDController()->~GetColorLayer(this, "IncapacitatedAmbience");
+		if (overlay) overlay->Update({BackgroundColor = nil});
+	}
 	// Add a whiteish flash
 	CreateEffect(FxFlashScreenRGBa, 200, 1, "FlashReanimated", RGB(255, 255, 255), 200, 40);
 	// Remove symbol
@@ -130,7 +131,7 @@ func StartDeathAnimation(int animation_slot)
 func OverlayDeathAnimation(int slot, string animation)
 {
 	animation = animation ?? "Dead";
-	return PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Remove));
+	return PlayAnimation(animation, slot, Anim_Linear(0, 0, GetAnimationLength(animation), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 10, ANIM_Hold));
 }
 
 /* --- Menu --- */
@@ -189,4 +190,45 @@ func CloseIncapacitatedMenu()
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, false);
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_ToggleReanimation, false);
 }
+
+/* --- Fake death animation --- */
+
+local FxFakeDeathAnimation = new Effect
+{
+	Name = "FxFakeDeathAnimation",
+	ActionName = "Incapacitated",
+
+	Timer = func ()
+	{
+		// Force the animation while the Clonk is on the ground.
+		// You can still hit them with rocks and the like (which looks funny)
+		// Or fling them in the air from explosions...
+		// But the Clonk will then return to the death animation
+		// Lets at least get some feedback for this :D
+		if (this.Target->GetAction() != this.ActionName
+		&& (this.Target->GetContact(-1) || this.Target->InLiquid()))
+		{
+			RemoveExistingAnimation();
+			this.Target->SetAction("Incapacitated");
+			this.Target->StartDeathAnimation(CLONK_ANIM_SLOT_Death - 1);
+		}
+	},
+	
+	Destruction = func (int reason)
+	{
+		if (FX_Call_Normal == reason)
+		{
+			RemoveExistingAnimation();
+		}
+	},
+	
+	RemoveExistingAnimation = func ()
+	{
+		var fx = CMC_Rule_MortalWounds->GetDelayedDeathEffect(this.Target);
+		if (fx && fx.animations) for (var anim in fx.animations)
+		{
+			this.Target->StopAnimation(anim);
+		}
+	},
+};
 

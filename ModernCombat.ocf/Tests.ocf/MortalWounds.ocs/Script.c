@@ -74,8 +74,8 @@ global func InitTest()
 			obj->RemoveObject();
 
 	// Remove all landscape changes.
+	ClearFreeRect(0, 0, LandscapeWidth(), 180);
 	DrawMaterialQuad("Brick", 0, 160, LandscapeWidth(), 160, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight());
-	ClearFreeRect(0, 0, LandscapeWidth(), 160);
 
 	// Give script players new crew.
 	var victim_crew = GetCrew(player_victim);
@@ -457,4 +457,173 @@ global func Test6_OnClonkDeath(object clonk, int killer)
 {
 	CurrentTest().test6_killed = FrameCounter();
 }
+
+
+//--------------------------------------------------------
+
+global func Test7_OnStart(int player){ return InitTest();}
+global func Test7_OnFinished(){ return; }
+global func Test7_Execute()
+{
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test7_incapacitated)
+	{
+		if (CurrentTest().test7_rocked)
+		{
+			doTest("GetAction() returns %s, should return %s", victim->GetAction(), "Incapacitated");
+			doTest("Victim got killed in frame %v, should be %v (not yet killed)", CurrentTest().test7_killed, nil);
+			return Evaluate();
+		}
+		else
+		{
+			CurrentTest().test7_rocked = true;
+			var rock = victim->CreateObject(Rock, -30, 0, NO_OWNER);
+			rock->SetXDir(30);
+			rock->SetYDir(-5);
+	
+			return Wait(90);
+		}
+	}
+	else
+	{
+		Log("Test that incapacitated clonks are not affected by objects");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+
+			CurrentTest().test7_incapacitated = true;
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test7_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test7_killed = FrameCounter();
+}
+
+
+//--------------------------------------------------------
+
+global func Test8_OnStart(int player){ return InitTest();}
+global func Test8_OnFinished(){ return; }
+global func Test8_Execute()
+{
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test8_incapacitated)
+	{
+		if (CurrentTest().test8_blasted)
+		{
+			doTest("GetAction() returns %s, should return %s", victim->GetAction(), "Incapacitated");
+			doTest("Victim got killed in frame %v, should be %v (not yet killed)", CurrentTest().test8_killed, nil);
+			return Evaluate();
+		}
+		else
+		{
+			CurrentTest().test8_blasted = true;
+			victim->MovePosition(0, -5);
+			var bomb = victim->CreateObject(Firestone, -10, 10, NO_OWNER);
+			bomb->Explode(20);
+			return Wait(90);
+		}
+	}
+	else
+	{
+		Log("Test that incapacitated clonks are not affected by explosions");
+		if (victim)
+		{	
+			victim->DoEnergy(-victim.MaxEnergy / 1000);
+
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+
+			CurrentTest().test8_incapacitated = true;
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test8_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test8_killed = FrameCounter();
+}
+
+
+//--------------------------------------------------------
+
+global func Test9_OnStart(int player){ return InitTest();}
+global func Test9_OnFinished(){ return; }
+global func Test9_Execute()
+{
+	var victim = GetCrew(player_victim);
+	if (CurrentTest().test9_incapacitated)
+	{
+		if (CurrentTest().test9_blasted)
+		{
+			doTest("GetAction() returns %s, should return %s", victim->GetAction(), "Incapacitated");
+			doTest("Victim got killed in frame %v, should be %v (not yet killed)", CurrentTest().test9_killed, nil);
+			return Evaluate();
+		}
+		else if (victim->InLiquid())
+		{
+			doTest("GetAction() returns %s, should return %s", victim->GetAction(), "Incapacitated");
+			doTest("Victim got killed in frame %v, should be %v (not yet killed)", CurrentTest().test9_killed, nil);
+
+			CurrentTest().test9_blasted = true;
+			var bomb = victim->CreateObject(Firestone, +10, 10, NO_OWNER);
+			bomb->Explode(20);
+			return Wait(90);
+		}
+		else
+		{
+			return Wait(40);
+		}
+	}
+	else
+	{
+		Log("Test incapacitated clonks behaviour inside liquids");
+		if (victim)
+		{
+			DrawMaterialQuad("Acid",   140, 158, 250, 158, 250, 240, 140, 240);
+			
+			victim->DoEnergy(1 -victim.MaxEnergy / 1000);			
+			victim->MovePosition(0, -5);
+			var bomb = victim->CreateObject(Firestone, -10, 10, NO_OWNER);
+			bomb->Explode(20);
+
+			if (!victim)
+			{
+				Log("Apparently the victim got killed, this should not happen with the rule");
+			}
+			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
+
+			CurrentTest().test9_incapacitated = true;
+			return Wait(10);
+		}
+		else
+		{
+			return FailTest(); // Test not implemented
+		}
+	}
+}
+global func Test9_OnClonkDeath(object clonk, int killer)
+{
+	CurrentTest().test9_killed = FrameCounter();
+}
+
 
