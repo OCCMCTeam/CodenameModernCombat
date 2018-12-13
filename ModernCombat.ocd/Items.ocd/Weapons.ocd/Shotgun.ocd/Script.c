@@ -123,6 +123,19 @@ local ReloadStateMap =
 	Single_CloseAmmoChamber = { Delay = 20, UserAnimation = {Name = "MusketLoadArms", Begin = 3500, End = 3600, }, StartCall = "PlaySoundCloseAmmoChamber", },
 };
 
+
+public func AmmoChamberCapacity(id ammo)
+{
+	if (ammo == CMC_Ammo_Bullets)
+	{
+		return GetFiremode()->GetAmmoUsage();
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 /* --- Effects --- */
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
