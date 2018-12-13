@@ -139,7 +139,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	{
 		var ammo_list = main_menu->GetList();
 		var hotkey = 0;
-		
+
 		// Add cancel option as default
 
 		var default_entry = ammo_list->MakeEntryProplist();
@@ -151,7 +151,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			         ->SetScrollHint(true);
 		ammo_list->AddEntry(default_action, default_entry);
 		this->~SetListSelectionMenuHotkey(default_entry, 9);
-		
+
 		// Add entries for the ammo types
 		for (var ammo_type in available_types) 
 		{
@@ -162,7 +162,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var text_color = 0xffffffff;
 			var description = Format("$UnpackAmmo$", ammo_info.ammo_count, ammo_type->GetName(), CMC_Ammo_Box->GetName());
 			var call_on_click = this.CreateAmmoBox;
-			
+
 			// Not available if it would not create any ammo
 			if (ammo_info.ammo_count <= 0)
 			{
@@ -170,7 +170,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				description = Format("$PointsRequired$", ammo_info.points_required);
 				call_on_click = this.CreateNothing;
 			}
-			
+
 			// Not available if you require a special class to create it
 			if (ammo_type != CMC_Ammo_Bullets && !HasAmmoAbility(user))
 			{
@@ -178,7 +178,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 				description = Format("$AmmoAbilityRequired$", CMC_Ability_ImproveAmmoEquipment->GetName());
 				call_on_click = this.CreateNothing;
 			}
-			
+
 			var name = Format("<c %x>%s</c>", text_color, ammo_type->GetName());
 			var entry = ammo_list->MakeEntryProplist();
 			entry->SetIcon(ammo_type)
@@ -208,16 +208,16 @@ func CreateAmmoBox(object user, id ammo_type)
 
 	// Get info again, in case something has changed in the meantime
 	var ammo_info = GetCreateAmmoInfo(ammo_type, GetAmmoCount());
-	
+
 	// Create the box
 	var ammo_box = CreateObject(CMC_Ammo_Box, 0, 0, user->GetOwner());
 	var ammo = ammo_box->CreateContents(ammo_type);
 	ammo->SetStackCount(ammo_info.ammo_count);
-	
+
 	// Remove points
 	DoAmmoCount(-ammo_info.points_cost);
 	ammo_box->Sound("Items::Tools::AmmoBox::ResupplyOut?", {player = user->GetOwner()});
-	
+
 	// Remove if empty, do this before collecting the ammo box, so that you can unpack from a full inventory
 	RemoveEmptyAmmoBag(user);
 

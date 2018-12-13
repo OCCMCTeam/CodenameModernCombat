@@ -10,7 +10,7 @@
 func Construction(object creator)
 {
 	SetOwner(NO_OWNER); // Circumvent object limit
-	
+
 	_inherited(creator, ...);
 }
 
@@ -134,7 +134,7 @@ func GetBoobyTrapPreview()
 local IntBoobyTrapPreview = new Effect
 {
 	//-- Basic effect functions
-	
+
 	Start = func (int temporary, object user)
 	{
 		if (temporary)
@@ -145,7 +145,7 @@ local IntBoobyTrapPreview = new Effect
 		this.gfx_layer_bar_l = 2;
 		this.gfx_layer_bar_r = 3;
 		this.gfx_layer_laser = 4;
-		
+
 		// Trap preview
 		this.booby_trap_preview = this.booby_trap_preview ?? CreateObject(Dummy);
 		this.booby_trap_preview.Visibility = VIS_Owner;
@@ -172,7 +172,7 @@ local IntBoobyTrapPreview = new Effect
 		this.cone_preview->SetGraphics("Bar", CMC_Cursor_Cone, this.gfx_layer_bar_r, GFXOV_MODE_ExtraGraphics);
 		this.cone_preview->SetGraphics("Bar", CMC_Cursor_Cone, this.gfx_layer_laser, GFXOV_MODE_ExtraGraphics);
 	},
-	
+
 	Destruction = func ()
 	{
 		if (this.booby_trap_preview) this.booby_trap_preview->RemoveObject();
@@ -209,9 +209,9 @@ local IntBoobyTrapPreview = new Effect
 			return FX_Execute_Kill;
 		}
 	},
-	
+
 	//-- Functions for placement, etc.
-	
+
 	Update = func (object user, int x, int y)
 	{
 		var dist = nil;
@@ -247,14 +247,14 @@ local IntBoobyTrapPreview = new Effect
 		var laser_angle = BoundBy(Normalize(Angle(0, 0, x, y), norm), laser_min, laser_max);
 
 		var pos = Target->GetWall(trap_angle - 180, dist, bottom); // Look in the opposite direction for the wall!
-		
+
 		this.booby_trap_x = pos.X;
 		this.booby_trap_y = pos.Y;
 		this.booby_trap_r = trap_angle;
 		this.booby_trap_angle = laser_angle;
 		this.booby_trap_placement = pos.Placement;
 	},
-	
+
 	TryPlaceBoobyTrap = func (object user, int x, int y)
 	{
 		// Place it
@@ -266,18 +266,18 @@ local IntBoobyTrapPreview = new Effect
 			trap->SetR(this.booby_trap_r);
 			trap->PlaceBoobyTrap(user, this.booby_trap_angle);
 		}
-		
+
 		// Cancel / Remove preview on positive placement
 		this->CancelPlaceBoobyTrap(user, x, y);
 	},
-	
+
 	CancelPlaceBoobyTrap = func (object user, int x, int y)
 	{
 		RemoveEffect(nil, Target, this);
 	},
-	
+
 	// Draw laser and blast cone preview
-	
+
 	DrawPreview = func()
 	{
 		// The trap itself
@@ -291,7 +291,7 @@ local IntBoobyTrapPreview = new Effect
 			color = RGBa(255, 0, 0, 128);
 		}
 		this.booby_trap_preview->SetClrModulation(color, this.gfx_layer_trap);
-		
+
 		// Cone, simple
 		var precision = 1000;
 		var turn_around = precision * 180;
@@ -326,7 +326,7 @@ func GetWall(int angle, int max_dist, int dist_bottom)
 			break;
 		}
 	}
-	
+
 	// Save everything as a proplist :)
 	return {
 		X = place_x,
@@ -351,7 +351,7 @@ func StartLaser()
 func CheckLaser()
 {
 	if (booby_trap_triggered || GetAction() != "Active") return;
-	
+
 	var self = this;
 
 	// Create a projectile that checks whether it hits objects or the landscape
@@ -428,7 +428,7 @@ func LaserHit(object target)
 		var xdir = target->GetXDir();
 		var ydir = target->GetYDir();
 		if (xdir == 0 && ydir == 0) return;
-	
+
 		// ... and done!
 		Detonate();
 	}
@@ -488,7 +488,7 @@ func Detonate()
 {
 	if (booby_trap_triggered) return;
 	booby_trap_triggered = true;
-	
+
 	if (GetAction() == "Active")
 	{
 		var spread = BoobyTrapExplosionAngle;
@@ -505,7 +505,7 @@ func Detonate()
 	}
 	else
 	{
-	
+
 		ExplosionEffect(5);
 	}
 	RemoveObject();

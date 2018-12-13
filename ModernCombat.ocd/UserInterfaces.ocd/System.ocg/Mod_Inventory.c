@@ -14,6 +14,6 @@ public func SetHandItemPos(int hand, int inv)
 	{
 		this->~OnSlotUnchanged();
 	}
-	
+
 	return return_value;
 }

@@ -1,16 +1,16 @@
 /**
 	Helper functions for explosions
-	
+
 	@author Marky
  */
 
 /**
 	Creates an explosion with multiple damage and radius stages.
-	
+
 	@par radius_stages The explosion ranges, e.g. [10, 20, 30] pixels. Must be ascending;
 	@par damage_stages    The damage stages, e.g. [50, 40, 30] energy. Must be descending;
 	@par silent If set to {@code true} there will be no sound.
-	
+
 	@par full_damage By default, the damage is 100% at the explosion center (10x10 pixel box),
 	                 and 50% of the damage level inside the radius range.
 	                 Setting this to {@code true} causes 200% damage at the center and 100% in the radius range.
@@ -18,7 +18,7 @@
 global func Explosion(array radius_stages, array damage_stages, bool silent, bool full_damage)
 {
 	AssertObjectContext();
-	
+
 	var multiplier = 1;
 	if (full_damage) multiplier = 2;
 
@@ -67,19 +67,19 @@ global func Explosion(array radius_stages, array damage_stages, bool silent, boo
 global func BlastObjects(int x, int y, int level, object container, int cause_plr, int damage_level, object layer, object prev_container, bool no_shockwave)
 {
 	var obj;
-	
+
 	// Coordinates are always supplied globally, convert to local coordinates.
 	var l_x = x - GetX(), l_y = y - GetY();
-	
+
 	// caused by: if not specified, controller of calling object
 	if (cause_plr == nil)
 		if (this)
 			cause_plr = GetController();
-	
+
 	// damage: if not specified this is the same as the explosion radius
 	if (damage_level == nil)
 		damage_level = level;
-	
+
 	// In a container?
 	if (container)
 	{
@@ -100,12 +100,12 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 		// Damage objects at point of explosion.
 		for (var obj in FindObjects(at_rect, Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
 			if (obj) obj->BlastObject(damage_level, cause_plr);
-			
+
 		// Damage objects in radius.
 		for (var obj in FindObjects(Find_Distance(level, l_x, l_y), Find_Not(at_rect), Find_NoContainer(), Find_Layer(layer), Find_Exclude(prev_container)))
 			if (obj) obj->BlastObject(damage_level / 2, cause_plr);
 
-		
+
 		// Perform the shockwave at the location where the top level container previously was.
 		// This ensures reliable flint jumps for explosives that explode inside a crew member.
 		var off_x = 0, off_y = 0;

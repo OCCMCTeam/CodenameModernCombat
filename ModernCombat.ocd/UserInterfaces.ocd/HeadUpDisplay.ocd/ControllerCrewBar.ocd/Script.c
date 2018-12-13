@@ -15,12 +15,12 @@ func Construction()
 	gui_cmc_crew.Menu = AssembleCrewBarsPosition();
 	gui_cmc_crew.Health_Bar = AssembleHealthBar();
 	gui_cmc_crew.Breath_Bar = AssembleBreathBar();
-	
+
 	// Open the menu (is actually just the position for the bars) with the two bars added to it
 	GetHealthBar()->AddTo(gui_cmc_crew.Menu);
 	GetBreathBar()->AddTo(gui_cmc_crew.Menu);
 	gui_cmc_crew.Menu->Open(GetOwner());
-	
+
 	return _inherited(...);
 }
 
@@ -193,7 +193,7 @@ public func GetBreathBar()
 
 /*
 	Schedules an update of the bar for the next frame.
-	
+
 	@par bar The name of the bar if you want to update only of the bars. Pass 'nil' to update all bars.
  */
 public func ScheduleUpdateCrewBars(string bar)
@@ -233,19 +233,19 @@ local ScheduledCrewBarsUpdateTimer = new Effect
 func UpdateCrewBars(bool update_health, bool update_breath)
 {
 	var cursor = GetCursor(GetOwner());
-	
+
 	if (gui_cmc_crew.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		if (update_health)
 		{
 			GetHealthBar()->SetHealth(cursor);
 		}
-		
+
 		if (update_breath)
 		{
 			var breath_max = cursor->~GetMaxBreath();
 			var breath = cursor->GetBreath();
-			
+
 			// In case of breath_max == 0 this will also hide the bar :)
 			if (breath < breath_max)
 			{

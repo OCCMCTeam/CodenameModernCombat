@@ -1,8 +1,8 @@
 /**
 	Interface for Clonks
-	
+
 	Clonks that want to use the class system should include this library.
-	
+
 	@author Marky
 */
 
@@ -43,7 +43,7 @@ public func OnCrewRelaunchFinish()
 		var amount = GetCrewClass().Ammo[ammo_type];
 		this->SetAmmo(ammo, amount);
 	}
-	
+
 	// Create contents - different logic necessary, because the properties are sorted alphabetically
 	var item_types = GetProperties(GetCrewClass().Items);
 	for (var item_type in item_types)
@@ -52,7 +52,7 @@ public func OnCrewRelaunchFinish()
 		var amount = GetCrewClass().Items[item_type].Amount;
 		CreateContents(item, amount);
 	}
-	
+
 	// Create grenades
 	var grenade_types = GetProperties(GetCrewClass().Grenades);
 	for (var grenade_type in grenade_types)
@@ -98,12 +98,12 @@ public func OnSelectClassTab(proplist menu, id class)
 		var description = new GUI_Element
 		{
 			Priority = 1,
-			
+
 			icon =  // Display icon and then transparent background with text, because text will be easier to read
 			{
 				Bottom = GuiDimensionCmc(1000, -GUI_CMC_Margin_Element_V)->ToString(),
 				Symbol = class,
-				
+
 				desc =
 				{
 					Style = GUI_TextHCenter | GUI_TextVCenter,
@@ -121,7 +121,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		var ammo_info = new GUI_Element 
 		{
 			Priority = 2,
-			
+
 			box = 
 			{
 				BackgroundColor = GUI_CMC_Background_Color_Default,
@@ -147,7 +147,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		var ability_info = new GUI_Element 
 		{
 			Priority = 3,
-			
+
 			box = 
 			{
 				BackgroundColor = GUI_CMC_Background_Color_Default,
@@ -164,9 +164,9 @@ public func OnSelectClassTab(proplist menu, id class)
 
 		ability_info->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Icon_Size + GUI_CMC_Margin_Element_V))
 		            ->AddTo(menu->GetContentBox());
-		
+
 	}
-	
+
 	// Weapons
 	if (class.Items)
 	{
@@ -193,7 +193,7 @@ public func OnSelectClassTab(proplist menu, id class)
 		item_info->SetHeight(size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V)))
 		         ->AddTo(menu->GetContentBox());
 	}
-	
+
 	// Grenades
 	if (class.Grenades)
 	{
@@ -230,14 +230,14 @@ func AssembleClassTabAbilityIcon(int priority, id ability, proplist icon_size)
 	{
 		Priority = priority,
 		Tooltip = ability.Description,
-		
+
 		icon = 
 		{
 			Right = icon_size->ToString(),
 			Bottom = icon_size->ToString(),
 			Symbol = ability,
 		},
-		
+
 		label = 
 		{
 			Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),
@@ -255,7 +255,7 @@ func AssembleClassTabAmmoIcon(int priority, id ammo, int amount, proplist icon_s
 		Priority = priority,
 		Right = icon_size->ToString(),
 		Bottom = icon_size->ToString(),
-		
+
 		Symbol = ammo,
 		Text = Format("%dx", amount),
 		Tooltip = ammo->GetName(),
@@ -272,20 +272,20 @@ func AssembleClassTabInventoryIcon(int priority, id item, int amount, proplist i
 		Tooltip = item.Description,
 
 		Bottom = icon_size->ToString(),
-		
+
 		icon = 
 		{
 			Right = icon_size->ToString(),
 			Bottom = icon_size->ToString(),
 			Symbol = item,
-			
+
 			count = 
 			{			
 				Text = Format("%dx", amount),
 				Style = GUI_TextBottom | GUI_TextRight,
 			},
 		},
-		
+
 		label = 
 		{
 			Left = icon_size->Add(GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_H))->ToString(),

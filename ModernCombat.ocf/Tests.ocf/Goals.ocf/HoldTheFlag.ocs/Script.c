@@ -41,13 +41,13 @@ func InitializePlayer(int player)
 		}
 		return;
 	}
-	
+
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
-	
+
 	// No FoW to see everything happening.
 	SetFoW(false, player);
-	
+
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	GetCrew(player)->Enter(relaunch);
@@ -93,7 +93,7 @@ global func InitTest(int win_score, int crew_count)
 			crew[player][i] = clonk; 
 		}
 	}
-	
+
 	// Initialize flagpole
 	flag = CreateObject(CMC_FlagPost, 380, 200, NO_OWNER);
 	goal = CreateObject(CMC_Goal_HoldTheFlag);

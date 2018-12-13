@@ -1,6 +1,6 @@
 /**
 	Additional functions for CMC
-	
+
 	@author Marky
  */
 

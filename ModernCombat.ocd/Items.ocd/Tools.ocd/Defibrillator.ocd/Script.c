@@ -43,7 +43,7 @@ func Selection(object container)
 			ScheduleCall(this, this.PlaySoundBeep, SelectionTime());
 		}
 	}
-	
+
 	// Reset the charge, just to be sure
 	PowerUpUse = 0;
 	return _inherited(container, ...);
@@ -113,7 +113,7 @@ func ControlUseStart(object user, int x, int y)
 {
 	// Reset powerup charge
 	PowerUpUse = 0;
-	
+
 	// Handle the other things
 	if (IsCharged())
 	{
@@ -166,7 +166,7 @@ func ReleaseShock(object user, int x, int y)
 
 	var shock_point = GetShockPoint(x, y);
 	var find_target = Find_Target(shock_point.x, shock_point.y, shock_point.radius);
-	
+
 	var ammo_cost = 10;
 	if (ShockAlly(user, find_target) || ShockEnemy(user, find_target))
 	{
@@ -182,9 +182,9 @@ func ReleaseShock(object user, int x, int y)
 
 	DoAmmoCount(-ammo_cost);	
 	DoShockSparks(shock_point, 5, 10);
-	
+
 	// AddLightFlash(40+Random(20),0,0,RGB(0,140,255));
-	
+
 	// Cooldown and reset use; cooldown is inverted, so that a short powerup causes a long cooldown period
 	var cooldown = Max(5, 35 - PowerUpUse);
 	AddEffect("IntCooldown", this, 1, cooldown);
@@ -199,12 +199,12 @@ func ShockAlly(object user, array find_target)
 	{
 		if (!ally) continue;
 		PlaySoundShockAlly();
-		
+
 		// Reanimate with min energy, add healing effect
 		ally->DoReanimate();
 		ally->DoEnergy(Max(0, 30 - ally->GetEnergy()));
 		ally->Heal(this.HealAmount, this.HealInterval + ScalePowerUpInverse(Max(5, 25 - this.HealInterval)));
-		
+
 		// Event message?
 		// EventInfo4K(0,Format("$MsgReanimation$",GetTaggedPlayerName(GetOwner(caller)), GetTaggedPlayerName(GetOwner(obj))),IC04);
 		// Achievement progress (Shock Therapist)
@@ -222,24 +222,24 @@ func ShockEnemy(object user, array find_target)
 	{
 		if (!enemy) continue;
 		PlaySoundShockEnemy();
-		
+
 		var strength = 10 + PowerUpUse;
-		
+
 		// Fling enemy
 		var precision = 1000;
 		var angle = Angle(user->GetX(), user->GetY(), enemy->GetX(), enemy->GetY(), precision);
-		
+
 		enemy->Fling(+Sin(angle, strength, precision) / 5
 		         -Abs(Cos(angle, strength, precision))/ 5);
-		
+
 		// In case the object is flung down a cliff
 		if (user->GetOwner() != NO_OWNER)
 		{
 			enemy->SetKiller(user->GetOwner());
 		}
-		
+
 		enemy->DoEnergy(-30, false, FX_Call_DmgFire, user->GetOwner());
-		
+
 		// Killed him? Incapacitated enemies do count as not alive, too :)
 		if (!enemy->GetAlive())
 		{
@@ -272,7 +272,7 @@ func DoShockSparks(proplist shock_point, int a, int b)
 	var dir_x_max = Cos(shock_point.angle, +5, shock_point.precision) - Sin(shock_point.angle, -1, shock_point.precision);
 	var dir_y_min = Sin(shock_point.angle, -5, shock_point.precision) + Cos(shock_point.angle, -5, shock_point.precision);
 	var dir_y_max = Sin(shock_point.angle, +5, shock_point.precision) + Cos(shock_point.angle, -1, shock_point.precision);
-	
+
 	if (a > 0)
 	{
 		CreateParticle("ElectroSpark", PV_Random(shock_point.x - 3, shock_point.x + 3), PV_Random(shock_point.y - 3, shock_point.y + 3), 

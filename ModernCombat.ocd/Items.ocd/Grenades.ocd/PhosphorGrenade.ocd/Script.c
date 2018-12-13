@@ -73,7 +73,7 @@ func ExplosionEffect(int level, int x, int y, int smoothness, bool silent, int d
 		Alpha = PV_Linear(32, 0),
 		Size = PV_Random(level - 5, level + 5)
 	};
-	
+
 	// Blast particle.
 	CreateParticle("Smoke", x, y, PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(20, 40), smoke, 10);
 	CreateParticle("MagicFire", x, y, PV_Random(-20, 20), PV_Random(-20, 20), PV_Random(5, 10), fire, 20);

@@ -21,7 +21,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 		                            + GUI_CMC_Element_SelectionList_Margin_H * 2  // Outside margin left/right
 		                            + GUI_CMC_Element_ListIcon_Size               // Space for the icon, on the left
 		                            + GUI_CMC_Element_Icon_Size));                // Space for the button hint, on the right
-		
+
 		var header_height = GuiDimensionCmc(nil, GUI_CMC_Element_Default_Height);
 		var header = new GUI_Element { Style = GUI_TextHCenter | GUI_TextVCenter,};
 		header->SetHeight(header_height);
@@ -30,34 +30,34 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 		var body = new GUI_Element {Style = GUI_NoCrop};
 		body->SetTop(header->GetBottom())
 		    ->AddTo(this);
-		
+
 		var list = new CMC_GUI_SelectionList {Style = GUI_VerticalLayout };
 		list->~Assemble();
 		list->AddTo(body);
 
 		this.Components[0] = header;
 		this.Components[1] = list;
-		
+
 		return this;
 	},
-	
-	
+
+
 	GetHeader = func()
 	{
 		return this.Components[0];
 	},
-	
+
 	GetList = func ()
 	{
 		return this.Components[1];
 	},
-	
+
 	AdjustHeightToEntries = func ()
 	{
 		var entries = GetLength(GetList().ListEntry_Elements);
 		var amount = Max(7, entries);
 		var top = (amount - entries) / 2;
-		
+
 		var size = GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size);
 		// TODO: This works well, but the background looks bad: 
 		SetHeight(GetList()->GetHeight()->Add(this.Components[0]->GetHeight()));
@@ -70,7 +70,7 @@ static const CMC_GUI_SelectionListMenu = new GUI_Element
 
 		return this;
 	},
-	
+
 	SetHeaderCaption = func (string text)
 	{
 		GetHeader().Text = Format("<c %x>%s</c>", GUI_CMC_Text_Color_HeaderCaption, text);
@@ -87,7 +87,7 @@ static const CMC_GUI_SelectionList = new GUI_List
 		var custom_entry = new CMC_GUI_SelectionListEntry{};
 		return custom_entry->Assemble()->SetIcon(symbol)->SetCaption(text);
 	},
-	
+
 	MakeSeparatorProplist = func()
 	{
 		var separator = new CMC_GUI_SelectionListSeparator{};
@@ -108,7 +108,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 			Left = margin_h->ToString(),
 			Right = margin_h->Add(size)->ToString(),
 			Bottom = size->ToString(),
-			
+
 			Margin = [GuiDimensionCmc(nil, 2)->ToString()],
 			Style = GUI_TextBottom | GUI_TextRight,
 		};
@@ -116,25 +116,25 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 		{
 			Left = margin_h->Add(size)->ToString(),
 			Right = caption_border_right,
-			
+
 			Style = GUI_TextVCenter,
 		};
 		SetHeight(size);
 		return this;
 	},
-	
+
 	SetIcon = func (symbol)
 	{
 		this.icon.Symbol = symbol;
 		return this;
 	},
-	
+
 	SetCaption = func (string text)
 	{
 		this.caption.Text = text;
 		return this;
 	},
-	
+
 	SetCount = func (int amount)
 	{
 		if (nil == amount || 0 == amount)
@@ -147,7 +147,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 		}
 		return this;
 	},
-	
+
 	SetButtonHint = func (string button)
 	{
 		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
@@ -162,7 +162,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 		button_hint->GetButtonIcon()->AlignCenterV();
 		return this;
 	},
-	
+
 	SetScrollHint = func (bool on)
 	{
 		var margin_h = GuiDimensionCmc(nil, GUI_CMC_Element_SelectionList_Margin_H);
@@ -177,7 +177,7 @@ static const CMC_GUI_SelectionListEntry = new GUI_SelectionListEntry
 		button_hint->GetButtonIcon()->AlignCenterV();
 		return this;
 	},
-	
+
 	UpdateEntry = func ()
 	{
 		// The actual menu
@@ -218,7 +218,7 @@ static const CMC_GUI_SelectionListSeparator = new GUI_List_Entry
 		SetHeight(GuiDimensionCmc(nil, 3));
 		return this;
 	},
-	
+
 	SetSelected = func ()
 	{
 		// Does nothing, but is required by selection list entries. Could call via ->~, too, but this seems to be more prone to errors, such as forgetting the callback.

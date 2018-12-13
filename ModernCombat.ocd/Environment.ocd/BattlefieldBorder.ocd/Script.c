@@ -23,12 +23,12 @@ local fxzonecheck = new Effect
 	Timer = func()
 	{
 		var objs;
-		
+
 		if (Target.zonetype == ZONETYPE_NORMAL)
 		{
 			// Outside Battlefield. Find everything that is in this area.
 			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target());
-			
+
 			for (var obj in objs)
 			{
 				if (!GetEffect("DeathZoneTimer", obj)) obj->CreateEffect(Target.fxinsidedeathzone,1,1, { zoneobj = Target } );
@@ -38,7 +38,7 @@ local fxzonecheck = new Effect
 		{
 			// Team Spawn. Find everything but clonks from the specified team.
 			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target(), Find_Not(Find_Team(Target.team)));
-			
+
 			for (var obj in objs)
 			{
 				if (!GetEffect("DeathZoneTimer", obj)) obj->CreateEffect(Target.fxinsidedeathzone,1,1, { zoneobj = Target } );
@@ -48,7 +48,7 @@ local fxzonecheck = new Effect
 		{
 			// Instant Death Zone. Kill everything instantaneously in this area.
 			objs = Target->FindObjects(Target->Find_InZone(), Target->Find_Target());
-			
+
 			// TODO: Maybe adjust killtracing if needed
 			for (var obj in objs)
 			{
@@ -63,16 +63,16 @@ local fxzonecheck = new Effect
 local fxinsidedeathzone = new Effect
 {
 	Name = "DeathZoneTimer",
-	
+
 	MaxAreaTime = 35 * 10, // 35 Frames per second * 10 Seconds
-	
+
 	zoneobject = nil,
-	
+
 	Start = func(temp, params)
 	{
 		zoneobject = params.zoneobj;
 	},
-	
+
 	Timer = func()
 	{
 		// Remove effect from dead or respawning targets
@@ -80,7 +80,7 @@ local fxinsidedeathzone = new Effect
 		{
 			return FX_Execute_Kill;
 		}
-	
+
 
 		// Remove Effect if clonk leaves the area
 		// The combination of Find_Not and Find_Exclude reduces the possible objects to find to just the clonk. We only want to check for this clonk if it's still inside the area.
@@ -92,14 +92,14 @@ local fxinsidedeathzone = new Effect
 
 		// Show remaining time
 		Target->PlayerMessage(Target->GetOwner(), "$GoBack$", (MaxAreaTime - Time) / 35);
-		
+
 		if (Time > MaxAreaTime)
 		{
 			// TODO: Maybe adjust killtracing if needed
 			Target->Kill();
 		}
 	},
-	
+
 	Stop = func (int temp)
 	{
 		if (!temp && Target)
@@ -109,7 +109,7 @@ local fxinsidedeathzone = new Effect
 	},
 };
 
-	
+
 func Find_InZone()
 {
 	return Find_InRect(area[0], area[1], area[2], area[3]);
@@ -134,7 +134,7 @@ func Definition(def)
 {
 	// EditorProps
 	if (!def.EditorProps) def.EditorProps = {};
-	
+
 	// Area to check for clonks
 	def.EditorProps.area = 
 	{ 
@@ -150,7 +150,7 @@ func Definition(def)
 		Set = "SetAreaRect",
 		SetRoot = false
 	};
-	
+
 	// Type of area
 	def.EditorProps.zonetype =
 	{
@@ -164,7 +164,7 @@ func Definition(def)
 		],
 		Set = "SetZoneType"
 	};
-	
+
 	// Team for Spawn Areas. This team will be excluded from the area check.
 	def.EditorProps.team =
 	{
@@ -188,11 +188,11 @@ func SetAreaRect(array new_area_rect)
 func SetZoneType(int new_type)
 {
 	zonetype = new_type;
-	
+
 	// Update Graphics for editor view
 	var gfxnames = ["", "TeamSpawn", "Death"];
 	SetGraphics(gfxnames[new_type]);
-	
+
 	return true;
 }
 
@@ -209,10 +209,10 @@ func SetTeam(int new_team)
 func SaveScenarioObject(props)
 {
 	if (!inherited(props, ...)) return false;
-	
+
 	props->AddCall("Area", this, "SetAreaRect", area);
 	props->AddCall("ZoneType", this, "SetZoneType", zonetype);
 	props->AddCall("Team", this, "SetTeam", team);
-	
+
 	return true;
 }

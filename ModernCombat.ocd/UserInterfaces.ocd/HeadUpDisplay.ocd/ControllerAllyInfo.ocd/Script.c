@@ -101,7 +101,7 @@ public func OnCrewSelection(object clonk, bool unselect)
 public func OnCrewHealthChange(object clonk, int change, int cause, int caused_by)
 {
 	ScheduleUpdateAllyInfo();
-	
+
 	return _inherited(clonk, change, cause, caused_by, ...);
 }
 
@@ -166,7 +166,7 @@ func AssembleAllyInfo(int slot)
 {
 	var button = new CMC_GUI_Ally_Info { ID = slot + 1};
 	button->Assemble();
-	
+
 	return button;
 }
 
@@ -189,7 +189,7 @@ public func ScheduleUpdateAllyInfo(bool update_self_only)
 		{
 			var player = GetPlayerByIndex(i);
 			var crew = GetCrew(player, 0);
-			
+
 			if (crew)
 			{
 				var controller = crew->GetHUDController();
@@ -218,9 +218,9 @@ local ScheduledAllyInfoUpdateTimer = new Effect
 func UpdateAllyInfo()
 {
 	UpdateAllyAmount();
-	
+
 	var hide =  GetCursor(GetOwner())->~IsRespawning();
-	
+
 	for (var i = 0; i < GetLength(gui_cmc_ally_info.Allies); ++i)
 	{
 		var ally = gui_cmc_ally_info.Allies[i];
@@ -237,18 +237,18 @@ func UpdateAllyInfo()
 			{
 				color = GUI_CMC_Text_Color_Highlight;
 			}
-	
+
 			// Selected clonk info
 			var rank = 0;
 			var cursor = GetCursor(ally);
 			if (cursor) rank = cursor->~GetRank(); // FIXME: Uses cursor rank for now, but should be CMC player rank 
-			
+
 			// Player info
 			info->Show();
 			info->SetNameLabel(GetPlayerName(ally), color);
 			info->SetRankSymbol(Icon_Rank, rank, 24);
 			info->Update();
-			
+
 			// Display class
 			if (cursor) // This has to be moved to the crew anyway
 			{
@@ -263,7 +263,7 @@ func UpdateAllyInfo()
 					info->RemoveStatusIcon(identifier_class);
 				}
 			}
-			
+
 			// Health bar
 			if (info->GetHealthBar()->ShowForCrew(cursor, !cursor || cursor->~IsRespawning()))
 			{
@@ -288,7 +288,7 @@ func UpdateAllyAmount()
 			gui_cmc_ally_info.Info[i] = AssembleAllyInfo(i);
 			gui_cmc_ally_info.Info[i]->AddTo(gui_cmc_ally_info.Menu)->Show();
 		}
-	
+
 		// Need to remove some ally info buttons?
 		for (var i = old_count; i > new_count; --i)
 		{
@@ -296,19 +296,19 @@ func UpdateAllyAmount()
 			GuiClose(gui_cmc_ally_info.Menu->GetRootID(), slot.ID, this);
 		}
 		SetLength(gui_cmc_ally_info.Info, new_count);
-		
+
 		// Adjust positions
 		var margin_small = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_V);
-		
+
 		var position = GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_V);
-		
+
 		for (var i = 0; i < new_count; ++i)
 		{
 			// Align the slot
 			var slot = gui_cmc_ally_info.Info[i];
 			slot->AlignLeft(GuiDimensionCmc(nil, GUI_CMC_Margin_Screen_H));
 			slot->AlignTop(position);
-			
+
 			// Update top position
 			position = slot->GetBottom()->Add(margin_small);
 		}

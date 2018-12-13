@@ -1,6 +1,6 @@
 /**
 	Prevent instant death.
-	
+
 	@author Marky
 */
 
@@ -25,7 +25,7 @@ func Activate(int for_player)
 func Construction(object creator)
 {
 	_inherited(creator, ...);
-	
+
 	SetDelayedDeath(false); // Creating the rule disables delayed death
 }
 
@@ -74,7 +74,7 @@ local RuleMortalWoundsCheck = new Effect
 	FramesPerSecond = 35,
 	TimerMax = 15 * 35,
 	TimerMin = 5 * 35,
-	
+
 	Start = func (int temp)
 	{
 		if (!temp)
@@ -89,7 +89,7 @@ local RuleMortalWoundsCheck = new Effect
 		}
 		return FX_OK;
 	},
-	
+
 	Timer = func ()
 	{
 		var change = +1;
@@ -103,7 +103,7 @@ local RuleMortalWoundsCheck = new Effect
 				return FX_Execute_Kill;
 			}
 			change = -1;
-			
+
 			// Some effects
 			if (this.death_timer % this.FramesPerSecond == 0)
 			{
@@ -114,7 +114,7 @@ local RuleMortalWoundsCheck = new Effect
 				var alpha = InterpolateLinear(this.death_timer, 0, 230, this.TimerMax, 0);
 				overlay->Update({BackgroundColor = RGBa(1, 1, 1, alpha)});
 			}
-			
+
 			// Update the menu
 			if (this.Target->~GetIncapacitatedMenu())
 			{
@@ -128,10 +128,10 @@ local RuleMortalWoundsCheck = new Effect
 				overlay->Update({BackgroundColor = nil});
 			}
 		}
-		
+
 		this.death_timer = BoundBy(this.death_timer + change, 0, this.TimerMax);
 	},
-	
+
 	Damage = func (int health_change, int cause, int by_player)
 	{
 		// Already wounded?
@@ -158,14 +158,14 @@ local RuleMortalWoundsCheck = new Effect
 		}
 		return health_change;
 	},
-	
+
 	// Status
-	
+
 	IsIncapacitated = func ()
 	{
 		return this.is_incapacitated;
 	},
-	
+
 	DoReanimate = func (int by_player)
 	{
 		if (IsIncapacitated())
@@ -180,13 +180,13 @@ local RuleMortalWoundsCheck = new Effect
 		}
 		return false;
 	},
-	
+
 	// Effects
 	GetScreenOverlay = func ()
 	{
 		return this.Target->GetHUDController()->~GetColorLayer(this.Target, Format("%v", CMC_Rule_MortalWounds));
 	},
-	
+
 };
 
 /* --- Functions, are being added to clonks if the rule is active --- */

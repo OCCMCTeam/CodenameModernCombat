@@ -93,19 +93,19 @@ static const IntTestControl = new Effect
 			this.current_result = false;
 			this.current_check = true;
 		}
-		
+
 		// waiting
 		if (this.wait > 0)
 		{
 			this.wait -= 1;
 			return FX_OK;
 		}
-		
+
 		// Check whether the current test has been finished.
 		if (this->ExecuteTest())
 		{
 			this.launched = false;
-			
+
 			if (this.current_result)
 			{
 				Log(">> Test %d passed.", this.testnr);
@@ -115,10 +115,10 @@ static const IntTestControl = new Effect
 				Log(">> Test %d failed.", this.testnr);
 				this.count_failed++;
 			}
-			
+
 			// Update global result
 			this.global_result &= this.current_result;
-	
+
 			// Call the test on finished function.
 			this->CleanupTest();
 			// Log result and increase test number.
@@ -127,20 +127,20 @@ static const IntTestControl = new Effect
 		}
 		return FX_OK;
 	},
-	
-	
+
+
 	HasNextTest = func ()
 	{
 		return Call(Format("~Test%d_OnStart", this.testnr), this.player);
 	},
-	
-	
+
+
 	ExecuteTest = func ()
 	{
 		return Call(Format("Test%d_Execute", this.testnr));
 	},
-	
-	
+
+
 	CleanupTest = func ()
 	{
 		Call(Format("~Test%d_OnFinished", this.testnr));
@@ -151,7 +151,7 @@ static const IntTestControl = new Effect
 global func doTest(description, returned, expected)
 {
 	var test;
-	
+
 	if (GetType(returned) == C4V_PropList || GetType(returned) == C4V_Array)
 	{
 		test = DeepEqual(returned, expected);
@@ -160,10 +160,10 @@ global func doTest(description, returned, expected)
 	{
 		test = (returned == expected);
 	}
-	
+
 	var predicate = "[Fail]";
 	if (test) predicate = "[Pass]";
-	
+
 	Log(Format("%s %s", predicate, description), returned, expected);
 
 	CurrentTest().current_check &= test;

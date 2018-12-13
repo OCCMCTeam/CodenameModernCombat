@@ -30,16 +30,16 @@ public func DoSetup(int round)
     // {
 		// Create template spawn points with default configuration
 		var config = Scenario->GetSpawnPointTemplates();
-	
+
 		// Place spawn points
 		var ammo_crate = CopySpawnPoint(config.ammo_bullets, 960, 635);
 		ammo_crate->OnRoundStart();
 		PushBack(additional_objects, ammo_crate);
-		
+
 		// Remove template spawn points
 		Scenario->RemoveSpawnPointTemplates(config);
     //}
-    
+
 
 	_inherited(round);
 }

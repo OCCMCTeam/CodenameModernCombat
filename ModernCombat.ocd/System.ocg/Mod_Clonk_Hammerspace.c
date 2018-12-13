@@ -1,10 +1,10 @@
 /**
 	Animations for clonk
-	
+
 	Reaching into hammer space upon item selection.
-	
+
  */
- 
+
 #appendto Clonk
 
 /* --- Callbacks from ClonkControl --- */
@@ -191,7 +191,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		}
 	}
-	
+
 	return _inherited(plr, ctrl, x, y, strength, repeat, status);
 }
 

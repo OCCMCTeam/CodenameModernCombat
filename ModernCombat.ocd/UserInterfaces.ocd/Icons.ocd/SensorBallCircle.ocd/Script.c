@@ -29,7 +29,7 @@ func AttachTargetLost()
 {
 	return RemoveObject();
 }
-	
+
 func SaveScenarioObject() { return false; }
 
 
@@ -39,9 +39,9 @@ public func AddTo(object target, bool ignore_fadeout)
 {
 	AssertDefinitionContext();
 	var circle = CreateObject(this, 0, 0, target->GetOwner());
-	
+
 	circle->Init(target);
-	
+
 	if (!ignore_fadeout)
 	{
 		circle->FadeOut(80, true);
@@ -61,11 +61,11 @@ public func Get(object to)
 func Init(object to)
 {
 	SetAction("Be", to);
-	
+
 	// Position at center of the target
 	SetVertex(0, VTX_X, to->GetVertex(0, VTX_X));
 	SetVertex(0, VTX_Y, to->GetVertex(0, VTX_Y));
-	
+
 	// Set plane to be higher than the object attached to.
 	this.Plane = Max(to.Plane + 1, 1000);
 

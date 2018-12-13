@@ -1,6 +1,6 @@
 /**
 	Hold the Flag
-	
+
 	Integration into a scenario works as described in {@link CMC_Goal_HoldTheFlag#DoSetup}.
 */
 
@@ -14,7 +14,7 @@
 func OnRoundStart(int round)
 {
 	inherited(...);
-	
+
 	var clock = CreateObject(GUI_Clock);
 	SetClock(clock);
 }
@@ -22,7 +22,7 @@ func OnRoundStart(int round)
 
 /**
 	Sets up the goal for a round.
-	
+
 	@note
 	The flag post should be created by this function.
 	Overload for your scenario, complying with:
@@ -37,7 +37,7 @@ func OnRoundStart(int round)
 	}
 	The order is vital here, because the function
 	call expects the flag to exist already.
-	
+
 	@par round The round number.
  */
 func DoSetup(int round)
@@ -53,7 +53,7 @@ func DoSetup(int round)
 	var capture_speed = Max(18 - 4 * GetLength(GetActiveTeams()), 4);
 	GetFlag()->SetHoldTheFlag()
 	         ->SetCaptureSpeed(capture_speed);
-	         
+
 	// Set defaults:
 	score_progress = 0;
 	faction_score_warning = BoundBy(GetWinScore()* 3 / 4, Max(0, GetWinScore() - 5), Max(0, GetWinScore() - 1));
@@ -61,7 +61,7 @@ func DoSetup(int round)
 	// Setup the goal timer
 	var interval = Max(14 - 2 * GetLength(GetActiveTeams()), 5);
 	AddTimer(this.EvaluateProgress, interval);
-	
+
 	InitScoreboard();
 
 	inherited(round);
@@ -122,7 +122,7 @@ func EvaluateProgress()
 			// Score and reset progress
 			score_progress = 0;
 			DoFactionScore(team, 1);
-	
+
 			// Add points for achievement system
 			for (var i; i < GetPlayerCount(); ++i)
 			{
@@ -187,7 +187,7 @@ public func FlagCaptured(object flagpost, int by_team, array attackers, bool reg
 	for (var attacker in attackers)
 	{
 		if (!attacker) continue;
-			
+
 		// Add points for achievement system (defended flag post)
 		if (regained)
 		{
@@ -243,7 +243,7 @@ func UpdateScoreboard() // TODO
 	var large_space = "          "; // Should be wide enough, so that the "100%" message does not change the width of the scoreboard
 
 	var info = GetFlag()->GetScoreboardInfo();
-	
+
 	// First row with data
 	var row = 1000;
 	var sort_top = 1000;

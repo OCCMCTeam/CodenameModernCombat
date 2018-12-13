@@ -1,6 +1,6 @@
 /**
 	Ammo Box
-	
+
 	Should NOT have an extra slot, because we do not want the user to take ammo out of it
 	by means other than our own user interface.
 */
@@ -64,7 +64,7 @@ func UpdateAmmoBoxGraphics()
 public func GetGuiItemStatusProperties(object user)
 {
 	var status = new GUI_Item_Status_Properties {};
-	
+
 	var configuration = Format("<c %x>%s</c>", GUI_CMC_Text_Color_Highlight, this->GetName());
 	if (Contents())
 	{
@@ -131,21 +131,21 @@ func UnpackAmmo(object user)
 		RemoveObject();
 		return false;
 	}
-	
+
 	// Transfer the ammo
 	var type = Contents()->GetID();
 	var available = Contents()->GetStackCount();
 	var transferred = user->DoAmmo(type, available);
-	
+
 	// Nothing transferred?
 	if (transferred == 0)
 	{
 		return false;
 	}
-	
+
 	// Effect
 	user->Sound("Items::Tools::AmmoBox::ResupplyIn?", {player = user->GetOwner()});
-	
+
 	// Cleanup
 	Contents()->DoStackCount(-transferred);
 	if (!Contents())

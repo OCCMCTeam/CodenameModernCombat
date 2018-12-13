@@ -1,6 +1,6 @@
 /**
 	Deploy location manager
-	
+
 	Handles deploy locations.
  */
 
@@ -35,7 +35,7 @@ public func ScanDeployLocations()
 	{
 		var locations = FindObjects(Find_Func("IsDeployLocation"));
 		locations_temporary = [];
-		
+
 		for (var location in locations)
 		{
 			if (location->~IsTemporary())

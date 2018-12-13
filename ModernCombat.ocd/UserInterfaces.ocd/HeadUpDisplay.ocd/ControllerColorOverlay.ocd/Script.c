@@ -117,7 +117,7 @@ public func OnCrewRelaunchFinish(object clonk)
 
 /*
 	Schedules an update of the bar for the next frame.
-	
+
 	@par bar The name of the bar if you want to update only of the bars. Pass 'nil' to update all bars.
  */
 public func ScheduleUpdateColorOverlay()
@@ -140,7 +140,7 @@ local ScheduledColorOverlayUpdateTimer = new Effect
 func UpdateColorOverlay()
 {
 	var cursor = GetCursor(GetOwner());
-	
+
 	if (gui_cmc_color_overlay.Menu->ShowForCrew(cursor, cursor->~IsRespawning()))
 	{
 		for (var identifier in GetProperties(gui_cmc_color_overlay))
@@ -149,7 +149,7 @@ func UpdateColorOverlay()
 			{
 				continue;
 			}
-			
+
 			for (var for_object in GetProperties(gui_cmc_color_overlay[identifier]))
 			{
 				var overlay = gui_cmc_color_overlay[identifier][for_object];
@@ -191,6 +191,6 @@ func GetColorLayer(object target, string identifier)
 		gui_cmc_color_overlay[identifier][for_object]->SetWidth(1000)->SetHeight(1000);
 		gui_cmc_color_overlay[identifier][for_object]->AddTo(gui_cmc_color_overlay.Menu)->Show();
 	}
-	
+
 	return gui_cmc_color_overlay[identifier][for_object];
 }

@@ -130,7 +130,7 @@ func OnPressUse(object user, int x, int y)
 		}
 		return true;
 	}
-	
+
 	return inherited(user, x, y, ...);
 }
 
@@ -150,20 +150,20 @@ func AimOptical(object user, int x, int y)
 	// Start in global coordinates	
 	var x_start = user->GetX();
 	var y_start = user->GetY() - 5;
-	
+
 	var aim_angle = Angle(x_start, y_start, user->GetX() + x, user->GetY() + y, precision);
-	
+
 	var max_distance = Distance(0, 0, LandscapeWidth(), LandscapeHeight());
-	
+
 	var x_target = x_start + Sin(aim_angle, max_distance, precision);
 	var y_target = y_start - Cos(aim_angle, max_distance, precision);
-	
+
 	// If path is free the target is OK - the distance was chosen in such a way that it always hits the border of a landscape
 	var end = PathFree2(x_start, y_start, x_target, y_target) ?? [x_target, y_target];
-	
+
 	var x_end = end[0];
 	var y_end = end[1];
-		
+
 	if (!this.RocketLauncher_Laser)
 	{
 		this.RocketLauncher_Laser = CreateObject(LaserEffect, 0, 0, user->GetController());
@@ -173,13 +173,13 @@ func AimOptical(object user, int x, int y)
 			 ->Color(RGB(200, 0, 0))
 			 ->Activate();
 	}
-	
+
 	if (this.RocketLauncher_Laser)
 	{
 		this.RocketLauncher_Laser->SetPosition(x_start, y_start);
 		this.RocketLauncher_Laser->Line(x_start, y_start, x_end, y_end)->Update();
 	}
-	
+
 	if (this.RocketLauncher_Missile)
 	{
 		this.RocketLauncher_Missile->GuideTo(x_end, y_end);

@@ -1,6 +1,6 @@
 /**
 	Incapacitated
-	
+
 	@author Marky
  */
 
@@ -26,7 +26,7 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 		// Large digits for remaining seconds
 		var countdown_digits = new GUI_Counter {};
 		GUI_Components[ComponentIndex_Digits] = countdown_digits;
-				
+
 		countdown_digits->SetMaxDigits(3)
 		                ->ShowTrailingZeros(false)
 		                ->SetDigitProperties({Symbol = CMC_Icon_Number})
@@ -79,25 +79,25 @@ static const CMC_GUI_IncapacitatedMenu = new CMC_GUI_DowntimeMenu
 
 		return infobox;
 	},
-	
+
 	/* --- Access functions --- */
-	
+
 	GetCountdownDigits = func ()
 	{
 		return GUI_Components[ComponentIndex_Digits]; 
 	},
-	
+
 	GetCountdownText = func ()
 	{
 		return GUI_Components[ComponentIndex_Text]; 
 	},
-	
+
 	/* --- Status functions --- */
-	
+
 	OnTimeRemaining = func (int frames)
 	{
 		frames = Max(frames, 0);
-		
+
 		// Update the countdown text
 		var caption = "$RespawnWaitingIncapacitated$";
 		var roundup = RELAUNCH_Factor_Second - frames % RELAUNCH_Factor_Second;

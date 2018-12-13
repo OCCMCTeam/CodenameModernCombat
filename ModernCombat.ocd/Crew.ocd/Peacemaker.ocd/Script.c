@@ -60,17 +60,17 @@ private func RemoveBackpack()
 private func SetSkin(int new_skin)
 {
 	// Overridden to do less
-	
+
 	// Remember skin:
 	// skin 0 => Adventurer
 	// skin 1 => Steampunk
 	// skin 2 => Alchemist
 	// skin 3 => Farmer
 	skin = new_skin;
-	
+
 	// However, we do not use any of these :(
 	skin_name = nil;
-	
+
 	//SetGraphics(skin_name = nil, Clonk);
 	gender = 0;
 
@@ -216,7 +216,7 @@ func UpdateFirearmSpread()
 	{
 		spread_reduction = CLONK_SPREAD_Reduction_Base;
 	}
-	
+
 	// Certain actions set a minimum spread
 	var action_spread_min = 0;
 	if (IsJumping() || GetEffect("Rolling", this))
@@ -239,7 +239,7 @@ func UpdateFirearmSpread()
 			action_spread_min = CLONK_SPREAD_Standing_Min;
 		}
 	}
-	
+
 	// Get weapon data
 	var firemode, cursor_type, spread_limit;
 	var weapon = this->GetHandItem(0);
@@ -252,12 +252,12 @@ func UpdateFirearmSpread()
 		cursor_type = firemode->~GetAimCursor();
 		spread_limit = firemode->~GetSpreadLimit();
 	}
-	
+
 	// Apply the values
 	SetFirearmSpreadLimit(spread_limit ?? CLONK_SPREAD_Max);
 	DoFirearmSpread(spread_reduction);
 	RaiseFirearmSpread(action_spread_min);
-	
+
 	// Crosshair
 	var cursor = CMC_Virtual_Cursor->Get(this);
 	if (cursor)

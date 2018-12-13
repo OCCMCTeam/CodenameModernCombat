@@ -1,6 +1,6 @@
 /**
 	Fade screen alpha effect.
-	
+
 	Can stack multiple 
 */
 
@@ -43,7 +43,7 @@ static const FxFlashScreenRGBa = new Effect
 	Timer = func (int time)
 	{
 		var overlay = this.Target->GetHUDController()->GetColorLayer(this.Target, this.ColorLayer);
-		
+
 		var current_alpha = 0;
 		for (var track in this.AlphaTracks)
 		{
@@ -52,7 +52,7 @@ static const FxFlashScreenRGBa = new Effect
 		current_alpha = BoundBy(current_alpha, this.AlphaMin, this.AlphaMax);
 
 		overlay->Update({BackgroundColor = RGBa(this.Color.R, this.Color.G, this.Color.B, current_alpha)});
-		
+
 		if (current_alpha == this.AlphaMin)
 		{
 			return FX_Execute_Kill;
@@ -66,7 +66,7 @@ static const FxFlashScreenRGBa = new Effect
 			this.Target->GetHUDController()->GetColorLayer(this.Target, this.ColorLayer)->Update({BackgroundColor = nil});
 		}
 	},
-	
+
 	AddAlphaTrack = func (int time_offset, int alpha_add, int fade_time)
 	{
 		var track = { T0 = time_offset, Alpha = alpha_add, Length = fade_time};

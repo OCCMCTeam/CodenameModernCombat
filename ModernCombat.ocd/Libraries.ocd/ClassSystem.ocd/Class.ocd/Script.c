@@ -1,6 +1,6 @@
 /**
 	Basic library for Clonk classes
-	
+
 	@author Marky
 */
 

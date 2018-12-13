@@ -1,6 +1,6 @@
 /**
 	Shows the status of the selected item in the bottom right corner.
-	
+
 	Should contain:
 	- "object count" for counters, such as ammo in the object
 	- "total count" that displays the maximum value of object count
@@ -152,27 +152,27 @@ func AssembleItemStatus()
 {
 	var separator_button_row_h = 800;
 	var line_height = 333; // There are 3 lines
-	
+
 	var field_large_digit_width = 200;
 	var field_small_digit_width = 100;
 
 	var field_large_digit_margin = 160;
 	var field_small_digit_margin = 80;
-	
+
 	var menu = new GUI_Element
 	{
 		Target = this,
 		Player = NO_OWNER, // will be shown once a gui update occurs
 		Style = GUI_Multiple | GUI_NoCrop | GUI_IgnoreMouse,
 		Priority = GUI_CMC_Priority_HUD,
-		
+
 		BackgroundColor = GUI_CMC_Background_Color_Default,
 	};
-	
+
 	menu->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Width + GUI_CMC_Element_Icon_Size))
 	    ->SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_Info_Height))
 	    ->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H));
-	
+
 	// Depends on include order, unfortunately
 	// Also, you have to shift down from the top in this case :/
 	if (this.gui_cmc_crew)
@@ -189,12 +189,12 @@ func AssembleItemStatus()
 	field->SetWidth(separator_button_row_h)
 	     ->SetHeight(2 * line_height)
 	     ->AddTo(menu);
-	     
+
 	// Get button assignments
-	
+
 	var button_grenade = GetPlayerControlAssignment(GetOwner(), CON_CMC_DrawGrenade, true, true);
 	var button_reload = GetPlayerControlAssignment(GetOwner(), CON_CMC_Reload, true, true);
-	
+
 	// Rightmost element: A vertical button row
 	var vertical_button_row = new GUI_Element
 	{
@@ -205,7 +205,7 @@ func AssembleItemStatus()
 			Symbol = CMC_Icon_Button,
 			GraphicsName = button_reload,
 		},
-		
+
 		button_2 = 
 		{
 			Top = ToPercentString(1 * line_height + field_small_digit_margin),
@@ -213,7 +213,7 @@ func AssembleItemStatus()
 			Symbol = CMC_Icon_Button,
 			GraphicsName = button_grenade,
 		},
-		
+
 		button_3 = 
 		{
 			Top = ToPercentString(2 * line_height + field_small_digit_margin),
@@ -225,7 +225,7 @@ func AssembleItemStatus()
 	vertical_button_row->SetLeft(separator_button_row_h)
 	                   ->SetRight(1000)
 	                   ->AddTo(menu);
-	                   
+
 	// Leftmost bottom element: Detail text of one line height
 	var object_configuration = new GUI_Element
 	{
@@ -290,7 +290,7 @@ func AssembleItemStatus()
 	gui_cmc_item_status.Total_Count = total_count;
 	gui_cmc_item_status.Grenade_Count = grenade_count;
 	gui_cmc_item_status.Grenade_Icon = grenade_icon;
-	
+
 	return menu;
 }
 
@@ -333,7 +333,7 @@ public func GetObjectConfiguration()
 
 /*
 	Callback from the HUD adapter.
-	
+
 	Just update the item status, too.
  */
 public func ScheduleUpdateInventory()
@@ -345,7 +345,7 @@ public func ScheduleUpdateInventory()
 
 /*
 	Schedules an update of the bar for the next frame.
-	
+
 	@par bar The name of the bar if you want to update only of the bars. Pass 'nil' to update all bars.
  */
 public func ScheduleUpdateItemStatus()
@@ -369,11 +369,11 @@ local ScheduledItemStatusUpdateTimer = new Effect
 func UpdateItemStatus()
 {
 	var cursor = GetCursor(GetOwner());
-	
+
 	if (gui_cmc_item_status.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		// --- Grenades
-		
+
 		var grenade_type = cursor->~GetCurrentGrenadeType();
 		if (grenade_type)
 		{
@@ -385,7 +385,7 @@ func UpdateItemStatus()
 			GetGrenadeCount()->Hide();
 			gui_cmc_item_status.Grenade_Icon->Hide();
 		}
-		
+
 		// --- Item status
 		var item = cursor->GetHandItem(0);
 
@@ -400,7 +400,7 @@ func UpdateItemStatus()
 		{
 			status = new GUI_Item_Status_Properties{};
 		}
-		
+
 		// Show object counts only if there is a value
 		var object_count = status->GetObjectCount();
 		if (object_count == nil)
@@ -411,7 +411,7 @@ func UpdateItemStatus()
 		{
 			GetObjectCount()->Show()->SetValue(object_count);
 		}
-		
+
 		// Show total count only if there is a value
 		var total_count = status->GetTotalCount();
 		if (total_count == nil)
@@ -422,7 +422,7 @@ func UpdateItemStatus()
 		{
 			GetTotalCount()->Show()->SetValue(total_count);
 		}
-		
+
 		// Show slash only if there is object count AND total count
 		if (object_count == nil || total_count == nil)
 		{
@@ -432,7 +432,7 @@ func UpdateItemStatus()
 		{
 			GetSlash()->Show();
 		}
-		
+
 		// Text info in the bottom row, item name as a default
 		var object_configuration = status->GetObjectConfiguration();
 		if (item && object_configuration == nil)
@@ -470,7 +470,7 @@ static const GUI_Item_Status_Properties = new Global
 	total_count = nil,          // Amount to be display in total count; nil means: not displayed
 
 	// Getters
-	
+
 	GetObjectConfiguration = func ()
 	{
 		return this.object_configuration;
@@ -487,7 +487,7 @@ static const GUI_Item_Status_Properties = new Global
 	},
 
 	// Setters
-	
+
 	SetObjectConfiguration = func (string text)
 	{
 		this.object_configuration = text;

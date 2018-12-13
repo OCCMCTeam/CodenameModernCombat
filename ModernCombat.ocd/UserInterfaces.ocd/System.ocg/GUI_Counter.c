@@ -3,15 +3,15 @@
 
 	@author Marky
  */
- 
+
 
 /*
 	GUI prototype for a counter.
-	
+
 	Usage:
 	- Create a counter by var counter = new GUI_Counter{};
 	- Call layout->AddTo(...) to add the layout the bar to a menu
-	
+
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
@@ -19,20 +19,20 @@
 static const GUI_Counter = new GUI_Element
 {	
 	// --- Properties
-	
+
 	GUI_Counter_DigitAmount = 1,	      // The counter shows this many digits
 	GUI_Counter_No_Trailing_Zeros = true, // Hide trailing zeros?
-	
+
 	// --- Functions / API
-	
+
 	/*
 		Defines the maximum amount of digits that the counter
 		can display.
-		
+
 		If you want to display a number with more digits than
 		this amount the counter will simply display "9" on
 		every digit.
-		
+
 		@return proplist The counter proplist, for calling further functions.
 	 */
 	SetMaxDigits = func (int amount)
@@ -40,7 +40,7 @@ static const GUI_Counter = new GUI_Element
 		this.GUI_Counter_DigitAmount = amount;
 		return this;
 	},
-	
+
 	// SetDigit* function: Sets the size of the GUI element.
 	//
 	// Manipulating a GUI element this way will always
@@ -48,7 +48,7 @@ static const GUI_Counter = new GUI_Element
 	// the left and/or top border stay fixed.
 	//
 	// Sets the dimensions as usually, but multiplies it by the supplied digit width
-	
+
 	SetDigitWidth = func (dimension, int em)
 	{
 		SetWidth(Dimension(dimension, em)->Scale(this.GUI_Counter_DigitAmount ?? 1));
@@ -57,18 +57,18 @@ static const GUI_Counter = new GUI_Element
 
 	/*
 		Sets the value that the counter displays.
-		
+
 		@par value The value.
 		If you want to display a number with more digits than
 		the counter can display it will simply display "9" on
 		every digit.
-		
+
 		@return proplist The counter proplist, for calling further functions.
 	 */
 	SetValue = func (int value)
 	{
 		var digits = GetDigits(value);
-		
+
 		// Fill everything with 9s if the number is too long.s
 		if (GetLength(digits) > this.GUI_Counter_DigitAmount)
 		{
@@ -78,14 +78,14 @@ static const GUI_Counter = new GUI_Element
 				digits[i] = 9;
 			}
 		}
-		
+
 		SetDigits(digits);
 		return this;
 	},
 
 	/*
 		Defines whether you want to show trailing zeros.
-		
+
 		@par show If this is set to 'true' those digits that are not present
 		          in the actual value will display '0' instead.
 		          Set it to 'false' to hide traling zeros and display only
@@ -97,9 +97,9 @@ static const GUI_Counter = new GUI_Element
 		this.GUI_Counter_No_Trailing_Zeros = !show;
 		return this;
 	},
-	
+
 	// --- Internal Functions
-	
+
 	/*
 		Internal function:
 		Gets the digits of a value in an array (in reverse order).
@@ -150,7 +150,7 @@ static const GUI_Counter = new GUI_Element
 		}
 		SetCounterElementProperties("GraphicsName", graphics_names, true);
 	},
-	
+
 	SetDigitProperties = func (proplist properties)
 	{
 		for (var property_name in GetProperties(properties))
@@ -159,7 +159,7 @@ static const GUI_Counter = new GUI_Element
 		}
 		return this;
 	},
-	
+
 	/*
 		Internal function:
 		Gets the "order" of a digit: 10^exponent
@@ -168,7 +168,7 @@ static const GUI_Counter = new GUI_Element
 	{
 		return 10 ** exponent;
 	},
-	
+
 	/*
 		Sets a property in the counter element.
 		Update is displayed once the update function is called
@@ -188,18 +188,18 @@ static const GUI_Counter = new GUI_Element
 			}
 		}
 	},
-	
+
 	SetCounterElementProperty = func (int index, string property_name, value)
 	{
 		var counter_name = Format("digit_%d", GetOrder(index));
-		
+
 		if (!this[counter_name])
 		{
 			this[counter_name] = {};
 		}
 		this[counter_name][property_name] = value;
 	},
-	
+
 	// Translates the integer position information to GUI layout properties
 	ComposeLayout = func ()
 	{
@@ -208,11 +208,11 @@ static const GUI_Counter = new GUI_Element
 		this.Right = GetRight()->ToString();
 		this.Top = GetTop()->ToString();
 		this.Bottom = GetBottom()->ToString();
-		
+
 		// Additional code below
 		var remainder = 1000 % this.GUI_Counter_DigitAmount;
 		var width = (1000 - remainder) / this.GUI_Counter_DigitAmount;
-		
+
 		var left = [], right = [];
 		for (var i = 0; i < this.GUI_Counter_DigitAmount; ++i)
 		{

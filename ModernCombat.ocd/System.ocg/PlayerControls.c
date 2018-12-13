@@ -9,7 +9,7 @@ global func PlayerControl(int player, int control, id spec_id, int x, int y, int
 	{
 		control = CON_UseAlt;
 	}
-	
+
 	// Map the CON_QuickSwitch key to CON_CMC_ItemConfig
 	if (control == CON_QuickSwitch)
 	{

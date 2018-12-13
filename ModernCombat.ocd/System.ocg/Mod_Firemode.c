@@ -128,7 +128,7 @@ public func GetProneAimingAnimation()
 
 /**
  Get the sound for firing.
- 
+
  @return The sound string, without sound number.
 */
 public func GetFireSound()
@@ -140,7 +140,7 @@ public func GetFireSound()
  Gets the current fire sound. This composes the fire sound with a cycling number.
  Calling this function also cycles the number, so call it only once per function,
  preferrably.
- 
+
  @return The composed sound string.
 */
 public func GetCurrentFireSound()
@@ -330,7 +330,7 @@ public func SetProneAimingAnimation(string name)
 
 /**
  Set the fire sound for this fire mode.
- 
+
  @par name The sound name. Must not contain numbers.
  @par count The amount of sounds of this type.
             A value of 'nil' means that there is no sound playlist,
@@ -370,7 +370,7 @@ public func SetSpreadLimit(int value)
 /**
 	Set the type of cursor that is shown
 	while aiming. Nil means no cursor.
-	
+
 	@par cursor Can be an ID in case of one cursor,
 	            or an array of IDs if you desire
 	            multiple cursors at the same time.

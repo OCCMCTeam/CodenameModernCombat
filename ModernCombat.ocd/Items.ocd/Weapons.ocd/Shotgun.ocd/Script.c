@@ -138,7 +138,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
 	EffectMuzzleFlash(user, x, y, angle, RandomX(40, 55), false, true);
-	
+
 	// Casing
 	ScheduleCall(this, this.PlaySoundLoadAmmoChamber, firemode->GetRecoveryDelay(), 1);
 	ScheduleCall(this, this.EjectCasing, firemode->GetRecoveryDelay() + 5, 1, user, angle, firemode);

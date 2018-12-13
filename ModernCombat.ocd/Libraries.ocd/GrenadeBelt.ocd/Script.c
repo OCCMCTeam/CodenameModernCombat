@@ -13,7 +13,7 @@ local cmc_grenade_belt;
 func Initialize()
 {
 	_inherited(...);
-	
+
 	cmc_grenade_belt = 
 	{
 		max_count = 4,
@@ -26,9 +26,9 @@ func Initialize()
 
 /**
 	Takes a grenade of a specific type.
-	
+
 	@par type This type of grenade will be drawn.
-	
+
 	@return bool {@code true} if drawing the grenade was successful.  
  */
 public func TakeGrenade(id type)
@@ -50,7 +50,7 @@ public func TakeGrenade(id type)
 			if (grenade->Contained() == this)
 			{
 				DoGrenadeCount(type, -1);
-				
+
 				// Select the grenade, if possible
 				if (this.GetItemPos && this.SetHandItemPos)
 				{
@@ -97,10 +97,10 @@ public func StashGrenade(object grenade)
 
 /**
 	Changes the amount of grenades in the belt.
-	
+
 	@par type Can be a {@code C4V_String} or {@code C4V_Def}.
 	@par change The value to change by.
-	
+
 	@return int The actual change.
  */
 public func DoGrenadeCount(type, int change)
@@ -135,7 +135,7 @@ public func DoGrenadeCount(type, int change)
 
 /**
 	Gets the amount of stashed grenades.
-	
+
 	@par type Get the count for a specific type,
 	          or get the total of all grenades
 	          if {@code nil} is passed.
@@ -218,7 +218,7 @@ func ObjectControl(int player, int control, int x, int y, int strength, bool rep
 		{
 			this->~OpenListSelectionMenu(this, CMC_LIST_MENU_TYPE_GRENADE_SELECTION);
 		}
-		
+
 		// While not respawning block the option menu always!
 		return true;
 	}
@@ -232,11 +232,11 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	if (type == CMC_LIST_MENU_TYPE_GRENADE_SELECTION)
 	{
 		main_menu->SetHeaderCaption("$ConfigureGrenades$");
-		
+
 		// Always show grenades in the same order, so that the grenade selection is independent of classes
 		// - that is: I want the player to be able to pick the same grenade type with a certain hotkey,
 		//            no matter what class is selected
-		
+
 		// Fill with contents
 		var available_types = GetAvailableGrenadeTypes();
 		if (GetLength(available_types) == 0)
@@ -248,7 +248,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			var list = main_menu->GetList();
 			var hotkey = 0;
 			var current_type = GetCurrentGrenadeType();
-			
+
 			// Add entry for drawing the current grenade type
 			var default_entry = list->MakeEntryProplist();
 			var default_action = "$DrawGrenade$";
@@ -270,10 +270,10 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			{
 				var amount = GetGrenadeCount(grenade_type);
 				var disabled = (amount == 0);
-			
+
 				// Text and description
 				var text_color = nil;
-				
+
 				if (current_type == grenade_type)
 				{
 					text_color = GUI_CMC_Text_Color_Highlight;

@@ -21,17 +21,17 @@ public func OnDetonation()
 	var level = 30;
 	DoShockwave(GetX(), GetY(), level, GetController(), GetObjectLayer());
 	ExplosionEffect(level, 0, 0, 0, true, level);
-	
+
 	// Determine free angles
 	var angles = GetPathFreeAngles(level);
 	var min_angle = Min(angles) ?? -90;
 	var max_angle = Max(angles) ?? +90;
 	var avg_angle = GetAverage(angles);
-	
+
 	// Determine cones
 	var neg_angle = (min_angle + avg_angle) / 2;
 	var pos_angle = (max_angle + avg_angle) / 2;
-	
+
 	// Cast shrapnel in 3 cones, preferrably sideways
 	var shrapnel_count = 40;
 	var spread = 5;
@@ -46,9 +46,9 @@ func LaunchShrapnel(int min_angle, int max_angle, int spread, int amount)
 {
 	var min = Min(min_angle, max_angle);
 	var max = Max(min_angle, max_angle);
-	
+
 	var steps = Max(1, (max - min) / Max(1, amount));
-	
+
 	for (var angle = min; amount > 0; --amount)
 	{
 		var shrapnel = CreateObject(Shrapnel, 0, 0, NO_OWNER);
@@ -57,7 +57,7 @@ func LaunchShrapnel(int min_angle, int max_angle, int spread, int amount)
 		shrapnel->Launch(GetController());
 		shrapnel.ProjectileDamage = this.ShrapnelDamage;
 		CreateObject(BulletTrail)->Set(shrapnel, 2, 30);
-	
+
 		/*
 		var frag = CreateObject(CMC_Projectile_Bullet); // FIXME: Lazy again :) But seriously, the fragment code is loooong
 		frag->Velocity(RandomX(70, 100))
@@ -68,7 +68,7 @@ func LaunchShrapnel(int min_angle, int max_angle, int spread, int amount)
 		    ->Shooter(this);
 		frag->Launch(angle);
 		*/
-	
+
 		angle += steps;
 	}
 }

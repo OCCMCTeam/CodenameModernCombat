@@ -245,7 +245,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
 	{
 		EffectMuzzleFlash(user, x, y, angle, 20, false, true);
-		
+
 		// Casing
 		x = +Sin(angle, firemode->GetProjectileDistance() / 3);
 		y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
@@ -258,13 +258,13 @@ func FireEffect(object user, int angle, proplist firemode)
 	{
 		var user_xdir = user->GetXDir();
 		var user_ydir = user->GetYDir();
-		
+
 		CreateParticle("Smoke2", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(user_xdir, user_xdir + xdir), PV_Random(user_ydir, user_ydir + ydir), PV_Random(15, 25),
 		{
 			Prototype = Particles_ThrustColored(200, 200, 200),
 			Size = PV_Random(5, 10),
 		}, 10);
-	
+
 		CreateParticle("Thrust", x, y, user_xdir, user_ydir, PV_Random(20, 30),
 		{
 			Prototype = Particles_ThrustColored(255, 200, 200),

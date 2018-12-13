@@ -89,11 +89,11 @@ func StartDead()
 func StartDeathAnimation(int animation_slot)
 {
 	animation_slot = animation_slot ?? CLONK_ANIM_SLOT_Death;
-	
+
 	// Save animation slots
 	var fx = CMC_Rule_MortalWounds->GetDelayedDeathEffect(this);
 	if (fx) fx.animations = [];
-	
+
 	// Blend death animation with other animations, except for the death slot
 	var merged_animations = false;	
 	for (var slot = 0; slot < animation_slot; ++slot)
@@ -101,7 +101,7 @@ func StartDeathAnimation(int animation_slot)
 		if (GetRootAnimation(slot) == nil) continue;
 		var anim = OverlayDeathAnimation(slot);
 		merged_animations = true;
-		
+
 		if (fx)
 		{
 			PushBack(fx.animations, anim);
@@ -162,14 +162,14 @@ func OpenIncapacitatedMenu()
 	    ->Show()
 	    ->Open(GetOwner());
 	SetMenu(menu->GetRootID());
-	
+
 	// Save menu in the container for future reference
 	SetIncapacitatedMenu(menu);
-	
+
 	// Enable custom controls for the menu
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_RequestHelp, true);
 	SetPlayerControlEnabled(GetOwner(), CON_CMC_Incapacitated_ToggleReanimation, true);
-	
+
 	// Follow
 	if (GetCursor(GetOwner()) == this)
 	{

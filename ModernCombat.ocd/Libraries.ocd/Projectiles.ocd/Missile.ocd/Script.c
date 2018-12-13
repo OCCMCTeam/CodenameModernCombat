@@ -128,7 +128,7 @@ func Malfunction()
 	if (!this.Missile_IsDamaged)
 	{
 		this.Missile_IsDamaged = true;
-		
+
 		//if(!IsSecure() && Hostile(iLastAttacker, GetController()))
 		//{
 		//	//Punkte bei Belohnungssystem (Projektil abgefangen)
@@ -194,14 +194,14 @@ func ControlSpeed()
 		{
 			this.Missile_Speed = BoundBy(this.Missile_Speed + this->Acceleration(), 0, this->MaxSpeed());
 		}
-	
+
 		velocity_x = +Sin(this.Missile_AngleValue, this.Missile_Speed, this.Missile_AnglePrecision);
 		velocity_y = -Cos(this.Missile_AngleValue, this.Missile_Speed, this.Missile_AnglePrecision);
 
 		SetXDir(velocity_x);
 		SetYDir(velocity_y);
 	}
-	
+
 	// Adjust rotation while falling!
 	var target_r = Angle(0, 0, GetXDir(), GetYDir());
 	var diff_r = BoundBy(target_r - GetR(), -this.Missile_RDir, +this.Missile_RDir);
@@ -215,14 +215,14 @@ func OnTravelling()
 	{
 		Fall();
 	}
-	
+
 	if (GetY() < -500)
 	{
 		Detonate();
 	}
-	
+
 	HandleSmokeTrail();
-	
+
 	ConnectToTracer();
 }
 
@@ -250,10 +250,10 @@ func HandleSmokeTrail()
 		var rand = RandomX(-30, 30);
 		var xdir = +Sin(GetR() + rand, 20);
 		var ydir = -Cos(GetR() + rand, 20);
-		
+
 		var size_thrust = RandomX(8, 10);
 		var size_smoke = RandomX(10, 12);
-		
+
 		if (this.Missile_IsDamaged)
 		{
 			off_x *= -1;
@@ -270,7 +270,7 @@ func HandleSmokeTrail()
 				Size = size_thrust,
 			});
 		}
-		
+
 		// Missile with fuel creates smoke
 		if (this.Missile_HasFuel && !this.Missile_IsDamaged)
 		{
@@ -295,10 +295,10 @@ func GuideTo(int x, int y)
 		// Rotate towards target rotation
 	    var current_angle = this.Missile_AngleValue;
 		var target_angle = Angle(GetX(), GetY(), x, y, this.Missile_AnglePrecision);
-	
+
 	    var difference = Normalize(target_angle - current_angle, -180 * this.Missile_AnglePrecision, this.Missile_AnglePrecision);
 	    var turn = Min(Abs(difference), MaxTurn() * this.Missile_AnglePrecision);
-	    
+
 	    // Update angle and rotation
 		this.Missile_AngleValue += turn * Sign(difference);
 	    SetR(this.Missile_AngleValue / this.Missile_AnglePrecision);
@@ -314,13 +314,13 @@ func ConnectToTracer()
 		LaserReset();
 		return;
 	}
-	
+
 	// Remove laser if there is an uplink
 	if (this.Missile_TracerLinked)
 	{
 		LaserReset();
 	}
-	
+
 	// Found a tracer already?
 	if (this.Missile_TracerControl)
 	{
@@ -336,7 +336,7 @@ func ConnectToTracer()
 			LoseTarget();
 		}
 	}
-	
+
 	// Look for the next closest laser
 	if (!this.Missile_TracerControl)
 	{
@@ -405,7 +405,7 @@ func LaserUpdate(object target)
 	{
 		return LaserReset();
 	}
-	
+
 	if (!this.Missile_TracerLaser)
 	{
 		this.Missile_TracerLaser = CreateObject(LaserEffect, 0, 0, GetController());

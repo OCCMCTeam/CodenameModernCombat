@@ -8,9 +8,9 @@
 /**
 	Heals the object over time for /amount/ HP.
 	Calling the function multiple times results in faster healing (as opposed to longer healing).
-	
+
 	If necessary, a custom interval can be set. The healing effect restores 1 energy per interval.
-	
+
 	@par amount This much will be healed in total.
 	@par interval Heals 1 energy every <interval> frames
 	@par no_stacking No healing effect is added, if the target already has a *Heal* effect.
@@ -51,7 +51,7 @@ static const FxHealingOverTimeCmc = new Effect
 		}
 		Target->DoEnergy(1);
 		++this.done;
-		
+
 		if (this.timer_callback)
 		{
 			DoCallback(this.timer_callback, Target, time);

@@ -1,6 +1,6 @@
 /**
 	Include this in objects that are affected by stun grenades.
-	
+
 	The default implementation is suited for Clonks, but can be expanded or overriden
 	for vehicles, structures, etc.
 
@@ -29,7 +29,7 @@ func BlindedByStunGrenade(object grenade, int intensity)
 	{
 		CreateEffect(BlindedByFlash, 100, 1, intensity);
 	}
-	
+
 	this->~OnBlindedByStunGrenade(grenade, intensity);
 }
 
@@ -86,7 +86,7 @@ local BlindedByFlash = new Effect
 			this.Target->GetHUDController()->GetColorLayer(this.Target, this.ColorLayer)->Update({BackgroundColor = nil});
 		}
 	},
-	
+
 	AddIntensity = func (int additional)
 	{
 		var subtract = Min(this.Intensity / 6, 50);
@@ -109,7 +109,7 @@ local BlindedByFlash = new Effect
 			overlay->Update({BackgroundColor = RGBa(255, 255, 255, BoundBy(this.Intensity, 0, 255)), });
 		}
 	},
-	
+
 	UpdateStatusIcons = func ()
 	{
 		// Distinction between contained and non-contained is not made until I know the original reason; Will most likely come up again once we add vehicles
@@ -119,12 +119,12 @@ local BlindedByFlash = new Effect
 		{
 			graphics = "Full";
 		}
-		
+
 		var symbol_helper = this.Target->ShowStatusSymbol(CMC_Icon_Stunned);
 		symbol_helper->SetSymbolGraphics(CMC_Icon_Stunned, graphics)
 		             ->SetSymbolColor(CMC_Icon_Stunned, nil, nil, nil, BoundBy(this.Intensity, 0, 255));
 	},
-	
+
 	HasColorOverlay = func ()
 	{
 		return this.Target->GetHUDController() && this.Target->GetHUDController().GetColorLayer;

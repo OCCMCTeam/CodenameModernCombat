@@ -1,6 +1,6 @@
 /**
 	Collection of miscellaneous GUI elements.
-	
+
 	@author Marky
  */
 
@@ -9,7 +9,7 @@
 static const CMC_GUI_Element_StatusBox = new GUI_Element
 {
 	BackgroundColor = GUI_CMC_Background_Color_Default,
-	
+
 	Assemble = func (object target)
 	{
 		SetHeight(GuiDimensionCmc(nil, GUI_CMC_Element_PlayerStatus_Height));
@@ -27,20 +27,20 @@ static const CMC_GUI_TextButton = new CMC_GUI_Button
 	// --- GUI Properties
 
 	BackgroundColor = GUI_CMC_Background_Color_Default,
-	
+
 	hover = nil, // Overlay for hover effect
-	
+
 	// --- Functions
-	
+
 	AssignPlayerControl = func (int player, int control) // Sets the button hint and default with, defines some stuff from the inherited control
 	{
 		return AssignButtonHint(player, GetPlayerControlAssignment(player, control, true, true));
 	},
-	
+
 	AssignButtonHint = func (int player, string button_assignment) // Sets the button hint and default with, defines some stuff from the inherited control
 	{
 		this.hover = { Priority = 1};
-		
+
 		// Text
 		this.label = new GUI_Element { Priority = 2, Style = GUI_TextLeft | GUI_TextVCenter | GUI_NoCrop};
 		this.label->SetWidth(GuiDimensionCmc(nil, GUI_CMC_Element_TextButton_Width))
@@ -77,7 +77,7 @@ static const CMC_GUI_Controller_Tab = new Global
 		// Establish defaults
 		this.Tab_Ids = this.Tab_Ids ?? [];
 		this.Tab_Elements = this.Tab_Elements ?? [];
-		
+
 		if (identifier)
 		{
 			index = GetIndexOf(this.Tab_Ids, identifier);
@@ -94,7 +94,7 @@ static const CMC_GUI_Controller_Tab = new Global
 		}
 		return this.Tab_Elements[index];
 	},
-	
+
 	GetTabCount = func ()
 	{
 		return GetLength(this.Tab_Ids ?? []);
@@ -120,11 +120,11 @@ static const CMC_GUI_Controller_Tab = new Global
 			PushBack(this.Tab_Ids, identifier);
 			PushBack(this.Tab_Elements, tab);
 		}
-		
+
 		// Done
 		return tab;
 	},
-	
+
 	SelectTab = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
@@ -142,7 +142,7 @@ static const CMC_GUI_Controller_Tab = new Global
 			this.Tab_Elements[i]->SetSelected(i == index, skip_callback);
 		}
 	},
-	
+
 	SelectBestTab = func (bool skip_callback)
 	{
 		var best_index = -1;
@@ -164,7 +164,7 @@ static const CMC_GUI_Controller_Tab = new Global
 				best_priority = priority;
 			}
 		}
-		
+
 		if (best_index == -1)
 		{
 			return false;
@@ -175,7 +175,7 @@ static const CMC_GUI_Controller_Tab = new Global
 			return true;
 		}
 	},
-	
+
 	GetSelectedTab = func ()
 	{
 		for (var tab in this.Tab_Elements)
@@ -187,7 +187,7 @@ static const CMC_GUI_Controller_Tab = new Global
 		}
 		return nil;
 	},
-	
+
 	GetTabSelectionPriority = func (proplist tab)
 	{
 		return tab->~GetSelectionPriority() // Use a custom priority?

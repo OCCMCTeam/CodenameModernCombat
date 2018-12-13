@@ -1,6 +1,6 @@
 /**
 	Include this in objects that are affected by smoke grenades.
-	
+
 	The default implementation is suited for Clonks, but can be expanded or overriden
 	for vehicles, structures, etc.
 
@@ -47,7 +47,7 @@ local BlindedBySmoke = new Effect
 		this.Alpha = BoundBy(this.Alpha + change_alpha, 0, this.AlphaMax);
 
 		overlay->Update({BackgroundColor = RGBa(150, 150, 150, this.Alpha)});
-		
+
 		if (this.Alpha == 0)
 		{
 			return FX_Execute_Kill;

@@ -60,14 +60,14 @@ func CreateInterior()
 func CreateEquipment()
 {
 	_inherited(...);
-	
+
 	// Create template spawn points with default configuration
 	var config = GetSpawnPointTemplates();
 
 	// Place spawn points
 	CopySpawnPoint(config.ammo_grenades, 970, 690);
 	CopySpawnPoint(config.ammo_missiles, 960, 575);
-	
+
 	// Remove template spawn points
 	RemoveSpawnPointTemplates(config);
 }

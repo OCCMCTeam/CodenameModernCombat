@@ -1,9 +1,9 @@
 /**
 	Refillable use item
-	
+
 	When including this, be sure to call the inherited function in:
 	- Initialize()
-	
+
 	Additionally has to:
 	- include the Library_AmmoManager
 	- implement the function MaxAmmo()
@@ -43,7 +43,7 @@ local RefillAmmoEffect = new Effect
 		{
 			return FX_OK;
 		}
-		
+
 		// Do it!
 		var user = Target->Contained();
 		var can_refill = Target->~AllowAmmoRefill(user);
@@ -88,7 +88,7 @@ func GetGuiItemStatusProperties(object user)
 
 	// Object count
 	status->SetObjectCount(GetAmmoCount());
-	
+
 	// Total count
 	if (user == Contained())
 	{

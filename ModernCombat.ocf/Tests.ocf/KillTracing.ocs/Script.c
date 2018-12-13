@@ -43,13 +43,13 @@ func InitializePlayer(int player)
 		}
 		return;
 	}
-	
+
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
-	
+
 	// No FoW to see everything happening.
 	SetFoW(false, player);
-	
+
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	GetCrew(player)->Enter(relaunch);
@@ -93,7 +93,7 @@ static const IntKillTraceTestControl = new IntTestControl
 	{
 		return Global[Format("Test%d_Setup", this.testnr)];
 	},
-	
+
 	ExecuteTest = func ()
 	{		
 		if (this.setup > 0)
@@ -114,7 +114,7 @@ static const IntKillTraceTestControl = new IntTestControl
 		else
 		{
 			InitTest();
-			
+
 			var output = Call(Format("~Test%d_Log", this.testnr));
 			if (output)
 			{
@@ -125,19 +125,19 @@ static const IntKillTraceTestControl = new IntTestControl
 			var killer = GetCrew(player_killer);
 			var fake_killer = GetCrew(player_killer_fake);
 			Call(Format("Test%d_Setup", this.testnr), victim, killer, fake_killer);
-			
+
 			this.setup = FrameCounter();
 		}
 		return Wait();
 	},
-	
+
 
 	CleanupTest = func ()
 	{
 		this.setup = 0;
 		this.timeout = nil;
 	},
-	
+
 	OnDeath = func (int killer, object clonk)
 	{
 		// Store the result.
@@ -158,7 +158,7 @@ global func InitTest()
 	// Remove all landscape changes.
 	DrawMaterialQuad("Brick", 0, 160, LandscapeWidth(), 160, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight());
 	ClearFreeRect(0, 0, LandscapeWidth(), 160);
-	
+
 	// Give script players new crew.
 	var victim_crew = GetCrew(player_victim);
 	if (victim_crew)
@@ -181,7 +181,7 @@ global func InitTest()
 	GetCrew(player_killer)->SetPosition(50, 150);
 	GetCrew(player_killer_fake)->SetPosition(20, 150);
 	GetCrew(player_victim)->CreateEffect(IntLogEnergyChange, 1, 1);
-	
+
 	ResetHostility();
 	return;
 }
@@ -264,7 +264,7 @@ global func Test1_Setup(object victim, object killer, object fake_killer)
 {
 	victim->SetPosition(145, 150);
 	victim->DoEnergy(10 - victim->GetMaxEnergy());
-		
+
 	var bomb = killer->CreateContents(IronBomb);
 	bomb->ControlUse(killer);
 	killer->SetHandAction(0);
@@ -303,7 +303,7 @@ global func Test4_Setup(object victim, object killer, object fake_killer)
 
 	var weapon = killer->CreateContents(CMC_Weapon_RocketLauncher);
 	weapon->DoAmmo(CMC_Ammo_Missiles, 1);
-	
+
 	var aim_x = victim->GetX() - killer->GetX();
 	Test_WeaponSingleCall("UseAlt", weapon, 1, killer, aim_x, 0);
 	Test_WeaponSingleCall("Use", weapon, 50, killer, aim_x, 0);
@@ -319,7 +319,7 @@ global func Test5_Setup(object victim, object killer, object fake_killer)
 	// Get in position!
 	victim->SetPosition(480, 150);
 	victim->DoEnergy(85 - victim->GetEnergy());
-	
+
 	fake_killer->SetPosition(180, 150);
 	fake_killer->DoEnergy(85 - victim->GetEnergy());
 
@@ -330,20 +330,20 @@ global func Test5_Setup(object victim, object killer, object fake_killer)
 	var tracer = fake_killer->CreateContents(CMC_Weapon_Pistol);
 	tracer->DoAmmo(CMC_Ammo_Bullets, 1);
 	tracer->SetFiremode(1, true);
-	
+
 	// Let fake killer fire a tracer at the victim
 	var f_aim_x = victim->GetX() - fake_killer->GetX();
 	Test_WeaponSingleCall("Use", tracer, 10, fake_killer, f_aim_x, 0);
-	
+
 	// Let killer fire the missile into the air, than do an uplink to the tracer
 	var k_aim_x = 100;
 	var k_aim_y = -50;
-	
+
 	Test_WeaponSingleCall("UseAlt", weapon, 1, killer, k_aim_x, k_aim_y); // Start aiming
 	Test_WeaponSingleCall("Use", weapon, 20, killer, k_aim_x, k_aim_y);   // Fire high
 	Test_WeaponSingleCall("Use", weapon, 55, killer, k_aim_x, k_aim_y);   // Confirm uplink
-	
+
 	// Let the victim run to the left a little
 	ScheduleCall(victim, victim.SetComDir, 60, 1, COMD_Left); 
-	
+
 }

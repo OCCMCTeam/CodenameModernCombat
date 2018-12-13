@@ -25,13 +25,13 @@ func InitializePlayer(int player)
 		}
 		return;
 	}
-	
+
 	// Set zoom to full map size.
 	SetPlayerZoomByViewRange(player, LandscapeWidth(), nil, PLRZOOM_Direct);
-	
+
 	// No FoW to see everything happening.
 	SetFoW(false, player);
-	
+
 	// Move normal players into a relaunch container.
 	var relaunch = CreateObject(RelaunchContainer, LandscapeWidth() / 2, LandscapeHeight() / 2);
 	GetCrew(player)->Enter(relaunch);
@@ -76,7 +76,7 @@ global func InitTest()
 	// Remove all landscape changes.
 	DrawMaterialQuad("Brick", 0, 160, LandscapeWidth(), 160, LandscapeWidth(), LandscapeHeight(), 0, LandscapeHeight());
 	ClearFreeRect(0, 0, LandscapeWidth(), 160);
-	
+
 	// Give script players new crew.
 	var victim_crew = GetCrew(player_victim);
 	if (victim_crew)
@@ -116,7 +116,7 @@ global func Test1_OnFinished()
 }
 global func Test1_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test1_killed)
 	{
@@ -150,7 +150,7 @@ global func Test2_OnStart(int player){ return InitTest();}
 global func Test2_OnFinished(){ return; }
 global func Test2_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test2_killed)
 	{
@@ -163,51 +163,51 @@ global func Test2_Execute()
 		if (victim)
 		{
 			Log("Full energy");
-		
+
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), victim.MaxEnergy / 1000);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), true);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, OCF_Alive);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), false);
-	
-	
+
+
 			Log("Half energy");
 			var diff = victim.MaxEnergy / 2000;
 			victim->DoEnergy(-diff);
-			
+
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), victim.MaxEnergy / 1000 - diff);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), true);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, OCF_Alive);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), false);
-			
+
 			Log("Dead");
 			victim->DoEnergy(-victim.MaxEnergy / 1000);
-			
+
 			if (!victim)
 			{
 				Log("Apparently the victim got killed, this should not happen with the rule");
 			}
-			
+
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
 			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 1);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			Log("Heal a little, healing has no effect, clonk still counts as incapacitated");
-			
+
 			victim->DoEnergy(4);
-	
+
 			doTest("Energy is %d, should be %d", victim->GetEnergy(), 0);
 			doTest("Energy is actually %d, should be %d", victim->Call(Global.GetEnergy), 1);
 			doTest("GetAlive returns %v, should be %v", victim->GetAlive(), false);
 			doTest("GetOCF & OCF_Alive returns %d, should be %d", victim->GetOCF() & OCF_Alive, 0);
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			Log("Kill() call still kills the victim");
-			
+
 			CurrentTest().test2_killed = true;
 			victim->Kill();
-			
+
 			return Wait(30);
 		}
 		else
@@ -235,7 +235,7 @@ global func Test3_OnStart(int player){ return InitTest();}
 global func Test3_OnFinished(){ return; }
 global func Test3_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test3_incapacitated)
 	{
@@ -256,13 +256,13 @@ global func Test3_Execute()
 		if (victim)
 		{	
 			victim->DoEnergy(-victim.MaxEnergy / 1000);
-			
+
 			if (!victim)
 			{
 				Log("Apparently the victim got killed, this should not happen with the rule");
 			}
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			CurrentTest().test3_incapacitated = FrameCounter();
 			CurrentTest().test3_timeout = Death_Timeout() + CurrentTest().test3_incapacitated;
 			CurrentTest().test3_expected = Death_Expected() + CurrentTest().test3_incapacitated;
@@ -287,7 +287,7 @@ global func Test4_OnStart(int player){ return InitTest();}
 global func Test4_OnFinished(){ return; }
 global func Test4_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test4_incapacitated)
 	{
@@ -313,17 +313,17 @@ global func Test4_Execute()
 		if (victim)
 		{	
 			victim->DoEnergy(-victim.MaxEnergy / 1000);
-			
+
 			if (!victim)
 			{
 				Log("Apparently the victim got killed, this should not happen with the rule");
 			}
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			CurrentTest().test4_incapacitated = FrameCounter();
 			CurrentTest().test4_timeout = Death_Timeout() + CurrentTest().test4_incapacitated;
 			CurrentTest().test4_expected = Death_Expected() + CurrentTest().test4_incapacitated;
-			
+
 			// Resurrect 1 frame before he dies
 			ScheduleCall(victim, victim.DoReanimate, Death_Expected() - 1, 1);
 
@@ -347,7 +347,7 @@ global func Test5_OnStart(int player){ return InitTest();}
 global func Test5_OnFinished(){ return; }
 global func Test5_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test5_incapacitated)
 	{
@@ -369,13 +369,13 @@ global func Test5_Execute()
 		if (victim)
 		{	
 			victim->DoEnergy(-victim.MaxEnergy / 1000);
-			
+
 			if (!victim)
 			{
 				Log("Apparently the victim got killed, this should not happen with the rule");
 			}
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			CurrentTest().test5_incapacitated = FrameCounter();
 			var second_life = 8 * 35;
 			var second_death = 9 * 35; // 35 frames to recharge the interval
@@ -406,7 +406,7 @@ global func Test6_OnStart(int player){ return InitTest();}
 global func Test6_OnFinished(){ return; }
 global func Test6_Execute()
 {
-	
+
 	var victim = GetCrew(player_victim);
 	if (CurrentTest().test6_incapacitated)
 	{
@@ -428,13 +428,13 @@ global func Test6_Execute()
 		if (victim)
 		{	
 			victim->DoEnergy(-victim.MaxEnergy / 1000);
-			
+
 			if (!victim)
 			{
 				Log("Apparently the victim got killed, this should not happen with the rule");
 			}
 			doTest("IsIncapacitated() returns %v, should return %v", victim->IsIncapacitated(), true);
-			
+
 			CurrentTest().test6_incapacitated = FrameCounter();
 			var second_life = 14 * 35;
 			var second_death = second_life + 1;

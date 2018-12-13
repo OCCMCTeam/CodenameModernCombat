@@ -29,7 +29,7 @@ func Selection(object container)
 public func GetGuiItemStatusProperties(object user)
 {
 	var status = new GUI_Item_Status_Properties {};
-	
+
 	var configuration = Format("<c %x>%s</c>", GUI_CMC_Text_Color_Highlight, this->GetName());
 	status->SetObjectConfiguration(configuration);
 
@@ -78,7 +78,7 @@ func Sting(object user, int x, int y)
 	// Find targets, heal most hurt preferrably
 	var sting_point = GetStingPoint(x, y);
 	var targets = FindObjects(Find_Distance(sting_point.radius, sting_point.x, sting_point.y), Find_Exclude(user), Find_Allied(user->GetOwner()), Find_NoContainer(), Find_Func("GetAlive"), Sort_Func("GetEnergy"));
-	
+
 	// Heal the target?
 	var rejected;
 	for (var target in targets)
@@ -91,7 +91,7 @@ func Sting(object user, int x, int y)
 
 		return UseOn(user, target);
 	}
-	
+
 	// No effect? The message only shows the reason for the last clonk that was rejected
 	PlaySoundIneffective();
 	if (rejected)
@@ -134,7 +134,7 @@ func UseOn(object user, object target)
 	{
 		PlaySoundInject(target);
 		target->CreateEffect(FxFlashScreenRGBa, 200, 1, this.HealEffectLayer, this.HealEffectColor, 180, 35);
-  
+
 	    if ((user != target)
 	     && (!Hostile(user->GetOwner(), target->GetOwner())))
 	    {
@@ -162,7 +162,7 @@ func HealEffect(object target, int time)
 		BlitMode = GFX_BLIT_Additive,
         Alpha = PV_Linear(50, 0),
 	}, 1);
-	
+
 	if(0 == (time % 18))
 	{
 		target->CreateEffect(FxFlashScreenRGBa, 200, 1, this.HealEffectLayer, this.HealEffectColor, 80, 30);

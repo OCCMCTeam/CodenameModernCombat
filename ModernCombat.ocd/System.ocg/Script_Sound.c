@@ -47,13 +47,13 @@ global func Sound(name, opts, ...)
 		{
 			FatalError("Trying to play a player specific sound %v, without a player given.", name);
 		}
-		
+
 		// Play a sound for this player? You can set name.self to nil, so that a sound is player for the others only
 		if (name.self)
 		{
 			inherited(name.self, opts, ...);
 		}
-		
+
 		// Play a sound for other players?
 		if (name.others)
 		{

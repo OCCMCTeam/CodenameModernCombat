@@ -1,6 +1,6 @@
 /**
 	Deploy location
-	
+
 	Marks a point where the player can enter the battle field.
  */
 
@@ -47,7 +47,7 @@ public func Initialize()
 	// Editor properties
 	this.EditorProps = this.EditorProps ?? {};
 	this.EditorActions = this.EditorActions ?? {};
-	
+
 	this.EditorActions.AddLocation =
 	{
 		Name = "$EditorAddLocationName$", 
@@ -77,7 +77,7 @@ public func Initialize()
 	menu_icon.location = this;
 	menu_icon.MouseSelection = this.MouseSelectionCallback; // Add a click callback
 	menu_icon->SetLightRange(800, 150);
-	
+
 	SetMenuIcon();
 }
 
@@ -87,7 +87,7 @@ public func AddRelaunchLocation(int x, int y, bool skip_update)
 {
 	locations = locations ?? [];
 	PushBack(locations, RelaunchLocation(x, y));
-	
+
 	var length = GetLength(locations);
 	var average_x = 0;
 	var average_y = 0;
@@ -102,7 +102,7 @@ public func AddRelaunchLocation(int x, int y, bool skip_update)
 		average_y /= length;
 		SetPosition(average_x, average_y);
 	}
-	
+
 	if (!skip_update)
 	{
 		UpdateEditorPropsLocation();
@@ -226,7 +226,7 @@ public func GetRelaunchLocationRating(int player, proplist relaunch_location)
 	var x = relaunch_location->GetX() - GetX();
 	var y = relaunch_location->GetY() - GetY();
 	var rating = 0;
-	
+
 	for(var thing in FindObjects(Find_Distance(100, x, y), Find_Or(Find_OCF(OCF_CrewMember), Find_And(Find_Hostile(player), Find_Func("IsSpawnTrap")))))
     {
 		if (thing->GetOCF() & OCF_CrewMember)
@@ -254,7 +254,7 @@ public func CreateMenuFor(int player, proplist callback_menu)
 	menu_list[player] = callback_menu;
 	menu_icon.Visibility[player + 1] = 1;
 	menu_icon->SetPosition(GetX(), GetY());
-	
+
 	UpdateMenuIcon();
 }
 
@@ -316,9 +316,9 @@ func SetMenuIcon(id icon, string gfx_name)
 func UpdateEditorPropsLocation()
 {
 	var color = 0xdf0000;
-	
+
 	this.editor_location_count = Max(this.editor_location_count, GetLength(locations));
-	
+
 	for (var i = 0; i < this.editor_location_count; ++i)
 	{
 		var name = GetEditorPropsLocationName(i);
@@ -365,7 +365,7 @@ func ApplyEditorPropsLocation()
 			}
 		}
 	}
-	
+
 	UpdateEditorPropsLocation();
 }
 

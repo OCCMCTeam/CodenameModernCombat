@@ -140,7 +140,7 @@ func FireEffect(object user, int angle, proplist firemode)
 func Casing(object user, proplist firemode)
 {
 	var angle = user->GetCalcDir() * 90;
-	
+
 	// Casing
 	var x = +Sin(angle, firemode->GetProjectileDistance() / 2);
 	var y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();

@@ -33,13 +33,13 @@ func UpdateCursorBar(int distance, int angle, spread, int overlay)
 	var full_size = 1000;
 	var half_size = 500;
 	var precision = 1000;
-	
+
 	var min_length = 30;    // Minimal length for the bar. If the cursor gets nearer, the bar fades out
 	var max_length = 100;   // Maximal length for the bar.
-	
+
 	var margin_top = 10;    // Margin from the top of the cone graphics to the crosshair
 	var margin_bottom = 10; // Margin from the bottom of the cone graphics to the user
-	
+
 	// Determine offset position
 	var cursor_top    = Max(distance - margin_top, min_length);
 	var cursor_bottom = Max(margin_bottom, cursor_top - max_length);
@@ -56,7 +56,7 @@ func UpdateCursorBar(int distance, int angle, spread, int overlay)
 	var yoff_side = Sin(angle, dist_side, precision);
 	var xoff_center = +Sin(angle, cursor_center * half_size, precision) - Sin(angle, distance * full_size, precision);
 	var yoff_center = -Cos(angle, cursor_center * half_size, precision) + Cos(angle, distance * full_size, precision);
-	
+
 	// Draw it!
 	SetObjDrawTransform
 	(
@@ -64,7 +64,7 @@ func UpdateCursorBar(int distance, int angle, spread, int overlay)
         +sin, +cos * relative_length / full_size, yoff_center + yoff_side,
         overlay
 	);
-	
+
 	// Update alpha if the cone is too near.
 	SetClrModulation(RGBa(255, 255, 255, BoundBy(distance * 128 / min_length, 0, 255)), overlay);
 }
@@ -79,13 +79,13 @@ func UpdateConeBar(int distance, int angle, spread, int overlay, int margin_top,
 	var full_size = 1000;
 	var half_size = 500;
 	var precision = 1000;
-	
+
 	var min_length = 30;    // Minimal length for the bar. If the cursor gets nearer, the bar fades out
 	var max_length = 100;   // Maximal length for the bar.
-	
+
 	margin_top = margin_top ?? 10;    // Margin from the top of the cone graphics to the crosshair
 	margin_bottom = margin_bottom ?? 10; // Margin from the bottom of the cone graphics to the user
-	
+
 	// Determine offset position
 	var cursor_top    = Max(distance - margin_top, min_length);
 	var cursor_bottom = Max(margin_bottom, cursor_top - max_length);
@@ -102,7 +102,7 @@ func UpdateConeBar(int distance, int angle, spread, int overlay, int margin_top,
 	var yoff_side = 0; //Sin(angle, dist_side, precision);
 	var xoff_center = +Sin(angle, cursor_center * half_size, precision);
 	var yoff_center = -Cos(angle, cursor_center * half_size, precision);
-	
+
 	// Draw it!
 	SetObjDrawTransform
 	(
@@ -110,7 +110,7 @@ func UpdateConeBar(int distance, int angle, spread, int overlay, int margin_top,
         +sin, +cos * relative_length / full_size, yoff_center + yoff_side,
         overlay
 	);
-	
+
 	// Update alpha if the cone is too near.
 	SetClrModulation(RGBa(255, 255, 255, BoundBy(distance * 128 / min_length, 0, 255)), overlay);
 }

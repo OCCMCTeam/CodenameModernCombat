@@ -3,9 +3,9 @@
 
 	@author Marky
  */
- 
+
 /* --- Constants --- */
- 
+
 static const CMC_ViewRange_GlobalMin = 200;
 
 static const CMC_ViewRange_Default_Player = 600;
@@ -32,7 +32,7 @@ global func SetPlayerZoomDefault(int player)
 global func SetPlayerZoomLandscape(int player)
 {
 	var range = Max(LandscapeWidth(), LandscapeHeight());
-	
+
 	if (player == nil)
 	{
 		for (var i = 0; i < GetPlayerCount(); ++i)

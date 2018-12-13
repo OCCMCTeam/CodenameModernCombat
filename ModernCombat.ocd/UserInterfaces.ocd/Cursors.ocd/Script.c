@@ -30,7 +30,7 @@ func AttachTargetLost()
 {
 	return RemoveObject();
 }
-	
+
 func SaveScenarioObject() { return false; }
 
 
@@ -72,7 +72,7 @@ public func SetCursorType(type, int index)
 		{
 			current = CursorObjects[index]->GetID();
 			spread = CursorObjects[index].Cursor_Spread;
-			
+
 		}
 		if (current != type)
 		{
@@ -106,17 +106,17 @@ func Init(object target, string graphics_name)
 {
 	// Initialize
 	SetAction("Be", target);
-	
+
 	// Attach vertex 1 of the virtual cursor to vertex 0 of the target.
 	// This makes attachment of the actual cursor easy, because it will
 	// simply attach to the virtual cursor vertex 0, see below.
 	var attach_vertex = 1;
 	var target_vertex = 0;
-	
+
 	// Position at center of the target
 	SetVertex(attach_vertex, VTX_X, target->GetVertex(target_vertex, VTX_X));
 	SetVertex(attach_vertex, VTX_Y, target->GetVertex(target_vertex, VTX_Y));
-	
+
 	// Attach with the non-default vertex
 	SetActionDataAttach(attach_vertex, target_vertex);
 

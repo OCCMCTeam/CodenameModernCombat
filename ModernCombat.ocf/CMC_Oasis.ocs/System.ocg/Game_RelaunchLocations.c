@@ -4,7 +4,7 @@
 public func AddDeployLocationTeam1()
 {
 	var base_team1 = CreateObject(CMC_DeployLocation);
-	
+
 	base_team1->SetName("$Team1$");
 	base_team1->SetTeam(1)
 	          ->SetMenuIcon(nil, "Allied")
@@ -16,7 +16,7 @@ public func AddDeployLocationTeam1()
 public func AddDeployLocationTeam2()
 {
 	var base_team2 = CreateObject(CMC_DeployLocation);
-	
+
 	base_team2->SetName("$Team2$");
 	base_team2->SetTeam(2)
 	          ->SetMenuIcon(nil, "Allied")

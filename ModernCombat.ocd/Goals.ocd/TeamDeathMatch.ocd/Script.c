@@ -6,7 +6,7 @@
 func OnRoundStart(int round)
 {
 	inherited(...);
-	
+
 	var clock = CreateObject(GUI_Clock);
 	SetClock(clock);
 }

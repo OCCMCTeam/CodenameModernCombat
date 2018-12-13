@@ -48,7 +48,7 @@ static const GUI_Margin_StatusIcon_H = 3;
  - health bar
  - breath bar
  - item status
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Info_Width = 205;
@@ -57,49 +57,49 @@ static const GUI_CMC_Element_Info_Width = 205;
 /*
  Heigh for info elements:
  - item status
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Info_Height = 90;
 
 /*
  Height of default element.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_Default_Height = 30;
 
 /*
  Height of default progress bar element.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_ProgressBar_Height = 10;
 
 /*
  Width for player info.
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Player_Width = 300;
 
 /*
  Width for inventory info.
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Inventory_Width = 55;
 
 /*
  Width for text buttons.
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_TextButton_Width = 120;
 
 /*
  Width/Height of icons
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_Icon_Size = 45;
@@ -107,35 +107,35 @@ static const GUI_CMC_Element_Icon_Size = 45;
 
 /*
  Width/Height of button hint elements.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_ButtonHint_Size = 25;
 
 /*
  Width/Height of status icons in ally info.
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_StatusIcon_Size = 27;
 
 /*
  Width/Height of list menu entry elements.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_ListIcon_Size = 35;
 
 /*
  Width/Height of selection list menu entry elements.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_SelectionList_Width = 250;
 
 /*
  Horizontal margin of selection list menu entry elements.
- 
+
  Given in pixel-scaled-em. 
  */
 static const GUI_CMC_Element_SelectionList_Margin_H = 70;
@@ -145,7 +145,7 @@ static const GUI_CMC_Element_SelectionList_Margin_H = 70;
  Height for info elements:
  - Respawn menu class selection
  - Incapacitated menu
- 
+
  Given in pixel-scaled-em.
  */
 static const GUI_CMC_Element_PlayerStatus_Height = 95;

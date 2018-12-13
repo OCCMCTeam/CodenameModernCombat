@@ -361,7 +361,7 @@ local AimingHelper = new Effect
 		this.y = pos[1];
 		this.anim = anim;
 	},
-	
+
 	Timer = func()
 	{
 		// This effect should end now if it hasn't ended (see Reset())
@@ -379,7 +379,7 @@ local AimingHelper = new Effect
 		this.Target->FinishAiming(this.clonk, this.type, this.x, this.y);
 		return FX_Execute_Kill;
 	},
-	
+
 	Cancel = func()
 	{
 		this.clonk->StopAnimation(this.anim);
@@ -444,7 +444,7 @@ func UnsetHipFireAim(object clonk)
 local HipFireEffect = new Effect
 {
 	Name = "HipFireEffect",
-	
+
 	Construction = func (object clonk)
 	{
 		// Time duration in which no firing command was issued
@@ -452,7 +452,7 @@ local HipFireEffect = new Effect
 
 		this.clonk = clonk;
 	},
-	
+
 	Timer = func()
 	{
 		// If no firing button is pressed: schedule stop
@@ -471,7 +471,7 @@ local HipFireEffect = new Effect
 			return FX_Execute_Kill;
 		return FX_OK;
 	},
-	
+
 	Stop = func(int reason, bool temp)
 	{
 		if (reason != FX_Call_Normal)
@@ -515,7 +515,7 @@ func SetIronsightAim(object clonk)
 	clonk->SetCancelOnJump(true);
 	// TODO: Test & maybe make depended on weapon shoot mode?
 	clonk->SetAimViewOffset(50);
-	
+
 	PlaySoundAim(clonk);
 }
 
@@ -595,7 +595,7 @@ public func GetAmmoReloadContainer()
 public func OnNoAmmo(object user, proplist firemode) // FIXME: Wrong location
 {
 	_inherited(user, firemode);
-	
+
 	this->PlaySoundNoAmmo(user);
 }
 
@@ -673,7 +673,7 @@ public func GetGuiItemStatusProperties(object user)
 
 	// Object count
 	status->SetObjectCount(GetAmmo(ammo_type));
-	
+
 	// Total count
 	if (user == Contained() && user->~IsAmmoManager())
 	{
@@ -832,7 +832,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 	if (type == CMC_LIST_MENU_TYPE_FIREMODE_SELECTION)
 	{
 		main_menu->SetHeaderCaption("$ConfigureFirearm$");
-		
+
 		// Fill with contents
 		var available_modes = GetAvailableFiremodes();
 		if (GetLength(available_modes) == 0)
@@ -879,7 +879,7 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 			             ->SetScrollHint(true);
 			list->AddEntry(default_action, default_entry);
 			this->~SetListSelectionMenuHotkey(default_entry, 9);
-			
+
 			var last_ammo_type = nil;
 			for (var firemode in available_modes) 
 			{
@@ -890,11 +890,11 @@ public func GetListSelectionMenuEntries(object user, string type, proplist main_
 					list->AddEntry(nil, list->MakeSeparatorProplist());
 				}
 				last_ammo_type = current_ammo_type;
-			
+
 				// Text and description
 				var name = GuiGetFiremodeString(firemode);
 				var index = firemode->GetIndex();
-				
+
 				var entry = list->MakeEntryProplist();
 				entry->SetIcon(current_ammo_type)
 				     ->SetCaption(name)

@@ -30,7 +30,7 @@ func AttachTargetLost()
 {
 	return RemoveObject();
 }
-	
+
 func SaveScenarioObject() { return false; }
 
 

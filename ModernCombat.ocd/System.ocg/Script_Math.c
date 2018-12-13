@@ -7,7 +7,7 @@
 global func InterpolateRGBa(int progress, int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, interpolation)
 {
 	interpolation = interpolation ?? Global.InterpolateLinear;
-	
+
 	var y0_split = SplitRGBaValue(y0);
 	var y1_split = SplitRGBaValue(y1);
 	var y2_split = SplitRGBaValue(y2);
@@ -41,7 +41,7 @@ global func InterpolateLinear(int progress, int x0, int y0, int x1, int y1, int 
 	{
 		var interval = x1 - x0;
 		var factor = BoundBy(progress - x0, 0, interval);
-		
+
 		return (factor * y1 + (interval - factor) * y0) / Max(1, interval);
 	}
 }

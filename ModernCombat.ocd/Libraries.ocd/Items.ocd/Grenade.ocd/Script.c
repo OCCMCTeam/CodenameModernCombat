@@ -1,6 +1,6 @@
 /**
 	Library for grenades
-	
+
 	Represents grenade item functionality.
 
 	@author Marky
@@ -133,7 +133,7 @@ public func IsGrenadeHoldEnabled(int player)
 public func ControlUseAiming(object user, int x, int y)
 {
 	user->SetAimPosition(GetAimPosition(user, x, y), true);
-	
+
 	if (!user->HasActionProcedure(false))
 	{
 		CancelAim(user);
@@ -148,7 +148,7 @@ func GetAimPosition(object user, int x, int y)
 
 	if (angle >  160) angle =  160;
 	if (angle < -160) angle = -160;
-	
+
 	// Update delayed effect
 	var fx = GetEffect("BlockGrenadeThrow", user);
 	if (fx)
@@ -386,7 +386,7 @@ func Fuse()
   		SetGraphics("Active");
 		this.Collectible = false;
 		SetCategory(C4D_Vehicle);
-		
+
 		var user = Contained();
 		if (user)
 		{
@@ -412,7 +412,7 @@ local BlockGrenadeThrow = new Effect
 		}
 		return FX_OK;
 	},
-	
+
 	Timer = func (int time)
 	{
 		if (!this.Grenade || time > this.Lifetime)
@@ -426,7 +426,7 @@ local BlockGrenadeThrow = new Effect
 		}
 		return FX_OK;
 	},
-	
+
 	Stop = func (int temp)
 	{
 		if (!temp && this.Target && this.OnFinish && this.Grenade)
@@ -458,7 +458,7 @@ func HandleTrail(int time)
 			container->PlayerMessage(container->GetController(),"<c %x>{{Rock}}</c>", color); // FIXME: placeholder for graphics
 		}
 	}
-	
+
 	inherited(time);
 }
 
@@ -603,7 +603,7 @@ local RollingFriction = new Effect
 			}
 		}
 	},
-	
+
 	Stop = func (int temporary)
 	{
 		if (!temporary)

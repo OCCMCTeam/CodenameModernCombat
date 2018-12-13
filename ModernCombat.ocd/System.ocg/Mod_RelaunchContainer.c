@@ -38,7 +38,7 @@ public func SetRespawnMenu(proplist menu)
 /**
 	Callback when the crew is contained.
 	This happens after the crew has entered the container.
-	
+
 	@par crew This object is being initialized.
  */
 public func OnInitializeCrew(object crew)
@@ -48,16 +48,16 @@ public func OnInitializeCrew(object crew)
 	{
 		contents->RemoveObject();
 	}
-	
+
 	// Silence player messages
 	CreateEffect(FxSilencePlayerMessages, 1, 1);
-	
+
 	// Open the respawn menu
 	crew->~OpenRespawnMenu();
 
 	// Notify the HUD
 	crew->~OnCrewRelaunchStart();
-	
+
 	// Remove light
 	crew->SetLightRange(0);
 }
@@ -77,8 +77,8 @@ public func OnRelaunchCrew(object crew)
 
 	// Reset zoom to defaults
 	SetPlayerZoomDefault(player);
-	
-	
+
+
 	// Close the menu
 	if (GetRespawnMenu())
 	{
@@ -88,27 +88,27 @@ public func OnRelaunchCrew(object crew)
 		{
 			location = deploy->RecommendRelaunchLocation(player);
 		}
-		
+
 		// Hide symbols
 		for (var symbol in CMC_DeployLocationManager->GetDeployLocations())
 		{
 			symbol->CloseMenuFor(player);
 		}
-		
+
 		// Close actual menu
 		GetRespawnMenu()->Close();
 	}
-	
+
 	// Update location
 	if (location)
 	{
 		crew->SetPosition(location->GetX(), location->GetY());
 		SetPlrView(player, crew);
 	}
-	
+
 	// Notify the HUD
 	crew->~OnCrewRelaunchFinish();
-	
+
 	// Restore light
 	crew->SetLightRange(300);
 }
@@ -117,7 +117,7 @@ public func OnRelaunchCrew(object crew)
 
 /**
 	Find out whether a relaunch is currently blocked.
-	
+
 	@return bool Returns {@code true} if the relaunch is blocked.
 	             By default, this is if the crew has a menu,
 	             or if a callback "RejectRelaunch" in the crew
@@ -138,7 +138,7 @@ public func IsRelaunchBlocked()
 
 /**
 	Callback from the relaunch timer.
-	
+
 	By default this displays the remaining time as a message above the container.
 
 	@par frames This many frames are remaining.

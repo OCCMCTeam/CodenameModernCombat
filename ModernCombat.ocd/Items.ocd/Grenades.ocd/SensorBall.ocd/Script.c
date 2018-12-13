@@ -85,7 +85,7 @@ func OnDetonation()
 	// Permanent light
 	SetLightColor(GetPlayerColor(GetController()));
 	SetLightRange(this.Sensor_Distance, 40);
-	
+
 	// Light flash
 	var flash_colors = SplitRGBaValue(GetPlayerColor(GetController()));
 	var flash =

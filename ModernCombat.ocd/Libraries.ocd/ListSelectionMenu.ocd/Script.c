@@ -1,10 +1,10 @@
 /**
 	Provider for a custom list selection menu
-	
+
 	Must implement:
-	
+
 		GetListSelectionMenuEntries(object user, string type, proplist menu)
-	
+
 	where:
 		user = the object calling the menu,
 		type = a string that serves identification of the menus, if there are several menu types in an object.
@@ -12,7 +12,7 @@
 		menu = the menu proplist.
 
 	This function can be used for filling the menu with contents and setting menu appearance.
-	
+
 	@author Marky
 */
 
@@ -74,7 +74,7 @@ public func GetListSelectionMenu()
 
 /** 
 	Opens the menu.
-	
+
 	@par user This object uses the menu.
 	@par type This is and identifier that is used for handling multiple types of menus in the same object.
 	          Only one menu can be active at the same time, and the identifier is not saved in the menu,
@@ -85,35 +85,35 @@ public func OpenListSelectionMenu(object user, string type)
 {
 	// Close existing menu, no callback
 	CloseListSelectionMenu();
-	
+
 	// If another menu is already open cancel the action.
 	if (user->~GetMenu())
 	{
 		return;
 	}
-	
+
 	// Define menu
 
 	var main_menu = new CMC_GUI_SelectionListMenu {};
 	main_menu->Assemble()
 	         ->AlignCenterH()
 	         ->Open(user->GetOwner());
-	         
+
 	cmc_list_selection_menu = {};
 	cmc_list_selection_menu.user = user;
 	cmc_list_selection_menu.menu = main_menu;
 	cmc_list_selection_menu.user->~SetMenu(main_menu->GetRootID(), false, this);
 	cmc_list_selection_menu.hotkey_controls = GUI_CON_Hotkey_ByIndex();
 	cmc_list_selection_menu.hotkey_entries =  [];
-	
+
 	// Add entries and update appearance
-	
+
 	this->GetListSelectionMenuEntries(user, type, main_menu);
-	
+
 	main_menu->AdjustHeightToEntries()
 	         ->AlignCenterV()
 	         ->ShiftTop(GuiDimensionCmc(nil, GUI_CMC_Element_ListIcon_Size)->Scale(5)->Shrink(2)); // Shift upwards by 2.5 items
-	    
+
 	var delay = this->~DelayListSelectionMenu(user, type);
 	if (delay > 0)
 	{
@@ -156,7 +156,7 @@ public func ScrollListSelectionMenu(bool backward)
 	if (cmc_list_selection_menu)
 	{
 		cmc_list_selection_menu.menu->GetList()->SelectNextEntry(backward);
-			
+
 		if (cmc_list_selection_menu.menu.Settings.ClickAfterScroll)
 		{
 			cmc_list_selection_menu.menu->GetList()->GetSelectedEntry()->~OnClickCall();
@@ -177,7 +177,7 @@ public func PressListSelectionMenuHotkey(int control)
 		if (nil != entry_index)
 		{
 			cmc_list_selection_menu.menu->GetList()->SelectEntry(nil, entry_index);
-			
+
 			if (cmc_list_selection_menu.menu.Settings.ClickAfterHotkey)
 			{
 				cmc_list_selection_menu.menu->GetList()->GetSelectedEntry()->~OnClickCall();

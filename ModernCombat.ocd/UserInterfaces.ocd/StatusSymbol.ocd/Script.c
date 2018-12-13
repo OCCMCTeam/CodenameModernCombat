@@ -1,8 +1,8 @@
 /**
 	Status Symbol
-	
+
 	Shows a certain state of an object.
-	
+
 	@author Zapper, Maikel (orignal code), Marky (made it more modular)
 */
 
@@ -39,7 +39,7 @@ func AttachTargetLost()
 {
 	return RemoveObject();
 }
-	
+
 func SaveScenarioObject() { return false; }
 
 
@@ -94,7 +94,7 @@ func Init(object to)
 	SetOwner(to->GetOwner());
 	SetAction("Be", to);
 	symbols = {};
-	
+
 	// Above the object.
 	offset_top = to->GetTop();
 	var x = to->GetVertex(0, VTX_X);
@@ -109,7 +109,7 @@ func AddSymbol(id symbol_id, int priority)
 {
 	var symbol_name = Format("%v", symbol_id);
 	var symbol = symbols[symbol_name];
-	
+
 	if (symbol)
 	{
 		if (symbol.Priority != priority)
@@ -208,7 +208,7 @@ func SetSymbolColor(id symbol_id, int r, int g, int b, int alpha)
 		if (g) symbol.G = g;
 		if (b) symbol.B = b;
 		if (alpha) symbol.Alpha = alpha;
-		
+
 		UpdateData(symbol);
 	}
 	return this;
@@ -248,7 +248,7 @@ local Blinking = new Effect
 		}
 		return FX_OK;
 	},
-	
+
 	Timer = func ()
 	{
 		if (this.Visible)

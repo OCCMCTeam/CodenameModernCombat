@@ -1,6 +1,6 @@
 /**
 	Library for grenades
-	
+
 	Represents basic grenade functionality.
 
 	@author Marky
@@ -89,9 +89,9 @@ public func HandleTrail(int time)
 	{
 		var speed = Abs(GetXDir()) + Abs(GetYDir());
 		var alpha = Min(155, 55 + speed);
-		
+
 		var color = SplitRGBaValue(this.Grenade_SmokeColor ?? RGB(100, 100, 100));
-		
+
 		CreateParticle("Smoke",
 		               -GetXDir() / 6, -GetYDir() / 6,
 		                PV_Random(-10, 10), -5,

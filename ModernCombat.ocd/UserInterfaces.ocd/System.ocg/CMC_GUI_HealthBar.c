@@ -12,7 +12,7 @@ static const CMC_GUI_HealthBar = new CMC_GUI_ProgressBar
 	    SetValue(1000); // Full in the beginning
 		return this;
 	},
-	
+
 	IssueWarning = func (bool warn, object target)
 	{
 		var tag = "Health_Full";
@@ -24,7 +24,7 @@ static const CMC_GUI_HealthBar = new CMC_GUI_ProgressBar
 		// and after the GuiUpdate to take proper effect
 		GuiUpdateTag(tag, GetRootID(), GetChildID());
 	},
-	
+
 	SetHealth = func (object crew)
 	{
 		// Update the values
@@ -32,11 +32,11 @@ static const CMC_GUI_HealthBar = new CMC_GUI_ProgressBar
 		if (health_max)
 		{
 			var health = crew->GetEnergy();
-			
+
 			// Set values for the update, this does not yet apply the changes to the menu
 			Show();
 			SetValue(1000 * health / health_max);
-			
+
 			// Apply changes
 			Update();
 			// Change tag for incomplete health bar

@@ -24,7 +24,7 @@ func OnHitLandscape()
 func OnHitScan(int x_start, int y_start, int x_end, int y_end)
 {
 	var laser = CreateObject(LaserEffect, x_start - GetX(), y_start - GetY(), NO_OWNER);
-	
+
 	laser->Line(x_start, y_start, x_end, y_end)
 		 ->SetWidth(laser_beam.width ?? 5)
 		 ->SetLifetime(laser_beam.lifetime ?? 20)

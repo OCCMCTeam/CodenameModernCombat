@@ -93,7 +93,7 @@ public func StartLoad(object weapon, string type)
 
 	aim_schedule_timer = aim_set["LoadTime"];
 	aim_schedule_call  = "StopLoad";
-	
+
 	if(aim_set["LoadTime2"] != nil)
 	{
 		aim_schedule_timer2 = aim_set["LoadTime2"];

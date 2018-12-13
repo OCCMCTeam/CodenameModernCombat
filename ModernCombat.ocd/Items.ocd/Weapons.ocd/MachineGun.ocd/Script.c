@@ -131,7 +131,7 @@ local ReloadStateMap =
 	Container_InsertAmmo  = { Delay = 90, EndCall    = "PlaySoundInsertAmmo", },
 	Container_Close       = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
 	Container_ReadyWeapon = { Delay = 30, StartCall  = "PlaySoundCloseAmmoContainer", },
-	
+
 	/* --- Support adding spare ammo back to the user --- */
 	Container_StashStart  = { Delay = 20, },
 	Container_StashFinish = { Delay = 20, StartCall = "PlaySoundResupplyAmmo", },
@@ -152,7 +152,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
 
 	EffectMuzzleFlash(user, x, y, angle, RandomX(35, 50), false, true);
-	
+
 	// Casing
 	x = +Sin(angle, firemode->GetProjectileDistance() / 3);
 	y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();

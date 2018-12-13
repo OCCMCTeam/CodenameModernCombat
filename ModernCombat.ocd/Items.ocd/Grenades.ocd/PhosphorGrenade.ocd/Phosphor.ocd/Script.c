@@ -104,9 +104,9 @@ func BurnObject(object target)
 	{
 		target->CreateEffect(PhosphorBurn, 50, 20, this);
 	}
-	
+
 	target->DoEnergy(-1, false, FX_Call_DmgFire, GetController());
-	
+
 	//DoDmg(3, DMG_Fire, pObj, 1);
 	//AddFireEffect(pObj,50,FIRE_Red,1);
 
@@ -138,7 +138,7 @@ func Hit()
 local PhosphorBurn = new Effect
 {
 	Name = "PhosphorBurn",
-	
+
 	Start = func (int temp, object glob)
 	{
 		if (temp)
@@ -153,7 +153,7 @@ local PhosphorBurn = new Effect
 		this.Glob = glob;
 		this.Glob->SetAction("Attach", this.Target);
 	},
-	
+
 	Timer = func (int time)
 	{
 		if (!this.Glob)
@@ -165,7 +165,7 @@ local PhosphorBurn = new Effect
 			this.Glob->AttachTargetLost();
 			return FX_Execute_Kill;
 		}
-		
+
 		if (time > 60)
 		{
 			return FX_Execute_Kill;
@@ -177,7 +177,7 @@ local PhosphorBurn = new Effect
 local FxPreventAttach = new Effect
 {
 	Name = "FxPreventAttach",
-	
+
 	Timer = func ()
 	{
 		return FX_Execute_Kill;

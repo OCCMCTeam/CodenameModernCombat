@@ -24,7 +24,7 @@ local ActMap =
 		X = 0, Y = 0, Wdt = 25, Hgt = 25,
 		AbortCall = "AttachTargetLost",
 	},
-	
+
 	Fade = 
 	{
 		Prototype = Action,
@@ -53,7 +53,7 @@ func AttachTargetLost()
 	}
 	return RemoveObject();
 }
-	
+
 func SaveScenarioObject() { return false; }
 
 func Destruction()
@@ -69,7 +69,7 @@ func Destruction()
 
 /**
 	Adds the tag to a target.
-	
+
 	@par target the target.
 	@par host_player the owner of the tag
 	@par type the source type of the tag
@@ -87,13 +87,13 @@ public func AddTo(object target, int host_player, id type, string graphics_name,
 public func Get(object to, int for_player, id type)
 {
 	AssertDefinitionContext();	
-	
+
 	var allied = nil;
 	if (for_player != nil)
 	{
 		allied = Find_Allied(for_player);
 	}
-	
+
 	return FindObject(Find_ID(this), Find_ActionTarget(to), allied, Find_Func("IsTagType", type));
 }
 
@@ -107,7 +107,7 @@ func Init(object to, int host_player, id type, string graphics_name, int lifetim
 	SetAction("Be", to);
 	SetOwner(host_player);
 	var alive = to->GetOCF() & OCF_Alive;
-	
+
 	// Graphics, if supplied
 	if (graphics_name)
 	{
@@ -117,36 +117,36 @@ func Init(object to, int host_player, id type, string graphics_name, int lifetim
 	{
 		SetGraphics("Object");
 	}
-	
+
 	// Position at center of the target
 	SetVertex(0, VTX_X, to->GetVertex(0, VTX_X));
 	SetVertex(0, VTX_Y, to->GetVertex(0, VTX_Y));
-	
+
 	// Set plane to be higher than the object attached to.
 	this.Plane = Max(to.Plane + 1, 1000);
 
 	// Update colors and ownership continuously
 	UpdateOwnerColor();
 	AddTimer(this.UpdateOwnerColor, 1);
-	
+
 	// Remove eventually
 	if (lifetime > 0)
 	{
 		AddTimer(this.RemoveTimer, 1);
 	}
-	
+
 	// Energy bar for livings
 	if (alive && graphics_name != "Target")
 	{
 		EnergyBar = to->AddEnergyBar();
-		
+
 		if (EnergyBar)
 		{
 			EnergyBar->SetOwner(GetOwner());
 			EnergyBar.Visibility = this.Visibility;
 		}
 	}
-	
+
 	// Reveal FoW
 	SetLightColor(RGB(128, 128, 128));
 	SetLightRange(10, 40);

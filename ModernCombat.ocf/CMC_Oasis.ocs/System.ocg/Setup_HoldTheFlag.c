@@ -6,7 +6,7 @@ public func DoSetup(int round)
 {
 	Scenario->AddDeployLocationTeam1();
 	Scenario->AddDeployLocationTeam2();
-	
+
 	// Flag post
 	var flag = CreateObject(CMC_FlagPost, 3415, 480, NO_OWNER);
     flag->~SetName("$Flag3$");

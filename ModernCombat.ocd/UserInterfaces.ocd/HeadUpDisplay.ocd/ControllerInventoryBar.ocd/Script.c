@@ -160,7 +160,7 @@ func AssembleInventoryButton(int slot)
 
 /*
 	Schedules an update of the bar for the next frame.
-	
+
 	@par bar The name of the bar if you want to update only of the bars. Pass 'nil' to update all bars.
  */
 public func ScheduleUpdateInventory(bool selection_changed)
@@ -185,7 +185,7 @@ local ScheduledInventoryUpdateTimer = new Effect
 func UpdateInventory(bool selection_changed)
 {
 	var cursor = GetCursor(GetOwner());
-	
+
 	if (gui_cmc_inventory.Menu->ShowForCrew(cursor, cursor->~IsRespawning() || cursor->~IsIncapacitated()))
 	{
 		UpdateInventoryButtonAmount(cursor.MaxContentsCount);
@@ -198,12 +198,12 @@ func UpdateInventory(bool selection_changed)
 		{
 			var slot = gui_cmc_inventory.Slots[item_index];
 			var item = cursor->GetItem(item_index);
-			
+
 			if (selection_changed)
 			{
 				SetInventoryButtonCompact(item_index, false, 5);
 			}
-			
+
 			slot->SetInfo(item, item_index == selected_item_index);
 		}
 	}
@@ -221,7 +221,7 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 			gui_cmc_inventory.Slots[i] = AssembleInventoryButton(i);
 			gui_cmc_inventory.Slots[i]->AddTo(gui_cmc_inventory.Menu);
 		}
-	
+
 		// Need to remove some inventory buttons?
 		for (var i = old_count; i > max_contents_count; --i)
 		{
@@ -229,11 +229,11 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 			GuiClose(gui_cmc_inventory.Menu->GetRootID(), slot.ID, this);
 		}
 		SetLength(gui_cmc_inventory.Slots, max_contents_count);
-		
+
 		// Adjust positions
 		var margin = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_V);
 		var margin_small = GuiDimensionCmc(nil, GUI_CMC_Margin_Element_Small_V);
-		
+
 		var position;
 		// Depends on include order, unfortunately
 		if (this.gui_cmc_item_status)
@@ -250,8 +250,8 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 			position->SetPercent(1000);
 		}
 		position = position->Subtract(margin);
-		
-		
+
+
 		for (var i = max_contents_count; i > 0; --i)
 		{
 			// Align the slot
@@ -259,7 +259,7 @@ func UpdateInventoryButtonAmount(int max_contents_count)
 			slot->AlignRight(GuiDimensionCmc(1000, -GUI_CMC_Margin_Screen_H));
 			slot->AlignBottom(position);
 			slot->Update(slot->ComposeLayout());
-			
+
 			// Update top position
 			position = slot->GetTop()->Subtract(margin_small);
 		}
@@ -274,7 +274,7 @@ func SetInventoryButtonCompact(int index, bool compact, int blend_time)
 	{
 		change *= -1;
 	}
-	
+
 	var fx = this.gui_cmc_inventory.Collapse[index] ?? CreateEffect(this.CollapseButtonEffect, 1, 1);
 	fx.index = index;
 	fx.collapse_timeout = 35;
@@ -297,7 +297,7 @@ local CollapseButtonEffect = new Effect
 			          + button.GUI_Width_Expanded * button.GUI_Compactness;
 
 			width /= max;
-			
+
 			var text = button.GUI_Item_Name;
 			if (text)
 			{
@@ -326,7 +326,7 @@ local CollapseButtonEffect = new Effect
 		else
 		{
 			this.collapse_timeout -= 1;
-			
+
 			if (this.collapse_timeout <= 0)
 			{
 				this.Target->SetInventoryButtonCompact(this.index, true);

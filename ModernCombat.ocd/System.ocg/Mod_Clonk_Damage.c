@@ -8,7 +8,7 @@
 func Construction(object creator)
 {
 	_inherited(creator, ...);
-	
+
 	CreateEffect(FxCmcDamageSystem, 1);
 }
 

@@ -43,7 +43,7 @@ public func GetCarryTransform(object user, bool not_selected, bool nohand, bool 
 	}
 
 	return Trans_Mul(Trans_Rotate(220, 0, 1, 0), Trans_Rotate(30, 0, 0, 1), Trans_Rotate(-26, 1, 0, 0));
-	
+
 }
 
 

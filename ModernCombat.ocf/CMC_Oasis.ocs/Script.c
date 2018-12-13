@@ -10,7 +10,7 @@ func InitializeAmbience()
 func CreateInterior()
 {
 	_inherited(...);
-	
+
 	// Ramps
 	DrawMaterialQuad("Earth-earth_root", 2360, 678, 2400, 678, 2360, 680, 2400, 680, DMQ_Bridge);
 	DrawMaterialQuad("Earth-earth_root", 2490, 678, 2510, 678, 2490, 680, 2510, 680, DMQ_Bridge);

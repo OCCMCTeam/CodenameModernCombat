@@ -8,7 +8,7 @@
 public func GetGuiItemStatusProperties(object user)
 {
 	var status = new GUI_Item_Status_Properties {};
-	
+
 	return status->SetObjectCount(GetStackCount())
 		         ->SetTotalCount(MaxStackCount());
 }

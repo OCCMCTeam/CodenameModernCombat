@@ -1,6 +1,6 @@
 /**
 	Simple proplist with functions for GUI elements.
-	
+
 	Provides a (in my opinion) more comfortable interface than the basic
 	GUI functions.
 
@@ -10,10 +10,10 @@
 
 /*
 	Measurement prototype for GUI elements.
-	
+
 	Contains percent and em unit components
 	of a GUI position, accessible as integers.
-	
+
 	Background:
 	The GUI interface saves positions as strings.
 	This is sufficient for simple GUIs that you program
@@ -22,7 +22,7 @@
 	way, you have to be very careful as to how you specify your
 	positions, because you can add positions as much as you
 	like, but you cannot subtract properly:
-	
+
 	Shifting an existing "1.0em" to the right by "0.5em" results in "1.0em +0.5em".
 	Shifting it back by "-0.1em" results in "1.0em +0.5em -0.1em";
 	As you can see, the string gets longer and longer, and subtracting that position
@@ -36,10 +36,10 @@ static const GUI_Dimension = new Global
 	percent_factor = nil,
 	em = nil,
 	em_factor = nil,
-	
-	
+
+
 	// --- Functions
-	
+
 	/*
 		Gets the percent component of the dimension.
 	 */
@@ -47,7 +47,7 @@ static const GUI_Dimension = new Global
 	{
 		return this.percent;
 	},
-	
+
 	/*
 		Gets the percent component of the dimension.
 	 */
@@ -71,10 +71,10 @@ static const GUI_Dimension = new Global
 	{
 		return this.em_factor;
 	},
-	
+
 	/*
 		Sets the percent component of the dimension.
-		
+
 		@par value The percent component.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -84,10 +84,10 @@ static const GUI_Dimension = new Global
 		this.percent = value;
 		return this;
 	},
-	
+
 	/*
 		Sets the percent component factor of the dimension.
-		
+
 		@par value The percent component factor.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -97,10 +97,10 @@ static const GUI_Dimension = new Global
 		this.percent_factor = value;
 		return this;
 	},
-	
+
 	/*
 		Sets the em component of the dimension.
-		
+
 		@par value The em component.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -110,10 +110,10 @@ static const GUI_Dimension = new Global
 		this.em = value;
 		return this;
 	},
-	
+
 	/*
 		Sets the em component factor of the dimension.
-		
+
 		@par value The em component factor.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -123,11 +123,11 @@ static const GUI_Dimension = new Global
 		this.em_factor = value;
 		return this;
 	},
-	
-	
+
+
 	/*
 		Adds to the percent component of the dimension.
-		
+
 		@par change The percent value to add.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -137,11 +137,11 @@ static const GUI_Dimension = new Global
 		SetPercent(GetPercent() + change);
 		return this;
 	},
-	
-	
+
+
 	/*
 		Adds to the em component of the dimension.
-		
+
 		@par change The em value to add.
 		@return proplist The dimension itself for
 		                 further function calls.
@@ -151,7 +151,7 @@ static const GUI_Dimension = new Global
 		SetEm(GetEm() + change);
 		return this;
 	},
-	
+
 	CopyOf = func (proplist other)
 	{
 		if (IsValidPrototype(other))
@@ -167,11 +167,11 @@ static const GUI_Dimension = new Global
 			FatalError("Cannot copy proplist of prototype %s", GetPrototype(other));
 		}
 	},
-	
+
 	// --- Calculation functions 
 	//
 	// These will return a NEW dimension
-	
+
 	Add = func (percent, int em)
 	{
 		var other = Dimension(percent, em);
@@ -180,7 +180,7 @@ static const GUI_Dimension = new Global
 			       ->AddPercent(+other->GetPercent())
 			       ->AddEm(+other->GetEm());
 	},
-	
+
 	Subtract = func (percent, int em)
 	{
 		var other = Dimension(percent, em);
@@ -189,42 +189,42 @@ static const GUI_Dimension = new Global
 		       ->AddPercent(-other->GetPercent())
 		       ->AddEm(-other->GetEm());
 	},
-	
+
 	Scale = func(int factor)
 	{
 		return new GUI_Dimension{}->CopyOf(this)
 		       ->SetPercent(GetPercent() * factor)
 		       ->SetEm(GetEm() * factor);
 	},
-	
+
 	Shrink = func(int factor)
 	{
 		return new GUI_Dimension{}->CopyOf(this)
 		       ->SetPercent(GetPercent() / factor)
 		       ->SetEm(GetEm() / factor);
 	},
-	
+
 	// --- Internal functions
-	
+
 	AssertValidFactor = func (proplist other)
 	{
 		HarmonizeFactors(this, other);
 		HarmonizeFactors(other, this);
-	
+
 		var factorP1 = other->GetPercentFactor() ?? 10;
 		var factorP2 = this->GetPercentFactor() ?? 10;
 		var factorE1 = other->GetEmFactor() ?? 10;
 		var factorE2 = this->GetEmFactor() ?? 10;
-		
+
 		var error = false;
 
-		
+
 		if (factorP1 != factorP2 || factorE1 != factorE2)
 		{
 			FatalError("Cannot combine dimensions of different factors: other has %d%% and %dem, this has %d%% and %dem", factorP1, factorE1, factorP2, factorE2);
 		}
 	},
-	
+
 	HarmonizeFactors = func (proplist source, proplist destination)
 	{
 		if (!destination->GetPercent() && source->GetPercentFactor() != nil)
@@ -236,12 +236,12 @@ static const GUI_Dimension = new Global
 			destination->SetEmFactor(source->GetEmFactor());
 		}
 	},
-	
+
 	IsValidPrototype = func (proplist other)
 	{
 		return GetPrototype(other) == GUI_Dimension;
 	},
-	
+
 	ToString = func ()
 	{
 		if (GetPercent() == nil && GetEm() == nil)
@@ -257,7 +257,7 @@ static const GUI_Dimension = new Global
 			return Format("%s%s", p, e);
 		}
 	},
-	
+
 	// Ensures that the input already is a dimension, or is converted to one.
 	Dimension = func (percent_or_dimension, int em, int percent_factor, int em_factor)
 	{
@@ -283,11 +283,11 @@ static const GUI_Dimension = new Global
 
 /*
 	GUI prototype for a generic element.
-	
+
 	You can call various functions on this layout after you have created it;
 	As a general rule you can change these values around as much as you like
 	and they are applied to the menu only when you call layout->Update(). 
-	
+
 	Note:
 	Positions in the original GUI are 
  */
@@ -300,36 +300,36 @@ static const GUI_Element = new Global
 	                        // (the object may contain the menu that contains this layout that saves this object as its target)
 	                        // also, if the object is saved directly it is proplist, too, and therefore the GUI engine would
 	                        // try to display it as a subwindow
-	                        
+
 	GUI_Element_Name = nil, // the name of the element - the property name of the sub window in the menu
 	GUI_Element_Tag = nil,  // the last selected tag - for updates
 	GUI_Owner = nil,        // the owner for the element - for visibility
-	
+
 	GUI_Element_Position = nil,// Array that contains the positions in percent and string;
 	                           // Is an array, because if it were a proplist it would count as a subwindow;
 	                           // Must not be initialized in the prototype, because it would be a reference and ALL gui elements would manipulate the same data
-	
+
 	GUI_Parent = nil,        // Array that contains the parent element;
 	                         // Is an array, because if it were a proplist it would count as a subwindow;
 	                         // Must not be initialized in the prototype, because it would be a reference
-	                         
+
 	GUI_Element_KeepAsChild = nil, // Keep information for this child element after opening the menu?
 
 	// --- Generic Functions
-	
+
 	/**
 		Gets the name of the element in the GUI layout proplist.
-		
+
 		@return string The name.
 	 */
 	GetName = func ()
 	{
 		return this.GUI_Element_Name;
 	},
-	
+
 	/**
 		Gets the parent GUI_Element of this element
-		
+
 		@return 'nil' if the element has no parent.
 	 */
 	GetParent = func ()
@@ -364,7 +364,7 @@ static const GUI_Element = new Global
 			return this;
 		}
 	},
-	
+
 	/**
 		Gets the ID / GUI_ID of the main window.
 	 */
@@ -387,12 +387,12 @@ static const GUI_Element = new Global
 			return GetParent()->GetChildID();
 		}
 	},
-	
+
 	// --- GUI Control functions
 
 	/**
 		Open as a GUI window
-		
+
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Open = func (int player)
@@ -402,16 +402,16 @@ static const GUI_Element = new Global
 			this->ComposeLayout();
 			this.GUI_Owner = player;
 			Show();
-			
+
 			this.GUI_ID = GuiOpen(this);
 			ClearChildElements();
 		}
 		return this;
 	},
-	
+
 	/**
 		Close as a GUI window
-		
+
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Close = func ()
@@ -420,7 +420,7 @@ static const GUI_Element = new Global
 		{
 			// Callback
 			this->~OnClose();
-		
+
 			// Close the GUI
 			var root_id = GetRootID();
 			var child_id;
@@ -429,12 +429,12 @@ static const GUI_Element = new Global
 				child_id = this.ID;
 			}
 			GuiClose(root_id, child_id);
-			
+
 			// Reset the menu in a target
 			if (this.Target)
 			{
 				var target_menu = this.Target->~GetMenu();
-				
+
 				if (GetType(target_menu) == C4V_PropList)
 				{
 					if (root_id == target_menu.ID)
@@ -446,11 +446,11 @@ static const GUI_Element = new Global
 		}
 		return this;
 	},
-	
+
 	/**
 		Add to an existing GUI window as a subwindow
 		Note: Use this only on other GUI_Element windows
-		
+
 		@par parent Add to this menu.
 		@par child_id Use this child ID is a reference when updating.
 		@par element_name Use this property name for the element. By default an
@@ -496,7 +496,7 @@ static const GUI_Element = new Global
 			FatalError("Cannot add GUI element to proplist of prototype %v", GetPrototype(parent));
 		}
 	},
-	
+
 	/**
 	 Sets a tag for the whole GUI or for a child.
 	 */
@@ -505,10 +505,10 @@ static const GUI_Element = new Global
 		this.GUI_Element_Tag = tag;
 		return this;
 	},
-	
+
 	/**
 		Shows the menu if the crew is enabled, hides it if disabled.
-		
+
 		@par crew The crew member
 		@par hide_condition An additional condition for hiding the GUI
 		                    element.
@@ -526,10 +526,10 @@ static const GUI_Element = new Global
 			return false;
 		}
 	},
-	
+
 	/**
 		Makes the element visible to its owner.
-		
+
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Show = func ()
@@ -537,10 +537,10 @@ static const GUI_Element = new Global
 		this.Player = this.GUI_Owner;
 		return this;
 	},
-	
+
 	/**
 		Makes the element invisible to its owner.
-		
+
 		@return proplist The GUI element proplist, for calling further functions.
 	 */
 	Hide = func ()
@@ -548,10 +548,10 @@ static const GUI_Element = new Global
 		this.Player = NO_OWNER;
 		return this;
 	},
-	
+
 	/**
 		Updates the GUI with all changes to the layout that were made previously.
-		
+
 		@par specific Updates only a specific subset of the GUI element properties, 
 		              as the {@link Global#GuiUpdate} function would.
 		              Defaults to the GUI element proplist itself, so that all of
@@ -573,7 +573,7 @@ static const GUI_Element = new Global
 			// Compose a simple update proplist
 			update = {};
 			update[name] = specific ?? this;
-			
+
 			// Chain together the parent name, e.g.:
 			// { subwindow_level1 = { subwindow_level2 = { element_name = {...}}}}
 			for (var parent = GetParent(); parent != nil; parent = parent->GetParent())
@@ -584,7 +584,7 @@ static const GUI_Element = new Global
 				{
 					break; // No need for chaining proplists anymore
 				}
-				
+
 				var chained = {};
 				chained[parent->GetName()] = update;
 				update = chained;
@@ -599,44 +599,44 @@ static const GUI_Element = new Global
 		GuiUpdateTag(this.GUI_Element_Tag, gui_id, child_id);
 		return this;
 	},
-	
+
 	// --- Positioning functions
-	
+
 	// Set* functions: These leave the other values as they are,
 	//                 so that the dimensions of the element can be changed
-	
+
 	SetLeft = func (value, int em)
 	{
 		InitPosition();
 		this.GUI_Element_Position[0] = Dimension(value, em);
 		return this;
 	},
-	
+
 	SetRight = func (value, int em)
 	{
 		InitPosition();
 		this.GUI_Element_Position[2] = Dimension(value, em);
 		return this;
 	},
-	
+
 	SetTop = func (value, int em)
 	{
 		InitPosition();
 		this.GUI_Element_Position[1] = Dimension(value, em);
 		return this;
 	},
-	
+
 	SetBottom = func (value, int em)
 	{
 		InitPosition();
 		this.GUI_Element_Position[3] = Dimension(value, em);
 		return this;
 	},
-	
+
 	// Align* functions: These leave the dimensions of the GUI element fixed,
 	//                   but move its position so that it matches the target
 	//                   position
-	
+
 	AlignLeft = func (value, int em)
 	{
 		var width = GetWidth();
@@ -645,7 +645,7 @@ static const GUI_Element = new Global
 		SetRight(position->Add(width));
 		return this;
 	},
-	
+
 	AlignRight = func (value, int em)
 	{
 		if (value == nil && em == nil) // Default to rightmost position if called withouth parameters
@@ -658,7 +658,7 @@ static const GUI_Element = new Global
 		SetRight(position);
 		return this;
 	},
-	
+
 	AlignTop = func (value, int em)
 	{
 		var height = GetHeight();
@@ -667,7 +667,7 @@ static const GUI_Element = new Global
 		SetBottom(position->Add(height));
 		return this;
 	},
-	
+
 	AlignBottom = func (value, int em)
 	{
 		if (value == nil && em == nil) // Default to bottommost position if called withouth parameters
@@ -680,7 +680,7 @@ static const GUI_Element = new Global
 		SetBottom(position);
 		return this;
 	},
-	
+
 	AlignCenterH = func (value, int em)
 	{
 		// Get the desired position
@@ -694,11 +694,11 @@ static const GUI_Element = new Global
 		left->SetPercent(left->GetPercent() ?? 0);
 		right->SetPercent(right->GetPercent() ?? 1000);
 		var element_center = left->Add(right)->Shrink(2);
-		
+
 		// Shift to destination
 		return ShiftRight(destination->Subtract(element_center));
 	},
-	
+
 	AlignCenterV = func (value, int em)
 	{
 		// Get the desired position
@@ -712,16 +712,16 @@ static const GUI_Element = new Global
 		top->SetPercent(top->GetPercent() ?? 0);
 		bottom->SetPercent(bottom->GetPercent() ?? 1000);
 		var element_center = top->Add(bottom)->Shrink(2);
-		
+
 		// Shift to destination
 		return ShiftBottom(destination->Subtract(element_center));
 	},
-	
+
 	// Shift* functions: These leave the dimensions of the GUI element fixed,
 	//                   but move its position by a specified amount.
 	//                   Shift left/right and top/bottom are somewhat redundant,
 	//                   not sure if both will be kept.
-	
+
 	ShiftLeft = func (value, int em)
 	{
 		var shift = Dimension(value, em);
@@ -729,7 +729,7 @@ static const GUI_Element = new Global
 		SetRight(GetRight()->Subtract(shift));
 		return this;
 	},
-	
+
 	ShiftRight = func (value, int em)
 	{
 		var shift = Dimension(value, em);
@@ -737,7 +737,7 @@ static const GUI_Element = new Global
 		SetRight(GetRight()->Add(shift));
 		return this;
 	},
-	
+
 	ShiftTop = func (value, int em)
 	{
 		var shift = Dimension(value, em);
@@ -745,7 +745,7 @@ static const GUI_Element = new Global
 		SetBottom(GetBottom()->Subtract(shift));
 		return this;
 	},
-	
+
 	ShiftBottom = func (value, int em)
 	{
 		var shift = Dimension(value, em);
@@ -753,49 +753,49 @@ static const GUI_Element = new Global
 		SetBottom(GetBottom()->Add(shift));
 		return this;
 	},
-	
+
 	// Get* function: Get borders of the GUI, as a dimension.
-	
+
 	GetLeft = func ()
 	{
 		InitPosition();
 		return this.GUI_Element_Position[0];
 	},
-	
+
 	GetRight = func ()
 	{
 		InitPosition();
 		return this.GUI_Element_Position[2];
 	},
-	
+
 	GetTop = func ()
 	{
 		InitPosition();
 		return this.GUI_Element_Position[1];
 	},
-	
+
 	GetBottom = func ()
 	{
 		InitPosition();
 		return this.GUI_Element_Position[3];
 	},
-	
+
 	// --- Dimension related functions
-	
+
 	// Set* function: Sets the size of the GUI element.
 	//
 	//                Manipulating a GUI element this way will always
 	//                change the right and/or bottom border, while
 	//                the left and/or top border stay fixed.
-	
+
 	// Get* function: Get size of the GUI element, as a dimension.
-	
+
 	SetHeight = func (dimension, em)
 	{
 		SetBottom(GetTop()->Add(Dimension(dimension, em)));
 		return this;
 	},
-	
+
 	SetWidth = func (dimension, int em)
 	{
 		SetRight(GetLeft()->Add(Dimension(dimension, em)));
@@ -806,14 +806,14 @@ static const GUI_Element = new Global
 	{
 		return GetBottom()->Subtract(GetTop());
 	},
-	
+
 	GetWidth = func ()
 	{
 		return GetRight()->Subtract(GetLeft());
 	},
-	
+
 	// --- Internals
-	
+
 	// Removes all child elements from a GUI element
 	// Background: Internally the GUI gets all children for an update before it is opened, then these are removed for less data heavy updates
 	ClearChildElements = func ()
@@ -831,7 +831,7 @@ static const GUI_Element = new Global
 			}
 		}
 	},
-	
+
 	// Translates the integer position information to GUI layout properties
 	ComposeLayout = func ()
 	{
@@ -839,22 +839,22 @@ static const GUI_Element = new Global
 		this.Right = GetRight()->ToString();
 		this.Top = GetTop()->ToString();
 		this.Bottom = GetBottom()->ToString();
-		
+
 		return { Left = this.Left, Right = this.Right, Top = this.Top, Bottom = this.Bottom };
 	},
-	
+
 	// Ensures that the input already is a dimension, or is converted to one.
 	Dimension = func (percent_or_dimension, int em)
 	{
 		return GUI_Dimension->Dimension(percent_or_dimension, em);
 	},
-	
+
 	IsValidPrototype = func (proplist other)
 	{
 		var prototypes = GetPrototypes(other);
 		return GetPrototype(other) == GetPrototype(this) || IsValueInArray(prototypes, GUI_Element);
 	},
-	
+
 	GetValidElementName = func (proplist parent)
 	{
 		for (var tries = 10000; tries > 0; --tries)
@@ -867,7 +867,7 @@ static const GUI_Element = new Global
 		}
 		FatalError("Cannot find anonymous name for new GUI sub window");
 	},
-	
+
 	InitPosition = func ()
 	{
 		if (!this.GUI_Element_Position)
@@ -876,7 +876,7 @@ static const GUI_Element = new Global
 		}
 		return this;
 	},
-	
+
 	Self = func ()
 	{
 		return this;

@@ -12,16 +12,16 @@ global func GetMaterialProperties(int x, int y)
 	props.material = material;
 	props.texture = texture;
 	props.in_liquid = GBackLiquid(x, y);
-	
+
 	var color = RGBaDoLightness(GetAverageTextureColor(texture), 20);
-	
+
 	props.color = SplitRGBaValue(color);
 
 	var is_solid = GBackSolid(x, y);
 	var is_soft = GetMaterialVal("DigFree" , "Material", material)
 	           || GetMaterialVal("Soil"    , "Material", material)
 	           || GetMaterialVal("Instable", "Material", material);
-	           
+
 	var is_metal = WildcardMatch(texture, "*metal*")
 	            || WildcardMatch(texture, "*plate*");
 
@@ -69,6 +69,6 @@ global func GetMaterialProperties(int x, int y)
 			props.particle_phase = PV_Random(0, 3);
 		}
 	}
-	
+
 	return props;
 }

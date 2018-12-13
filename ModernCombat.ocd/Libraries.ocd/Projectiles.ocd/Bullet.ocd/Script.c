@@ -51,7 +51,7 @@ public func OnHitLandscape()
 		}
 		SoundAt(Format("Projectiles::Cartridge::%s?", sound_name));
 	}
-	
+
 	var precision = 10;
 	var hit_angle = Angle(0, 0, GetXDir(), GetYDir(), precision);
 
@@ -68,7 +68,7 @@ public func OnHitLandscape()
 			R = MaterialProperties.color.R, B = MaterialProperties.color.B, G = MaterialProperties.color.G,
 			Size = PV_KeyFrames(0, 0, 5 * dust_size / 12, 100, dust_size, 1000, 7 * dust_size / 12),
 		}, 3);
-	
+
 		// Debris
 		var particle_name = MaterialProperties.particle_type ?? "Air";
 		var particles =
@@ -147,7 +147,7 @@ func ProjectileColor(int time)
 {
 	var progress = 100 * time / Max(1, lifetime);
 	var value = Max(0, 255 - progress * 2);
-	
+
 	return RGBa(255, value, value, value);
 }
 
@@ -155,7 +155,7 @@ func TrailColor(int time)
 {
 	var progress = 100 * time / Max(1, lifetime);
 	var value = Max(0, 255 - progress * 2);
-	
+
 	return RGBa(255, value, value, value);
 }
 
@@ -180,7 +180,7 @@ func DrawBubbles(int x_start, int y_start, int x_end, int y_end)
 			CreateObject(Fx_Bubble, x, y, NO_OWNER)->SetSpeed(GetXDir() / 30 + RandomX(-5, 5), GetYDir() / 30 + RandomX(-5, 5));
 		}
 	}
-	
+
 	if (MaterialProperties.hit_water)
 	{
 		// Detect exact water level
@@ -224,7 +224,7 @@ func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 	// Determine starting position of the effect
 	var position_end = distance - position_margin;
 	var position_start = Max(position_margin, RandomX(position_margin, distance * 2 / 3));
-	
+
 	// Determine position for full particle size
 	var speed = Max(60, RandomX(-20, 20) + velocity);
 	var trace_length = RandomX(40, 80);
@@ -256,7 +256,7 @@ func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 	var angle = Angle(x_start, y_start, x_end, y_end);
 	var color_start = SplitRGBaValue(this->TrailColor(time_start));
 	var color_end = SplitRGBaValue(this->TrailColor(time_end));
-	
+
 	var pv_stretch;
 	if (position_growth <= position_start)
 	{

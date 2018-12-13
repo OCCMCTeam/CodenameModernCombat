@@ -20,10 +20,10 @@ func OnLaunch()
 	// FIXME: No idea if we actually want them to glow
 	SetLightColor(GetPlayerColor(GetOwner()));
 	SetLightRange(50, 30);
-	
+
 	Tracer_StartX = GetX();
 	Tracer_StartY = GetY();
-	
+
 	var color = SplitRGBaValue(GetPlayerColor(GetController()));
 	var max = Max([color.R, color.G, color.B]);
 	Tracer_Color = RGB(color.R * 255 / max, color.G * 255 / max, color.B * 255 / max); // Max value
@@ -44,7 +44,7 @@ func CreateFlare()
 {
 	var max = velocity / 10;
 	var prec = 1000;
-	
+
 	var angle = Angle(0, 0, GetXDir(), GetYDir(), prec);
 
 	var x = -Sin(angle, max, prec);
@@ -83,9 +83,9 @@ public func OnHitObject(object target, proplist hitcheck_effect)
 		{
 			return Remove();
 		}
-		
+
 		// TODO: Tracer has to ignore the target and keep flying if it cannot be added
-	
+
 		if ((Hostile(target->GetOwner(), GetController()) || target->~AttractTracer(this))
 	    && !target->InLiquid()
 	    && !target->~IgnoreTracer()
@@ -129,7 +129,7 @@ public func OnHitObject(object target, proplist hitcheck_effect)
 				// DoAchievementProgress(1, AC19, GetController());
 			}
 		}
-		
+
 		DrawLaserBeam();
 	}
 }
@@ -183,7 +183,7 @@ local TracerDartTimer = new Effect
 			this.Team = GetPlayerTeam(player);
 			color = SplitRGBaValue(GetPlayerColor(player));
 			this.Color = RGBa(color.R, color.G, color.B, 250); //color;
-			
+
 			// Tag the target
 			var tag = CMC_Icon_SensorBall_Tag->Get(this.Target, player, CMC_Projectile_TracerDart);
 			if (tag)
@@ -201,7 +201,7 @@ local TracerDartTimer = new Effect
 		}
 		return FX_OK;
 	},
-	
+
 	Stop = func (int temp)
 	{
 		if (!temp)
@@ -212,7 +212,7 @@ local TracerDartTimer = new Effect
 			{
 				tag->Remove();
 			}
-			
+
 			// Do some achievement points
 			var player = this.By_Player;
 			if (!GetPlayerName(player)) return;
@@ -224,33 +224,33 @@ local TracerDartTimer = new Effect
 		    }
 		}
 	},
-	
+
 	Timer = func (int time)
 	{
 		if (!this.Target) return FX_Execute_Kill;
-	
+
 		// Countdown
 		if (time > this.LifeTime)
 		{
 			return FX_Execute_Kill;
 		}
-	
+
 		// Destroy on contact with water
 		if (this.Target->InLiquid()) return FX_Execute_Kill;
-	
+
 		// Destroy if target is not hostile anymore
 		var team = this.Target->~GetTeam() ?? GetPlayerTeam(this.Target->GetController());
 		if (team && team == this.Team)
 		{
 			return FX_Execute_Kill;
 		}
-	
+
 		// Destroy tracer if target requests it
 		if (this.Target->~RemoveTracer(this))
 		{
 			return FX_Execute_Kill;
 		}
-		
+
 		if (time % 10 == 0)
 		{
 			this.Target->CreateLEDEffect(this.Color, 0, 0, 20, 20, true);

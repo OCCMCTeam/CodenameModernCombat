@@ -151,7 +151,7 @@ func CaptureTimer()
 		if (player == NO_OWNER) continue;
 		if (!GetPlayerName(player) || !GetPlayerTeam(player)) continue;
 		if (!PathFree(this->GetX(), this->GetY() - (GetID()->GetDefHeight()/2), crew->GetX(), crew->GetY())) continue;
-		
+
 		if (GetPlayerTeam(player) == capture_team)
 		{
 			PushBack(friends_in_range, crew);
@@ -163,10 +163,10 @@ func CaptureTimer()
 	}
 	var friends = GetLength(friends_in_range);
 	var enemies = GetLength(enemies_in_range);
-	
+
 	var has_friends = friends > 0;
 	var has_enemies = enemies > 0;
-	
+
 	attacking_team = GetTeamMajority(enemies_in_range);
 
 	// Only enemies in range? Neutralize the flag
@@ -428,7 +428,7 @@ func UpdateFlag()
 	// Update the position
 	flag->SetColor(color);
 	SetFlagPosition(capture_progress);
-	
+
 	// No status bar?
 	if (!bar)
 	{
@@ -437,7 +437,7 @@ func UpdateFlag()
 
 	bar->SetBarColor(InterpolateRGBa(capture_progress, 0, FlagPost_Flag_Color_Neutral, 100, color, FlagPost_Bar_Color_Back));
 	bar->SetValue(capture_progress);
-	
+
 	if (GetDeployLocation())
 	{
 		if (capture_team)
@@ -467,7 +467,7 @@ func SetFlagPosition(int percent)
 func ShowCaptureRadius()
 {
 	if (range_marker) return;
-	
+
 	// Create new one
 	range_marker = CMC_Icon_SensorBall_Circle->AddTo(this);
 
@@ -488,7 +488,7 @@ func GetScoreboardInfo()
 	{
 		flag_name_color = team_color;
 	}
-	
+
 	var flag_status_icon = CMC_Icon_FlagPost_Neutral;
 	if (capture_trend == -1) flag_status_icon = CMC_Icon_FlagPost_Embattled; // Attack
 	if (capture_trend == +1) flag_status_icon = CMC_Icon_FlagPost_Capturing; // Defense
@@ -519,9 +519,9 @@ public func /* check */ MoveFlagpost(int x, int y, string name, int range, bool 
 	/* TODO
 	for (var i = -80; i < -20; i += 10)
 		CastParticles("MetalSplinter",1,20,0,i,50,80);
-		
+
 	if (GetEffectData(EFSM_ExplosionEffects) > 0) CastSmoke("Smoke3",8,15,0,-5,250,200,RGBa(255,255,255,100),RGBa(255,255,255,130));
-	
+
 	CastParticles("Sandbag", 10, 70, 0,-10, 35, 45, RGBa(228,228,228,0), RGBa(250,250,250,50));
 	*/
 	Sound("FenceDestruct.ogg");

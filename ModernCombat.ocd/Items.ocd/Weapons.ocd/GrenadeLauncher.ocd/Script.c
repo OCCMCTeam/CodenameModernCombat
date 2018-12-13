@@ -144,13 +144,13 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	// Should not need an effect
 	// TODO: Add part of the user speed?
-	
+
 	var controller = user->GetController();
 	if (GetType(controller) == C4PT_User)
 	{
 		SetPlrView(controller, projectile);
 	}
-	
+
 }
 
 func FireEffect(object user, int angle, proplist firemode)
@@ -160,10 +160,10 @@ func FireEffect(object user, int angle, proplist firemode)
 
 	var user_xdir = user->GetXDir();
 	var user_ydir = user->GetYDir();
-	
+
 	var xdir = +Sin(angle, firemode->GetProjectileSpeed()) / 4;
 	var ydir = -Cos(angle, firemode->GetProjectileSpeed()) / 4;
-	
+
 	CreateParticle("Smoke2", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(user_xdir, user_xdir + xdir), PV_Random(user_ydir, user_ydir + ydir), PV_Random(15, 25),
 	{
 		Prototype = Particles_ThrustColored(200, 200, 200),

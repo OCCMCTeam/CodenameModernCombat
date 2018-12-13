@@ -14,11 +14,11 @@ public func Initialize()
 
 	// Create the round manager - this organizes the game in rounds
 	CreateObject(Environment_RoundManager);
-	
+
 	// Create the configuration - TODO: this has old style menus at the moment, will be changed
 	// to proper GUI menus soon
 	CreateObject(CMC_Game_Session_Configurator);
-	
+
 	// A nice log message
 	Log("$InitializeScenario$");
 
@@ -32,7 +32,7 @@ public func Initialize()
 public func InitializePlayer(int player, int x, int y, object base, int team, id extra_data)
 {
 	OnPlayerJoinedRound(player, team);
-	
+
 	// Do the usual stuff
 	return _inherited(player, x, y, base, team, extra_data, ...);
 }
@@ -125,15 +125,15 @@ private func CleanUpEquipment(int round_number)
 private func OnRoundReset(int round_number)
 {
 	Log("$ResetScenario$");
-	
+
 	// Interior objects and equipment should be reset at the start of the round
 	CreateInterior();
 	CreateEquipment();
-	
+
 	// Make map visible to everyone
 	UpdateFoW();
 	SetPlayerZoomLandscape();
-	
+
 	// Do the usual stuff
 	_inherited(round_number, ...);
 }
@@ -156,13 +156,13 @@ private func OnRoundEnd(int round_number)
 	// Interior objects and equipment should be remove at the end of the round
 	CleanUpInterior();
 	CleanUpEquipment();
-	
+
 	// Disable fog of war
 	UpdateFoW(nil, nil, false);
-	
+
 	// Aaaand we're done!
 	GameOver();
-	
+
 	_inherited(round_number, ...); // Does nothing for now
 }
 

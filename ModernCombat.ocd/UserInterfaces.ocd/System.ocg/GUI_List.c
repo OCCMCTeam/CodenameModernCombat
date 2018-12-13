@@ -1,6 +1,6 @@
 /**
 	List prototype
-	
+
 	@author Marky
  */
 
@@ -22,7 +22,7 @@ static const GUI_List = new GUI_Element
 		this.ListEntry_Ids = this.ListEntry_Ids ?? [];
 		this.ListEntry_Elements = this.ListEntry_Elements ?? [];
 		this.ListEntry_Width = this.ListEntry_Width ?? GuiDimensionCmc();
-		
+
 		var entry;
 		var index = GetIndexOf(this.ListEntry_Ids, identifier);
 		if (index >= 0)
@@ -32,7 +32,7 @@ static const GUI_List = new GUI_Element
 		else
 		{
 			var entry_count = GetLength(this.ListEntry_Elements);
-			
+
 			// Add additional entry
 			entry = new_entry ?? this->~MakeEntryProplist();
 			entry.Priority = entry_count;
@@ -43,7 +43,7 @@ static const GUI_List = new GUI_Element
 			PushBack(this.ListEntry_Elements, entry);
 		}
 		entry->Update();
-		
+
 		// Update the list height
 		var height = nil;
 		for (var element in this.ListEntry_Elements)
@@ -59,11 +59,11 @@ static const GUI_List = new GUI_Element
 		}
 		SetHeight(height);
 		Update(ComposeLayout());
-		
+
 		// Done
 		return entry;
 	},
-	
+
 	GetSelectedEntry = func ()
 	{
 		if (this.ListEntry_Elements)
@@ -71,7 +71,7 @@ static const GUI_List = new GUI_Element
 			return this.ListEntry_Elements[this.ListEntry_Selected];
 		}
 	},
-	
+
 	SelectEntry = func (identifier, int index, bool skip_callback)
 	{
 		if (identifier)
@@ -84,9 +84,9 @@ static const GUI_List = new GUI_Element
 		{
 			FatalError("Entry not found");
 		}
-		
+
 		this.ListEntry_Selected = index;
-		
+
 		var can_select = false;
 		for (var i = 0; i < GetLength(this.ListEntry_Elements); ++i)
 		{
@@ -99,7 +99,7 @@ static const GUI_List = new GUI_Element
 		}
 		return can_select;
 	},
-	
+
 	SelectNextEntry = func(bool backward, bool skip_callback)
 	{
 		var index = this.ListEntry_Selected ?? 0;
@@ -136,7 +136,7 @@ static const GUI_List_Entry = new GUI_Element
 	ListEntry_Callback_OnMouseOut = nil,
 	ListEntry_Callback_OnMenuClosed = nil,
 	ListEntry_Index = nil,
-	
+
 	// --- Functions
 
 	SetCallbackOnClick = func (array callback)
@@ -145,57 +145,57 @@ static const GUI_List_Entry = new GUI_Element
 		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
 		return this;
 	},
-	
+
 	SetCallbackOnMouseIn = func (array callback)
 	{
 		this.ListEntry_Callback_OnMouseIn = callback;
 		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
 		return this;
 	},
-	
+
 	SetCallbackOnMouseOut = func (array callback)
 	{
 		this.ListEntry_Callback_OnMouseOut = callback;
 		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
 		return this;
 	},
-	
+
 	SetCallbackOnMenuClosed = func (array callback) // Custom callback from certain menus, does not correspond with any of the usual GUI callbacks
 	{
 		this.ListEntry_Callback_OnMenuClosed = callback;
 		return this;
 	},
-	
+
 	GetIndex = func ()
 	{
 		return this.ListEntry_Index;
 	},
-	
+
 	SetIndex = func (int index)
 	{
 		this.ListEntry_Index = index;
 		return this;
 	},
-	
+
 	OnClickCall = func ()
 	{
 		DoCallback(this.ListEntry_Callback_OnClick);
 	},
-	
+
 	OnMouseInCall = func ()
 	{
 		this.ListEntry_Hovered = true;
 		this->~UpdateEntry();
 		DoCallback(this.ListEntry_Callback_OnMouseIn);
 	},
-	
+
 	OnMouseOutCall = func ()
 	{
 		this.ListEntry_Hovered = false;
 		this->~UpdateEntry();
 		DoCallback(this.ListEntry_Callback_OnMouseOut);
 	},
-	
+
 	OnMenuClosedCall = func ()
 	{
 		if (this.ListEntry_Callback_OnMenuClosed)
@@ -215,13 +215,13 @@ static const GUI_SelectionListEntry = new GUI_List_Entry
 	ListEntry_Callback_OnSelected = nil,
 
 	// --- Functions
-	
+
 	SetSelected = func (bool selected, bool skip_callback)
 	{
 		// Update the display
 		this.ListEntry_Selected = selected;
 		this->~UpdateEntry();
-		
+
 		// Issue a callback?
 		if (this.ListEntry_Callback_OnSelected && selected && !skip_callback)
 		{
@@ -229,7 +229,7 @@ static const GUI_SelectionListEntry = new GUI_List_Entry
 		}
 		return this; // Return value of 'nil' means that the item cannot be selected/deselected
 	},
-	
+
 	IsSelected = func ()
 	{
 		return this.ListEntry_Selected;

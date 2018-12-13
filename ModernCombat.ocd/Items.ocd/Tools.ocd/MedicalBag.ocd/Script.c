@@ -105,7 +105,7 @@ public func UnpackSyringe(object user)
 	    user->PlayerMessage(user->GetOwner(), "$AbilityRequired$", CMC_Ability_ImproveMedicalEquipment);
 	    return false;
 	}
-	
+
 	// Not enough points?
 	var points_required = 40;
 	if (GetAmmoCount() < points_required)
@@ -113,18 +113,18 @@ public func UnpackSyringe(object user)
 	    user->PlayerMessage(user->GetOwner(), "$PointsRequired$", points_required);
 		return;
 	}
-	
+
 	// Create the syringe
 	var syringe = CreateObject(CMC_Tool_Syringe, 0, 0, NO_OWNER);
-	
+
 	// Collect it
 	if (user->Collect(syringe))
 	{
 		DoAmmoCount(-points_required);
-		
+
 		user->ShiftContents(false, syringe->GetID()); // TOOD: would be cool to shift right to that item, no???
 		user->SetComDir(COMD_Stop);
-		
+
 		syringe->SetOwner(user->GetOwner());
 		syringe->EvaluateObjectLimit(user->GetOwner());
 	}

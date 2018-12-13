@@ -1,6 +1,6 @@
 /**
 	Default button for tabs and/or generic menu controls.
-	
+
 	@author Marky
  */
 
@@ -18,24 +18,24 @@ static const CMC_GUI_Button = new GUI_Element
 	// --- GUI Properties
 
 	BackgroundColor = GUI_CMC_Background_Color_Default,
-	
+
 	hover = nil, // Overlay for hover effect
 	label = nil, // Overlay for text, should be over the hover effect
-	
+
 	// --- Functions
-	
+
 	Assemble = func ()
 	{
 		this.OnClick = GuiAction_Call(this, GetFunctionName(this.OnClickCall));
 		this.OnMouseIn = GuiAction_Call(this, GetFunctionName(this.OnMouseInCall));
 		this.OnMouseOut = GuiAction_Call(this, GetFunctionName(this.OnMouseOutCall));
-		
+
 		this.hover = { Priority = 1};
 		this.label = { Priority = 2, Style = GUI_TextHCenter | GUI_TextVCenter};
-		
+
 		return this;
 	},
-	
+
 	SetData = func (string caption, array callback, proplist style)
 	{
 		if (caption)
@@ -49,23 +49,23 @@ static const CMC_GUI_Button = new GUI_Element
 		this.Tab_Callback = callback;
 		return this;
 	},
-	
+
 	SetIndex = func (int index)
 	{
 		this.Tab_Index = index;
 		return this;
 	},
-	
+
 	OnMouseInCall = func ()
 	{
 		Update({ hover = {BackgroundColor = GUI_CMC_Background_Color_Hover}});
 	},
-	
+
 	OnMouseOutCall = func ()
 	{
 		Update({ hover = {BackgroundColor = nil}});
 	},
-	
+
 	OnClickCall = func ()
 	{
 		if (this.Tab_Enabled)
@@ -81,11 +81,11 @@ static const CMC_GUI_Button = new GUI_Element
 			}
 		}
 	},
-	
+
 	SetEnabled = func (bool enabled)
 	{
 		this.Tab_Enabled = enabled;
-		
+
 		// Deselect disabled buttons
 		if (!enabled && IsSelected())
 		{
@@ -97,7 +97,7 @@ static const CMC_GUI_Button = new GUI_Element
 		}
 		return this;
 	},
-	
+
 	SetSelected = func (bool selected, bool skip_callback)
 	{
 		if (this.Tab_Enabled)
@@ -105,7 +105,7 @@ static const CMC_GUI_Button = new GUI_Element
 			// Update the display
 			this.Tab_Selected = selected;
 			UpdateBackground();
-			
+
 			// Issue a callback?
 			if (IsTabButton() && this.Tab_Callback && selected && !skip_callback)
 			{
@@ -115,22 +115,22 @@ static const CMC_GUI_Button = new GUI_Element
 		}
 		return this;
 	},
-	
+
 	IsSelected = func ()
 	{
 		return this.Tab_Selected;
 	},
-	
+
 	IsEnabled = func ()
 	{
 		return this.Tab_Enabled;
 	},
-	
+
 	IsTabButton = func ()
 	{
 		return nil != this.Tab_Index;
 	},
-	
+
 	UpdateBackground = func (int color)
 	{
 		if (color == nil)

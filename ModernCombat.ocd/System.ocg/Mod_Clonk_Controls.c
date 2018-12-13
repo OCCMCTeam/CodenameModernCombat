@@ -41,7 +41,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			DebugLog("%s toggles reanimation allowed/not allowed", GetName()); // TODO
 			return true;
 		}
-	
+
 		// Prevent interactions with the world
 		// Menu controls should be allowed, so should crew controls for changing the crew member
 		if (IsMovementControl(ctrl)
@@ -65,7 +65,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		}
 	}
-	
+
 	// Handle item configuration
 	// This sort of blends in with the use calls,
 	// so that it becomes clear that it cannot be
@@ -79,7 +79,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			return true;
 		}
 	}
-	
+
 	// Handle aiming?
 	if (ctrl == CON_CMC_AimingCursor)
 	{
@@ -133,7 +133,7 @@ func AimingUseControl(int x, int y, object obj)
 	}
 
 	var handled = obj->Call(GetUseCallString("Aiming"), this, x, y);
-	
+
 	// Adjust cursor
 	this->~UpdateCmcVirtualCursor(x, y);
 

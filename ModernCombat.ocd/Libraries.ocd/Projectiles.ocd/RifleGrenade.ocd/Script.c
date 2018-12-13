@@ -22,11 +22,11 @@ func IsProjectileTarget()
 func OnLaunch()
 {
 	SetAction("TravelBallistic");
-	
+
 	Grenade_StartX = GetX();
 	Grenade_StartY = GetY();
 	Grenade_StartFrame = FrameCounter();
-	
+
 	Fuse();
 	StayOnHit();
 }

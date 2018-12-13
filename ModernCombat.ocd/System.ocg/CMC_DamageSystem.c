@@ -1,6 +1,6 @@
 /**
 	CMC damage system.
-	
+
 	Added as an effect, so that other Clonk types can potentially use this, too.
 	Also, this seems better than messing with inheritance.
  */
@@ -9,7 +9,7 @@ static const FxCmcDamageSystem = new Effect
 {
 	// Name, for identification
 	Name = "FxCmcDamageSystem",
-	
+
 	// Settings, so that e.g. other living beings can bleed, but they do not need the sound system or screen flash
 	SettingBlood = true,
 	SettingSound = true,
@@ -25,10 +25,10 @@ static const FxCmcDamageSystem = new Effect
 			AddSoundEffect(Abs(health_change_exact), cause, by_player);
 			AddBloodEffect(Abs(health_change_exact), cause, by_player);
 		}
-		
+
 		return health_change_exact;
 	},
-	
+
 	CatchBlow = func (int health_change, object from)
 	{
 		var blood = GetEffect(FxCmcBloodBurst.Name, Target);
@@ -40,7 +40,7 @@ static const FxCmcDamageSystem = new Effect
 			blood.YDir = from->GetYDir();
 		}
 	},
-	
+
 	AddScreenEffect = func (int damage)
 	{
 		if (!this.SettingScreen) return;
@@ -54,14 +54,14 @@ static const FxCmcDamageSystem = new Effect
 			flash.AlphaMax = intensity_max;
 		}
 	},
-	
+
 	AddSoundEffect = func (int damage, int cause, int by_player)
 	{
 		if (!this.SettingSound) return;
-		
+
 		// Round down to normal values
 		damage /= 1000;
-		
+
 		// Impact sound
 		var hit = nil;
 		if (cause == FX_Call_EngScript)
@@ -76,7 +76,7 @@ static const FxCmcDamageSystem = new Effect
 		{
 			Target->~PlaySoundDamageImpact(hit);
 		}
-		
+
 		// Hurt sound
 		var hurt = "";
 		if (FX_Call_EngCorrosion == cause
@@ -94,7 +94,7 @@ static const FxCmcDamageSystem = new Effect
 			Target->~PlaySoundDamageHurt(hurt);
 		}
 	},
-	
+
 	AddBloodEffect = func (int damage, int cause, int by_player)
 	{
 		if (!this.SettingBlood) return;
@@ -112,35 +112,35 @@ static const FxCmcDamageSystem = new Effect
 static const FxCmcBloodBurst = new Effect
 {
 	Name = "FxCmcBloodBurst",
-	
+
 	Timer = func (int time)
 	{
 		Spray(this.Damage / 1000, this.X, this.Y);
 		return FX_Execute_Kill;
 	},
-	
+
 	GetBloodColor = func ()
 	{
 		return Target.BloodColor ?? {R = RandomX(70, 195), G = 0, B = 0, Alpha = 255};
 	},
-	
+
 	GetBloodColorLight = func ()
 	{
 		return Target.BloodColor ?? {R = RandomX(130, 225), G = 0, B = 0, Alpha = 255};
 	},
-	
+
 	GetRandomX = func ()
 	{
 		var range_x = Target->GetID()->GetDefWidth()/3; 
 		return RandomX(-range_x, +range_x);
 	},
-	
+
 	GetRandomY = func ()
 	{
 		var range_y = Target->GetID()->GetDefHeight()/3; 
 		return RandomX(-range_y, +range_y);
 	},
-	
+
 	IsSky = func(int x, int y)
 	{
 		var material = Target->GetMaterial(x, y);
@@ -159,7 +159,7 @@ static const FxCmcBloodBurst = new Effect
 		{
 			angle = Angle(0, 0, Target->GetXDir(), Target->GetYDir());
 		}
-		
+
 		// Burst / spray
 		var burst_angle = Normalize(angle - 90 + RandomX(-5, 5), 0);
 		var	burst_color = GetBloodColorLight();
@@ -174,7 +174,7 @@ static const FxCmcBloodBurst = new Effect
 			DampingY = 500,
 			Attach = ATTACH_Front, 
 		});
-		
+
 		// Splatter on the background
 		if (!IsSky(x, y))
 		{
@@ -202,7 +202,7 @@ static const FxCmcBloodBurst = new Effect
 			{
 				var splat_angle = Normalize(angle + RandomX(-10, 10), 0);
 				var radius = RandomX(2, 5) + size / 2; // Factor in the particle rotation
-				
+
 				splat->
 				CreateParticle("BloodSplatter2", x + Sin(splat_angle, radius), y - Cos(splat_angle, radius), 0, 0, lifetime,
 				{

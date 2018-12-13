@@ -19,7 +19,7 @@ public func OpenRespawnMenu()
 		    ->Show()
 		    ->Open(GetOwner());
 		SetMenu(menu->GetRootID());
-		
+
 		// Save menu in the container for future reference
 		Contained()->SetRespawnMenu(menu);
 
@@ -45,7 +45,7 @@ public func OnOpenRespawnMenu(proplist menu)
 
 	// Select the first location by default
 	menu->GetDeployLocations()->SelectBestTab(true);
-	
+
 	// Zoom out
 	menu->GetOverviewButton()->OnClickCall();
 }
