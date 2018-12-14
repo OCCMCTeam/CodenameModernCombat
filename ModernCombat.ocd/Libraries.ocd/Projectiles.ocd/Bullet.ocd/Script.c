@@ -153,10 +153,7 @@ func ProjectileColor(int time)
 
 func TrailColor(int time)
 {
-	var progress = 100 * time / Max(1, lifetime);
-	var value = Max(0, 255 - progress * 2);
-
-	return RGBa(255, value, value, value);
+	return RGBa(255, 190, 0, 50);
 }
 
 /* --- Effects --- */
@@ -214,41 +211,25 @@ func DrawBubbles(int x_start, int y_start, int x_end, int y_end)
 
 func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 {
+	// Set the basics
+	var time_interval = 2;
+	var particle_velocity = RandomX(30, 40) * 4;
+	var precision_velocity = 10;
 	var particle_size = 64;
-	var position_margin = 20;
+	var distance_travelled = time_interval * particle_velocity / precision_velocity;
+	var margin_for_size = particle_size / 2;
 
 	// Determine distance, and cancel if it is too near
 	var distance = Distance(x_start, y_start, x_end, y_end);
-	if (distance <= 2 * position_margin) return;
+	var position_end = distance - distance_travelled;
+	if (position_end <= particle_size) return;
 
 	// Determine starting position of the effect
-	var position_end = distance - position_margin;
-	var position_start = Max(position_margin, RandomX(position_margin, distance * 2 / 3));
-
-	// Determine position for full particle size
-	var speed = Max(60, RandomX(-20, 20) + velocity);
-	var trace_length = RandomX(40, 80);
-	var position_growth = Min(trace_length, position_end);
-	var position_shrink = Max(position_start, position_end - trace_length);
-	if (position_shrink < position_growth)
-	{
-		position_shrink = (position_shrink + position_growth) / 2;
-		position_growth = position_shrink;
-		trace_length = position_shrink - position_start;
-	}
+	var position_start = RandomX(margin_for_size, position_end - margin_for_size);
 
 	// Determine times
-	var time_start = CalcLifetime(position_start, speed);
-	var time_growth = CalcLifetime(position_growth, speed);
-	var time_shrink = CalcLifetime(position_shrink, speed);
-	var time_end = CalcLifetime(position_end, speed);
-
-	var time_interval = Max(1, time_end - time_start);
-	var keyframe_end = 1000;
-	var keyframe_growth = Max(0, (time_growth - time_start) * keyframe_end / time_interval);
-	var keyframe_shrink = Max(0, (time_shrink - time_start) * keyframe_end / time_interval);
-	var stretch_min = position_margin * 1000 / particle_size;
-	var stretch_max = trace_length * 1000 / particle_size;
+	var time_start = (precision_velocity * position_start) / particle_velocity;
+	var time_end = time_start + time_interval;
 
 	// Determine creation offset
 	var x = (distance - position_start) * (x_start - x_end) / distance;
@@ -257,26 +238,15 @@ func DrawTrace(int x_start, int y_start, int x_end, int y_end)
 	var color_start = SplitRGBaValue(this->TrailColor(time_start));
 	var color_end = SplitRGBaValue(this->TrailColor(time_end));
 
-	var pv_stretch;
-	if (position_growth <= position_start)
-	{
-		pv_stretch = PV_KeyFrames(0, 0, stretch_max, keyframe_shrink, stretch_max, keyframe_end, stretch_min);
-	}
-	else
-	{
-		pv_stretch = PV_KeyFrames(0, 0, stretch_min, keyframe_growth, stretch_max, keyframe_shrink, stretch_max, keyframe_end, stretch_min);
-	}
-
-	CreateParticle("BulletTrace", x, y, +Sin(angle, speed), -Cos(angle, speed), time_interval,
+	CreateParticle("BulletTrace", x, y, +Sin(angle, particle_velocity), -Cos(angle, particle_velocity), time_interval,
 	{
 		R = PV_Linear(color_start.R, color_end.R), G = PV_Linear(color_start.G, color_end.G), B = PV_Linear(color_start.B, color_end.B),
 		Size = particle_size,
-		Alpha = PV_KeyFrames(0, 0, 110, keyframe_growth, 220, keyframe_shrink, 220, keyframe_end, 0),
-		Stretch = pv_stretch,
+		Alpha = PV_Linear(80, 0),
 		Rotation = angle,
 		BlitMode = GFX_BLIT_Additive,
 		CollisionDensity = 25, // Collide with liquids
-		OnCollision = PC_Stop(), // Original particle died, but stopping is better
+		OnCollision = PC_Die(),
 	},
 	1);
 }
@@ -292,12 +262,6 @@ func DrawSpark()
 		BlitMode = GFX_BLIT_Additive,
 		Size = PV_Linear(BoundBy(GetDamageAmount() / 2, 2, 5), 1),
 	});
-}
-
-func CalcLifetime(int distance, int speed)
-{
-	var precision_velocity = 10;
-	return (precision_velocity * distance) / Max(1, speed ?? velocity); 
 }
 
 /* --- Properties --- */
