@@ -33,6 +33,35 @@ func Hit()
 	Sound("Items::Tools::AmmoBox::Hit?");
 }
 
+func Entrance(object into)
+{
+	// Note: If this is done via RejectEntrance() instead, you auto-collect items that are lying around
+	// Implementation via Entrance() ensures, that you get ammo only if you decide to pick it up 
+	if (CollectionUnpacksAmmo && into && into->~IsClonk() && !HasMaxAmmo(into))
+	{
+		// TODO: Maybe the item should still be picked up?
+		UnpackAmmo(into);
+	}
+	return _inherited(into, ...);
+}
+
+/* --- Callback from spawnpoint --- */
+
+func RejectCollectionFromSpawnPoint(object spawn_point, object user)
+{
+	return HasMaxAmmo(user);
+}
+
+func HasMaxAmmo(object user)
+{
+	if (Contents())
+	{
+		var type = Contents()->GetID();
+		return user->~GetAmmo(type) >= type->MaxAmmo();
+	}
+	return false;
+}
+
 
 /* --- Display --- */
 
@@ -160,5 +189,6 @@ func UnpackAmmo(object user)
 local Name = "$Name$";
 local Description = "$Description$";
 local Collectible = true;
+local CollectionUnpacksAmmo = true;
 
 local ObjectLimitPlayer = 3;

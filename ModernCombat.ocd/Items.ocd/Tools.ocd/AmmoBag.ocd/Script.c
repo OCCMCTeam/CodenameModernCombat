@@ -221,7 +221,8 @@ func CreateAmmoBox(object user, id ammo_type)
 	// Remove if empty, do this before collecting the ammo box, so that you can unpack from a full inventory
 	RemoveEmptyAmmoBag(user);
 
-	// Collect it
+	// Collect it, the ammo box should not fill the user ammo
+	ammo_box.CollectionUnpacksAmmo = false;
 	if (user->Collect(ammo_box))
 	{
 		user->ShiftContents(false, ammo_box->GetID()); // TOOD: would be cool to shift right to that item, no???
@@ -229,6 +230,10 @@ func CreateAmmoBox(object user, id ammo_type)
 	else
 	{
 	    user->PlayerMessage(user->GetOwner(), "$NoSpace$");
+	}
+	if (ammo_box)
+	{
+		ammo_box.CollectionUnpacksAmmo = true;
 	}
 }
 
