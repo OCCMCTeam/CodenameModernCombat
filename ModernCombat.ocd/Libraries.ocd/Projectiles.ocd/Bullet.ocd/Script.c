@@ -1,5 +1,7 @@
 #include Library_Projectile
 
+static const CMC_PROJECTILE_LIGHT_BULLET = 0xffffbe00; // RGB(255, 190, 0)
+
 func Initialize()
 {
 	SetObjectBlitMode(GFX_BLIT_Additive);
@@ -12,7 +14,7 @@ func OnLaunch()
 	SetAction("Travel");
 	// FIXME: No idea if we actually want bullets to glow :)
 	// I just took this from the CR script
-	SetLightColor(RGB(255, 190, 0));
+	SetLightColor(CMC_PROJECTILE_LIGHT_BULLET);
 	SetLightRange(50, 30);
 }
 
@@ -33,6 +35,7 @@ func OnLaunched()
 public func OnHitObject(object target, proplist hitcheck_effect)
 {
 	SoundAt("Projectiles::Cartridge::HitObject?");
+	DrawSpark();
 }
 
 
@@ -111,6 +114,7 @@ public func OnHitLandscape()
 		CreateParticle("Frazzle", 0, 0, PV_Random(xdir - 1, xdir + 1), PV_Random(ydir - 1, ydir + 1), PV_Random(20, 40), { Prototype = Particles_Glimmer(), Phase = PV_Random(0, 4)}, 2 * MaterialProperties.spark_factor);
 		CreateParticle("Frazzle", PV_Random(-2, 2), PV_Random(-2, 2), PV_Random(-3, +3), PV_Random(-3, +3), PV_Random(20, 40), { Prototype = Particles_Glimmer(), Phase = PV_Random(0, 4)}, 3);
 	}
+	DrawSpark();
 }
 
 /**
@@ -137,7 +141,6 @@ public func OnHitScan(int x_start, int y_start, int x_end, int y_end)
 	MaterialProperties = GetMaterialProperties(x + x_end - GetX(), y + y_end - GetY());
 	DrawBubbles(x_start, y_start, x_end, y_end);
 	DrawTrace(x_start, y_start, x_end, y_end);
-	DrawSpark();
 }
 
 /* --- Display --- */
@@ -153,7 +156,7 @@ func ProjectileColor(int time)
 
 func TrailColor(int time)
 {
-	return RGBa(255, 190, 0, 50);
+	return CMC_PROJECTILE_LIGHT_BULLET;
 }
 
 /* --- Effects --- */
