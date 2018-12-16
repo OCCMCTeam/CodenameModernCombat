@@ -224,6 +224,24 @@ public func SetAimViewOffset(int distance)
 	aim_effect.view_offset = distance;
 }
 
+public func SetAimViewOffsetMin(int distance)
+{
+	var aim_effect = GetEffect("IntAim", this);
+	if (!aim_effect) // Need to call StartAim first!
+		return;
+
+	aim_effect.view_offset_min = distance;
+}
+
+public func SetAimViewOffsetMax(int distance)
+{
+	var aim_effect = GetEffect("IntAim", this);
+	if (!aim_effect) // Need to call StartAim first!
+		return;
+
+	aim_effect.view_offset_max = distance;
+}
+
 func FxIntAimTimer(target, effect, time)
 {
 	// Call the main function first, to set everything up
@@ -233,8 +251,9 @@ func FxIntAimTimer(target, effect, time)
 	// Check if a view offset is set
 	if (effect.view_offset)
 	{
-		var x_offset = +Sin(this.aim_angle, effect.view_offset);
-		var y_offset = -Cos(this.aim_angle, effect.view_offset);
+		var offset = BoundBy(effect.view_offset, effect.view_offset_min ?? 0, effect.view_offset_max ?? 0);
+		var x_offset = +Sin(this.aim_angle, offset);
+		var y_offset = -Cos(this.aim_angle, offset);
 		SetViewOffset(this->GetOwner(), x_offset, y_offset);
 	}
 }

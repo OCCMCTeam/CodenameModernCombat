@@ -167,9 +167,10 @@ public func ControlUseAiming(object clonk, int x, int y)
 
 	if (change_aiming)
 		return true;
-
+		
 	var button_pressed = (GetPlayerControlState(clonk->GetOwner(), CON_Use) > 0);
 	ContinueAiming(clonk, x, y, button_pressed);
+	clonk->SetAimViewOffset(Distance(x, y));
 	return true;
 }
 
@@ -514,7 +515,8 @@ func SetIronsightAim(object clonk)
 
 	clonk->SetCancelOnJump(true);
 	// TODO: Test & maybe make depended on weapon shoot mode?
-	clonk->SetAimViewOffset(50);
+	clonk->SetAimViewOffsetMin(50);
+	clonk->SetAimViewOffsetMax(150);
 
 	PlaySoundAim(clonk);
 }
@@ -558,7 +560,8 @@ func SetProneAim(object clonk)
 
 	clonk->SetCancelOnJump(true);
 	// TODO: Test & maybe make depended on weapon shoot mode?
-	clonk->SetAimViewOffset(50);
+	clonk->SetAimViewOffsetMin(50);
+	clonk->SetAimViewOffsetMax(150);
 }
 
 func UnsetProneAim(object clonk)
