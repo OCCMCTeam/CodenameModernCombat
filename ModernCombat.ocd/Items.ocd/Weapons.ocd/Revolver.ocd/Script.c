@@ -138,7 +138,7 @@ func Reload_Single_EjectCasings(object user, proplist firemode)
 {
 	for (; casing_count > 0; --casing_count)
 	{
-		EjectCasing(user, user->GetCalcDir() * 90, "Cartridge_Pistol", 2, RandomX(-2, 2), -Random(2));
+		EjectCasing(user, user->GetCalcDir() * 90, RandomX(-2, 2), -Random(2))->SetSize(32);
 	}
 }
 

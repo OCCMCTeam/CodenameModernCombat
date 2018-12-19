@@ -169,7 +169,7 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 func FireEffect(object user, int angle, proplist firemode)
 {
 	MuzzleFlash(user, angle, 20);
-	EjectCasing(user, angle, "Cartridge_Pistol", 2);
+	EjectCasing(user, angle)->SetSize(23);
 }
 
 /* --- Sounds --- */

@@ -157,7 +157,7 @@ func FireEffect(object user, int angle, proplist firemode)
 func EjectCasing2(object user, int angle)
 {
 	var color = user->GetColor();
-	EjectCasing(user, angle, "Cartridge_Pistol", 4, RandomX(-8, -4))->TypeShotgun()->SetColor(color);
+	EjectCasing(user, angle, RandomX(-8, -4))->TypeShotgun()->SetColor(color);
 }
 
 

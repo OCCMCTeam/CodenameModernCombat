@@ -218,7 +218,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	MuzzleFlash(user, angle, 20);
 	if (!firemode.IsTracer)
 	{
-		EjectCasing(user, angle, "Cartridge_Pistol", 2);
+		EjectCasing(user, angle);
 	}
 }
 
@@ -227,7 +227,7 @@ func OnStartReload(object user, int x, int y, proplist firemode)
 	if (firemode.IsTracer)
 	{
 		var angle = GetAngle(x, y);
-		EjectCasing(user, angle, "Cartridge_Pistol", 2, Sin(-angle, 5), -RandomX(15, 20));
+		EjectCasing(user, angle, Sin(-angle, 5), -RandomX(15, 20));
 	}
 }
 

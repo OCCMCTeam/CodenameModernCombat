@@ -5,6 +5,7 @@ func Initialize()
 	// Set a custom object layer, so that the object does not hit other objects and is excluded from searches
 	SetObjectLayer(this);
 	AddTimer(this.Progress, 1);
+	SetSize(20);
 	this.HitSound = "Projectiles::Casing::Hit?";
 }
 
@@ -32,15 +33,16 @@ func SetAngle(int angle)
 	return this;
 }
 
-func SetSize(int size)
+func SetSize(int size) // Size, approx in mm
 {
-	var scale = size * 100;
+	var scale = size * 5;
 	this.MeshTransformation = Trans_Scale(scale, scale, scale);
 	return this;
 }
 
 func TypeShotgun()
 {
+	SetSize(70);
 	this.HitSound = "Projectiles::Casing::HitSpecial?";
 	SetGraphics("Shotgun");
 	return this;
@@ -48,6 +50,7 @@ func TypeShotgun()
 
 func TypeRifle()
 {
+	SetSize(45);
 	this.HitSound = "Projectiles::Casing::HitBig?";
 	SetGraphics("Rifle");
 	return this;
