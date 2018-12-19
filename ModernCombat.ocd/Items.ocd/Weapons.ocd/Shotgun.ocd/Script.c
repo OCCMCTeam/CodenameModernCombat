@@ -156,7 +156,7 @@ func FireEffect(object user, int angle, proplist firemode)
 
 func EjectCasing2(object user, int angle)
 {
-	EjectCasing(user, angle, "Cartridge_Pistol", 4, user->GetCalcDir() * 8 * RandomX(-2, -1));
+	EjectCasing(user, angle, "Cartridge_Pistol", 4, RandomX(-8, -4));
 }
 
 

@@ -996,10 +996,13 @@ func MuzzleFlash(object user, int angle, int size)
 
 func EjectCasing(object user, int angle, string type, int size, int xdir, int ydir)
 {
-	var chamber = GetWeaponPosition(user, WEAPON_POS_Chamber, angle);
-	xdir = xdir ?? (user->GetCalcDir() * 14 * RandomX(-2, -1));
-	ydir = ydir ?? RandomX(-11, -13);
-	CreateCartridgeEffect(type, size, chamber.X, chamber.Y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+	var casing = GetWeaponPosition(user, WEAPON_POS_Chamber, angle);
+	xdir = xdir ?? RandomX(-7, -14);
+	ydir = ydir ?? RandomX(-5, -7);
+	var ejection = new PositionOffsetRotation {};
+	ejection->DefineOffset(xdir, ydir);
+	ejection = ejection->GetPosition(angle);
+	CreateCartridgeEffect(type, size, casing.X, casing.Y, user->GetXDir() + ejection.X, user->GetYDir() + ejection.Y);
 }
 
 
