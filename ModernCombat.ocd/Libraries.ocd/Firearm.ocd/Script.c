@@ -1008,6 +1008,8 @@ func EjectCasing(object user, int angle, string type, int size, int xdir, int yd
 	casing->SetSize(size)
 	      ->SetAngle(angle)
 	      ->SetSpeed(user->GetXDir() + ejection.X, user->GetYDir() + ejection.Y);
+
+	return casing;
 }
 
 

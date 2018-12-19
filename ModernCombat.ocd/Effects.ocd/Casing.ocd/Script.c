@@ -39,6 +39,20 @@ func SetSize(int size)
 	return this;
 }
 
+func TypeShotgun()
+{
+	this.HitSound = "Projectiles::Casing::HitSpecial?";
+	SetGraphics("Shotgun");
+	return this;
+}
+
+func TypeRifle()
+{
+	this.HitSound = "Projectiles::Casing::HitBig?";
+	SetGraphics("Rifle");
+	return this;
+}
+
 /* --- Behaviour --- */
 
 local is_fading = false;

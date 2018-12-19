@@ -7,7 +7,7 @@ material cmc_casing
         pass
         {
             ambient  0.800 0.800 0.800 1.0
-            diffuse  0.640 0.640 0.640 1.0
+            diffuse  0.800 0.800 0.800 1.0
             specular 0.025 0.025 0.025 1.0 2.5
             emissive 0.0 0.0 0.0 1.0
 
@@ -16,14 +16,28 @@ material cmc_casing
             depth_check on
             depth_write on
             scene_blend one zero
-
-            texture_unit 
-            {
-                texture casings.png
-                tex_address_mode wrap
-                scale 1.0 1.0
-                colour_op modulate
-            }
+			
+			texture_unit overlay
+			{
+				texture casings_overlay.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex modulate src_texture src_player_colour
+				alpha_op_ex source1 src_texture src_player_colour
+			}
+			texture_unit gfx
+			{
+				texture casings.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op_ex blend_current_alpha src_current src_texture
+				alpha_op_ex add src_current src_texture
+			}
+			texture_unit light
+			{
+				colour_op_ex modulate src_current src_diffuse
+				alpha_op_ex modulate src_current src_diffuse
+			}
         }
     }
 }

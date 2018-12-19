@@ -13,3 +13,4 @@ VertexFriction=20
 Mass=1
 Float=1
 Rotate=1
+ColorByOwner=1
