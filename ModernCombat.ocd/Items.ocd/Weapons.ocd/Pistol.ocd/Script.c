@@ -57,7 +57,7 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 	{
 		return Trans_Mul(this.MeshTransformation);
 	}
-	else // FIXME - not necessary at the moment, this is covered by IsUserReadyToUse: if (clonk->~IsWalking() || clonk->~IsJumping())
+	else
 	{
 		return Trans_Mul(this.MeshTransformation, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 	}
@@ -209,17 +209,13 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	if (!firemode.IsTracer)
 	{
-		projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
 		projectile->HitScan();
 	}
 }
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	// Muzzle flash
-	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
-	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, 20, false, true);
-
+	MuzzleFlash(user, angle, 20);
 	if (!firemode.IsTracer)
 	{
 		EjectCasing(user, angle, "Cartridge_Pistol", 2);

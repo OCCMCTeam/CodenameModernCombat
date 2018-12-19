@@ -987,6 +987,12 @@ func PlaySoundNoAmmo(object user)
 {
 	Sound("Items::Weapons::Shared::Empty", {player = user->GetOwner()});
 }
+		
+func MuzzleFlash(object user, int angle, int size)
+{
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, size ?? 20, false, true);
+}
 
 func EjectCasing(object user, int angle, string type, int size, int xdir, int ydir)
 {

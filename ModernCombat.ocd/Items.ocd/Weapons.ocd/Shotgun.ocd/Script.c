@@ -142,15 +142,12 @@ public func AmmoChamberCapacity(id ammo)
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
-	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
 	projectile->HitScan();
 }
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	// Muzzle flash
-	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
-	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, RandomX(40, 55), false, true);
+	MuzzleFlash(user, angle, RandomX(40, 55));
 
 	// Casing
 	ScheduleCall(this, this.PlaySoundLoadAmmoChamber, firemode->GetRecoveryDelay(), 1);

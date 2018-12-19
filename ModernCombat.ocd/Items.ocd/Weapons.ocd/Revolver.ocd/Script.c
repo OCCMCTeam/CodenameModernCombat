@@ -125,15 +125,13 @@ local ReloadStateMap =
 
 func OnFireProjectile(object user, object projectile, proplist firemode)
 {
-	projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
 	projectile->HitScan();
 	++casing_count;
 }
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
-	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, RandomX(40, 45), false, true);
+	MuzzleFlash(user, angle, RandomX(40, 45));
 }
 
 func Reload_Single_EjectCasings(object user, proplist firemode)

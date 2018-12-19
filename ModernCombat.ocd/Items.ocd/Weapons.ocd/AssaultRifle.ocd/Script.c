@@ -252,7 +252,6 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 {
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
 	{
-		projectile->Trail(2, 150); // FIXME: Is not visible in hitscan :/
 		projectile->HitScan();
 	}
 	else
@@ -267,16 +266,14 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	// Muzzle flash
-	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
-
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
 	{
-		EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, 20, false, true);
+		MuzzleFlash(user, angle, 20);
 		EjectCasing(user, angle, "Cartridge_Pistol", 2);
 	}
 	else
 	{
+		var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
 		var user_xdir = user->GetXDir();
 		var user_ydir = user->GetYDir();
 		var xdir = +Sin(angle, 10);
