@@ -269,7 +269,7 @@ func FireEffect(object user, int angle, proplist firemode)
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
 	{
 		MuzzleFlash(user, angle, 20);
-		EjectCasing(user, angle)->TypeRifle();
+		EjectCasing(user, angle)->TypeRifle()->DoSpin();
 	}
 	else
 	{
