@@ -120,8 +120,9 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	var x = muzzle.X;
+	var y = muzzle.Y;
 
 	// Muzzle flash, the coordinates are inverted here, because the effect should be at the rear of the bazooka
 	var xdir = -x;

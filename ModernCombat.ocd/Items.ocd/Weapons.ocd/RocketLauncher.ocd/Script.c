@@ -26,6 +26,8 @@ public func Initialize()
 	AddFiremode(FiremodeMissiles_TechniqueUnguided());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 func Definition(id weapon)
@@ -83,8 +85,6 @@ func FiremodeMissiles()
 	->SetProjectileID(CMC_Projectile_Missile)
 	->SetProjectileSpeed(100)
 	->SetProjectileRange(10000)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(300))
 	// Crosshair, CMC Custom
@@ -253,8 +253,9 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	var x = muzzle.X;
+	var y = muzzle.Y;
 
 	// Muzzle flash, the coordinates are inverted here, because the effect should be at the rear of the bazooka
 	var xdir = -x;

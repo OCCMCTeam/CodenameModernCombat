@@ -53,9 +53,9 @@ func InitGraphics()
 
 /* --- Callbacks --- */
 
-func UpdateAimPosition(int x, int y)
+func UpdateAimPosition(int x, int y, int origin_x, int origin_y)
 {
-	Cursor_Distance = Distance(x, y);
+	Cursor_Distance = Distance(origin_x, origin_y, x, y);
 	ScheduleUpdate();
 }
 

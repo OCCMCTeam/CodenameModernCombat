@@ -71,7 +71,7 @@ func OnHoldingUse(object clonk, int x, int y)
 		// Call library default firing mechanic
 		DoFireCycle(clonk, x, y, false);
 		// Adjust cursor
-		clonk->~UpdateCmcVirtualCursor(x, y);
+		clonk->~UpdateCmcVirtualCursor(this, x, y);
 	}
 	return true;
 }
@@ -156,6 +156,11 @@ func OnUseAltStop(object clonk, int x, int y)
 
 /* --- Aiming --- */
 
+func Setting_AimOnUseStart()
+{
+	return false;
+}
+
 // Called by the CMC modified clonk, see ModernCombat.ocd\System.ocg\Mod_Clonk.c
 public func ControlUseAiming(object clonk, int x, int y)
 {
@@ -213,8 +218,7 @@ public func StartAiming(object clonk, string aim_type, int x, int y)
 		var current_anim = clonk->GetRootAnimation(CLONK_ANIM_SLOT_Arms);
 		var anim = GetFiremode()->Call(Format("Get%sAimingAnimation", aim_type));
 		var length = clonk->GetAnimationLength(anim);
-		var y_offset = GetFiremode()->GetYOffset();
-		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
+		var angle = Abs(Normalize(clonk->Angle(0,0, x, y), -180)) * 10;
 		// Just to be sure, end all arms animations
 		if (current_anim != nil)
 			clonk->StopAnimation(current_anim);
@@ -269,8 +273,7 @@ public func ChangeAiming(object clonk, string new_type, int x, int y)
 		var delay = GetFiremode()->Call(Format("Get%sDelay", new_type));
 		var anim = GetFiremode()->Call(Format("Get%sAimingAnimation", new_type));
 		var length = clonk->GetAnimationLength(anim);
-		var y_offset = GetFiremode()->GetYOffset();
-		var angle = Abs(Normalize(clonk->Angle(0,0, x, y + y_offset), -180)) * 10;
+		var angle = Abs(Normalize(clonk->Angle(0,0, x, y), -180)) * 10;
 
 		// Blend current aiming animation into new aiming animation
 		number = clonk->PlayAnimation(anim, CLONK_ANIM_SLOT_Arms, Anim_Const(angle * length / 1800), Anim_Linear(0, 0, 999, delay, ANIM_Remove));
@@ -308,8 +311,7 @@ func FinishAiming(object clonk, string aim_type, int x, int y)
 // To be called every frame (preferably) during aiming
 func ContinueAiming(object clonk, int x, int y, bool button_pressed)
 {
-	var angle = Angle(0, 0, x, y + GetFiremode()->GetYOffset());
-	angle = Normalize(angle, -180);
+	var angle = GetAngle(x, y);
 	clonk->SetAimPosition(angle);
 	aim_target = [clonk->GetX() + x, clonk->GetY() + y];
 
@@ -985,6 +987,15 @@ func PlaySoundNoAmmo(object user)
 {
 	Sound("Items::Weapons::Shared::Empty", {player = user->GetOwner()});
 }
+
+func EjectCasing(object user, int angle, string type, int size, int xdir, int ydir)
+{
+	var chamber = GetWeaponPosition(user, WEAPON_POS_Chamber, angle);
+	xdir = xdir ?? (user->GetCalcDir() * 14 * RandomX(-2, -1));
+	ydir = ydir ?? RandomX(-11, -13);
+	CreateCartridgeEffect(type, size, chamber.X, chamber.Y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+}
+
 
 /* --- Reloading --- */
 

@@ -24,6 +24,9 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Smoke());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +2, 2);
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 func Definition(id weapon)
@@ -58,7 +61,7 @@ public func GetCarryTransform(object clonk, bool not_selected, bool nohand, bool
 }
 public func GetCarrySpecial(clonk)
 {
-	if(IsAiming()) return "pos_hand2";
+	if (IsAiming()) return "pos_hand2";
 }
 
 /* --- Fire modes --- */
@@ -78,8 +81,6 @@ func FiremodeGrenades()
 	->SetDamage(20)
 	// Projectile
 	->SetProjectileSpeed(120)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(270))
 	->SetSpreadBySelection(ProjectileDeviationCmc(80))
@@ -155,8 +156,9 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance() + firemode->GetYOffset());
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	var x = muzzle.X;
+	var y = muzzle.Y;
 
 	var user_xdir = user->GetXDir();
 	var user_ydir = user->GetYDir();

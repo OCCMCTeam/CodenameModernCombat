@@ -20,6 +20,7 @@ local ActMap =
 };
 
 local CursorObjects = [];
+local AimOrigin;
 
 
 /* --- Callbacks --- */
@@ -82,7 +83,7 @@ public func SetCursorType(type, int index)
 			}
 			CursorObjects[index] = CreateObject(type, 0, 0, GetOwner());
 			CursorObjects[index]->Init(this);
-			UpdateAimPosition(GetVertex(0, VTX_X), GetVertex(0, VTX_Y));
+			UpdateAimPosition(nil, GetVertex(0, VTX_X), GetVertex(0, VTX_Y));
 			UpdateAimSpread([spread]);
 		}
 		return CursorObjects[index];
@@ -116,6 +117,7 @@ func Init(object target, string graphics_name)
 	// Position at center of the target
 	SetVertex(attach_vertex, VTX_X, target->GetVertex(target_vertex, VTX_X));
 	SetVertex(attach_vertex, VTX_Y, target->GetVertex(target_vertex, VTX_Y));
+	AimOrigin = {X = 0, Y = 0};
 
 	// Attach with the non-default vertex
 	SetActionDataAttach(attach_vertex, target_vertex);
@@ -125,13 +127,28 @@ func Init(object target, string graphics_name)
 }
 
 
-func UpdateAimPosition(int x, int y)
+func UpdateAimPosition(object weapon, int x, int y)
 {
+	var min_range = 50;
+	if (Distance(x, y) < min_range)
+	{
+		var angle = Angle(0, 0, x, y);
+		x = +Sin(angle, min_range);
+		y = -Cos(angle, min_range);
+	}
+
 	SetVertex(0, VTX_X, x);
 	SetVertex(0, VTX_Y, y);
+	
+	var target = GetActionTarget();
+	if (weapon)
+	{
+		AimOrigin = weapon->~GetWeaponPosition(target, WEAPON_POS_Muzzle, target->~GetAimPosition()) ?? AimOrigin;
+	}
+
 	for (var cursor in CursorObjects)
 	{
-		if (cursor) cursor->~UpdateAimPosition(x, y);
+		if (cursor) cursor->~UpdateAimPosition(x, y, AimOrigin.X, AimOrigin.Y);
 	}
 }
 

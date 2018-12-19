@@ -24,6 +24,10 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSingle());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +2, 2);
+	DefineWeaponOffset(WEAPON_POS_Chamber,  +2, -1);
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 
@@ -53,14 +57,14 @@ public func GetCarryTransform(object clonk, bool idle, bool nohand, bool onback)
 	{
 		return Trans_Mul(this.MeshTransformation);
 	}
-	else // FIXME - not necessary at the moment, this is covered by IsUserReadyToUse: if (clonk->~IsWalking() || clonk->~IsJumping())
+	else
 	{
 		return Trans_Mul(this.MeshTransformation, Trans_Rotate(90, 1), Trans_Rotate(90, 0, 0, 1));
 	}
 }
 public func GetCarrySpecial(clonk)
 {
-	if(IsAiming()) return "pos_hand2";
+	if (IsAiming()) return "pos_hand2";
 }
 
 /* --- Fire modes --- */
@@ -83,8 +87,6 @@ func FiremodeBullets()
 	->SetProjectileID(CMC_Projectile_Bullet)
 	->SetProjectileSpeed(250)
 	->SetProjectileRange(400)
-	->SetProjectileDistance(8)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpread(ProjectileDeviationCmc(20))
 	->SetSpreadPerShot(ProjectileDeviationCmc(110))
@@ -130,29 +132,15 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	// Muzzle flash
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
-
-	EffectMuzzleFlash(user, x, y, angle, RandomX(40, 45), false, true);
-}
-
-func Casing(object user, proplist firemode)
-{
-	var angle = user->GetCalcDir() * 90;
-
-	// Casing
-	var x = +Sin(angle, firemode->GetProjectileDistance() / 2);
-	var y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
-
-	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + RandomX(-2, 2), user->GetYDir() - Random(2));
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, RandomX(40, 45), false, true);
 }
 
 func Reload_Single_EjectCasings(object user, proplist firemode)
 {
 	for (; casing_count > 0; --casing_count)
 	{
-		Casing(user, firemode);
+		EjectCasing(user, user->GetCalcDir() * 90, "Cartridge_Pistol", 2, RandomX(-2, 2), -Random(2));
 	}
 }
 

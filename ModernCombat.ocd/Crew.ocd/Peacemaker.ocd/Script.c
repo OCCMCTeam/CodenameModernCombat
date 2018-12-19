@@ -293,12 +293,12 @@ func AddCmcVirtualCursor(int player)
 }
 
 
-func UpdateCmcVirtualCursor(int x, int y)
+func UpdateCmcVirtualCursor(object weapon, int x, int y)
 {
 	var cursor = CMC_Virtual_Cursor->Get(this);
 	if (cursor)
 	{
-		cursor->UpdateAimPosition(x, y);
+		cursor->UpdateAimPosition(weapon, x, y);
 	}
 }
 
@@ -312,7 +312,6 @@ public func StartAim(object weapon, int angle, string type)
 
 public func ChangeAim(object weapon, string type)
 {
-	Log("Change aim %s", type);
 	AddCmcVirtualCursor(GetOwner());
 	return inherited(weapon, type, ...);
 }

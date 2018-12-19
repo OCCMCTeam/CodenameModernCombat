@@ -29,6 +29,10 @@ public func Initialize()
 	AddFiremode(FiremodeGrenades_Smoke());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +2, 2);
+	DefineWeaponOffset(WEAPON_POS_Chamber,  +2, -1);
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 func Definition(id weapon)
@@ -59,12 +63,12 @@ public func GetCarryTransform(object clonk, bool not_selected, bool nohand, bool
 	}
 	else
 	{
-		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-10, 0, 0, 1));
+		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-6, 0, 0, 1));
 	}
 }
 public func GetCarrySpecial(clonk)
 {
-	if(IsAiming()) return "pos_hand2";
+	if (IsAiming()) return "pos_hand2";
 }
 
 /* --- Fire modes --- */
@@ -85,8 +89,6 @@ func FiremodeBullets()
 	->SetProjectileID(CMC_Projectile_Bullet)
 	->SetProjectileSpeed(270)
 	->SetProjectileRange(800)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(55))
 	->SetSpreadBySelection(ProjectileDeviationCmc(100))
@@ -136,8 +138,6 @@ func FiremodeGrenades()
 	->SetDamage(20)
 	// Projectile
 	->SetProjectileSpeed(90)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(200))
 	->SetSpreadBySelection(ProjectileDeviationCmc(100))
@@ -268,33 +268,27 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 func FireEffect(object user, int angle, proplist firemode)
 {
 	// Muzzle flash
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
 
 	if (firemode->GetAmmoID() == CMC_Ammo_Bullets)
 	{
-		EffectMuzzleFlash(user, x, y, angle, 20, false, true);
-
-		// Casing
-		x = +Sin(angle, firemode->GetProjectileDistance() / 3);
-		y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
-		var xdir = user->GetCalcDir() * 14 * RandomX(-2, -1);
-		var ydir = RandomX(-11, -13);
-
-		CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+		EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, 20, false, true);
+		EjectCasing(user, angle, "Cartridge_Pistol", 2);
 	}
 	else
 	{
 		var user_xdir = user->GetXDir();
 		var user_ydir = user->GetYDir();
+		var xdir = +Sin(angle, 10);
+		var ydir = -Cos(angle, 10);
 
-		CreateParticle("Smoke2", PV_Random(x - 5, x + 5), PV_Random(y - 5, y + 5), PV_Random(user_xdir, user_xdir + xdir), PV_Random(user_ydir, user_ydir + ydir), PV_Random(15, 25),
+		CreateParticle("Smoke2", PV_Random(muzzle.X - 5, muzzle.X + 5), PV_Random(muzzle.Y - 5, muzzle.Y + 5), PV_Random(user_xdir, user_xdir + xdir), PV_Random(user_ydir, user_ydir + ydir), PV_Random(15, 25),
 		{
 			Prototype = Particles_ThrustColored(200, 200, 200),
 			Size = PV_Random(5, 10),
 		}, 10);
 
-		CreateParticle("Thrust", x, y, user_xdir, user_ydir, PV_Random(20, 30),
+		CreateParticle("Thrust", muzzle.X, muzzle.Y, user_xdir, user_ydir, PV_Random(20, 30),
 		{
 			Prototype = Particles_ThrustColored(255, 200, 200),
 			Size = 8,

@@ -25,6 +25,10 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSingle());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +2, 2);
+	DefineWeaponOffset(WEAPON_POS_Chamber,  +2, -1);
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 func Definition(id weapon)
@@ -55,7 +59,7 @@ public func GetCarryTransform(object clonk, bool not_selected, bool nohand, bool
 	}
 	else
 	{
-		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-10, 0, 0, 1));
+		return Trans_Mul(this.MeshTransformation, Trans_Rotate(-90, 1, 0, 0), Trans_Rotate(-6, 0, 0, 1));
 	}
 }
 public func GetCarrySpecial(clonk)
@@ -81,8 +85,6 @@ func FiremodeBullets()
 	->SetProjectileID(CMC_Projectile_Bullet)
 	->SetProjectileSpeed(270)
 	->SetProjectileRange(550)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(20))
 	->SetSpreadBySelection(ProjectileDeviationCmc(110))
@@ -167,19 +169,9 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 
 func FireEffect(object user, int angle, proplist firemode)
 {
-	// Muzzle flash
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
-
-	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
-
-	// Casing
-	x = +Sin(angle, firemode->GetProjectileDistance() / 3);
-	y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
-	var xdir = user->GetCalcDir() * 14 * RandomX(-2, -1);
-	var ydir = RandomX(-11, -13);
-
-	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, 20, false, true);
+	EjectCasing(user, angle, "Cartridge_Pistol", 2);
 }
 
 /* --- Sounds --- */

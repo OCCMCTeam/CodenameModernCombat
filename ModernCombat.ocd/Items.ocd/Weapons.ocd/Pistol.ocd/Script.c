@@ -25,6 +25,10 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueTracerDart());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +3, +1);
+	DefineWeaponOffset(WEAPON_POS_Chamber, +4, -1);
+	DefineWeaponOffset(WEAPON_POS_Muzzle, +8, -1);
 }
 
 func Definition(id def)
@@ -77,9 +81,6 @@ func FiremodeBullets()
 	// Reloading
 	->SetAmmoID(CMC_Ammo_Bullets)
 	->SetRecoveryDelay(5)
-	// Projectile
-	->SetProjectileDistance(8)
-	->SetYOffset(-6)
 	// Crosshair, CMC Custom
 	->SetAimCursor([CMC_Cursor_Cone])
 	// Effects, CMC custom
@@ -216,14 +217,12 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 func FireEffect(object user, int angle, proplist firemode)
 {
 	// Muzzle flash
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
-
-	EffectMuzzleFlash(user, x, y, angle, 20, false, true);
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, 20, false, true);
 
 	if (!firemode.IsTracer)
 	{
-		Casing(user, angle, firemode);
+		EjectCasing(user, angle, "Cartridge_Pistol", 2);
 	}
 }
 
@@ -231,18 +230,11 @@ func OnStartReload(object user, int x, int y, proplist firemode)
 {
 	if (firemode.IsTracer)
 	{
-		Casing(user, Angle(0, 0, x, y), firemode);
+		var angle = GetAngle(x, y);
+		EjectCasing(user, angle, "Cartridge_Pistol", 2, Sin(-angle, 5), -RandomX(15, 20));
 	}
 }
 
-func Casing(object user, int angle, proplist firemode)
-{
-	// Casing
-	var x = +Sin(angle, firemode->GetProjectileDistance() / 2);
-	var y = -Cos(angle, firemode->GetProjectileDistance() / 2) +  + firemode->GetYOffset();
-
-	CreateCartridgeEffect("Cartridge_Pistol", 2, x, y, user->GetXDir() + Sin(-angle, 5), user->GetYDir() - RandomX(15, 20));
-}
 
 /* --- Sounds --- */
 

@@ -23,6 +23,10 @@ public func Initialize()
 	AddFiremode(FiremodeBullets_TechniqueSpreadshot());
 
 	StartLoaded();
+
+	DefineWeaponOffset(WEAPON_POS_Magazine, +2, 2);
+	DefineWeaponOffset(WEAPON_POS_Chamber,  +2, -1);
+	DefineWeaponOffset(WEAPON_POS_Muzzle,  +12, -1);
 }
 
 func Definition(id weapon)
@@ -80,8 +84,6 @@ func FiremodeBullets()
 	->SetProjectileID(CMC_Projectile_Bullet)
 	->SetProjectileSpeed([250, 270])
 	->SetProjectileRange(300)
-	->SetProjectileDistance(12)
-	->SetYOffset(-6)
 	// Spread
 	->SetSpreadPerShot(ProjectileDeviationCmc(150))
 	->SetSpreadBySelection(ProjectileDeviationCmc(320))
@@ -147,24 +149,17 @@ func OnFireProjectile(object user, object projectile, proplist firemode)
 func FireEffect(object user, int angle, proplist firemode)
 {
 	// Muzzle flash
-	var x = +Sin(angle, firemode->GetProjectileDistance());
-	var y = -Cos(angle, firemode->GetProjectileDistance()) + firemode->GetYOffset();
-
-	EffectMuzzleFlash(user, x, y, angle, RandomX(40, 55), false, true);
+	var muzzle = GetWeaponPosition(user, WEAPON_POS_Muzzle, angle);
+	EffectMuzzleFlash(user, muzzle.X, muzzle.Y, angle, RandomX(40, 55), false, true);
 
 	// Casing
 	ScheduleCall(this, this.PlaySoundLoadAmmoChamber, firemode->GetRecoveryDelay(), 1);
-	ScheduleCall(this, this.EjectCasing, firemode->GetRecoveryDelay() + 5, 1, user, angle, firemode);
+	ScheduleCall(this, this.EjectCasing2, firemode->GetRecoveryDelay() + 5, 1, user, angle);
 }
 
-func EjectCasing(object user, int angle, proplist firemode)
+func EjectCasing2(object user, int angle)
 {
-	var x = +Sin(angle, firemode->GetProjectileDistance() / 3);
-	var y = -Cos(angle, firemode->GetProjectileDistance() / 3) + firemode->GetYOffset();
-	var xdir = user->GetCalcDir() * 8 * RandomX(-2, -1);
-	var ydir = RandomX(-11, -13);
-
-	CreateCartridgeEffect("Cartridge_Pistol", 4, x, y, user->GetXDir() + xdir, user->GetYDir() + ydir);
+	EjectCasing(user, angle, "Cartridge_Pistol", 4, user->GetCalcDir() * 8 * RandomX(-2, -1));
 }
 
 

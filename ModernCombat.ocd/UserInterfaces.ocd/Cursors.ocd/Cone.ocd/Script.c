@@ -8,10 +8,10 @@ func InitGraphics()
 	SetGraphics("Bar", GetID(), CNAT_Right, GFXOV_MODE_ExtraGraphics);
 }
 
-func UpdateAimPosition(int x, int y)
+func UpdateAimPosition(int x, int y, int origin_x, int origin_y)
 {
 	// Save aiming angle, because the bars need to be rotated this much
-	Cursor_Angle = Angle(0, 0, x, y, 1000);
+	Cursor_Angle = Angle(origin_x, origin_y, x, y, 1000);
 	inherited(x, y);
 }
 
