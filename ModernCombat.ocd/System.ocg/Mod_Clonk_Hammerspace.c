@@ -10,29 +10,50 @@
 /* --- Callbacks from ClonkControl --- */
 
 
-func OnSlotFull(int slot)
+func OnSlotFull(int hand)
 {
-	StartHammerspaceAnimation(slot);
-	return _inherited(slot, ...);
+	StartHammerspaceAnimation(hand);
+	return _inherited(hand, ...);
 }
 
-func OnSlotEmpty(int slot)
+func OnSlotEmpty(int hand)
 {
-	StartHammerspaceAnimation(slot);
-	return _inherited(slot, ...);
+	StartHammerspaceAnimation(hand);
+	return _inherited(hand, ...);
+}
+
+func OnDropped(object item)
+{
+	CreateEffect(IntBlockHammerspaceAnimation, 1, 2);
+	return _inherited(item, ...);
 }
 
 /* --- Animation --- */
 
-func StartHammerspaceAnimation(int slot)
+func StartHammerspaceAnimation(int hand)
 {
-	var animation = GetEffect("IntHammerspaceAnimation", this) ?? CreateEffect(IntHammerspaceAnimation, 1, 1);
-	var inventory_slot = GetItemPos(GetHandItem(slot));
-	animation->SetInventorySlot(inventory_slot);
+	if (!GetEffect(IntBlockHammerspaceAnimation.Name, this))
+	{
+		var inventory_slot = GetHandItemPos(hand);
+		var animation = GetEffect(IntHammerspaceAnimation.Name, this) ?? CreateEffect(IntHammerspaceAnimation, 1, 1, inventory_slot);
+		animation->SetInventorySlot(inventory_slot);
+	}
 }
+
+local IntBlockHammerspaceAnimation = new Effect
+{
+	Name = "IntBlockHammerspaceAnimation",
+
+	Timer = func ()
+	{
+		return FX_Execute_Kill;
+	},
+};
 
 local IntHammerspaceAnimation = new Effect
 {
+	Name = "IntHammerspaceAnimation",
+
 	ReachTime = 5,
 	SelectionTime = 35,
 	SelectionTime_Default = 35,
@@ -135,16 +156,18 @@ local IntHammerspaceAnimation = new Effect
 			var now = FrameCounter();
 			var change = now - this.SlotChange;
 
+			// Reach back again if the animation is already reaching forward
 			if (change >= this.ReachTime)
 			{
 				ReachBack();
 			}
 
+			// Determine time for selection when reaching forward
 			var item = this.Target->GetHandItem(slot);
 			this.SlotChange = now;
 
 			if (item)
-			{			
+			{
 				this.SelectionTime = item->~SelectionTime() ?? this.SelectionTime_Default;
 			}
 			else
