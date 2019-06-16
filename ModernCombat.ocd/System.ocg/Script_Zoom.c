@@ -6,9 +6,9 @@
 
 /* --- Constants --- */
 
-static const CMC_ViewRange_GlobalMin = 200;
+static const CMC_ViewRange_GlobalMin = 400;
 
-static const CMC_ViewRange_Default_Player = 600;
+static const CMC_ViewRange_Default_Player = 810;
 
 /* --- Functions --- */
 
